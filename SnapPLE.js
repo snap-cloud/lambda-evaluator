@@ -20,12 +20,12 @@ var gradingLog = {
 		} else {
 			throw "gradingLog.finishTest: TestID is invalid.";
 		}
+		var glog = this;
 		if (testID < this.testCount) {
-			var glog = this;
 			//SET TIME OUT TO ALLOW COMPLETION
 			setTimeout(function() {testBlock(glog, testID+1)},1);
 		} else {
-			setTimeout(function() {evaluateLog()},1);
+			setTimeout(function() {evaluateLog(glog)},1);
 		}
 		// return this["" + testID];
 	},
@@ -91,7 +91,10 @@ function getScript(blockSpec, spriteIndex) {
 
 function setValues(block, values) {
 	var valIndex = 0;
-	for (var morph of block.children) {
+
+	var morphList = block.children;
+
+	for (var morph of morphList) {
 		if (morph.constructor.name === "InputSlotMorph") {
 			morph.setContents(values[valIndex]);
 			valIndex += 1;
@@ -140,52 +143,65 @@ function testBlock(outputLog, testID) {
 //TODO: TEST THIS BLOCK
 function multiTestBlock(outputLog, blockSpec, inputs, expOuts) {
 
+
 	if (inputs.length !== expOuts.length) {
 		return null;
 	}
 
 	var testIDs = new Array(inputs.length);
 	if (getScript(blockSpec) === undefined) {
-
+		throw "No block named: '" + blockSpec.replace(/%[a-z]/g, "[]") + "'";
 	}
 	for (var i=0;i<inputs.length; i++) {
 		testIDs[i] = outputLog.addTest(blockSpec, inputs[i], expOuts[i]);
 		// testIDs[i] = testBlock(outputLog, blockSpec, inputs[i], expOuts[i])
 	}
 	testBlock(outputLog, testIDs[0]);
-	return testIDs
+	return testIDs;
+}
+
+function prettyBlockString(blockSpec, inputs) {
+	var pString = blockSpec;
+	for (var inp in inputs) {
+		pString = pString.replace(/%[a-z]/, inp);
+	}
+	return pString;
 }
 
 /*
-Evaluate the gradingLog, update 
+Evaluate the outputLog, update 
 */
-function evaluateLog(testIDs) {
+function evaluateLog(outputLog, testIDs) {
+
+	//
 	if (testIDs === undefined) {
 		testIDs = [];
-		for (var i = 1; i <= gradingLog.testCount; i++) {
+		for (var i = 1; i <= outputLog.testCount; i++) {
 		   testIDs.push(i);
 		}
 	}
 	for (var id of testIDs) {
-		if (gradingLog[id]["output"] === gradingLog[id]["expOut"]) {
-			gradingLog[id]["feedback"] = "Correct!";
+		if (outputLog[id]["output"] === outputLog[id]["expOut"]) {
+			outputLog[id]["feedback"] = "Correct!";
 		} else {
-			gradingLog[id]["feedback"] = "Incorrect Answer; Expected: " + 
-				gradingLog[id]["expOut"] + " , Got: " + gradingLog[id]["output"];
+			outputLog[id]["feedback"] = "Incorrect Answer; Expected: " + 
+				outputLog[id]["expOut"] + " , Got: " + outputLog[id]["output"];
 		}
 	}
-	return printLog();
+	// console.log(printLog(outputLog));
+	return outputLog;
 }
 
-function printLog() {
-	for (var i = 1; i<=gradingLog.testCount;i++) {
-		var testString = "[Test " + i + "]";
-		testString += " Block: '" + gradingLog[i]["blockSpec"] + "'";
-		testString += " Input: " + gradingLog[i]["input"];
-		testString += " Expected Ans: " + gradingLog[i]["expOut"];
-		testString += " Got: " + gradingLog[i]["output"];
-		testString += " Feedback: " + gradingLog[i]["feedback"];
-		console.log(testString);
+function printLog(outputLog) {
+	var testString = ""; //TODO: Consider putting Output Header
+	for (var i = 1; i<=outputLog.testCount;i++) {
+		testString += "[Test " + i + "]";
+		testString += " Block: '(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+		testString += " Input: " + outputLog[i]["input"];
+		testString += " Expected Ans: " + outputLog[i]["expOut"];
+		testString += " Got: " + outputLog[i]["output"];
+		testString += " Feedback: " + outputLog[i]["feedback"] + "\n";
 	}
+	return testString;
 }
 
