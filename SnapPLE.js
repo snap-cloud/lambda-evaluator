@@ -1,39 +1,74 @@
 //Snap Protocol Language Enabler
 
-var gradingLog = {
-	testCount: 0,
-	qID: null,
-	addTest: function(blockSpec, input, expOut) {
-		this.testCount += 1;
-		this["" + this.testCount] = {"blockSpec": blockSpec,"input": input, "expOut": expOut, "output": null, "feedback": null};
-		return this.testCount;
-	},
-	deleteTest: function(testID) {
-		delete this["" + testID];
-	},
-	finishTest: function(testID, output, feedback) {
-		if (this["" + testID] !== undefined) {
-			this["" + testID]["output"] = output;
-			if (feedback !== undefined) {
-				this["" + testID]["feedback"] = feedback;
-			}
-		} else {
-			throw "gradingLog.finishTest: TestID is invalid.";
-		}
-		if (testID < this.testCount) {
-			var glog = this;
-			//SET TIME OUT TO ALLOW COMPLETION
-			setTimeout(function() {testBlock(glog, testID+1)},1);
-		} else {
-			setTimeout(function() {evaluateLog()},1);
-		}
-		// return this["" + testID];
-	},
-	testFinished: function(testID) {
-		var test = this["" + testID];
-		return (test["output"] !== null);
-	}
+function gradingLog() {
+	this.testCount = 0;
+	this.qID = null;
+	this.gradeLog = {};
+}
+
+gradingLog.prototype.addTest = function(blockSpec, input, expOut) {
+	this.testCount += 1;
+	this.gradeLog["" + this.testCount] = {"blockSpec": blockSpec,"input": input, "expOut": expOut, "output": null, "feedback": null};
+	return this.testCount;
 };
+
+gradingLog.prototye.finishTest = function(testID, output, feedback) {
+	if (this.gradeLog["" + testID] !== undefined) {
+		this.gradeLog["" + testID]["output"] = output;
+		if (feedback !== undefined) {
+			this.gradeLog["" + testID]["feedback"] = feedback;
+		}
+	} else {
+		throw "gradingLog.finishTest: TestID is invalid.";
+	}
+	if (testID < this.testCount) {
+		var glog = this.gradeLog;
+		//SET TIME OUT TO ALLOW COMPLETION
+		setTimeout(function() {testBlock(glog, testID+1)},1);
+	} else {
+		setTimeout(function() {evaluateLog()},1);
+	}
+	// return this["" + testID];
+};
+
+gradingLog.prototype.testFinished = function(testID) {
+	var test = this.gradeLog["" + testID];
+	return (test["output"] !== null);
+};
+// var gradingLog = {
+// 	testCount: 0,
+// 	qID: null,
+// 	addTest: function(blockSpec, input, expOut) {
+// 		this.testCount += 1;
+// 		this["" + this.testCount] = {"blockSpec": blockSpec,"input": input, "expOut": expOut, "output": null, "feedback": null};
+// 		return this.testCount;
+// 	},
+// 	deleteTest: function(testID) {
+// 		delete this["" + testID];
+// 	},
+// 	finishTest: function(testID, output, feedback) {
+// 		if (this["" + testID] !== undefined) {
+// 			this["" + testID]["output"] = output;
+// 			if (feedback !== undefined) {
+// 				this["" + testID]["feedback"] = feedback;
+// 			}
+// 		} else {
+// 			throw "gradingLog.finishTest: TestID is invalid.";
+// 		}
+// 		if (testID < this.testCount) {
+// 			var glog = this;
+// 			//SET TIME OUT TO ALLOW COMPLETION
+// 			setTimeout(function() {testBlock(glog, testID+1)},1);
+// 		} else {
+// 			setTimeout(function() {evaluateLog()},1);
+// 		}
+// 		// return this["" + testID];
+// 	},
+// 	testFinished: function(testID) {
+// 		var test = this["" + testID];
+// 		return (test["output"] !== null);
+// 	}
+// };
 
 
 function getSprite(index) {
@@ -127,10 +162,10 @@ function readValue(proc) {
 // }
 
 function testBlock(outputLog, testID) {
-	if (outputLog[testID] === undefined) {
+	if (outputLog.gradeLog[testID] === undefined) {
 		throw "testBlock: Output Log Contains no test with ID: " + testID;
 	}
-	var test = outputLog[testID];
+	var test = outputLog.gradeLog[testID];
 	var block = getScript(test["blockSpec"]);
 	setValues(block, test["input"]);
 	var proc = evalReporter(block, outputLog, testID);
@@ -167,11 +202,11 @@ function evaluateLog(testIDs) {
 		}
 	}
 	for (var id of testIDs) {
-		if (gradingLog[id]["output"] === gradingLog[id]["expOut"]) {
-			gradingLog[id]["feedback"] = "Correct!";
+		if (gradingLog.gradeLog[id]["output"] === gradingLog.gradeLog[id]["expOut"]) {
+			gradingLog.gradeLog[id]["feedback"] = "Correct!";
 		} else {
-			gradingLog[id]["feedback"] = "Incorrect Answer; Expected: " + 
-				gradingLog[id]["expOut"] + " , Got: " + gradingLog[id]["output"];
+			gradingLog.gradeLog[id]["feedback"] = "Incorrect Answer; Expected: " + 
+				gradingLog.gradeLog[id]["expOut"] + " , Got: " + gradingLog.gradeLog[id]["output"];
 		}
 	}
 	return printLog();
@@ -180,11 +215,11 @@ function evaluateLog(testIDs) {
 function printLog() {
 	for (var i = 1; i<=gradingLog.testCount;i++) {
 		var testString = "[Test " + i + "]";
-		testString += " Block: '" + gradingLog[i]["blockSpec"] + "'";
-		testString += " Input: " + gradingLog[i]["input"];
-		testString += " Expected Ans: " + gradingLog[i]["expOut"];
-		testString += " Got: " + gradingLog[i]["output"];
-		testString += " Feedback: " + gradingLog[i]["feedback"];
+		testString += " Block: '" + gradingLog.gradeLog[i]["blockSpec"] + "'";
+		testString += " Input: " + gradingLog.gradeLog[i]["input"];
+		testString += " Expected Ans: " + gradingLog.gradeLog[i]["expOut"];
+		testString += " Got: " + gradingLog.gradeLog[i]["output"];
+		testString += " Feedback: " + gradingLog.gradeLog[i]["feedback"];
 		console.log(testString);
 	}
 }
