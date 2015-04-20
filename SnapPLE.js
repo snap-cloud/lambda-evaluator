@@ -1,40 +1,43 @@
 //Snap Protocol Language Enabler
 
-var gradingLog = {
-	testCount: 0,
-	qID: null,
-	addTest: function(blockSpec, input, expOut) {
-		this.testCount += 1;
-		this["" + this.testCount] = {"blockSpec": blockSpec,"input": input, "expOut": expOut, "output": null, "feedback": null};
-		return this.testCount;
-	},
-	deleteTest: function(testID) {
-		delete this["" + testID];
-	},
-	finishTest: function(testID, output, feedback) {
-		if (this["" + testID] !== undefined) {
-			this["" + testID]["output"] = output;
-			if (feedback !== undefined) {
-				this["" + testID]["feedback"] = feedback;
-			}
-		} else {
-			throw "gradingLog.finishTest: TestID is invalid.";
-		}
-		var glog = this;
-		if (testID < this.testCount) {
-			//SET TIME OUT TO ALLOW COMPLETION
-			setTimeout(function() {testBlock(glog, testID+1)},1);
-		} else {
-			setTimeout(function() {evaluateLog(glog)},1);
-		}
-		// return this["" + testID];
-	},
-	testFinished: function(testID) {
-		var test = this["" + testID];
-		return (test["output"] !== null);
-	}
+
+/*
+	gradingLog is initialized when a block is tested.
+	Tests are added to the log and the output value is
+	updated when the Snap! process finishes. Finishing
+	the last test causes the grading log to be evaluate.
+
+	WARNING: Currently does not function for infitely
+	looping scripts.
+*/
+function gradingLog() {
+	this.testCount = 0;
+	this.qID = null;
+}
+
+gradingLog.prototype.addTest = function(blockSpec, input, expOut) {
+	this.testCount += 1;
+	this["" + this.testCount] = {"blockSpec": blockSpec,"input": input, "expOut": expOut, "output": null, "feedback": null};
+	return this.testCount;
 };
 
+gradingLog.prototype.finishTest = function(testID, output, feedback) {
+	if (this["" + testID] !== undefined) {
+		this["" + testID]["output"] = output;
+		if (feedback !== undefined) {
+			this["" + testID]["feedback"] = feedback;
+		}
+	} else {
+		throw "gradingLog.finishTest: TestID is invalid.";
+	}
+	var glog = this;
+	if (testID < this.testCount) {
+		setTimeout(function() {testBlock(glog, testID+1)},1);
+	} else {
+		setTimeout(function() {evaluateLog(glog)},1);
+	}
+	// return this["" + testID];
+};
 
 function getSprite(index) {
 	try {
@@ -48,6 +51,8 @@ function getSprite(index) {
 		throw e
 	}
 }
+
+
 
 function getScripts(index) {
 	try {
@@ -120,14 +125,6 @@ function evalReporter(block, outputLog, testID) {
 function readValue(proc) {
 	return proc.homeContext.inputs[0];
 }
-//Old VERSION
-// function testBlock(outputLog, blockSpec, input, expOut) {
-// 	var block = getScript(blockSpec);
-// 	setValues(block, input);
-// 	var testID = outputLog.addTest(blockSpec, input, expOut)
-// 	var proc = evalReporter(block, outputLog, testID);
-// 	return testID
-// }
 
 function testBlock(outputLog, testID) {
 	if (outputLog[testID] === undefined) {
@@ -141,9 +138,11 @@ function testBlock(outputLog, testID) {
 }
 
 //TODO: TEST THIS BLOCK
-function multiTestBlock(outputLog, blockSpec, inputs, expOuts) {
+function multiTestBlock(blockSpec, inputs, expOuts, outputLog) {
 
-
+	if (outputLog === undefined) {
+		outputLog = new gradingLog();
+	}
 	if (inputs.length !== expOuts.length) {
 		return null;
 	}
@@ -157,7 +156,7 @@ function multiTestBlock(outputLog, blockSpec, inputs, expOuts) {
 		// testIDs[i] = testBlock(outputLog, blockSpec, inputs[i], expOuts[i])
 	}
 	testBlock(outputLog, testIDs[0]);
-	return testIDs;
+	return outputLog;
 }
 
 function prettyBlockString(blockSpec, inputs) {
