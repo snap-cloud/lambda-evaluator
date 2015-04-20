@@ -32,6 +32,9 @@ gradingLog.prototype.finishTest = function(testID, output, feedback) {
 	}
 	var glog = this;
 	if (testID < this.testCount) {
+		//TODO: Track currently tested block evaluation with a second timeout.
+		// Should check to see if the process has finished. If it hasn't,
+		// terminate the process, update the log, launch the  next test.
 		setTimeout(function() {testBlock(glog, testID+1)},1);
 	} else {
 		setTimeout(function() {evaluateLog(glog)},1);
@@ -39,27 +42,27 @@ gradingLog.prototype.finishTest = function(testID, output, feedback) {
 	// return this["" + testID];
 };
 
+/*
+	Snap block getters and setters used to retrieve blocks, 
+	set values, and initiates blocks. 
+
+*/
+
 function getSprite(index) {
 	try {
-		var sprite = world.children[0].sprites.contents[index];
-		if (sprite === undefined) {
-			throw "No sprite at index: " + index;
-		}
-		return sprite;
+		return world.children[0].sprites.contents[index];
 	} catch(e) {
-		console.log("getSprite(): " + e);
-		throw e
+		throw "This Snap instance is very broken"
 	}
 }
+		
 
 
-
+//Returns the scripts of the script at 'index', undefined otherwise.
 function getScripts(index) {
-	try {
-		var sprite = getSprite(index);
-	} catch(e) {
-		throw e
-	}
+
+	var sprite = getSprite(index);
+
 	if (sprite !== undefined) {
 		return sprite.scripts.children;
 	} else {
@@ -69,27 +72,36 @@ function getScripts(index) {
 
 function getScript(blockSpec, spriteIndex) {
 	//TODO: Consider expanding to grab from additional sprites
+
+	//Try to get a sprite's scripts
+	//Throw exception if none exist.
 	try {
+		//Does the sprite exist?
 		if (spriteIndex === undefined) {
 			var scripts = getScripts(0);
 		} else {
 			var scripts = getScripts(spriteIndex);
 		}
-	} catch(e) {
-		console.log("getScript(): Attempting to return spriteIndex: 0");
-		try {
-			var scripts = getScripts(0);
-		} catch(e) {
-			console.log("No Sprites: Add new Sprite to continue.")
-
+		//If no sprites exist, throw an exception. 
+		if (scripts === undefined) {
+			throw "No scripts"
 		}
+	} catch(e) {
+		throw "getScript: No Sprite available."
 	}
+
+	//Try to return the first block matching 'blockSpec'. 
+	//Throw exception if none exist/
 	var validScripts = scripts.filter(function (morph) {
 		if (morph.selector) {
 			//TODO: consider adding selector type check (morph.selector === "evaluateCustomBlock")
 			return (morph.blockSpec === blockSpec);
 		}
 	});
+	if (validScripts.length === 0) {
+		throw "getScript: No block named: '" + blockSpec.replace(/%[a-z]/g, "[]") + "'" +" in script window.";
+	}
+
 	return validScripts[0]
 
 }
@@ -126,6 +138,12 @@ function readValue(proc) {
 	return proc.homeContext.inputs[0];
 }
 
+/*
+	Test and evaluate Snap! blocks. Uses a gradingLog to initilize tests,
+	launch processes, and update the log, and launch the next test
+*/
+
+
 function testBlock(outputLog, testID) {
 	if (outputLog[testID] === undefined) {
 		throw "testBlock: Output Log Contains no test with ID: " + testID;
@@ -137,7 +155,6 @@ function testBlock(outputLog, testID) {
 	return testID; 
 }
 
-//TODO: TEST THIS BLOCK
 function multiTestBlock(blockSpec, inputs, expOuts, outputLog) {
 
 	if (outputLog === undefined) {
@@ -148,12 +165,14 @@ function multiTestBlock(blockSpec, inputs, expOuts, outputLog) {
 	}
 
 	var testIDs = new Array(inputs.length);
-	if (getScript(blockSpec) === undefined) {
-		throw "No block named: '" + blockSpec.replace(/%[a-z]/g, "[]") + "'";
+	try {
+		var scripts = getScript(blockSpec);
+	} catch(e) {
+		throw e
 	}
+
 	for (var i=0;i<inputs.length; i++) {
 		testIDs[i] = outputLog.addTest(blockSpec, inputs[i], expOuts[i]);
-		// testIDs[i] = testBlock(outputLog, blockSpec, inputs[i], expOuts[i])
 	}
 	testBlock(outputLog, testIDs[0]);
 	return outputLog;
@@ -168,7 +187,9 @@ function prettyBlockString(blockSpec, inputs) {
 }
 
 /*
-Evaluate the outputLog, update 
+Evaluate the outputLog, match the expected output with the recieved output
+Add relevant feedback with associated issue.
+TODO: Explore input of conditional comments
 */
 function evaluateLog(outputLog, testIDs) {
 
@@ -187,7 +208,6 @@ function evaluateLog(outputLog, testIDs) {
 				outputLog[id]["expOut"] + " , Got: " + outputLog[id]["output"];
 		}
 	}
-	// console.log(printLog(outputLog));
 	return outputLog;
 }
 
