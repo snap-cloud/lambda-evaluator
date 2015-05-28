@@ -13,6 +13,7 @@
 function gradingLog() {
 	this.testCount = 0;
 	this.qID = null;
+	this.allCorrect = false;
 }
 
 gradingLog.prototype.addTest = function(blockSpec, input, expOut) {
@@ -36,11 +37,31 @@ gradingLog.prototype.finishTest = function(testID, output, feedback) {
 		// Should check to see if the process has finished. If it hasn't,
 		// terminate the process, update the log, launch the  next test.
 		setTimeout(function() {testBlock(glog, testID+1)},1);
+		//TODO: generalize for all sprites?
+		//TODO: DO THIS FOR THE FIRST TEST ALSO!!
+		//TODO: Figure out a good default timeout NOW -> 300ms
+		setTimeout(function() {
+			var stage = world.children[0].stage;
+			stage.threads.stopProcess(getScript(glog["" + (testID+1)]["blockSpec"]));
+			// glog.updateLog(testID+1,null,"Timeout error: Function did not finish before xxx ms");
+		}, 300);
 	} else {
 		setTimeout(function() {evaluateLog(glog)},1);
 	}
 	// return this["" + testID];
 };
+
+gradingLog.prototype.updateLog = function(testID, output, feedback) {
+	if (this["" + testID] !== undefined) {
+		this["" + testID]["output"] = output;
+		if (feedback !== undefined) {
+			this["" + testID]["feedback"] = feedback;
+		}
+	} else {
+		throw "gradingLog.finishTest: TestID is invalid.";
+	}
+
+}
 
 /*
 	Snap block getters and setters used to retrieve blocks, 
@@ -199,15 +220,32 @@ function evaluateLog(outputLog, testIDs) {
 		   testIDs.push(i);
 		}
 	}
+	outputLog.allCorrect = true;
 	for (var id of testIDs) {
 		if (outputLog[id]["output"] === outputLog[id]["expOut"]) {
 			outputLog[id]["feedback"] = "Correct!";
 		} else {
+			outputLog.allCorrect = false;
 			outputLog[id]["feedback"] = "Incorrect Answer; Expected: " + 
 				outputLog[id]["expOut"] + " , Got: " + outputLog[id]["output"];
 		}
 	}
 	return outputLog;
+}
+
+function dictLog(outputLog) {
+	var outDict = {};
+	for (var i = 1; i <=outputLog.testCount;i++) {
+		var testDict = {};
+		testDict["id"] = i;
+		testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+		testDict["input"] = outputLog[i]["input"];
+		testDict["expOut"] = outputLog[i]["expOut"];
+		testDict["output"] = outputLog[i]["output"];
+		testDict["feedback"] = outputLog[i]["feedback"];
+		outDict[i] = testDict;
+	}
+	return outDict;
 }
 
 function printLog(outputLog) {
