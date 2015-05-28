@@ -1,0 +1,42 @@
+<problem display_name="webGLDemo">
+<script type="loncapa/python">
+<![CDATA[
+import json
+def vglcfn(e, ans):
+  par = json.loads(ans)
+  # We can use either the value of the answer key to grade
+  # answer = json.loads(par["answer"])
+  # return answer["checkState"]
+  return true
+
+def hint_fn(answer_ids, student_answers, new_cmap, old_cmap):
+  aid = answer_ids[0]
+  ans = json.loads(student_answers[aid])
+  hint = str(ans["answer"])
+  new_cmap.set_hint_and_mode(aid,hint,'always')
+
+
+
+]]>
+</script>
+<p>
+The shapes below can be selected (yellow) or unselected (cyan).
+Clicking on them repeatedly will cycle through these two states.
+</p>
+<p>
+If the cone is selected (and not the cube), a correct answer will be
+generated after pressing "Check". Clicking on either "Check" or "Save"
+will register the current state.
+</p>
+<customresponse cfn="vglcfn">
+  <jsinput gradefn="AGDrawSquare.getGrade"
+    get_statefn="AGDrawSquare.getState"
+    set_statefn="AGDrawSquare.setState"
+    initial_state='{"selectedObjects":{"cube":true,"cylinder":false}}'
+    width="100%"
+    height="500"
+    html_file="/static/indexCustRep.html"
+    sop="false"/>
+  <hintgroup hintfn="hint_fn"/>
+</customresponse>
+</problem>
