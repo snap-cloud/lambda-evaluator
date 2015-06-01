@@ -246,7 +246,7 @@ function evaluateLog(outputLog, testIDs) {
 			outputLog[id]["output"] = "Timeout error.";
 			//TODO: Add actual timeout variable from outputLog to the feedback
 			outputLog[id]["feedback"] = "Timeout error: Function did not finish before " + 
-				outputLog[id]["timeOut"] + " ms.";
+				((outputLog[id]["timeOut"] < 0) ? 1000 : outputLog[id]["timeOut"]) + " ms.";
 		} else {
 			outputLog.allCorrect = false;
 			outputLog[id]["feedback"] = "Incorrect Answer; Expected: " + 
