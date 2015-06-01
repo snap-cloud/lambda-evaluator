@@ -283,8 +283,6 @@ function printLog(outputLog) {
 	}
 	return testString;
 }
-<<<<<<< HEAD
-=======
 
 /* Takes in a single block and converts it into JSON format.
  * For example, will take in a block like:
