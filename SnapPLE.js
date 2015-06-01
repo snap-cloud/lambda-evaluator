@@ -1,3 +1,4 @@
+
 //Snap Protocol Language Enabler
 
 
@@ -6,7 +7,6 @@
 	Tests are added to the log and the output value is
 	updated when the Snap! process finishes. Finishing
 	the last test causes the grading log to be evaluate.
-
 	WARNING: Currently does not function for infitely
 	looping scripts.
 */
@@ -16,9 +16,14 @@ function gradingLog() {
 	this.allCorrect = false;
 }
 
-gradingLog.prototype.addTest = function(blockSpec, input, expOut) {
+gradingLog.prototype.addTest = function(blockSpec, input, expOut, timeOut) {
 	this.testCount += 1;
-	this["" + this.testCount] = {"blockSpec": blockSpec,"input": input, "expOut": expOut, "output": null, "feedback": null};
+	this["" + this.testCount] = {"blockSpec": blockSpec,
+								 "input": input, 
+								 "expOut": expOut, 
+								 "output": null, 
+								 "feedback": null,
+								 "timeOut": timeOut};
 	return this.testCount;
 };
 
@@ -40,11 +45,12 @@ gradingLog.prototype.finishTest = function(testID, output, feedback) {
 		//TODO: generalize for all sprites?
 		//TODO: DO THIS FOR THE FIRST TEST ALSO!!
 		//TODO: Figure out a good default timeout NOW -> 300ms
-		setTimeout(function() {
-			var stage = world.children[0].stage;
-			stage.threads.stopProcess(getScript(glog["" + (testID+1)]["blockSpec"]));
-			// glog.updateLog(testID+1,null,"Timeout error: Function did not finish before xxx ms");
-		}, 300);
+		// setTimeout(function() {
+		// 	var stage = world.children[0].stage;
+		// 	stage.threads.stopProcess(getScript(glog["" + (testID+1)]["blockSpec"]));
+		// 	// glog.updateLog(testID+1,null,"Timeout error: Function did not finish before xxx ms");
+		// }, 300);
+		infLoopCheck(glog, testID+1);
 	} else {
 		setTimeout(function() {evaluateLog(glog)},1);
 	}
@@ -66,7 +72,6 @@ gradingLog.prototype.updateLog = function(testID, output, feedback) {
 /*
 	Snap block getters and setters used to retrieve blocks, 
 	set values, and initiates blocks. 
-
 */
 
 function getSprite(index) {
@@ -176,12 +181,12 @@ function testBlock(outputLog, testID) {
 	return testID; 
 }
 
-function multiTestBlock(blockSpec, inputs, expOuts, outputLog) {
+function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
 
 	if (outputLog === undefined) {
 		outputLog = new gradingLog();
 	}
-	if (inputs.length !== expOuts.length) {
+	if (inputs.length !== expOuts.length && inputs.length !== timeOuts.length) {
 		return null;
 	}
 
@@ -193,9 +198,10 @@ function multiTestBlock(blockSpec, inputs, expOuts, outputLog) {
 	}
 
 	for (var i=0;i<inputs.length; i++) {
-		testIDs[i] = outputLog.addTest(blockSpec, inputs[i], expOuts[i]);
+		testIDs[i] = outputLog.addTest(blockSpec, inputs[i], expOuts[i], timeOuts[i]);
 	}
 	testBlock(outputLog, testIDs[0]);
+	infLoopCheck(outputLog, testIDs[0]);
 	return outputLog;
 }
 
@@ -205,6 +211,17 @@ function prettyBlockString(blockSpec, inputs) {
 		pString = pString.replace(/%[a-z]/, inp);
 	}
 	return pString;
+}
+
+function infLoopCheck(outputLog, testID) {
+	var timeout = outputLog["" + testID]["timeOut"]; //Make this = the incoming timeout value for the specific test
+	if (timeout < 0) {
+		timeout = 1000;
+	}
+	setTimeout(function() {
+			var stage = world.children[0].stage;
+			stage.threads.stopProcess(getScript(outputLog["" + testID]["blockSpec"]));
+		}, timeout);
 }
 
 /*
@@ -225,6 +242,11 @@ function evaluateLog(outputLog, testIDs) {
 	for (var id of testIDs) {
 		if (outputLog[id]["output"] === outputLog[id]["expOut"]) {
 			outputLog[id]["feedback"] = "Correct!";
+		} else if (outputLog[id]["output"] === undefined) {
+			outputLog[id]["output"] = "Timeout error.";
+			//TODO: Add actual timeout variable from outputLog to the feedback
+			outputLog[id]["feedback"] = "Timeout error: Function did not finish before " + 
+				((outputLog[id]["timeOut"] < 0) ? 1000 : outputLog[id]["timeOut"]) + " ms.";
 		} else {
 			outputLog.allCorrect = false;
 			outputLog[id]["feedback"] = "Incorrect Answer; Expected: " + 
@@ -261,4 +283,3 @@ function printLog(outputLog) {
 	}
 	return testString;
 }
-
