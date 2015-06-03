@@ -353,7 +353,7 @@ function JSONblock(block) {
  *         return n * factorial(n - 1);
  *     }
  *
- * Then we get a JSON object that looks like this:
+ * Then we get a JavaScript object that looks like this:
  *
  * [{blockSp: "factorial %n",
  *   inputs: ["5"],
@@ -401,10 +401,6 @@ function JSONcustomBlock(block) {
  *
  */
 function JSONscript(blockList) {
-	// if (Object.prototype.toString.call(blockList) !== '[object Array]') {
-	// 	throw "Input is not of type '[object Array]'. It is of type: " + Object.prototype.toString.call(blockList);
-	// }
-	// var currBlock = blockList[0];
 	var currBlock = blockList;
 	var scriptArr = [];
 	var currJSONblock = JSONblock(currBlock);
@@ -421,4 +417,88 @@ function JSONscript(blockList) {
 
 	return scriptArr;
 }
+
+/* Returns a JavaScript object that contains all of the global variables with
+ * their associated values.
+ */
+function getAllGlobalVars() {
+	return world.children[0].globalVariables.vars;
+}
+
+/* Returns the value of a specific global variable. Takes in a string
+ * that is the global variable to search for and a JavaScript object
+ * that contains all of the global variables as keys and their values as the
+ * corresponding values.
+ */
+function getGlobalVar(varToGet, globalVars) {
+	if (!globalVars.hasOwnProperty(varToGet)) {
+		throw varToGet + " is not a global variable.";
+	}
+	return globalVars[varToGet].value;
+}
+
+// /* Checks the x position box. */
+// function checkPositions(callback) {
+// 	world.children[0].children[3].children[0].children[13].trigger();
+// 	world.children[0].children[3].children[0].children[15].trigger();
+// 	callback();
+// }
+
+// /* Checks the x position box. */
+// function checkPositions2() {
+// 	world.children[0].children[3].children[0].children[13].trigger();
+// 	world.children[0].children[3].children[0].children[15].trigger();
+// }
+
+
+/* Returns a JavaScript object of the current sprite's location as x and y coordinates.
+ * Takes in a sprite morph to check the location. You can access the first
+ * sprite morph on the stage by running this command: world.children[0].sprites.contents[0]
+ * in the console.
+ */
+function getSpriteLocation() {
+	var x_coord, y_coord, stage;
+
+	world.children[0].children[3].children[0].children[13].trigger();
+	world.children[0].children[3].children[0].children[15].trigger();
+	stage = world.children[0].children[4];
+	x_coord = stage.children[1].children[0].children[0].text;
+	y_coord = stage.children[2].children[0].children[0].text;
+	world.children[0].children[3].children[0].children[13].trigger();
+	world.children[0].children[3].children[0].children[15].trigger();
+
+	// /* Updates the coordinates x and y by returning an object with the coordinates. */
+	// function updateCoordinates() {
+	// 	stage = world.children[0].children[4];
+	// 	x_coord = stage.children[1].children[0].children[0].text;
+	// 	y_coord = stage.children[2].children[0].children[0].text;
+	// 	//return {x : x_coord, y: y_coord};
+	// }
+
+	// setTimeout(world.children[0].children[3].children[0].children[13].trigger(), 0);
+	// setTimeout(world.children[0].children[3].children[0].children[15].trigger(), 1000);
+	// setTimeout(updateCoordinates(), 3000);
+	// stage = world.children[0].children[4];
+	// x_coord = stage.children[1].children[0].children[0].text;
+	// y_coord = stage.children[2].children[0].children[0].text;
+	// setTimeout(world.children[0].children[3].children[0].children[13].trigger(), 5000);
+	// setTimeout(world.children[0].children[3].children[0].children[15].trigger(), 7000);
+	// checkPositions(function() {
+	// 	updateCoordinates(function() {
+	// 		checkPositions2();
+	// 	});
+	// });
+	return {x: x_coord, y: y_coord};
+}
+
+/* Returns the direction of the input sprite morph as an integer.
+ * 0 : up
+ * 90 : right
+ * 180 : down
+ * 270 : left
+ */
+function getSpriteDirection(sprite) {
+	return sprite.heading;
+}
+
 
