@@ -14,6 +14,7 @@ function gradingLog() {
 	this.testCount = 0;
 	this.qID = null;
 	this.allCorrect = false;
+	this.currentTimeout = null;
 }
 
 gradingLog.prototype.addTest = function(blockSpec, input, expOut, timeOut) {
@@ -41,6 +42,7 @@ gradingLog.prototype.finishTest = function(testID, output, feedback) {
 		//TODO: Track currently tested block evaluation with a second timeout.
 		// Should check to see if the process has finished. If it hasn't,
 		// terminate the process, update the log, launch the  next test.
+		clearTimeout(this.currentTimeout);
 		setTimeout(function() {testBlock(glog, testID+1)},1);
 		//TODO: generalize for all sprites?
 		//TODO: DO THIS FOR THE FIRST TEST ALSO!!
@@ -50,7 +52,7 @@ gradingLog.prototype.finishTest = function(testID, output, feedback) {
 		// 	stage.threads.stopProcess(getScript(glog["" + (testID+1)]["blockSpec"]));
 		// 	// glog.updateLog(testID+1,null,"Timeout error: Function did not finish before xxx ms");
 		// }, 300);
-		infLoopCheck(glog, testID+1);
+		this.currentTimeout = infLoopCheck(glog, testID+1);
 	} else {
 		setTimeout(function() {evaluateLog(glog)},1);
 	}
@@ -201,7 +203,7 @@ function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
 		testIDs[i] = outputLog.addTest(blockSpec, inputs[i], expOuts[i], timeOuts[i]);
 	}
 	testBlock(outputLog, testIDs[0]);
-	infLoopCheck(outputLog, testIDs[0]);
+	outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
 	return outputLog;
 }
 
@@ -218,7 +220,7 @@ function infLoopCheck(outputLog, testID) {
 	if (timeout < 0) {
 		timeout = 1000;
 	}
-	setTimeout(function() {
+	return setTimeout(function() {
 			var stage = world.children[0].stage;
 			stage.threads.stopProcess(getScript(outputLog["" + testID]["blockSpec"]));
 		}, timeout);
