@@ -340,8 +340,54 @@ function JSONblock(block) {
 	return {blockSp: block.blockSpec, inputs: blockArgs};
 }
 
-/* Takes in a list of all scripts for a single Sprite in chronological order
- * and converts it into JSON format. For example, if we have consecutive blocks
+/* Takes in a custom block and converts it to JSON format. For example,
+ * if we have a factorial block like this on the screen:
+ *
+ * "factorial (5)"
+ *
+ * with a body like this:
+ *
+ * factorial (n) {
+ *     if (n == 0) {
+ *         return 1;
+ *     }
+ *     else {
+ *         return n * factorial(n - 1);
+ *     }
+ *
+ * Then we get a JSON object that looks like this:
+ *
+ * [{blockSp: "factorial %n",
+ *   inputs: ["5"],
+ *   body: [{blockSp: "if %b %c else %c",
+ *    inputs: [{blockSp: "%s = %s",
+ *              inputs: ["n", "1"]},
+ *             {blockSp: "report %s",
+ *              inputs: ["1"]},
+ *              {blockSp: "report %s",
+ *              inputs: [{blockSp: "%n x %n",
+ *                        inputs: ["n", {blockSp: "factorial %n",
+ *                                       inputs: ["n", 1]}]}]}]}
+ * ]}]
+ */
+function JSONcustomBlock(block) {
+	var resultJSONblock = JSONblock(block);
+	var JSONbody = JSONscript(block.definition.body.expression);
+	var inputs = block.definition.body.inputs;
+	var JSONinputs = [];
+	for (var i = 0; i < inputs.length; i++) {
+		JSONinputs[i] = inputs[i];
+	}
+	return {blockSp: resultJSONblock.blockSp,
+		    inputs: resultJSONblock.inputs,
+		    body: JSONbody,
+		    variables: JSONinputs};
+}
+
+/* Takes in all scripts for a single Sprite in chronological order
+ * and converts it into JSON format. You would need to run something like
+ * var script = world.children[0].sprites.contents[0].scripts.children[0];
+ * in the browser to get the first clone. For example, if we have consecutive blocks
  * for a Sprite on the screen like this:
  *
  * "move (10) steps"
@@ -357,10 +403,11 @@ function JSONblock(block) {
  *
  */
 function JSONscript(blockList) {
-	if (Object.prototype.toString.call(blockList) !== '[object Array]') {
-		throw "Input is not of type '[object Array]'. It is of type: " + Object.prototype.toString.call(blockList);
-	}
-	var currBlock = blockList[0];
+	// if (Object.prototype.toString.call(blockList) !== '[object Array]') {
+	// 	throw "Input is not of type '[object Array]'. It is of type: " + Object.prototype.toString.call(blockList);
+	// }
+	// var currBlock = blockList[0];
+	var currBlock = blockList;
 	var scriptArr = [];
 	var currJSONblock = JSONblock(currBlock);
 	var childrenList = currBlock.children;
