@@ -12,8 +12,10 @@
         <script type="text/javascript">
 
             //recover stored save
-            var worldXML = localStorage.getItem("worldState");
+            //var worldXML = localStorage.getItem("worldState");
             var world;
+
+            var pageXML = localStorage.getItem(id)
             
             window.onload = function () {
                 world = new WorldMorph(document.getElementById('world'));
@@ -24,8 +26,8 @@
                 ide.toggleStageSize(true);
                 
                 //If this page has already been loaded
-                if (localStorage.getItem("worldState") !== null) {
-                    ide.openProjectString(worldXML);
+                if (localStorage.getItem(id) !== null) {
+                    ide.openProjectString(pageXML);
                 }
                 setInterval(loop, 1);
             };
