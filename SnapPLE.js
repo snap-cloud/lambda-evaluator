@@ -423,4 +423,3 @@ function JSONscript(blockList) {
 
 	return scriptArr;
 }
-

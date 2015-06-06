@@ -11,14 +11,14 @@ var AGDrawSquareState = {
 var testLog;
 
 function AGTest() {
-    testLog = multiTestBlock("%s my plus %s", [[1,2],[2,2],[2,3],[3,3]], [3,4,5,6]);
+    testLog = multiTestBlock("%s my plus %s", [[1,2],[2,2],[2,3],[3,3]], [3,4,5,6], [-1, -1, -1, -1]);
 }
 
 var AGDrawSquare = (function() {
-	
-	var channel;
+    
+    var channel;
 
-	if (window.parent !== window) {
+    if (window.parent !== window) {
         channel = Channel.build({
             window: window.parent,
             origin: "*",
@@ -34,7 +34,7 @@ var AGDrawSquare = (function() {
     //     return AGstate["checkState"];
     // }
 
-	function getGrade() {
+    function getGrade() {
         // The following return value may or may not be used to grade
         // server-side.
         // If getState and setState are used, then the Python grader also gets
