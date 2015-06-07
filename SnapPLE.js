@@ -76,8 +76,8 @@ gradingLog.prototype.updateLog = function(testID, output, feedback) {
 }
 
 /*
-	Snap block getters and setters used to retrieve blocks, 
-	set values, and initiates blocks. 
+	Snap block getters and setters used to retrieve blocks,
+	set values, and initiates blocks.
 */
 
 function getSprite(index) {
@@ -87,7 +87,7 @@ function getSprite(index) {
 		throw "This Snap instance is very broken"
 	}
 }
-		
+
 
 
 //Returns the scripts of the script at 'index', undefined otherwise.
@@ -114,7 +114,7 @@ function getScript(blockSpec, spriteIndex) {
 		} else {
 			var scripts = getScripts(spriteIndex);
 		}
-		//If no sprites exist, throw an exception. 
+		//If no sprites exist, throw an exception.
 		if (scripts === undefined) {
 			throw "No scripts"
 		}
@@ -122,7 +122,7 @@ function getScript(blockSpec, spriteIndex) {
 		throw "getScript: No Sprite available."
 	}
 
-	//Try to return the first block matching 'blockSpec'. 
+	//Try to return the first block matching 'blockSpec'.
 	//Throw exception if none exist/
 	var validScripts = scripts.filter(function (morph) {
 		if (morph.selector) {
@@ -189,7 +189,7 @@ function testBlock(outputLog, testID) {
 	var block = getScript(test["blockSpec"]);
 	setValues(block, test["input"]);
 	var proc = evalReporter(block, outputLog, testID);
-	return testID; 
+	return testID;
 }
 
 function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
@@ -269,7 +269,7 @@ function evaluateLog(outputLog, testIDs) {
 			outputLog.allCorrect = false;
 		} else {
 			outputLog.allCorrect = false;
-			outputLog[id]["feedback"] = "Incorrect Answer; Expected: " + 
+			outputLog[id]["feedback"] = "Incorrect Answer; Expected: " +
 				outputLog[id]["expOut"] + " , Got: " + outputLog[id]["output"];
 		}
 	}
@@ -309,3 +309,142 @@ function printLog(outputLog) {
 	}
 	return testString;
 }
+
+/* Takes in a single block and converts it into JSON format.
+ * For example, will take in a block like:
+ *
+ * "move (23) steps"
+ *
+ * and will convert it into JSON format as:
+ *
+ * [{blockSp: "move %n steps",
+ *   inputs: ["23"]}]
+ *
+ *
+ *
+ * Say we have an If/Else statement like so:
+ *
+ *  if (5 = (3 + 4)):
+ *      move (4 + (2 x 3)) steps
+ *  else:
+ *      move (4 - 3) steps
+ *
+ *
+ * This will get turned into the JSON format as follows:
+ *
+ * [{blockSp: "if %b %c else %c",
+ *    inputs: [{blockSp: "%s = %s",
+ *              inputs: ["5", {blockSp: "%n + %n",
+ *                            inputs: ["3", "4"]}]},
+ *             {blockSp: "move %n steps",
+ *              inputs: ["4, {blockSp: "%n + %n",
+ *                            inputs: ["2", "3"]}]},
+ *
+ *              {blockSp: "move %n steps",
+ *              inputs: [{blockSp: "%n - %n",
+ *                        inputs: ["4", "3"]}]}
+ *            ]
+ *  }
+ * ]
+ */
+function JSONblock(block) {
+	var blockArgs = [];
+	var morph;
+	for (var i = 0; i < block.children.length; i++) {
+		morph = block.children[i];
+		if (morph instanceof InputSlotMorph) {
+			blockArgs.push(morph.children[0].text);
+		} else if (morph instanceof CSlotMorph) {
+			blockArgs.push(JSONblock(morph.children[0]));
+		} else if (morph instanceof ReporterBlockMorph) {
+			blockArgs.push(JSONblock(morph));
+		}
+	}
+
+	return {blockSp: block.blockSpec, inputs: blockArgs};
+}
+
+/* Takes in a custom block and converts it to JSON format. For example,
+ * if we have a factorial block like this on the screen:
+ *
+ * "factorial (5)"
+ *
+ * with a body like this:
+ *
+ * factorial (n) {
+ *     if (n == 0) {
+ *         return 1;
+ *     }
+ *     else {
+ *         return n * factorial(n - 1);
+ *     }
+ *
+ * Then we get a JSON object that looks like this:
+ *
+ * [{blockSp: "factorial %n",
+ *   inputs: ["5"],
+ *   body: [{blockSp: "if %b %c else %c",
+ *    inputs: [{blockSp: "%s = %s",
+ *              inputs: ["n", "1"]},
+ *             {blockSp: "report %s",
+ *              inputs: ["1"]},
+ *              {blockSp: "report %s",
+ *              inputs: [{blockSp: "%n x %n",
+ *                        inputs: ["n", {blockSp: "factorial %n",
+ *                                       inputs: ["n", 1]}]}]}]}
+ * ]}]
+ */
+function JSONcustomBlock(block) {
+	var resultJSONblock = JSONblock(block);
+	var JSONbody = JSONscript(block.definition.body.expression);
+	var inputs = block.definition.body.inputs;
+	var JSONinputs = [];
+	for (var i = 0; i < inputs.length; i++) {
+		JSONinputs[i] = inputs[i];
+	}
+	return {blockSp: resultJSONblock.blockSp,
+		    inputs: resultJSONblock.inputs,
+		    body: JSONbody,
+		    variables: JSONinputs};
+}
+
+/* Takes in all scripts for a single Sprite in chronological order
+ * and converts it into JSON format. You would need to run something like
+ * var script = world.children[0].sprites.contents[0].scripts.children[0];
+ * in the browser to get the first clone. For example, if we have consecutive blocks
+ * for a Sprite on the screen like this:
+ *
+ * "move (10) steps"
+ * "turn (20 + 30) degrees"
+ *
+ * then our output will be in JSON format as:
+ *
+ * [{blockSp: "move %n steps",
+ *   inputs: [10]},
+ *  {blockSp: "turn %n degrees",
+ *   inputs: [{blockSpec: "%n + %n",
+ *             inputs: ["3", "2"]}]}]
+ *
+ */
+function JSONscript(blockList) {
+	// if (Object.prototype.toString.call(blockList) !== '[object Array]') {
+	// 	throw "Input is not of type '[object Array]'. It is of type: " + Object.prototype.toString.call(blockList);
+	// }
+	// var currBlock = blockList[0];
+	var currBlock = blockList;
+	var scriptArr = [];
+	var currJSONblock = JSONblock(currBlock);
+	var childrenList = currBlock.children;
+	var lastChild = childrenList[childrenList.length - 1];
+	scriptArr.push(currJSONblock);
+	while (lastChild instanceof BlockMorph) {
+		currBlock = lastChild;
+		currJSONblock = JSONblock(currBlock);
+		childrenList = currBlock.children;
+		lastChild = childrenList[childrenList.length - 1];
+		scriptArr.push(currJSONblock);
+	}
+
+	return scriptArr;
+}
+
