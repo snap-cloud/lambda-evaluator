@@ -6,16 +6,21 @@
 	gradingLog is initialized when a block is tested.
 	Tests are added to the log and the output value is
 	updated when the Snap! process finishes. Finishing
-	the last test causes the grading log to be evaluate.
-	WARNING: Currently does not function for infitely
-	looping scripts.
+	the last test causes the grading log to be evaluated.
 */
 function gradingLog() {
 	this.testCount = 0;
 	this.qID = null;
 	this.allCorrect = false;
+	this.currentTimeout = null;
 }
 
+/*
+*  Add a test to the gradingLog object
+*  tests are tracked by a test ID number. 
+*  Access specific parts of each test by:
+*  		gradingLog.[""+(testID)]["testDesciption"]
+*/
 gradingLog.prototype.addTest = function(blockSpec, input, expOut, timeOut) {
 	this.testCount += 1;
 	this["" + this.testCount] = {"blockSpec": blockSpec,
@@ -27,6 +32,13 @@ gradingLog.prototype.addTest = function(blockSpec, input, expOut, timeOut) {
 	return this.testCount;
 };
 
+/*
+*  Asyncronysly runs the input tests
+*  Initiates a test, sets the time out for the test and
+*  evaluates the test log once the last test has ran.
+*  Uses a series of setTimeouts to make sure the asyncronous 
+*  test threads do not clash with one another on setup.
+*/
 gradingLog.prototype.finishTest = function(testID, output, feedback) {
 	if (this["" + testID] !== undefined) {
 		this["" + testID]["output"] = output;
@@ -38,25 +50,19 @@ gradingLog.prototype.finishTest = function(testID, output, feedback) {
 	}
 	var glog = this;
 	if (testID < this.testCount) {
-		//TODO: Track currently tested block evaluation with a second timeout.
-		// Should check to see if the process has finished. If it hasn't,
-		// terminate the process, update the log, launch the  next test.
+		clearTimeout(this.currentTimeout);
 		setTimeout(function() {testBlock(glog, testID+1)},1);
 		//TODO: generalize for all sprites?
-		//TODO: DO THIS FOR THE FIRST TEST ALSO!!
-		//TODO: Figure out a good default timeout NOW -> 300ms
-		// setTimeout(function() {
-		// 	var stage = world.children[0].stage;
-		// 	stage.threads.stopProcess(getScript(glog["" + (testID+1)]["blockSpec"]));
-		// 	// glog.updateLog(testID+1,null,"Timeout error: Function did not finish before xxx ms");
-		// }, 300);
-		infLoopCheck(glog, testID+1);
+		//TODO: Figure out a good default timeout NOW -> 1000ms
+		this.currentTimeout = infLoopCheck(glog, testID+1);
 	} else {
 		setTimeout(function() {evaluateLog(glog)},1);
 	}
 	// return this["" + testID];
 };
 
+//Unused function that makes sure the test exisits in the log
+//and updates the output and feedback accordingly
 gradingLog.prototype.updateLog = function(testID, output, feedback) {
 	if (this["" + testID] !== undefined) {
 		this["" + testID]["output"] = output;
@@ -137,7 +143,7 @@ function setValues(block, values) {
 
 	var morphList = block.children;
 
-	for (var morph of morphList) {
+	for (var morph in morphList) {
 		if (morph.constructor.name === "InputSlotMorph") {
 			morph.setContents(values[valIndex]);
 			valIndex += 1;
@@ -150,12 +156,17 @@ function setValues(block, values) {
 
 function evalReporter(block, outputLog, testID) {
 	var stage = world.children[0].stage;
+	try {
 	var proc = stage.threads.startProcess(block, 
 					stage.isThreadSafe,
 					false,
 					function() {
 						outputLog.finishTest(testID, readValue(proc));
 					});
+	} catch(e) {
+		var proc = "Error!";
+		outputLog.finishTest(testID, proc, e);
+	}
 	return proc
 }
 
@@ -201,7 +212,7 @@ function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
 		testIDs[i] = outputLog.addTest(blockSpec, inputs[i], expOuts[i], timeOuts[i]);
 	}
 	testBlock(outputLog, testIDs[0]);
-	infLoopCheck(outputLog, testIDs[0]);
+	outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
 	return outputLog;
 }
 
@@ -213,12 +224,18 @@ function prettyBlockString(blockSpec, inputs) {
 	return pString;
 }
 
+/*
+*  Set a timeout for the test specified by testID and wait the appropriate time.
+*  If the test does not finish by the specified time out, find the process
+*  and kill it.
+*/
 function infLoopCheck(outputLog, testID) {
-	var timeout = outputLog["" + testID]["timeOut"]; //Make this = the incoming timeout value for the specific test
+	var timeout = outputLog["" + testID]["timeOut"];
+
 	if (timeout < 0) {
 		timeout = 1000;
 	}
-	setTimeout(function() {
+	return setTimeout(function() {
 			var stage = world.children[0].stage;
 			stage.threads.stopProcess(getScript(outputLog["" + testID]["blockSpec"]));
 		}, timeout);
@@ -239,14 +256,17 @@ function evaluateLog(outputLog, testIDs) {
 		}
 	}
 	outputLog.allCorrect = true;
-	for (var id of testIDs) {
-		if (outputLog[id]["output"] === outputLog[id]["expOut"]) {
+	for (var id in testIDs) {
+		//Changed === snapEquals() to better evaluate snap output
+		if (snapEquals(outputLog[id]["output"], outputLog[id]["expOut"])) {
 			outputLog[id]["feedback"] = "Correct!";
 		} else if (outputLog[id]["output"] === undefined) {
+			outputLog.allCorrect = false;
 			outputLog[id]["output"] = "Timeout error.";
-			//TODO: Add actual timeout variable from outputLog to the feedback
 			outputLog[id]["feedback"] = "Timeout error: Function did not finish before " + 
 				((outputLog[id]["timeOut"] < 0) ? 1000 : outputLog[id]["timeOut"]) + " ms.";
+		} else if (outputLog[id]["output"] === "Error!") {
+			outputLog.allCorrect = false;
 		} else {
 			outputLog.allCorrect = false;
 			outputLog[id]["feedback"] = "Incorrect Answer; Expected: " + 
@@ -256,6 +276,9 @@ function evaluateLog(outputLog, testIDs) {
 	return outputLog;
 }
 
+/*
+*  JSONify the output log 
+*/
 function dictLog(outputLog) {
 	var outDict = {};
 	for (var i = 1; i <=outputLog.testCount;i++) {
@@ -271,6 +294,9 @@ function dictLog(outputLog) {
 	return outDict;
 }
 
+/*
+*  print out the output log in a nice format
+*/
 function printLog(outputLog) {
 	var testString = ""; //TODO: Consider putting Output Header
 	for (var i = 1; i<=outputLog.testCount;i++) {
