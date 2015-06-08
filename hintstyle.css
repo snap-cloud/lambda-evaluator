@@ -9,12 +9,12 @@ span.correctans {
 	color: green;
 	font-family: "Candara";
 	font-size: 15px;
-	font-weight: normal;
+	font-weight: bold;
 }
 
 span.incorrectans {
 	color: red;
 	font-family: "Candara";
 	font-size: 15px;
-	font-weight: normal;
+	font-weight: bold;
 }
