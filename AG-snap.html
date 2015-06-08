@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html style="height: 100%">
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Snap! Build Your Own Blocks. Beta</title>
         <link rel="shortcut icon" href="http://snap.berkeley.edu/fav3.gif" type="image/gif">
-        <script src="jschannel.js"></script>
-        <script type="text/javascript" src="SnapPLE.js"></script>
-        <script type="text/javascript" src="AGDrawSquare.js"></script>
+        <link rel="stylesheet" type="text/css" href="AG-snap.css">
         <script type="text/javascript" src="snap.js"></script>
+        <script type="text/javascript" src="snapPLE.js"></script>
         
 
         <script type="text/javascript">
 
             //recover stored save
-            var pageXML = localStorage.getItem(id);
+            //var worldXML = localStorage.getItem("worldState");
             var world;
+
+            var pageXML = localStorage.getItem(id)
             
             window.onload = function () {
                 world = new WorldMorph(document.getElementById('world'));
@@ -34,12 +36,17 @@
             }
         </script>
     </head>
-    <body style="margin: 0;">
-        <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
-        <!-- <input id="clickMe" type="button" value="XXXXXX" onclick='multiTestBlock("%s my plus %s", [[1,2],[2,2],[2,3],[3,3]], [3,4,6,6]);'/> -->
-        <div id="autograding" style="position: absolute; padding-top: 5px; padding-left: 5px; color:red;">
-            UNGRADED
-        </div>
+    <body style="margin: 0; height: 100%;">
 
+        <canvas id="world" tabindex="1" style="position: absolute;" />
+        <div id="ag_menu">
+            <div id="ag_button">
+                
+            </div>
+        </div>
+        <div id="ag_feedback" style="position: relative; height: 10%;">
+            GIANT TEXT HERE
+        </div>
     </body>
+
 </html>
