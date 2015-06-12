@@ -1,3 +1,7 @@
+var id = (window.location != window.parent.location)
+            ? document.referrer
+            : document.location;
+
 var AGDrawSquareState = {
     'checkState': false,
     'comment': "Please run 'Grade Question' before clicking the 'Check' button.",
@@ -55,6 +59,11 @@ var AGDrawSquare = (function() {
         // }
         console.log("I GOT HERE");
         var glog = testLog;
+
+        //Convert world to XML and store in local Storage
+        var xmlString = ide.serializer.serialize(ide.stage);
+        localStorage.setItem(id, xmlString); 
+
         if (glog !== undefined) {
 
             
@@ -62,16 +71,21 @@ var AGDrawSquare = (function() {
             AGDrawSquareState['comment'] = "Autograder Finished"
             AGDrawSquareState['checkState'] = glog.allCorrect;
             console.log(JSON.stringify(AGDrawSquareState));
+            //saves correct student answer, as well as state, in case student returns to question
+            localStorage.setItem("answer", JSON.stringify(AGDrawSquareState));
+            localStorage.setItem("correctstate", xmlString);
             
         } 
 
-        //Convert world to XML and store in local Storage
-        var xmlString = ide.serializer.serialize(ide.stage);
-        localStorage.setItem("worldState", xmlString); 
 
-        //Return the gradeable object
+        //Return the gradeable object (either anew or from previously saved state)
         console.log("I got all the way down here?");
-        return JSON.stringify(AGDrawSquareState);
+        if (localStorage.getItem("answer") !== null && xmlString === localStorage.getItem("correctstate")) {
+            return localStorage.getItem("answer");
+        } else {
+            return JSON.stringify(AGDrawSquareState);
+        }
+        //return JSON.stringify(AGDrawSquareState);
     }
 
     function getState() {
