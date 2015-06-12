@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Snap! Build Your Own Blocks. Beta</title>
+        <link rel="shortcut icon" href="http://snap.berkeley.edu/fav3.gif" type="image/gif">
+        <script src="jschannel.js"></script>
+        <script type="text/javascript" src="SnapPLE.js"></script>
+        <script type="text/javascript" src="AG_M1_L1_T1.js"></script>
+        <script type="text/javascript" src="snap.js"></script>
+        
+
+        <script type="text/javascript">
+
+            //recover stored save
+            var pageXML = localStorage.getItem(id);
+            var world;
+            
+            window.onload = function () {
+                world = new WorldMorph(document.getElementById('world'));
+                new IDE_Morph().openIn(world);
+
+                //Reduce Stage Size on initialization
+                var ide = world.children[0];
+                ide.toggleStageSize(true);
+                
+                //If this page has already been loaded
+                if (localStorage.getItem(id) !== null) {
+                    ide.openProjectString(pageXML);
+                }
+                setInterval(loop, 1);
+            };
+            function loop() {
+                world.doOneCycle();
+            }
+        </script>
+    </head>
+    <body style="margin: 0;">
+        <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
+        <!-- <input id="clickMe" type="button" value="XXXXXX" onclick='multiTestBlock("%s my plus %s", [[1,2],[2,2],[2,3],[3,3]], [3,4,6,6]);'/> -->
+        <div id="autograding" style="position: absolute; padding-top: 5px; padding-left: 5px; color:red;">
+            UNGRADED
+        </div>
+
+    </body>
+</html>

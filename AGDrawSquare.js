@@ -1,3 +1,6 @@
+var id = (window.location != window.parent.location)
+            ? document.referrer
+            : document.location;
 
 var AGDrawSquareState = {
     'checkState': false,
