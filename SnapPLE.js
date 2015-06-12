@@ -602,34 +602,46 @@ function occurancesOfBlockSpec(blockSpec, block) {
 	return result;
 }
 
-/* Returns true if the two scripts are exactly the same. Else returns false.
+/* Returns true if the two JSON scripts are exactly the same. Else returns false.
  * Takes in two scripts, SCRIPT1 and SCRIPT2. Also takes in a boolean called
  * SOFTMATCH, if this is true then we ignore the inputs and just match up the
  * blocks. Can obtain sprite's first script by calling:
  *
- * world.children[0].sprites.contents[0].scripts.children[0]
+ * JSONscript(scripts...)
  *
  */
 function scriptsMatch(script1, script2, softMatch) {
-	if (script1.blockSpec !== script2.blockSpec) {
-		return false;
-	}
-	if (script1.children.length !== script2.children.length) {
-		return false;
-	}
+	var morph1, morph2, type1, type2;
+	for (var i = 0; i < script1.length; i++) {
+		morph1 = script1[i];
+		morph2 = script2[i];
+		type1 = typeof(morph1);
+		type2 = typeof(morph2);
 
-	var morph1, morph2;
-	for (var i = 0; i < script1.children.length; i++) {
-		morph1 = script1.children[i];
-		morph2 = script2.children[i];
-		if (morph1.constructor !== morph2.constructor) {
+
+		if (type1 !== type2) {
 			return false;
-		} else if ((morph1 instanceof CSlotMorph) && !(scriptsMatch(morph1.children[0], morph2.children[0], softMatch))) {
-			return false;
-		} else if ((morph1 instanceof BlockMorph) && !(scriptsMatch(morph1, morph2, softMatch))) {
-			return false;
-		} else if (!softMatch && (morph1 instanceof InputSlotMorph)) {
-			if (morph1.children[0].text !== morph2.children[0].text) {
+		}
+
+		if ((type1 === "string") && (type2 === "string")) {
+			if (!softMatch && (morph1 !== morph2)) {
+				return false;
+			}
+		} else if ((Object.prototype.toString.call(morph1) === '[object Array]')
+			&& (Object.prototype.toString.call(morph2) === '[object Array]')) {
+
+			if (!scriptsMatch(morph1, morph2, softMatch)) {
+				return false;
+			}
+
+		} else {
+			if (morph1.blockSp !== morph2.blockSp) {
+				return false;
+			}
+			if (morph1.inputs.length !== morph2.inputs.length) {
+				return false;
+			}
+			if (!scriptsMatch(morph1.inputs, morph2.inputs, softMatch)) {
 				return false;
 			}
 		}
