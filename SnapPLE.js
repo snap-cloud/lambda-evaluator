@@ -28,7 +28,8 @@ gradingLog.prototype.addTest = function(blockSpec, input, expOut, timeOut) {
 								 "expOut": expOut, 
 								 "output": null, 
 								 "feedback": null,
-								 "timeOut": timeOut};
+								 "timeOut": timeOut,
+								 "proc": null};
 	return this.testCount;
 };
 
@@ -56,7 +57,7 @@ gradingLog.prototype.finishTest = function(testID, output, feedback) {
 		//TODO: Figure out a good default timeout NOW -> 1000ms
 		this.currentTimeout = infLoopCheck(glog, testID+1);
 	} else {
-		setTimeout(function() {evaluateLog(glog)},1);
+		setTimeout(function() {evaluateLog(glog)}, 1);
 	}
 	// return this["" + testID];
 };
@@ -143,7 +144,7 @@ function setValues(block, values) {
 
 	var morphList = block.children;
 
-	for (var morph in morphList) {
+	for (var morph of morphList) {
 		if (morph.constructor.name === "InputSlotMorph") {
 			morph.setContents(values[valIndex]);
 			valIndex += 1;
@@ -156,17 +157,12 @@ function setValues(block, values) {
 
 function evalReporter(block, outputLog, testID) {
 	var stage = world.children[0].stage;
-	try {
 	var proc = stage.threads.startProcess(block, 
 					stage.isThreadSafe,
 					false,
 					function() {
 						outputLog.finishTest(testID, readValue(proc));
 					});
-	} catch(e) {
-		var proc = "Error!";
-		outputLog.finishTest(testID, proc, e);
-	}
 	return proc
 }
 
@@ -189,6 +185,7 @@ function testBlock(outputLog, testID) {
 	var block = getScript(test["blockSpec"]);
 	setValues(block, test["input"]);
 	var proc = evalReporter(block, outputLog, testID);
+	outputLog["" + testID]["proc"] = proc;
 	return testID;
 }
 
@@ -237,6 +234,9 @@ function infLoopCheck(outputLog, testID) {
 	}
 	return setTimeout(function() {
 			var stage = world.children[0].stage;
+			if (outputLog["" + testID]["proc"].errorFlag) {
+				outputLog["" + testID]["feedback"] = "Error!";
+			}
 			stage.threads.stopProcess(getScript(outputLog["" + testID]["blockSpec"]));
 		}, timeout);
 }
@@ -256,17 +256,18 @@ function evaluateLog(outputLog, testIDs) {
 		}
 	}
 	outputLog.allCorrect = true;
-	for (var id in testIDs) {
+	for (var id of testIDs) {
 		//Changed === snapEquals() to better evaluate snap output
-		if (snapEquals(outputLog[id]["output"], outputLog[id]["expOut"])) {
-			outputLog[id]["feedback"] = "Correct!";
-		} else if (outputLog[id]["output"] === undefined) {
+		if (outputLog[id]["feedback"] === "Error!") {
+			outputLog.allCorrect = false;
+			outputLog[id]["output"] = "Error!";
+		} else if (outputLog["" + id]["output"] === undefined) {
 			outputLog.allCorrect = false;
 			outputLog[id]["output"] = "Timeout error.";
 			outputLog[id]["feedback"] = "Timeout error: Function did not finish before " + 
 				((outputLog[id]["timeOut"] < 0) ? 1000 : outputLog[id]["timeOut"]) + " ms.";
-		} else if (outputLog[id]["output"] === "Error!") {
-			outputLog.allCorrect = false;
+		} else if (snapEquals(outputLog[id]["output"], outputLog[id]["expOut"])) {
+			outputLog[id]["feedback"] = "Correct!";
 		} else {
 			outputLog.allCorrect = false;
 			outputLog[id]["feedback"] = "Incorrect Answer; Expected: " +
@@ -274,6 +275,146 @@ function evaluateLog(outputLog, testIDs) {
 		}
 	}
 	return outputLog;
+}
+
+//SpriteEvent.prototype = new SpriteEvent();
+SpriteEvent.prototype.constructor = SpriteEvent;
+
+function SpriteEvent(sprite, index) {
+	this.init(sprite, index);
+}
+
+SpriteEvent.prototype.init = function(_sprite, index) {
+	this.sprite = index;
+	this.x = _sprite.xPosition();
+	this.y = _sprite.yPosition();
+	this.direction = _sprite.direction();
+	this.penDown = _sprite.isDown;
+	this.scale = _sprite.parent.scale;
+	this.ignore = false;
+}
+
+SpriteEvent.prototype.equals = function(sEvent) {
+	if (this.sprite === sEvent.sprite &&
+		this.x === sEvent.x &&
+		this.y === sEvent.y &&
+		this.direction === sEvent.direction &&
+		this.penDown === sEvent.penDown) {
+		return true;
+	}
+	return false;
+}
+
+function SpriteEventLog() {
+	this.numSprites = 0;
+}
+
+SpriteEventLog.prototype.addEvent = function(_sprite, index) {
+	if (this["" + index] === undefined) {
+		this["" + index] = [];
+		this.numSprites++;
+	}
+	this["" + index].push(new SpriteEvent(_sprite));
+	this.checkDup(index);
+}
+
+SpriteEventLog.prototype.checkDup = function(index) {
+	var len = this["" + index].length;
+	if (len < 2) {
+		return;
+	}
+	if (this["" + index][len - 1].equals(this["" + index][len - 2])) {
+		this["" + index].pop();
+	} else if (this["" + index][len - 1]["scale"] !== this["" + index][len - 2]["scale"]) {
+		this["" + index][len - 1].ignore = true;
+	}
+}
+
+function printEventLog(eventLog) {
+	for (var j = 0; j < eventLog.numSprites; j++) {
+		console.log(j + "\n");
+		console.log("------------\n");
+		for (var i = 0; i < eventLog["" + j].length; i++) {
+			if (eventLog["" + j][i].ignore) {
+				continue;
+			}
+			console.log("X pos: " + eventLog["" + j][i].x + "\n");
+			console.log("Y pos: " + eventLog["" + j][i].y + "\n");
+			console.log("Direction: " + eventLog["" + j][i].direction + "\n");
+			console.log("Pen Down: " + eventLog["" + j][i].penDown + "\n");
+			console.log("Stage Scale: " + eventLog["" + j][i].scale + "\n");
+		}
+	}
+}
+
+function fireKeyEvent(key) {
+	if (key === undefined) {
+		return;
+	}
+	if (key === "green flag") {
+		//do green flag event
+		world.keyboardReceiver.fireGreenFlagEvent();
+	} else if (key === "stop all") {
+		world.keyboardReceiver.fireStopAllEvent();
+	} else {
+		world.keyboardReceiver.fireKeyEvent(key);
+	}
+}
+
+//Make a mouse event with new MouseEvent("mousemove", {clientX: x, clientY: y})
+function moveMouse(event) {
+	if (event === undefined) {
+		//consider making the default be a move to 0, 0s
+		return;
+	}
+	world.hand.processMouseMove(event);
+}
+
+/*
+*  Create new Mouse Event at x, y coordiantes
+*  UNDER CONSTRUCTION!!!
+*/
+function mouseAction(action, x, y, element) {
+	if (element === undefined) {
+		element = "canvas";
+	}
+	//when we can generalize the x, y loaction update this function
+	var evt = new MouseEvent(action, {clientX: x, clientY: y});
+	if (action === "mousemove") {
+		world.hand.processMouseMove(evt);
+	}
+}
+
+//Demo for *GreenFlag Hat -> pen down -> forever(go to mouse x, y)*
+function doTheThing() {
+	var evt = new MouseEvent("mousemove", {clientX: 1200, clientY: 200});
+	moveMouse(evt);
+	fireKeyEvent("green flag");//move hand to x, y, and pen down forever
+	var evt2 = new MouseEvent("mousemove", {clientX: 1150, clientY: 150});
+	setTimeout(function () {moveMouse(evt2);}, 50);
+	var evt3 = new MouseEvent("mousemove", {clientX: 1200, clientY: 100});
+	setTimeout(function () {moveMouse(evt3);}, 100);
+	var evt4 = new MouseEvent("mousemove", {clientX: 1250, clientY: 150});
+	setTimeout(function () {moveMouse(evt4);}, 150);
+	var evt5 = new MouseEvent("mousemove", {clientX: 1200, clientY: 200});
+	setTimeout(function () {moveMouse(evt5);}, 200);
+	setTimeout(function () {fireKeyEvent("stop all");}, 250);
+}
+
+//Demo for *When space pressed Hat -> pen down -> forever(go to mouse x, y)*
+function doTheOtherThing() {
+	var evt = new MouseEvent("mousemove", {clientX: 1200, clientY: 200});
+	moveMouse(evt);
+	fireKeyEvent("space");//move hand to x, y, and pen down forever
+	var evt2 = new MouseEvent("mousemove", {clientX: 1150, clientY: 250});
+	setTimeout(function () {moveMouse(evt2);}, 50);
+	var evt3 = new MouseEvent("mousemove", {clientX: 1200, clientY: 300});
+	setTimeout(function () {moveMouse(evt3);}, 100);
+	var evt4 = new MouseEvent("mousemove", {clientX: 1250, clientY: 250});
+	setTimeout(function () {moveMouse(evt4);}, 150);
+	var evt5 = new MouseEvent("mousemove", {clientX: 1200, clientY: 200});
+	setTimeout(function () {moveMouse(evt5);}, 200);
+	setTimeout(function () {fireKeyEvent("stop all");}, 250);
 }
 
 /*

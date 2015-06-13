@@ -14,8 +14,10 @@
             //recover stored save
             //var worldXML = localStorage.getItem("worldState");
             var world;
+            var spriteList = null;
+            var spriteEvents = new SpriteEventLog();
 
-            var pageXML = localStorage.getItem(id)
+            //var pageXML = localStorage.getItem(id)
             
             window.onload = function () {
                 world = new WorldMorph(document.getElementById('world'));
@@ -26,14 +28,26 @@
                 ide.toggleStageSize(true);
                 
                 //If this page has already been loaded
-                if (localStorage.getItem(id) !== null) {
-                    ide.openProjectString(pageXML);
-                }
+                // if (localStorage.getItem(id) !== null) {
+                //     ide.openProjectString(pageXML);
+                // }
+
                 setInterval(loop, 1);
+                
             };
+
+            function eventListen() {
+                spriteList = world.children[0].sprites.contents;
+                for (var i = 0; i < spriteList.length; i++) {
+                    spriteEvents.addEvent(spriteList[i], i);
+                }
+            }
+
             function loop() {
                 world.doOneCycle();
+                eventListen();
             }
+
         </script>
     </head>
     <body style="margin: 0;">
