@@ -479,20 +479,6 @@ function getGlobalVar(varToGet, globalVars) {
 	return globalVars[varToGet].value;
 }
 
-/* Takes in a blockMorph BLOCK and checks if its blockspec matches the input
- * string BLOCKSPEC. Returns true if the given block has the same blockSpec
- * as the input, else false.
- * To get the script for a sprite you run the command:
- *
- * world.children[0].sprites.contents[0].scripts.children[0]
- *
- * this command gives you the first block, and access to all the ensueing
- * blocks too.
- */
-function blockContainsBlockSpec(block, blockSpec) {
-	return (block.blockSpec === blockSpec);
-}
-
 /* Takes in an entire Sprite's script and checks recursively if it contains
  * the string BLOCKSPEC that we are looking for. Returns true if BLOCKSPEC
  * is found, otherwise returns false.
@@ -500,80 +486,69 @@ function blockContainsBlockSpec(block, blockSpec) {
  * The script can be obtained by running the command, which gives you the
  * first block and access to all the blocks connected to that block:
  *
- * world.children[0].sprites.contents[0].scripts.children[0]
+ * JSONscript(...)
  */
 function scriptContainsBlockSpec(script, blockSpec) {
-	if (blockContainsBlockSpec(script, blockSpec)) {
-		return true;
-	}
+	var morph1, type1;
+	for (var i = 0; i < script.length; i++) {
+		morph1 = script[i];
+		type1 = typeof(morph1);
 
-	var morph;
-	for (var i = 0; i < script.children.length; i++) {
-		morph = script.children[i];
-		if ((morph instanceof CSlotMorph)
-			&& scriptContainsBlockSpec(morph.children[0], blockSpec)) {
-			return true;
-		} else if ((morph instanceof ReporterBlockMorph)
-			&& scriptContainsBlockSpec(morph, blockSpec)) {
-			return true;
+		if ((type1 === "string")) {
+			continue;
+		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
+			if (scriptContainsBlockSpec(morph1, blockSpec)) {
+				return true;
+			}
+		} else {
+			if (morph1.blockSp === blockSpec) {
+				return true;
+			}
+			if (scriptContainsBlockSpec(morph1.inputs, blockSpec)) {
+				return true;
+			}
 		}
 	}
 
-	if(!(script.children[script.children.length - 1] instanceof BlockMorph)) {
-		return false;
-	}
-
-	return scriptContainsBlockSpec(script.children[script.children.length - 1], blockSpec);
-}
-
-/* Takes in a blockSpec string BLOCK and a script SCRIPT
- * (which consists of many blocks) and returns which number block BLOCK is
- * within the entire script for the first occurance. For example, if we had
- * the following lines in Snap!:
- *
- * "move (10) steps"
- * "go to x:(6) y:(44)"
- * "turn clockwise (90) degrees"
- *
- * then calling our function with the blockSpec "move %n steps" would return 0.
- * Returns -1 if the block is not in the script.
- *
- * DOES NOT HANDLE IF STATEMENTS. ONLY CONTINOUS BLOCKS.
- */
-function getBlockIndex(blockSpec, script) {
-	var index = 0;
-	if (blockContainsBlockSpec(script, blockSpec)) {
-		return index;
-	}
-
-	var childrenList = script.children;
-	var lastChild = childrenList[childrenList.length - 1];
-	while (lastChild instanceof BlockMorph) {
-		index ++;
-		if (blockContainsBlockSpec(lastChild, blockSpec)) {
-			return index;
-		}
-		lastChild = lastChild.children[lastChild.children.length - 1];
-	}
-
-	return -1;
+	return false;
 }
 
 /* Takes in two blockSpecs and returns true if blockSpec string BLOCK1
  * precedes the blockSpec string BLOCK2 in terms of the order that they
  * appear in the script SCRIPT which can be obtained by calling:
  *
- * world.children[0].sprites.contents[0].scripts.children[0]
+ * JSONscript(...)
  *
- * DO WE NEED TO HANDLE IF STATEMENTS? HOW TO DO SO?
+ * seen1 is initialized to false
  */
-function blockPrecedes(block1, block2, script) {
-	var position1, position2;
-	position1 = getBlockIndex(block1, script);
-	position2 = getBlockIndex(block2, script);
-	if (position1 < position2) {
-		return true;
+function blockPrecedes(block1, block2, script, seen1) {
+	var morph1, type1;
+	for (var i = 0; i < script.length; i++) {
+		morph1 = script[i];
+		type1 = typeof(morph1);
+
+		if ((type1 === "string")) {
+			continue;
+		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
+			if (blockPrecedes(block1, block2, morph1, seen1)) {
+				return true;
+			}
+		} else {
+			if (morph1.blockSp === block2) {
+				if (!seen1) {
+					return false;
+				}
+				return true;
+			}
+			if ((morph1.blockSp === block1)) {
+				seen1 = true;
+			}
+			if (blockPrecedes(block1, block2, morph1.inputs, seen1)) {
+				return true;
+			}
+		}
 	}
+
 	return false;
 }
 
@@ -582,20 +557,24 @@ function blockPrecedes(block1, block2, script) {
  *
  * Get the block by calling:
  *
- * world.children[0].sprites.contents[0].scripts.children[0]
+ * JSONscript(...)
  */
 function occurancesOfBlockSpec(blockSpec, block) {
+	var morph1, type1;
 	var result = 0;
-	var morph;
-	if (block.blockSpec === blockSpec) {
-		result ++;
-	}
-	for (var i = 0; i < block.children.length; i++) {
-		morph = block.children[i];
-		if (morph instanceof CSlotMorph) {
-			result += occurancesOfBlockSpec(blockSpec, morph.children[0]);
-		} else if (morph instanceof BlockMorph) {
-			result += occurancesOfBlockSpec(blockSpec, morph);
+	for (var i = 0; i < block.length; i++) {
+		morph1 = block[i];
+		type1 = typeof(morph1);
+
+		if ((type1 === "string")) {
+			continue;
+		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
+			result += occurancesOfBlockSpec(blockSpec, morph1);
+		} else {
+			if (morph1.blockSp === blockSpec) {
+				result += 1;
+			}
+			result += occurancesOfBlockSpec(blockSpec, morph1.inputs);
 		}
 	}
 
