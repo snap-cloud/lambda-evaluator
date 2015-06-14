@@ -645,101 +645,54 @@ function stringToJSON(script) {
 	return JSON.parse(script);
 }
 
+/* Returns the next character. Got this from StackOverflow at this link:
+ * http://stackoverflow.com/questions/12504042/what-is-a-method-that-can-be-used-to-increment-letters
+ */
+function nextChar(c) {
+    return String.fromCharCode(c.charCodeAt(0) + 1);
+}
 
+/* Takes in two correct JSONscript(...) representations of answers and constructs a
+ * general pattern template that we can use to grade other answers to a given
+ * question. Also Takes in a copy of the first JSONscript(...) answer, which will
+ * be our result, a vars JavaScript object (should be initialized to empty) that maps
+ * values to variables and the currChar JavaScript object to be used as a
+ * variable (should initialize to {val: "a"}).
+ *
+ * Parameters: script1, script2, result, vars, currChar like this:
+ *
+ * var final = genPattern(script1, script2, result, {}, {val: "a"});
+ *
+ * Get a deep copy by calling: var newObject = jQuery.extend(true, [], oldObject);
+ */
+function genPattern(script1, script2, result, vars, currChar) {
+	var morph1, morph2, type1, type2;
+	for (var i = 0; i < script1.length; i++) {
+		morph1 = script1[i];
+		morph2 = script2[i];
+		morphR = result[i];
+		type1 = typeof(morph1);
+		type2 = typeof(morph2);
 
+		if ((type1 === "string") && (type2 === "string")) {
+			if (morph1 !== morph2) {
+				if (morph1 in vars) {
+					result[i] = vars[morph1];
+				} else {
+					result[i] = currChar.val;
+					vars[morph1] = currChar.val;
+					currChar.val = nextChar(currChar.val);
+				}
+			}
+		} else if ((Object.prototype.toString.call(morph1) === '[object Array]')
+			&& (Object.prototype.toString.call(morph2) === '[object Array]')) {
 
+			genPattern(morph1, morph2, morphR, vars, currChar);
 
-//Everything below here is trying to get genPattern() to work, just ignore it for now.
+		} else {
+			genPattern(morph1.inputs, morph2.inputs, morphR.inputs, vars, currChar);
+		}
+	}
 
-
-
-
-
-// /* Checks the inputs for the scripts, assuming that they match in terms
-//  * of the blocks and if/else statements. The input EXPECTED is a JavaScript
-//  * that object is our version of the correct answer with variables for the
-//  * input (because each student's answer could be different). The input
-//  * ACTUAL is the student's given JavaScript object that we are checking.
-//  * This function returns true if the EXPECTED variable pattern matches
-//  * the student's ACTUAL value pattern throughout their script. Returns
-//  * false otherwise. Also, EXPECTED and ACTUAL need to be the result of calling
-//  * JSONscript(EXPECTED) and JSONscript(ACTUAL) so that they are in this format:
-//  *
-//  * [{blockSp: "move %n steps",
-//  *   inputs: [10]},
-//  *  {blockSp: "turn %n degrees",
-//  *   inputs: [{blockSpec: "%n + %n",
-//  *             inputs: ["3", "2"]}]}]
-//  */
-// function inputsMatch(expected, actual) {
-// 	var args = {};
-
-// 	for (var i = 0; i < expected.inputs.length; i++) {     //need to finish this!!!
-// 		ourScript.inputs[i]
-// 	}
-// }
-
-// /* Returns the next character. Got this from StackOverflow at this link:
-//  * http://stackoverflow.com/questions/12504042/what-is-a-method-that-can-be-used-to-increment-letters
-//  */
-// function nextChar(c) {
-//     return String.fromCharCode(c.charCodeAt(0) + 1);
-// }
-
-//  Takes in two scripts that are both correct (and in the JSON format as
-//  * returned by JSONscript())and returns a general pattern of the script
-//  * (also in JSONscript() format) Where the inputs are the same, those
-//  * must be the same in the general pattern. Where the inputs differ,
-//  * we replace with a variable. Say we have these two scripts:
-//  *
-//  * move 30 steps      and    move 50 steps
-//  * turn 90 degrees           turn 90 degrees
-//  *
-//  * then we will return a JSON representation with the input for the move as a
-//  * variable and the input for the turn block as the value "90":
-//  *
-//  * move x steps
-//  * turn 90 degrees
-//  *
-//  * must also take in another copy of script 1 as result. Do not want to modify
-//  * script 1 because JavaScript passes a copy of the reference to script1.
-//  * Also need to pass in JavaScript object VARIABLES that contains a mapping of
-//  * the differeing values to different variables
-//  * that will be used in our general pattern, in order. Array starts with the
-//  * object that maps val:currVar. CurrVar should start with "a". {val: "a"}.
- 
-// function genPattern(script1, script2, result, variables, currVar) {
-// 	for (var block = 0; block < script1.length; block++) {
-// 		var currBlock1 = script1[block];
-// 		var currBlock2 = script2[block];
-// 		var currBlockResult = result[block];
-// 		if (Object.prototype.toString.call(currBlock1) === "[object Array]") {
-// 			genPattern(currBlock1, currBlock2, currBlockResult, variables, currVar);
-// 		} else {
-// 			var args1 = currBlock1.inputs;
-// 			var args2 = currBlock2.inputs;
-// 			var argsResult = currBlockResult.inputs;
-// 			for (var i = 0; i < args1.length; i++) {
-// 				if ((typeof(args1[i]) === "string") && (typeof(args2[i]) === "string")) {
-// 					if (args1[i] !== args2[i]) {
-// 						if (variables.hasOwnProperty(args1[i])) {
-// 							argsResult[i] = variables[args1[i]];
-// 						} else {
-// 							variables[args1[i]] = currVar.val;
-// 							argsResult[i] = currVar.val;
-// 							currVar.val = nextChar(currVar.val);
-// 						}
-// 					}
-// 				} else {
-// 					genPattern(args1, args2, argsResult, variables, currVar);
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	//return $.extend(variables, currVars);
-// 	return result;
-// }
-
-
-
+	return result;
+}
