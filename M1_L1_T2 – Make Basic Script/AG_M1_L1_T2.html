@@ -5,18 +5,20 @@
         <link rel="shortcut icon" href="http://snap.berkeley.edu/fav3.gif" type="image/gif">
         <script src="jschannel.js"></script>
         <script type="text/javascript" src="SnapPLE.js"></script>
-        <script type="text/javascript" src="AG_M1_L1_T1.js"></script>
+        <script type="text/javascript" src="AG_M1_L1_T2.js"></script>
         <script type="text/javascript" src="snap.js"></script>
         
 
         <script type="text/javascript">
 
             //recover stored save
+            console.log(id);
             var pageXML = localStorage.getItem(id);
             var world;
             
             window.onload = function () {
-            //UPDATE GRADING FLAG
+
+                //UPDATE GRADING FLAG
                 var grade_flag = document.getElementById("autograding");
                 var prev_AG_state = JSON.parse(localStorage.getItem(id + "answer"));
                 console.log(prev_AG_state);
@@ -31,7 +33,7 @@
                     grade_flag.innerHTML = "UNGRADED!";
                 }
 
-            //INITIALIZE UP SNAP
+                //INITIALIZE UP SNAP
                 world = new WorldMorph(document.getElementById('world'));
                 new IDE_Morph().openIn(world);
 
@@ -49,6 +51,7 @@
                 world.doOneCycle();
             }
         </script>
+        
     </head>
     <body style="margin: 0;">
         <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
