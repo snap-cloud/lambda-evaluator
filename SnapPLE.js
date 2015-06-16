@@ -6,9 +6,7 @@
 	gradingLog is initialized when a block is tested.
 	Tests are added to the log and the output value is
 	updated when the Snap! process finishes. Finishing
-	the last test causes the grading log to be evaluate.
-	WARNING: Currently does not function for infitely
-	looping scripts.
+	the last test causes the grading log to be evaluated.
 */
 function gradingLog() {
 	this.testCount = 0;
@@ -17,6 +15,12 @@ function gradingLog() {
 	this.currentTimeout = null;
 }
 
+/*
+*  Add a test to the gradingLog object
+*  tests are tracked by a test ID number. 
+*  Access specific parts of each test by:
+*  		gradingLog.[""+(testID)]["testDesciption"]
+*/
 gradingLog.prototype.addTest = function(blockSpec, input, expOut, timeOut) {
 	this.testCount += 1;
 	this["" + this.testCount] = {"blockSpec": blockSpec,
@@ -24,10 +28,18 @@ gradingLog.prototype.addTest = function(blockSpec, input, expOut, timeOut) {
 								 "expOut": expOut, 
 								 "output": null, 
 								 "feedback": null,
-								 "timeOut": timeOut};
+								 "timeOut": timeOut,
+								 "proc": null};
 	return this.testCount;
 };
 
+/*
+*  Asyncronysly runs the input tests
+*  Initiates a test, sets the time out for the test and
+*  evaluates the test log once the last test has ran.
+*  Uses a series of setTimeouts to make sure the asyncronous 
+*  test threads do not clash with one another on setup.
+*/
 gradingLog.prototype.finishTest = function(testID, output, feedback) {
 	if (this["" + testID] !== undefined) {
 		this["" + testID]["output"] = output;
@@ -39,26 +51,19 @@ gradingLog.prototype.finishTest = function(testID, output, feedback) {
 	}
 	var glog = this;
 	if (testID < this.testCount) {
-		//TODO: Track currently tested block evaluation with a second timeout.
-		// Should check to see if the process has finished. If it hasn't,
-		// terminate the process, update the log, launch the  next test.
 		clearTimeout(this.currentTimeout);
 		setTimeout(function() {testBlock(glog, testID+1)},1);
 		//TODO: generalize for all sprites?
-		//TODO: DO THIS FOR THE FIRST TEST ALSO!!
-		//TODO: Figure out a good default timeout NOW -> 300ms
-		// setTimeout(function() {
-		// 	var stage = world.children[0].stage;
-		// 	stage.threads.stopProcess(getScript(glog["" + (testID+1)]["blockSpec"]));
-		// 	// glog.updateLog(testID+1,null,"Timeout error: Function did not finish before xxx ms");
-		// }, 300);
+		//TODO: Figure out a good default timeout NOW -> 1000ms
 		this.currentTimeout = infLoopCheck(glog, testID+1);
 	} else {
-		setTimeout(function() {evaluateLog(glog)},1);
+		setTimeout(function() {evaluateLog(glog)}, 1);
 	}
 	// return this["" + testID];
 };
 
+//Unused function that makes sure the test exisits in the log
+//and updates the output and feedback accordingly
 gradingLog.prototype.updateLog = function(testID, output, feedback) {
 	if (this["" + testID] !== undefined) {
 		this["" + testID]["output"] = output;
@@ -214,7 +219,7 @@ function setValues(block, values) {
 
 function evalReporter(block, outputLog, testID) {
 	var stage = world.children[0].stage;
-	var proc = stage.threads.startProcess(block,
+	var proc = stage.threads.startProcess(block, 
 					stage.isThreadSafe,
 					false,
 					function() {
@@ -242,6 +247,7 @@ function testBlock(outputLog, testID) {
 	var block = getScript(test["blockSpec"]);
 	setValues(block, test["input"]);
 	var proc = evalReporter(block, outputLog, testID);
+	outputLog["" + testID]["proc"] = proc;
 	return testID;
 }
 
@@ -277,13 +283,22 @@ function prettyBlockString(blockSpec, inputs) {
 	return pString;
 }
 
+/*
+*  Set a timeout for the test specified by testID and wait the appropriate time.
+*  If the test does not finish by the specified time out, find the process
+*  and kill it.
+*/
 function infLoopCheck(outputLog, testID) {
-	var timeout = outputLog["" + testID]["timeOut"]; //Make this = the incoming timeout value for the specific test
+	var timeout = outputLog["" + testID]["timeOut"];
+
 	if (timeout < 0) {
 		timeout = 1000;
 	}
 	return setTimeout(function() {
 			var stage = world.children[0].stage;
+			if (outputLog["" + testID]["proc"].errorFlag) {
+				outputLog["" + testID]["feedback"] = "Error!";
+			}
 			stage.threads.stopProcess(getScript(outputLog["" + testID]["blockSpec"]));
 		}, timeout);
 }
@@ -304,13 +319,18 @@ function evaluateLog(outputLog, testIDs) {
 	}
 	outputLog.allCorrect = true;
 	for (var id of testIDs) {
-		if (outputLog[id]["output"] === outputLog[id]["expOut"]) {
-			outputLog[id]["feedback"] = "Correct!";
-		} else if (outputLog[id]["output"] === undefined) {
+		//Changed === snapEquals() to better evaluate snap output
+		//re ordered the conditionals to make more sense and reduce errors
+		if (outputLog[id]["feedback"] === "Error!") {
+			outputLog.allCorrect = false;
+			outputLog[id]["output"] = "Error!";
+		} else if (outputLog["" + id]["output"] === undefined) {
+			outputLog.allCorrect = false;
 			outputLog[id]["output"] = "Timeout error.";
-			//TODO: Add actual timeout variable from outputLog to the feedback
 			outputLog[id]["feedback"] = "Timeout error: Function did not finish before " + 
 				((outputLog[id]["timeOut"] < 0) ? 1000 : outputLog[id]["timeOut"]) + " ms.";
+		} else if (snapEquals(outputLog[id]["output"], outputLog[id]["expOut"])) {
+			outputLog[id]["feedback"] = "Correct!";
 		} else {
 			outputLog.allCorrect = false;
 			outputLog[id]["feedback"] = "Incorrect Answer; Expected: " +
@@ -320,12 +340,169 @@ function evaluateLog(outputLog, testIDs) {
 	return outputLog;
 }
 
-//Convert a gradingLog [object] into a dictionary or string for debugging and feedback
-//handling for edX.
+//SpriteEvent.prototype = new SpriteEvent();
+SpriteEvent.prototype.constructor = SpriteEvent;
 
-/* Takes a gradingLog object and converts it into a dictionary.
- *
- */
+//SpriteEvent constructor
+function SpriteEvent(sprite, index) {
+	this.init(sprite, index);
+}
+
+//SpriteEvent constructor helper
+SpriteEvent.prototype.init = function(_sprite, index) {
+	this.sprite = index;
+	this.x = _sprite.xPosition();
+	this.y = _sprite.yPosition();
+	this.direction = _sprite.direction();
+	this.penDown = _sprite.isDown;
+	this.scale = _sprite.parent.scale;
+	this.ignore = false;
+}
+
+//compares another SpriteEvent to this one for "equality"
+SpriteEvent.prototype.equals = function(sEvent) {
+	if (this.sprite === sEvent.sprite &&
+		this.x === sEvent.x &&
+		this.y === sEvent.y &&
+		this.direction === sEvent.direction &&
+		this.penDown === sEvent.penDown) {
+		return true;
+	}
+	return false;
+}
+
+//SpriteEventLog constructor
+function SpriteEventLog() {
+	this.numSprites = 0;
+}
+
+//adds events to the event log
+//_sprite is the sprite object and index is its index in the world array
+//creates an array for each _sprite using its index as an identifier
+//this method gets called every snap cycle
+SpriteEventLog.prototype.addEvent = function(_sprite, index) {
+	if (this["" + index] === undefined) {
+		this["" + index] = [];
+		this.numSprites++;
+	}
+	this["" + index].push(new SpriteEvent(_sprite));
+	this.checkDup(index);
+}
+
+//Checks for a changed event state
+//if the event is unchanged then remove it from the log
+SpriteEventLog.prototype.checkDup = function(index) {
+	var len = this["" + index].length;
+	if (len < 2) {
+		return;
+	}
+	if (this["" + index][len - 1].equals(this["" + index][len - 2])) {
+		this["" + index].pop();
+	} else if (this["" + index][len - 1]["scale"] !== this["" + index][len - 2]["scale"]) {
+		this["" + index][len - 1].ignore = true;
+	}
+}
+
+//Prints out the event log
+//ignore is an optional parameter that defaults to true
+//ignore is used to ignore/not ignore those events with the ignore flag of true
+function printEventLog(eventLog, ignore) {
+	ignore = ignore || true;
+	for (var j = 0; j < eventLog.numSprites; j++) {
+		console.log(j + "\n");
+		console.log("------------\n");
+		for (var i = 0; i < eventLog["" + j].length; i++) {
+			if (ignore && eventLog["" + j][i].ignore) {
+				continue;
+			}
+			console.log("X pos: " + eventLog["" + j][i].x + "\n");
+			console.log("Y pos: " + eventLog["" + j][i].y + "\n");
+			console.log("Direction: " + eventLog["" + j][i].direction + "\n");
+			console.log("Pen Down: " + eventLog["" + j][i].penDown + "\n");
+			console.log("Stage Scale: " + eventLog["" + j][i].scale + "\n");
+		}
+	}
+}
+
+//fires off a keyboard event
+//The key variable is a string representing the key
+//or a sequence of keys
+//if key = "green flag" - fires the green flag event
+//if key = "stop all" - stops all events
+function fireKeyEvent(key) {
+	if (key === undefined) {
+		return;
+	}
+	if (key === "green flag") {
+		//do green flag event
+		world.keyboardReceiver.fireGreenFlagEvent();
+	} else if (key === "stop all") {
+		world.keyboardReceiver.fireStopAllEvent();
+	} else {
+		world.keyboardReceiver.fireKeyEvent(key);
+	}
+}
+
+//Make a mouse event with new MouseEvent("mousemove", {clientX: x, clientY: y})
+function moveMouse(event) {
+	if (event === undefined) {
+		//consider making the default be a move to the realitive 0, 0s
+		return;
+	}
+	world.hand.processMouseMove(event);
+}
+
+/*
+*  Create new Mouse Event at x, y coordiantes
+*  UNDER CONSTRUCTION!!!
+*  (Need to generalize x, y coords regardless of window size, ect.)
+*/
+function mouseAction(action, x, y, element) {
+	if (element === undefined) {
+		element = "canvas";
+	}
+	//when we can generalize the x, y loaction update this function
+	var evt = new MouseEvent(action, {clientX: x, clientY: y});
+	if (action === "mousemove") {
+		world.hand.processMouseMove(evt);
+	}
+}
+
+//Demo for *GreenFlag Hat -> pen down -> forever(go to mouse x, y)*
+function doTheThing() {
+	var evt = new MouseEvent("mousemove", {clientX: 1200, clientY: 200});
+	moveMouse(evt);
+	fireKeyEvent("green flag");//move hand to x, y, and pen down forever
+	var evt2 = new MouseEvent("mousemove", {clientX: 1150, clientY: 150});
+	setTimeout(function () {moveMouse(evt2);}, 50);
+	var evt3 = new MouseEvent("mousemove", {clientX: 1200, clientY: 100});
+	setTimeout(function () {moveMouse(evt3);}, 100);
+	var evt4 = new MouseEvent("mousemove", {clientX: 1250, clientY: 150});
+	setTimeout(function () {moveMouse(evt4);}, 150);
+	var evt5 = new MouseEvent("mousemove", {clientX: 1200, clientY: 200});
+	setTimeout(function () {moveMouse(evt5);}, 200);
+	setTimeout(function () {fireKeyEvent("stop all");}, 250);
+}
+
+//Demo for *When space pressed Hat -> pen down -> forever(go to mouse x, y)*
+function doTheOtherThing() {
+	var evt = new MouseEvent("mousemove", {clientX: 1200, clientY: 200});
+	moveMouse(evt);
+	fireKeyEvent("space");//move hand to x, y, and pen down forever
+	var evt2 = new MouseEvent("mousemove", {clientX: 1150, clientY: 250});
+	setTimeout(function () {moveMouse(evt2);}, 50);
+	var evt3 = new MouseEvent("mousemove", {clientX: 1200, clientY: 300});
+	setTimeout(function () {moveMouse(evt3);}, 100);
+	var evt4 = new MouseEvent("mousemove", {clientX: 1250, clientY: 250});
+	setTimeout(function () {moveMouse(evt4);}, 150);
+	var evt5 = new MouseEvent("mousemove", {clientX: 1200, clientY: 200});
+	setTimeout(function () {moveMouse(evt5);}, 200);
+	setTimeout(function () {fireKeyEvent("stop all");}, 250);
+}
+
+/*
+*  JSONify the output log 
+*/
 function dictLog(outputLog) {
 	var outDict = {};
 	for (var i = 1; i <=outputLog.testCount;i++) {
@@ -341,6 +518,9 @@ function dictLog(outputLog) {
 	return outDict;
 }
 
+/*
+*  print out the output log in a nice format
+*/
 function printLog(outputLog) {
 	var testString = ""; //TODO: Consider putting Output Header
 	for (var i = 1; i<=outputLog.testCount;i++) {
