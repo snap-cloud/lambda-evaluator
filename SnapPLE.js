@@ -258,6 +258,7 @@ function evaluateLog(outputLog, testIDs) {
 	outputLog.allCorrect = true;
 	for (var id of testIDs) {
 		//Changed === snapEquals() to better evaluate snap output
+		//re ordered the conditionals to make more sense and reduce errors
 		if (outputLog[id]["feedback"] === "Error!") {
 			outputLog.allCorrect = false;
 			outputLog[id]["output"] = "Error!";
@@ -280,10 +281,12 @@ function evaluateLog(outputLog, testIDs) {
 //SpriteEvent.prototype = new SpriteEvent();
 SpriteEvent.prototype.constructor = SpriteEvent;
 
+//SpriteEvent constructor
 function SpriteEvent(sprite, index) {
 	this.init(sprite, index);
 }
 
+//SpriteEvent constructor helper
 SpriteEvent.prototype.init = function(_sprite, index) {
 	this.sprite = index;
 	this.x = _sprite.xPosition();
@@ -294,6 +297,7 @@ SpriteEvent.prototype.init = function(_sprite, index) {
 	this.ignore = false;
 }
 
+//compares another SpriteEvent to this one for "equality"
 SpriteEvent.prototype.equals = function(sEvent) {
 	if (this.sprite === sEvent.sprite &&
 		this.x === sEvent.x &&
@@ -305,10 +309,15 @@ SpriteEvent.prototype.equals = function(sEvent) {
 	return false;
 }
 
+//SpriteEventLog constructor
 function SpriteEventLog() {
 	this.numSprites = 0;
 }
 
+//adds events to the event log
+//_sprite is the sprite object and index is its index in the world array
+//creates an array for each _sprite using its index as an identifier
+//this method gets called every snap cycle
 SpriteEventLog.prototype.addEvent = function(_sprite, index) {
 	if (this["" + index] === undefined) {
 		this["" + index] = [];
@@ -318,6 +327,8 @@ SpriteEventLog.prototype.addEvent = function(_sprite, index) {
 	this.checkDup(index);
 }
 
+//Checks for a changed event state
+//if the event is unchanged then remove it from the log
 SpriteEventLog.prototype.checkDup = function(index) {
 	var len = this["" + index].length;
 	if (len < 2) {
@@ -330,12 +341,16 @@ SpriteEventLog.prototype.checkDup = function(index) {
 	}
 }
 
-function printEventLog(eventLog) {
+//Prints out the event log
+//ignore is an optional parameter that defaults to true
+//ignore is used to ignore/not ignore those events with the ignore flag of true
+function printEventLog(eventLog, ignore) {
+	ignore = ignore || true;
 	for (var j = 0; j < eventLog.numSprites; j++) {
 		console.log(j + "\n");
 		console.log("------------\n");
 		for (var i = 0; i < eventLog["" + j].length; i++) {
-			if (eventLog["" + j][i].ignore) {
+			if (ignore && eventLog["" + j][i].ignore) {
 				continue;
 			}
 			console.log("X pos: " + eventLog["" + j][i].x + "\n");
@@ -347,6 +362,11 @@ function printEventLog(eventLog) {
 	}
 }
 
+//fires off a keyboard event
+//The key variable is a string representing the key
+//or a sequence of keys
+//if key = "green flag" - fires the green flag event
+//if key = "stop all" - stops all events
 function fireKeyEvent(key) {
 	if (key === undefined) {
 		return;
@@ -364,7 +384,7 @@ function fireKeyEvent(key) {
 //Make a mouse event with new MouseEvent("mousemove", {clientX: x, clientY: y})
 function moveMouse(event) {
 	if (event === undefined) {
-		//consider making the default be a move to 0, 0s
+		//consider making the default be a move to the realitive 0, 0s
 		return;
 	}
 	world.hand.processMouseMove(event);
@@ -373,6 +393,7 @@ function moveMouse(event) {
 /*
 *  Create new Mouse Event at x, y coordiantes
 *  UNDER CONSTRUCTION!!!
+*  (Need to generalize x, y coords regardless of window size, ect.)
 */
 function mouseAction(action, x, y, element) {
 	if (element === undefined) {
