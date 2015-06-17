@@ -1,0 +1,249 @@
+/* NOTE: This file, which loads all necessary fonts for rendering Studio UI, is 1 of 3 CSS files compiled in our production pipeline  */
+/* No subsetting. */
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Light-webfont.b126ef62be73.eot");
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Light-webfont.b126ef62be73.eot?#iefix") format('embedded-opentype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Light-webfont.df04ed7fc7d8.woff") format('woff'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Light-webfont.557ad65e492b.ttf") format('truetype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Light-webfont.4c206ab41ebc.svg#open_sanslight") format('svg');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-LightItalic-webfont.1e369b712d5f.eot");
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-LightItalic-webfont.1e369b712d5f.eot?#iefix") format('embedded-opentype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-LightItalic-webfont.02d04d22784f.woff") format('woff'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-LightItalic-webfont.05e99ea9cf0b.ttf") format('truetype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-LightItalic-webfont.32bb3004c344.svg#open_sanslight_italic") format('svg');
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Regular-webfont.62d83926c383.eot");
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Regular-webfont.62d83926c383.eot?#iefix") format('embedded-opentype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Regular-webfont.87119b577169.woff") format('woff'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Regular-webfont.4c7e867ae422.ttf") format('truetype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Regular-webfont.d73851514472.svg#open_sansregular") format('svg');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Italic-webfont.028bb5f960d7.eot");
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Italic-webfont.028bb5f960d7.eot?#iefix") format('embedded-opentype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Italic-webfont.b9812e74f089.woff") format('woff'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Italic-webfont.2416d120632b.ttf") format('truetype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Italic-webfont.1238e6422891.svg#open_sansitalic") format('svg');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Semibold-webfont.78c76f824699.eot");
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Semibold-webfont.78c76f824699.eot?#iefix") format('embedded-opentype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Semibold-webfont.dbbfd9e667c7.woff") format('woff'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Semibold-webfont.f75c4b742376.ttf") format('truetype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Semibold-webfont.1f0599ac63a1.svg#open_sanssemibold") format('svg');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-SemiboldItalic-webfont.b799ba8ecbd6.eot");
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-SemiboldItalic-webfont.b799ba8ecbd6.eot?#iefix") format('embedded-opentype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-SemiboldItalic-webfont.f386291c234e.woff") format('woff'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-SemiboldItalic-webfont.e84740526b8c.ttf") format('truetype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-SemiboldItalic-webfont.5bed120b13ca.svg#open_sanssemibold_italic") format('svg');
+  font-weight: 600;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Bold-webfont.d7c3cb4eb719.eot");
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Bold-webfont.d7c3cb4eb719.eot?#iefix") format('embedded-opentype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Bold-webfont.6dbaf63547f2.woff") format('woff'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Bold-webfont.ad0eb070a07f.ttf") format('truetype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-Bold-webfont.9ac36fa661f4.svg#open_sansbold") format('svg');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-BoldItalic-webfont.75fb3c479a51.eot");
+  src: url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-BoldItalic-webfont.75fb3c479a51.eot?#iefix") format('embedded-opentype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-BoldItalic-webfont.7dae097d5db8.woff") format('woff'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-BoldItalic-webfont.f9103010ab55.ttf") format('truetype'),
+       url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/fonts/OpenSans/OpenSans-BoldItalic-webfont.8a0b648ee37e.svg#open_sansbold_italic") format('svg');
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* NOTE: This file, which based off of TinyMCE's vendor content styling (but customized to help with scoping), is 2 of 3 CSS files compiled in our production pipeline  */
+.mce-content-body{background-color:#fff;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:14px;scrollbar-3dlight-color:#f0f0ee;scrollbar-arrow-color:#676662;scrollbar-base-color:#f0f0ee;scrollbar-darkshadow-color:#ddd;scrollbar-face-color:#e0e0dd;scrollbar-highlight-color:#f0f0ee;scrollbar-shadow-color:#f0f0ee;scrollbar-track-color:#f5f5f5}.mce-content-body td,.mce-content-body th{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:11px}.mce-content-body .mce-object{border:1px dotted #3a3a3a;background:#d5d5d5 url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/js/vendor/tinymce/js/tinymce/skins/studio-tmce4/img/object.f3726450d745.gif") no-repeat center}.mce-content-body .mce-pagebreak{cursor:default;display:block;width:100%;height:5px;border:1px dashed #666;margin-top:15px}.mce-content-body .mce-item-anchor{cursor:default;display:inline-block;-webkit-user-select:all;-webkit-user-modify:read-only;-moz-user-select:all;-moz-user-modify:read-only;user-select:all;user-modify:read-only;width:9px!important;height:9px!important;border:1px dotted #3a3a3a;background:#d5d5d5 url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/js/vendor/tinymce/js/tinymce/skins/studio-tmce4/img/anchor.abd361357180.gif") no-repeat center}.mce-content-body .mce-nbsp{background:#AAA}.mce-content-body hr{cursor:default}.mce-content-body .mce-match-marker{background:#AAA;color:#fff}.mce-content-body .mce-match-marker-selected{background:#39f;color:#fff}.mce-content-body .mce-spellchecker-word{background:url("https://d3vz9i37d3bazy.cloudfront.net/static/5ceea7a/js/vendor/tinymce/js/tinymce/skins/studio-tmce4/img/wline.c136c9f8e007.gif") repeat-x bottom left;cursor:default}.mce-content-body .mce-item-table,.mce-content-body .mce-item-table caption,.mce-content-body .mce-item-table td,.mce-content-body .mce-item-table th{border:1px dashed #BBB}.mce-content-body td.mce-item-selected,.mce-content-body th.mce-item-selected{background-color:#39f!important}.mce-content-body .mce-edit-focus{outline:1px dotted #333}
+
+/* NOTE: This file, which customizes mid-editing styling to match xmodule preview rendering, is 3 of 3 CSS files compiled in our production pipeline  */
+.mce-content-body {
+    padding: 10px;
+    background-color: #fff;
+    /* keep font-family in sync with CUSTOM_FONTS constant in Html editor XModule
+     * (edx-platform/common/lib/xmodule/xmodule/js/src/html/edit.coffee)
+     * and with acceptance tests in cms/djangoapps/contentstore/features/html-editor.feature
+     */
+    font-family: 'Open Sans', Verdana, Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #3c3c3c;
+    scrollbar-3dlight-color: #F0F0EE;
+    scrollbar-arrow-color: #676662;
+    scrollbar-base-color: #F0F0EE;
+    scrollbar-darkshadow-color: #DDDDDD;
+    scrollbar-face-color: #E0E0DD;
+    scrollbar-highlight-color: #F0F0EE;
+    scrollbar-shadow-color: #F0F0EE;
+    scrollbar-track-color: #F5F5F5;
+}
+
+.mce-content-body h1 {
+    color: #3c3c3c;
+    font-weight: normal;
+    font-size: 2em;
+    line-height: 1.4em;
+    letter-spacing: 1px;
+    margin: 0 0 1.416em 0;
+}
+
+.mce-content-body h2 {
+    color: #646464;
+    font-weight: 300;
+    font-size: 1.2em;
+    line-height: 1.2em;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    -webkit-font-smoothing: antialiased;
+}
+
+.mce-content-body h3, .mce-content-body h4, .mce-content-body h5, .mce-content-body h6 {
+    margin: 0 0 10px 0;
+    font-weight: 600;
+}
+
+.mce-content-body h3 {
+    font-size: 1.2em;
+}
+
+.mce-content-body h4 {
+    font-size: 1em;
+}
+
+.mce-content-body h5 {
+    font-size: .83em;
+}
+
+.mce-content-body h6 {
+    font-size: 0.75em;
+}
+
+.mce-content-body p {
+    margin-bottom: 1.416em;
+    font-size: 1em;
+    line-height: 1.6em !important;
+    color: #3c3c3c;
+}
+
+.mce-content-body em, .mce-content-body i {
+    font-style: italic;
+}
+
+.mce-content-body strong, .mce-content-body b {
+    font-style: bold;
+}
+
+.mce-content-body p + p, .mce-content-body ul + p, .mce-content-body ol + p {
+    margin-top: 20px;
+}
+
+.mce-content-body ol, .mce-content-body ul {
+    margin: 1em 0;
+    padding: 0 0 0 1em;
+    color: #3c3c3c;
+
+}
+
+.mce-content-body ol li, .mce-content-body ul li {
+    margin-bottom: 0.708em;
+}
+
+.mce-content-body ol {
+    list-style: decimal outside none;
+}
+
+.mce-content-body ul {
+    list-style: disc outside none;
+}
+
+.mce-content-body a, .mce-content-body a:link, .mce-content-body a:visited, .mce-content-body a:hover, .mce-content-body a:active {
+    color: #1d9dd9;
+}
+
+.mce-content-body img {
+    max-width: 100%;
+}
+
+.mce-content-body pre {
+  margin: 1em 0;
+  color: #3c3c3c;
+  font-family: monospace, serif;
+  font-size: 1em;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.mce-content-body code {
+    font-family: monospace, serif;
+    background: none;
+    color: #3c3c3c;
+    padding: 0;
+}
+
+.mce-content-body table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+}
+
+.mce-content-body th {
+    background: #eee;
+    font-weight: bold;
+}
+
+.mce-content-body table td, .mce-content-body th {
+    margin: 20px 0;
+    padding: 10px;
+    border: 1px solid #ccc !important;
+    text-align: left;
+    font-size: 14px;
+}
+
+.mce-content-body table td.cont-justified-left, .mce-content-body table th.cont-justified-left {
+    text-align: left;
+}
+
+.mce-content-body table td.cont-justified-right, .mce-content-body table th.cont-justified-right {
+    text-align: right;
+}
+
+.mce-content-body table td.cont-justified-center, .mce-content-body table th.cont-justified-center {
+    text-align: center;
+}

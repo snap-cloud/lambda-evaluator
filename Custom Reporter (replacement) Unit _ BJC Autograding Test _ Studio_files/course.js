@@ -1,0 +1,1 @@
+define("js/models/course",["backbone"],function(e){var n=e.Model.extend({defaults:{name:""},validate:function(e){return e.name?void 0:gettext("You must specify a name")}});return n}),define("js/factories/course",["js/models/course"],function(e){return function(n){window.course=new e(n)}});
