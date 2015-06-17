@@ -1,12 +1,5 @@
 <!DOCTYPE html>
 <html style="height: 100%">
-<<<<<<< HEAD
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Snap! Build Your Own Blocks. Beta</title>
-        <link rel="shortcut icon" href="http://snap.berkeley.edu/fav3.gif" type="image/gif">
-        <link rel="stylesheet" type="text/css" href="AG-snap.css">
-=======
     <head lang="en">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Snap! Build Your Own Blocks. Beta</title>
@@ -18,7 +11,6 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="bootstrap.min.js"></script>
 
->>>>>>> upstream/master
         <script type="text/javascript" src="snap.js"></script>
         <script type="text/javascript" src="snapPLE.js"></script>
         
@@ -29,10 +21,6 @@
             //var worldXML = localStorage.getItem("worldState");
             var world;
 
-<<<<<<< HEAD
-            var pageXML = localStorage.getItem(id)
-            
-=======
 
             var id = (window.location != window.parent.location)
             ? document.referrer
@@ -45,7 +33,6 @@
             }
             var pageXML = localStorage.getItem(id);
 
->>>>>>> upstream/master
             window.onload = function () {
                 world = new WorldMorph(document.getElementById('world'));
                 new IDE_Morph().openIn(world);
@@ -55,11 +42,7 @@
                 ide.toggleStageSize(true);
                 
                 //If this page has already been loaded
-<<<<<<< HEAD
-                if (localStorage.getItem(id) !== null) {
-=======
                 if (pageXML !== null) {
->>>>>>> upstream/master
                     ide.openProjectString(pageXML);
                 }
                 setInterval(loop, 1);
@@ -71,17 +54,6 @@
     </head>
     <body style="margin: 0; height: 100%;">
 
-<<<<<<< HEAD
-        <canvas id="world" tabindex="1" style="position: absolute;" />
-        <div id="ag_menu">
-            <div id="ag_button">
-                
-            </div>
-        </div>
-        <div id="ag_feedback" style="position: relative; height: 10%;">
-            GIANT TEXT HERE
-        </div>
-=======
         <canvas id="world" tabindex="1" style="position: absolute;" /></canvas>
         <!-- <div id="ag_menu" style="position: relative;">
             <button type="button" class="btn btn-default">Default</button>
@@ -89,7 +61,6 @@
         <div id="ag_feedback" style="position: relative; height: 10%;">
             GIANT TEXT HERE
         </div> -->
->>>>>>> upstream/master
     </body>
 
 </html>
