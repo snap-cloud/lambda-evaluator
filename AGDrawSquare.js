@@ -1,6 +1,18 @@
-var id = (window.location != window.parent.location)
-            ? document.referrer
-            : document.location;
+var id_url = (window.location != window.parent.location)
+        ? document.referrer
+        : document.location;
+
+current_iframe = window.frameElement;
+num_iframes = window.parent.document.getElementsByTagName("iframe").length;
+var iframes = window.parent.document.getElementsByTagName("iframe");
+for (i = 0; i < num_iframes; i++) {
+    if (iframes[i] === current_iframe) {
+        var id_problem = i;
+    }
+}
+
+var id = id_url + id_problem;
+
 
 var AGDrawSquareState = {
     'checkState': false,
@@ -72,16 +84,19 @@ var AGDrawSquare = (function() {
             AGDrawSquareState['checkState'] = glog.allCorrect;
             console.log(JSON.stringify(AGDrawSquareState));
             //saves correct student answer, as well as state, in case student returns to question
-            localStorage.setItem("answer", JSON.stringify(AGDrawSquareState));
-            localStorage.setItem("correctstate", xmlString);
+            localStorage.setItem(id + "answer", JSON.stringify(AGDrawSquareState));
+            localStorage.setItem(id + "correctstate", xmlString);
             
         } 
 
 
         //Return the gradeable object (either anew or from previously saved state)
+
+        localStorage.setItem(id + "grade", String(AGDrawSquareState['checkState']));
+
         console.log("I got all the way down here?");
-        if (localStorage.getItem("answer") !== null && xmlString === localStorage.getItem("correctstate")) {
-            return localStorage.getItem("answer");
+        if (localStorage.getItem(id + "answer") !== null && xmlString === localStorage.getItem(id + "correctstate")) {
+            return localStorage.getItem(id + "answer");
         } else {
             return JSON.stringify(AGDrawSquareState);
         }
