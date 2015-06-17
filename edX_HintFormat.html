@@ -1,0 +1,80 @@
+<problem>
+  <link rel="stylesheet" type="text/css" href="/static/hintstyle.css" />
+  <script type="loncapa/python">
+
+import json
+def vglcfn(e, ans):
+	par = json.loads(ans)
+	answer = json.loads(par["answer"])
+	return answer["checkState"]
+
+def feedback_print(feedback):
+	output = ""
+	for test in feedback:
+		test_string = "[Test " + test + "] "
+		current_test = feedback[test]
+		for key in current_test:
+			#test_string += key + ": " + str(current_test[key]) + " ;"
+			a = 1
+    	output += test_string[0:-1] + " "
+	return output
+			
+		
+def hint_fn(answer_ids, student_answers, new_cmap, old_cmap):
+	aid = answer_ids[0]
+	grade = json.loads(student_answers[aid])
+	ans = json.loads(grade["answer"])
+	log = ans["feedback"]
+	#hint = log["comment"]
+
+	hint = str(log)
+	comment = str(ans["comment"])
+	output = ""
+	if comment != "Please run 'Grade Question' before clicking the 'Check' button.":
+		headings = """rowstart
+    					headstart Test headend
+    					headstart Input headend
+    					headstart Output headend
+    					headstart Expected headend 
+    					headstart Evaluation headend 
+    					headstart Feedback headend
+    				rowend"""
+		numtests = len(log)
+		numcorrect = 0
+		for i in range(1, numtests + 1):
+			test = str(i)
+			test_string = "teststart" + test + "dataend"
+			current_test = log[test]
+			#new_cmap.set_hint_and_mode(aid,str(current_test),'always')
+			for key in ["input", "output", "expOut"]:
+				test_string += "datastart" + str(current_test[key]) + "dataend"
+			if str(current_test["feedback"]) == "Correct!":
+				test_string += "correctstart" + "Correct!" + "dataend"
+				numcorrect += 1
+			else:
+				test_string += "incorrectstart" + "Incorrect!" + "dataend"
+				test_string += "correctstart" + str(current_test["feedback"]) + "dataend"
+			output += "rowstart" + test_string[:] + "rowend"
+		output = ": {0}% ({1}/{2})".format(round(numcorrect/numtests * 100), numcorrect, numtests) + \
+    		"""linebreak collapsedivstart
+    				tablestart""" + \
+    					headings + output + \
+    				"""tableend collapsedivend"""
+		new_cmap.set_hint_and_mode(aid,ans['comment']+ " " + output,'always')
+	else:
+		new_cmap.set_hint_and_mode(aid,ans['comment']+ " " + output,'always')
+
+</script>
+  <p>
+Make a "%x my plus %y" block to test!
+</p>
+  
+
+  <customresponse cfn="vglcfn">
+    <jsinput gradefn="AGDrawSquare.getGrade" get_statefn="AGDrawSquare.getState" set_statefn="AGDrawSquare.setState" initial_state="{&quot;selectedObjects&quot;:{&quot;cube&quot;:true,&quot;cylinder&quot;:false}}" width="100%" height="500" html_file="/static/indexCustRep.html" sop="false"/>
+    <hintgroup hintfn="hint_fn"/>
+  </customresponse>
+</problem>
+
+
+
