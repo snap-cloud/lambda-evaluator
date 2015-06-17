@@ -667,8 +667,6 @@ function JSONscript(blocks) {
 
 	return scriptArr;
 }
-<<<<<<< HEAD
-=======
 
 /* Returns a JavaScript object that contains all of the global variables with
  * their associated values.
@@ -961,5 +959,3 @@ function stringToJSON(script) {
 // }
 
 
-
->>>>>>> upstream/master
