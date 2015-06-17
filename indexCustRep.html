@@ -27,6 +27,43 @@
                 if (localStorage.getItem(id) !== null) {
                     ide.openProjectString(pageXML);
                 }
+
+                var hint = parent.document.getElementsByClassName("message")[0];
+                var tags = 
+                [['collapsedivstart', '<input class="toggle-box" id="expander" type="checkbox" ><label for="expander">Details</label><div id="table-wrapper">'], 
+                ['collapsedivend', '</div>'], 
+                ['linebreak', '<br /></br />'], 
+                ['tablestart', '<table class="results">'], 
+                ['tableend', '</table>'], 
+                ['rowstart', '<tr>'], 
+                ['rowend', '</tr>'], 
+                ['headstart', '<th class="titles" style="text-align: center;">'], 
+                ['headend', '</th>'], 
+                ['datastart', '<td class="data" style="text-align: center;">'], 
+                ['dataend', '</td>'], 
+                ['correctstart', '<td class="correctans">'],
+                ['incorrectstart', '<td class="incorrectans">'],
+                ['teststart', '<td class="tests">'],
+                ['spanend', '</span>'], 
+                ['spanstart', '<span class="message">']];
+
+
+                function escapeRegExp(string) {
+                    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+                }
+
+                function replaceall(string, find, replace) {
+                    return (string.replace(new RegExp(escapeRegExp(find), 'g'), replace));
+                }
+
+                var message = String(hint.innerHTML);
+                var taglength = tags.length;
+
+                for (var i = 0; i < taglength; i++) {
+                    setTimeout(message = replaceall(message, tags[i][0], tags[i][1]), 300);
+                }
+                hint.innerHTML = message;
+
                 setInterval(loop, 1);
             };
             function loop() {
