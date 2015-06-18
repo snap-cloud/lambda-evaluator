@@ -665,13 +665,13 @@ function nextChar(c) {
  * values to variables and the currChar JavaScript object to be used as a
  * variable (should initialize to {val: "a"}).
  *
- * Parameters: script1, script2, result, vars, currChar like this:
+ * Parameters: script1, script2, result, newMap, currChar like this:
  *
  * var final = genPattern(script1, script2, result, {}, {val: "a"});
  *
  * Get a deep copy by calling: var newObject = jQuery.extend(true, [], script1);
  */
-function genPattern(script1, script2, result, vars, currChar) {
+function genPattern(script1, script2, result, newMap, currChar) {
 	var morph1, morph2, type1, type2;
 	for (var i = 0; i < script1.length; i++) {
 		morph1 = script1[i];
@@ -682,144 +682,37 @@ function genPattern(script1, script2, result, vars, currChar) {
 
 		if ((type1 === "string") && (type2 === "string")) {
 			if (morph1 !== morph2) {
-				result[i] = currChar.val;
-				vars[currChar.val] = [morph1, morph2];
-				currChar.val = nextChar(currChar.val);
+
+				var newKey = JSONtoString([morph1, morph2]);
+				if (newMap.hasOwnProperty(newKey)) {
+					result[i] = newMap[newKey];
+				} else {
+					result[i] = currChar.val;
+					newMap[newKey] = currChar.val;
+					currChar.val = nextChar(currChar.val);
+				}
 			}
 		} else if ((Object.prototype.toString.call(morph1) === '[object Array]')
 			&& (Object.prototype.toString.call(morph2) === '[object Array]')) {
 
-			genPattern(morph1, morph2, morphR, vars, currChar);
+			genPattern(morph1, morph2, morphR, newMap, currChar);
 
 		} else {
-			genPattern(morph1.inputs, morph2.inputs, morphR.inputs, vars, currChar);
+			genPattern(morph1.inputs, morph2.inputs, morphR.inputs, newMap, currChar);
 		}
 	}
 
 	return result;
 }
 
-/* Takes in two arrays and check whether or not they are equal. Returns true if
- * the two arrays have the same elements in the same order, else false. This is
- * only a shallow comparison, NOT a deep comparison!
- *
- * took from StackOverflow at: http://stackoverflow.com/questions/3115982/how-to-check-if-two-arrays-are-equal-with-javascript
- */
-function arraysEqual(arr1, arr2) {
-	if (arr1 == arr2) {
-		return true;
-	}
-	if ((arr1 == null) || (arr2 == null)) {
-		return false;
-	}
-	if (arr1.length !== arr2.length) {
-		return false;
-	}
-
-	for (var i = 0; i < arr1.length; i++) {
-		if (arr1[i] !== arr2[i]) {
-			return false;
-		}
-	}
-
-	return true;
-}
-
-/* Replaces all of the variables in the given pattern (which is a JavaScript object)
- * like that returned from JSONscript(...) with the corresponding variable in newMap.
- * The keys in newMap are stringified, two-element arrays mapped to single character
- * variables. The keys in vars are single character variables mapped to two-element
- * arrays. Returns a new pattern, with the appropriate variables subbed-in.
- */
-function replacePattern(script, vars, newMap) {
-	var morph, type, newKey;
-	for (var i = 0; i < script.length; i++) {
-		morph = script[i];
-		type = typeof(morph);
-
-		if ((type === "string")) {
-			if (vars.hasOwnProperty(morph)) {
-				newKey = JSONtoString(vars[morph]);
-				script[i] = newMap[newKey];
-			}
-		} else if (Object.prototype.toString.call(morph) === '[object Array]') {
-			replacePattern(morph, vars, newMap);
-		} else {
-			replacePattern(morph.inputs, vars, newMap);
-		}
-	}
-
-	return script;
-}
-
-/* Takes in the result of genPattern(...) and the variables object that contains
- * the mapping from variables in our pattern to the corresponding values in the
- * two scripts that were orginially passed into genPattern(...). Each variable in
- * vars maps to exactly 2 values (one from each original script). This function
- * basically collapses all of the variables that map to common values into one
- * common variable. For example,
- *
- * move "a" steps
- * turn 90 degrees  //is our code
- * move "b" steps
- *
- * {"a": ["100", "50"], "b": ["100", "50"]} //are our variables
- *
- * will result in:
- *
- * move "a" steps
- * turn 90 degrees
- * move "a" steps
- *
- * because "a" and "b" map to exactly the same values in the same order.
- * The result is a new template.
- */
-function cleanPattern(result, vars) {
-	var newMap = {};
-	var currKeys = Object.keys(vars);
-	var newKey;
-	var finalPattern;
-
-	for (var key in vars) {
-		if (vars.hasOwnProperty(key)) {
-			newKey = JSONtoString(vars[key]);
-			if (newMap.hasOwnProperty(newKey)) {
-				continue;
-			} else {
-				newMap[newKey] = key;
-			}
-		}
-	}
-
-	return replacePattern(result, vars, newMap);
-}
-
-// loop through all of the key/value pairs in vars
-// 	if stringifed version of the value (the two element array) is in newMap
-// 		dont do anything
-// 	else
-// 		add a new key value pair to newMap like this: stringifed value: key from vars
-
-// 	after this, newMap will be a mapping of stringifed arrays to keys from vars, but newMap
-// 	is a one-to-one relationship, so only one value per key.
-
-// 	then call replacePattern() which will take in result, vars and newMap and go through and replace
-// 	all the variables that map to common values with one unifiying variable.
-
-// 	return the result of replacePattern()
-
 /* Takes in two JSONscripts from calling JSONscript(...) and returns the grading
  * template. This is a wrapper function for genPattern().
  */
 function getTemplate(script1, script2) {
 	var result = jQuery.extend(true, [], script1);
-	var vars = {};
-	var chars = {val: "a"};
-	var temp = genPattern(script1, script2, result, vars, chars);
-
-	//call clean pattern that takes in result and vars
-	//then return final result
-
-	return cleanPattern(temp, vars);
+	var newMap = {};
+	var chars = {val: "A"};
+	var newMap = {};
+	return genPattern(script1, script2, result, newMap, chars);
 }
 
