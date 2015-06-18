@@ -2,6 +2,8 @@ var id = (window.location != window.parent.location)
             ? document.referrer
             : document.location;
 
+
+
 var AG_state = {
     'checkState': false,
     'comment': "Please run 'Grade Question' before clicking the 'Check' button.",
@@ -10,13 +12,13 @@ var AG_state = {
 //This is unsafe. Store this elsewhere
 var testLog;
 
-var taskID = "AG_M1_L1_T1";
+var taskID = "AG_M1_L1_T2";
 id = id + taskID;
 function AGTest() {
-    testLog = testBlockPresent("move %n steps", 0);
+    testLog = testScriptPresent('[{"blockSp":"move %n steps","inputs":["10"]},{"blockSp":"turn %clockwise %n degrees","inputs":["15"]}]', 0);
 }
 
-var AG_M1_L1_T1 = (function() {
+var AG_M1_L1_T2 = (function() {
 	
 	var channel;
 
@@ -48,6 +50,7 @@ var AG_M1_L1_T1 = (function() {
 
         //Convert world to XML and store in local Storage
         var xmlString = ide.serializer.serialize(ide.stage);
+        
         localStorage.setItem(id, xmlString); 
 
         if (glog !== undefined) {

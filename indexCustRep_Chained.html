@@ -5,33 +5,22 @@
         <link rel="shortcut icon" href="http://snap.berkeley.edu/fav3.gif" type="image/gif">
         <script src="jschannel.js"></script>
         <script type="text/javascript" src="SnapPLE.js"></script>
-        <script type="text/javascript" src="AG_M1_L1_T1.js"></script>
+        <script type="text/javascript" src="AGDrawSquare.js"></script>
         <script type="text/javascript" src="snap.js"></script>
         
 
         <script type="text/javascript">
 
             //recover stored save
+            var chained_id = "https://studio.edge.edx.org/container/i4x://BerkeleyX/BJC_Autograding_Test/vertical/7243a4db4b354d068428c09e7a34cc9d0";
+
+            var chain_pageXML = localStorage.getItem(chained_id);
             var pageXML = localStorage.getItem(id);
             var world;
             
             window.onload = function () {
-            //UPDATE GRADING FLAG
-                var grade_flag = document.getElementById("autograding");
-                var prev_AG_state = JSON.parse(localStorage.getItem(id + "answer"));
-                console.log(prev_AG_state);
-                if (prev_AG_state !== null) {
-                    grade_flag.innerHTML = "GRADED";
-                    if (prev_AG_state.checkState) {
-                        grade_flag.style.color = "green";
-                    } else {
-                        grade_flag.style.color = "orange";
-                    }
-                } else {
-                    grade_flag.innerHTML = "UNGRADED!";
-                }
 
-            //INITIALIZE UP SNAP
+                /*if (localStorage.getItem(chained_id + "grade") === "correct") {*/
                 world = new WorldMorph(document.getElementById('world'));
                 new IDE_Morph().openIn(world);
 
@@ -40,11 +29,17 @@
                 ide.toggleStageSize(true);
                 
                 //If this page has already been loaded
-                if (localStorage.getItem(id) !== null) {
-                    ide.openProjectString(pageXML);
+
+                if (localStorage.getItem(chained_id + "grade") === "true") {
+                    if (localStorage.getItem(chained_id) !== null) {
+                        ide.openProjectString(chain_pageXML);
+                    }
+                } else {
+                    parent.document.getElementById('chain_problem_instructions').innerHTML = "Please complete the previous problem before proceeding onto this one.";
                 }
+
                 setInterval(loop, 1);
-            };
+                };
             function loop() {
                 world.doOneCycle();
             }
@@ -53,7 +48,7 @@
     <body style="margin: 0;">
         <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
         <!-- <input id="clickMe" type="button" value="XXXXXX" onclick='multiTestBlock("%s my plus %s", [[1,2],[2,2],[2,3],[3,3]], [3,4,6,6]);'/> -->
-        <div id="autograding" style="position: absolute; padding-top: 5px; padding-left: 5px; color:red; font-family:helvetica">
+        <div id="autograding" style="position: absolute; padding-top: 5px; padding-left: 5px; color:red;">
             UNGRADED
         </div>
 
