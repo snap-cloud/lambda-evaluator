@@ -188,7 +188,7 @@ function testScriptPresent(scriptString, spriteIndex, outputLog) {
 	//test that scripts match
 		//TODO: update scriptsMatch function to take block objects, not objects on screen
 	//var isPresent = scriptsMatch(JSONtemplate, JSONtarget, false);
-	var isPresent = (JSONtoString(JSONtemplate) == JSONtoString(JSONtarget));
+	var isPresent = checkTemplate(JSONtemplate, JSONtarget);
 	if (isPresent) {
 		feedback = "The targeted script is present in the scripts tab.";
 	} else {
@@ -952,4 +952,14 @@ function checkTemplate(template, script) {
 	var vars = {};
 	var softMatch = true;
 	return scriptsMatch(template, script, softMatch, vars);
+}
+
+/* Takes in two scripts and checks if they are exactly the same. No templates
+ * are used here to match up variables. Takes in SCRIPT1 and SCRIPT2 and returns
+ * true if they are exactly the same, including inputs. Returns false otherwise.
+ */
+function testScriptIdentical(script1, script2) {
+	var vars = {};
+	var softMatch = false;
+	return scriptsMatch(script1, script2, softMatch, vars);
 }
