@@ -1,5 +1,6 @@
 span.message {
 	text-align: left;
+	font-size: 15px;
 	font-weight: normal;
 	white-space: nowrap;
 	display: none;
@@ -7,12 +8,14 @@ span.message {
 
 td.correctans {
 	color: green;
+	font-size: 15px;
 	font-weight: bold;
 	white-space:nowrap;
 }
 
 td.incorrectans {
 	color: red;
+	font-size: 15px;
 	font-weight: bold;
 	white-space:nowrap;
 }
@@ -34,15 +37,28 @@ td.tests {
 	font-weight: bold;
 }
 
-.toggle-box + label + div {
+/*.toggle-box + label + div {
 	display: none;
-}
+}*/
 
 
-.toggle-box:checked + label + div {
+
+
+/*.toggle-box:checked + label + div {
 	display: block;
-	height: auto;
-}
+	webkit-transition: color 0.25s ease-in-out 0s;
+  	-webkit-transition-property: color;
+  	-webkit-transition-duration: 0.25s;
+  	-webkit-transition-timing-function: ease-in-out;
+  	-webkit-transition-delay: 0s;
+  	-moz-transition: color 0.25s ease-in-out 0s;
+  	transition: color 0.25s ease-in-out 0s;
+  	transition-property: color;
+  	transition-duration: 0.25s;
+  	transition-timing-function: ease-in-out;
+  	transition-delay: 0s;
+  	text-decoration: none;
+}*/
 
 .toggle-box + label:before {
 	background-color: #e7e3e3;
@@ -59,12 +75,13 @@ td.tests {
 	margin-right: 5px;
 	text-align: center;
 	width: 20px;
+	z-index: 10000;
 }
-
 
 .toggle-box:checked + label:before {
 	content: "\2212";
 }
+
 
 
 
@@ -85,6 +102,7 @@ table.results {
   td.data {
     color: #4F5150;
   }
+
 		
 
 
