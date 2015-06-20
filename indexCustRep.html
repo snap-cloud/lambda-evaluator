@@ -16,6 +16,13 @@
             var world;
             
             window.onload = function () {
+
+                if (parent.document.getElementsByClassName("message").length !== 0) {
+                    var hint = parent.document.getElementsByClassName("message")[0];
+                    hint.innerHTML = formatFeedback(hint);
+                    hint.style.display = "inline";
+                }
+
                 world = new WorldMorph(document.getElementById('world'));
                 new IDE_Morph().openIn(world);
 
@@ -28,7 +35,25 @@
                     ide.openProjectString(pageXML);
                 }
 
-                var hint = parent.document.getElementsByClassName("message")[0];
+
+                setInterval(loop, 1);
+            };
+            function loop() {
+                world.doOneCycle();
+            }
+            function escapeRegExp(string) {
+                    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+            }
+
+            function replaceall(string, find, replace) {
+                return (string.replace(new RegExp(escapeRegExp(find), 'g'), replace));
+            }
+
+            /*
+             * Re-format the contents of a the hint string to add HTML tags and
+             * appropriate CSS. Return the re-formatted string.
+             */
+            function formatFeedback(hint) {
                 var tags = 
                 [['collapsedivstart', '<input class="toggle-box" id="expander" type="checkbox" ><label for="expander">Details</label><div id="table-wrapper">'], 
                 ['collapsedivend', '</div>'], 
@@ -42,38 +67,24 @@
                 ['datastart', '<td class="data" style="text-align: center;">'], 
                 ['dataend', '</td>'], 
                 ['correctstart', '<td class="correctans">'],
-                ['incorrectstart', '<td class="incorrectans">'],
+                ['wrongstart', '<td class="incorrectans">'],
                 ['teststart', '<td class="tests">'],
                 ['spanend', '</span>'], 
                 ['spanstart', '<span class="message">']];
 
-
-                function escapeRegExp(string) {
-                    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-                }
-
-                function replaceall(string, find, replace) {
-                    return (string.replace(new RegExp(escapeRegExp(find), 'g'), replace));
-                }
-
-                var message = String(hint.innerHTML);
                 var taglength = tags.length;
+                var message = String(hint.innerHTML);
 
                 for (var i = 0; i < taglength; i++) {
-                    setTimeout(message = replaceall(message, tags[i][0], tags[i][1]), 300);
+                    message = replaceall(message, tags[i][0], tags[i][1]);
                 }
-                hint.innerHTML = message;
-
-                setInterval(loop, 1);
-            };
-            function loop() {
-                world.doOneCycle();
+                return message;
             }
+
         </script>
     </head>
     <body style="margin: 0;">
         <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
-        <!-- <input id="clickMe" type="button" value="XXXXXX" onclick='multiTestBlock("%s my plus %s", [[1,2],[2,2],[2,3],[3,3]], [3,4,6,6]);'/> -->
         <div id="autograding" style="position: absolute; padding-top: 5px; padding-left: 5px; color:red;">
             UNGRADED
         </div>
