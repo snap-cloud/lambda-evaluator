@@ -19,14 +19,20 @@ function gradingLog() {
 *  Add a test to the gradingLog object
 *  tests are tracked by a test ID number. 
 *  Access specific parts of each test by:
-*  		gradingLog.[""+(testID)]["testDesciption"]
+*  		gradingLog.[""+(testID)]
+*  Test Class include:
+*		"p" - presence test
+*		"r" - reporter test
+*		"s" - stage event test
 */
-gradingLog.prototype.addTest = function(blockSpec, input, expOut, timeOut) {
+gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, timeOut) {
 	this.testCount += 1;
-	this["" + this.testCount] = {"blockSpec": blockSpec,
+	this["" + this.testCount] = {"testClass": testClass,
+								 "blockSpec": blockSpec,
 								 "input": input, 
 								 "expOut": expOut, 
 								 "output": null, 
+								 "correct": false,
 								 "feedback": null,
 								 "timeOut": timeOut,
 								 "proc": null};
@@ -40,36 +46,41 @@ gradingLog.prototype.addTest = function(blockSpec, input, expOut, timeOut) {
 *  Uses a series of setTimeouts to make sure the asyncronous 
 *  test threads do not clash with one another on setup.
 */
-gradingLog.prototype.finishTest = function(testID, output, feedback) {
+gradingLog.prototype.finishTest = function(testID, output, feedback, correct) {
+
+	//Populate Grade Log
 	if (this["" + testID] !== undefined) {
 		this["" + testID]["output"] = output;
-		if (feedback !== undefined) {
-			this["" + testID]["feedback"] = feedback;
-		}
+		this["" + testID]["feedback"] = feedback || this["" + testID]["feedback"];
+		this["" + testID]["correct"] = correct || this["" + testID]["correct"];
 	} else {
 		throw "gradingLog.finishTest: TestID is invalid.";
 	}
+
+	//Initiate next test, kill timeout function for previous test
+	// if this is the last test, evaluate the log
+	// TODO: Integrate evaluateLog into finishTest
 	var glog = this;
 	if (testID < this.testCount) {
 		clearTimeout(this.currentTimeout);
 		setTimeout(function() {testBlock(glog, testID+1)},1);
-		//TODO: generalize for all sprites?
-		//TODO: Figure out a good default timeout NOW -> 1000ms
 		this.currentTimeout = infLoopCheck(glog, testID+1);
 	} else {
 		setTimeout(function() {evaluateLog(glog)}, 1);
 	}
-	// return this["" + testID];
 };
 
-//Unused function that makes sure the test exisits in the log
-//and updates the output and feedback accordingly
-gradingLog.prototype.updateLog = function(testID, output, feedback) {
+/*
+ * Modifies an entry of the gradingLog without calling subsequent tests
+ * as with .finishTest
+ * Used to update the log in the event of a timeout, error, 
+ * or entry modification.
+ */
+gradingLog.prototype.updateLog = function(testID, output, feedback, correct) {
 	if (this["" + testID] !== undefined) {
 		this["" + testID]["output"] = output;
-		if (feedback !== undefined) {
-			this["" + testID]["feedback"] = feedback;
-		}
+		this["" + testID]["feedback"] = feedback || this["" + testID]["feedback"]
+		this["" + testID]["correct"] = correct || this["" + testID]["correct"]
 	} else {
 		throw "gradingLog.finishTest: TestID is invalid.";
 	}
@@ -77,9 +88,47 @@ gradingLog.prototype.updateLog = function(testID, output, feedback) {
 }
 
 /*
-	Snap block getters and setters used to retrieve blocks,
-	set values, and initiates blocks.
+ * Convert the gradingLog into a dictionary that is returned by 
+ * edX getGrade(). 
+ */
+function dictLog(outputLog) {
+	var outDict = {};
+	for (var i = 1; i <=outputLog.testCount;i++) {
+		var testDict = {};
+		testDict["id"] = i;
+		testDict["testClass"] = outputLog[i]["testClass"];
+		testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+		testDict["input"] = outputLog[i]["input"];
+		testDict["expOut"] = outputLog[i]["expOut"];
+		testDict["output"] = outputLog[i]["output"];
+		testDict["correct"] = outputLog[i]["correct"];
+		testDict["feedback"] = outputLog[i]["feedback"];
+		outDict[i] = testDict;
+	}
+	return outDict;
+}
+
+/*
+*  print out the output log in a nice format
 */
+function printLog(outputLog) {
+	var testString = ""; //TODO: Consider putting Output Header
+	for (var i = 1; i<=outputLog.testCount;i++) {
+		testString += "[Test " + i + "]";
+		testString += "Class: " + outputLog[i]["correct"];
+		testString += " Block: '(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+		testString += " Input: " + outputLog[i]["input"];
+		testString += " Expected Ans: " + outputLog[i]["expOut"];
+		testString += " Got: " + outputLog[i]["output"];
+		testString += " Correct: " + outputLog[i]["correct"];
+		testString += " Feedback: " + outputLog[i]["feedback"] + "\n";
+	}
+	return testString;
+}
+
+/* Snap block getters and setters used to retrieve blocks,
+ * set values, and initiates blocks.
+ */
 
 function getSprite(index) {
 	try {
@@ -88,8 +137,6 @@ function getSprite(index) {
 		throw "This Snap instance is very broken"
 	}
 }
-
-
 
 //Returns the scripts of the script at 'index', undefined otherwise.
 function getScripts(index) {
@@ -139,6 +186,68 @@ function getScript(blockSpec, spriteIndex) {
 
 }
 
+function isScriptPresent(blockSpec, spriteIndex) {
+	var script;
+	try {
+		script = getScript(blockSpec, spriteIndex);
+		return true;
+	} catch(e) {
+		return false;
+	}
+}
+
+function testBlockPresent(blockSpec, spriteIndex, outputLog) {
+	//Populate optional parameters
+	if (outputLog === undefined) {
+		outputLog = new gradingLog();
+	}
+	if (spriteIndex === undefined) {
+		spriteIndex = 0;
+	}
+
+	//Generate Log
+	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1);
+	var isPresent = isScriptPresent(blockSpec, spriteIndex);
+	var feedback = null;
+	if (isPresent) {
+		feedback = "" + blockSpec + " is in the scripts tab.";
+	} else {
+		feedback = "Block Missing: " + blockSpec + " , was not found in the scripts tab";
+	}
+	outputLog.updateLog(testID, isPresent, feedback, isPresent);
+	evaluateLog(outputLog);
+	return outputLog;
+}
+
+function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog) {
+	//Populate optional parameters
+	if (outputLog === undefined) {
+		outputLog = new gradingLog();
+	}
+	if (spriteIndex === undefined) {
+		spriteIndex = 0;
+	}
+	
+	var JSONtemplate = stringToJSON(scriptString);
+	var blockSpec = JSONtemplate[0].blockSp;
+	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1);
+	var JSONtarget = JSONscript(getScript(blockSpec, spriteIndex));
+	//test that scripts match
+		//TODO: update scriptsMatch function to take block objects, not objects on screen
+	//var isPresent = scriptsMatch(JSONtemplate, JSONtarget, false);
+	var isPresent = checkTemplate(JSONtemplate, JSONtarget, scriptVariables);
+	if (isPresent) {
+		feedback = "The targeted script is present in the scripts tab.";
+	} else {
+		feedback = "Script Missing: The target script was not found in the scripts tab";
+	}
+	outputLog.updateLog(testID, isPresent, feedback, isPresent);
+	evaluateLog(outputLog);
+	return outputLog;
+
+}
+
+
 function setValues(block, values) {
 	var valIndex = 0;
 
@@ -166,7 +275,10 @@ function evalReporter(block, outputLog, testID) {
 	return proc
 }
 
-//FUNCTION NEEDS TO FIND THE PROCESS AND CHECK IF IT HAS COMPLETED
+/* Read the return value of a Snap! process. The process
+ * is an evaluating reporter block that updates a field in the
+ * process on completion.
+ */
 function readValue(proc) {
 	return proc.homeContext.inputs[0];
 }
@@ -175,8 +287,6 @@ function readValue(proc) {
 	Test and evaluate Snap! blocks. Uses a gradingLog to initilize tests,
 	launch processes, and update the log, and launch the next test
 */
-
-
 function testBlock(outputLog, testID) {
 	if (outputLog[testID] === undefined) {
 		throw "testBlock: Output Log Contains no test with ID: " + testID;
@@ -206,7 +316,7 @@ function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
 	}
 
 	for (var i=0;i<inputs.length; i++) {
-		testIDs[i] = outputLog.addTest(blockSpec, inputs[i], expOuts[i], timeOuts[i]);
+		testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i]);
 	}
 	testBlock(outputLog, testIDs[0]);
 	outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
@@ -259,6 +369,9 @@ function evaluateLog(outputLog, testIDs) {
 	for (var id of testIDs) {
 		//Changed === snapEquals() to better evaluate snap output
 		//re ordered the conditionals to make more sense and reduce errors
+		if (outputLog[id]["correct"] === true) {
+			continue;
+		}
 		if (outputLog[id]["feedback"] === "Error!") {
 			outputLog.allCorrect = false;
 			outputLog[id]["output"] = "Error!";
@@ -269,10 +382,16 @@ function evaluateLog(outputLog, testIDs) {
 				((outputLog[id]["timeOut"] < 0) ? 1000 : outputLog[id]["timeOut"]) + " ms.";
 		} else if (snapEquals(outputLog[id]["output"], outputLog[id]["expOut"])) {
 			outputLog[id]["feedback"] = "Correct!";
+			outputLog[id]["correct"] = true;
 		} else {
 			outputLog.allCorrect = false;
-			outputLog[id]["feedback"] = "Incorrect Answer; Expected: " +
-				outputLog[id]["expOut"] + " , Got: " + outputLog[id]["output"];
+			if (outputLog[id]["testClass"] === "r") {
+				outputLog[id]["feedback"] = "Expected: " +
+					outputLog[id]["expOut"] + " , Got: " + outputLog[id]["output"];
+			} else if (outputLog[id]["testClass"] === "p") {
+				//outputLog[id]["feedback"] = "Script is not"
+			}
+			outputLog[id]["correct"] = false;
 		}
 	}
 	return outputLog;
@@ -614,40 +733,6 @@ function makeDragon(iterations, callback) {
 /* ------ END DAVID'S MESS ------ */
 
 
-/*
-*  JSONify the output log 
-*/
-function dictLog(outputLog) {
-	var outDict = {};
-	for (var i = 1; i <=outputLog.testCount;i++) {
-		var testDict = {};
-		testDict["id"] = i;
-		testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
-		testDict["input"] = outputLog[i]["input"];
-		testDict["expOut"] = outputLog[i]["expOut"];
-		testDict["output"] = outputLog[i]["output"];
-		testDict["feedback"] = outputLog[i]["feedback"];
-		outDict[i] = testDict;
-	}
-	return outDict;
-}
-
-/*
-*  print out the output log in a nice format
-*/
-function printLog(outputLog) {
-	var testString = ""; //TODO: Consider putting Output Header
-	for (var i = 1; i<=outputLog.testCount;i++) {
-		testString += "[Test " + i + "]";
-		testString += " Block: '(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
-		testString += " Input: " + outputLog[i]["input"];
-		testString += " Expected Ans: " + outputLog[i]["expOut"];
-		testString += " Got: " + outputLog[i]["output"];
-		testString += " Feedback: " + outputLog[i]["feedback"] + "\n";
-	}
-	return testString;
-}
-
 /* Takes in a single block and converts it into JSON format.
  * For example, will take in a block like:
  *
@@ -693,7 +778,7 @@ function JSONblock(block) {
 		if (morph instanceof InputSlotMorph) {
 			blockArgs.push(morph.children[0].text);
 		} else if (morph instanceof CSlotMorph) {
-			blockArgs.push(JSONblock(morph.children[0]));
+			blockArgs.push(JSONscript(morph.children[0]));
 		} else if (morph instanceof ReporterBlockMorph) {
 			blockArgs.push(JSONblock(morph));
 		}
@@ -717,7 +802,7 @@ function JSONblock(block) {
  *         return n * factorial(n - 1);
  *     }
  *
- * Then we get a JSON object that looks like this:
+ * Then we get a JavaScript object that looks like this:
  *
  * [{blockSp: "factorial %n",
  *   inputs: ["5"],
@@ -749,8 +834,8 @@ function JSONcustomBlock(block) {
 /* Takes in all scripts for a single Sprite in chronological order
  * and converts it into JSON format. You would need to run something like
  * var script = world.children[0].sprites.contents[0].scripts.children[0];
- * in the browser to get the first clone. For example, if we have consecutive blocks
- * for a Sprite on the screen like this:
+ * in the browser to get the first clone. For example, if we have consecutive
+ * blocks for a Sprite on the screen like this:
  *
  * "move (10) steps"
  * "turn (20 + 30) degrees"
@@ -764,18 +849,14 @@ function JSONcustomBlock(block) {
  *             inputs: ["3", "2"]}]}]
  *
  */
-function JSONscript(blockList) {
-	// if (Object.prototype.toString.call(blockList) !== '[object Array]') {
-	// 	throw "Input is not of type '[object Array]'. It is of type: " + Object.prototype.toString.call(blockList);
-	// }
-	// var currBlock = blockList[0];
-	var currBlock = blockList;
+function JSONscript(blocks) {
+	var currBlock = blocks;
 	var scriptArr = [];
 	var currJSONblock = JSONblock(currBlock);
 	var childrenList = currBlock.children;
 	var lastChild = childrenList[childrenList.length - 1];
 	scriptArr.push(currJSONblock);
-	while (lastChild instanceof BlockMorph) {
+	while (lastChild instanceof CommandBlockMorph) {
 		currBlock = lastChild;
 		currJSONblock = JSONblock(currBlock);
 		childrenList = currBlock.children;
@@ -786,3 +867,352 @@ function JSONscript(blockList) {
 	return scriptArr;
 }
 
+/* Returns a JavaScript object that contains all of the global variables with
+ * their associated values.
+ */
+function getAllGlobalVars() {
+	return world.children[0].globalVariables.vars;
+}
+
+/* Returns the value of a specific global variable. Takes in a string VARTOGET
+ * that is the global variable to search for and a JavaScript object GLOBALVARS
+ * that contains all of the global variables as keys and their values as the
+ * corresponding values.
+ */
+function getGlobalVar(varToGet, globalVars) {
+	if (!globalVars.hasOwnProperty(varToGet)) {
+		throw varToGet + " is not a global variable.";
+	}
+	return globalVars[varToGet].value;
+}
+
+/* Takes in an entire Sprite's SCRIPT and checks recursively if it contains
+ * the JavaScript object BLOCK that we are looking for with specific inputs.
+ * Returns true if BLOCK is found, otherwise returns false.
+ *
+ * The SCRIPT can be obtained by running the command, which gives you the
+ * first block and access to all the blocks connected to that block:
+ *
+ * JSONscript(...)
+ */
+function scriptContains(script, block) {
+	var morph1, type1;
+	for (var i = 0; i < script.length; i++) {
+		morph1 = script[i];
+		type1 = typeof(morph1);
+
+		if ((type1 === "string")) {
+			continue;
+		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
+			if (scriptContains(morph1, block)) {
+				return true;
+			}
+		} else {
+			if (morph1.blockSp === block.blockSp) {
+				if (_.isEqual(morph1, block)) {
+					return true;
+				}
+			}
+			if (scriptContains(morph1.inputs, block)) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+/* A wrapper function that calls scriptContainsBlock by taking in the BLOCKARRAY
+ * which is the result of calling JSONscript(...) which gives you back an array
+ * of JavaScript objects. Since we are only working with one block, and hence only
+ * one JavaScript object, we will just extract the sole element of this array and
+ * pass that into scriptContains to get check if SCRIPT (also the result of calling
+ * JSONscript(...)) contains the given element in BLOCKARRAY. Returns true if we find
+ * the element in BLOCKARRAY, else return false.
+ */
+function scriptContainsBlock(script, blockArray) {
+	var block = blockArray[0];
+	return scriptContains(script, block);
+}
+
+/* Takes in two blockSpecs and boolean SEEN1, which is initialized to false.
+ * Returns true if blockSpec string BLOCK1 precedes the blockSpec string BLOCK2
+ * in terms of the order that they appear in the script SCRIPT which can be
+ * obtained by calling:
+ *
+ * JSONscript(...)
+ *
+ * For further clarification, a block this:
+ *
+ * "move (20 + (30 - 50)) steps"
+ *
+ * would count the (%n + %n) block as coming before the (%n - %n) block.
+ */
+function blockPrecedes(block1, block2, script, seen1) {
+	var morph1, type1;
+	for (var i = 0; i < script.length; i++) {
+		morph1 = script[i];
+		type1 = typeof(morph1);
+
+		if ((type1 === "string")) {
+			continue;
+		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
+			if (blockPrecedes(block1, block2, morph1, seen1)) {
+				return true;
+			}
+		} else {
+			if (morph1.blockSp === block2) {
+				if (!seen1) {
+					return false;
+				}
+				return true;
+			}
+			if ((morph1.blockSp === block1)) {
+				seen1 = true;
+			}
+			if (blockPrecedes(block1, block2, morph1.inputs, seen1)) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+/* Takes in a block BLOCK and returns the number of occurances
+ * of the string BLOCKSPEC.
+ *
+ * Get the block by calling:
+ *
+ * JSONscript(...)
+ */
+function occurancesOfBlockSpec(blockSpec, block) {
+	var morph1, type1;
+	var result = 0;
+	for (var i = 0; i < block.length; i++) {
+		morph1 = block[i];
+		type1 = typeof(morph1);
+
+		if ((type1 === "string")) {
+			continue;
+		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
+			result += occurancesOfBlockSpec(blockSpec, morph1);
+		} else {
+			if (morph1.blockSp === blockSpec) {
+				result += 1;
+			}
+			result += occurancesOfBlockSpec(blockSpec, morph1.inputs);
+		}
+	}
+
+	return result;
+}
+
+/* Returns true if the two JSON scripts are exactly the same. Else returns false.
+ * Takes in two scripts, TEMPLATE (our template) and SCRIPT (student's template).
+ * Also takes in a boolean called SOFTMATCH, if this is true then we match the
+ * pattern of the template with the student's answer. VARS is initially an empty
+ * dictionary of mapping of variables in template to the actual values seen in the
+ * script. Pattern must match up, else false. Can obtain sprite's script by calling:
+ *
+ * JSONscript(...)
+ *
+ */
+function scriptsMatch(template, script, softMatch, vars, templateVariables) {
+	var morph1, morph2, type1, type2;
+	for (var i = 0; i < template.length; i++) {
+		morph1 = template[i];
+		morph2 = script[i];
+		type1 = typeof(morph1);
+		type2 = typeof(morph2);
+
+
+		if (type1 !== type2) {
+			return false;
+		}
+
+		if ((type1 === "string") && (type2 === "string")) {
+			if (softMatch && (morph1 !== morph2)) {
+				if (vars.hasOwnProperty(morph1)) {
+					if (vars[morph1] !== morph2) {
+						return false;
+					}
+				} else if (templateVariables.indexOf(morph1) === -1) {
+					return false;
+				} else {
+					vars[morph1] = morph2;
+				}
+			} else if (!softMatch && (morph1 !== morph2)) {
+				return false;
+			}
+		} else if ((Object.prototype.toString.call(morph1) === '[object Array]')
+			&& (Object.prototype.toString.call(morph2) === '[object Array]')) {
+
+			if (!scriptsMatch(morph1, morph2, softMatch, vars, templateVariables)) {
+				return false;
+			}
+
+		} else {
+			if (morph1.blockSp !== morph2.blockSp) {
+				return false;
+			}
+			if (morph1.inputs.length !== morph2.inputs.length) {
+				return false;
+			}
+			if (!scriptsMatch(morph1.inputs, morph2.inputs, softMatch, vars, templateVariables)) {
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+/* Takes in a JavaScript object SCRIPT that is the result of calling JSONscript() on
+ * a piece of Snap! code and converts it to a string. Use this to pass into
+ * isScriptPresent() function for grading purposes.
+ */
+function JSONtoString(script) {
+	return JSON.stringify(script);
+}
+
+/* Takes in a string SCRIPT that is the representation of a JavaScript object and
+ * converts it back into JSON format (the same format as a result of calling
+ * JSONscript() on a piece of Snap! code).
+ */
+function stringToJSON(script) {
+	return JSON.parse(script);
+}
+
+/* Returns the next character after C. Got this from StackOverflow at this link:
+ * http://stackoverflow.com/questions/12504042/what-is-a-method-that-can-be-used-to-increment-letters
+ * Put in a case where "Z" then goes to "a" and "z" goes to "A" to prevent weird
+ * characters from being set to variables in our patterns like "[" or "}". Basically
+ * only uses alphabeticaly characters, just increments using the character's unicode value.
+ */
+function nextChar(c) {
+	if (c === "Z") {
+		return "a";
+	}
+	if (c === "z") {
+		return "A";
+	}
+    return String.fromCharCode(c.charCodeAt(0) + 1);
+}
+
+/* Takes in two correct JSONscript(...) representations of answers, SCRIPT1 and SCRIPT2,
+ * and constructs a general pattern template that we can use to grade other answers
+ * to a given question. Also Takes in a deep copy of the first JSONscript(...) called RESULT,
+ * which will be our template, and a NEWMAP JavaScript object (should be initialized to empty)
+ * that maps values to variables and the CURRCHAR JavaScript object that keeps track of
+ * the variable we are using for a given line in the template. This gets incremented bythe
+ * nextChar() function. Also takes in TEMPLATEVARIABLES, which is an array of all of the
+ * variables that will be in the returned template RESULT.
+ */
+function genPattern(script1, script2, result, newMap, currChar, templateVariables) {
+	var morph1, morph2, type1, type2;
+	for (var i = 0; i < script1.length; i++) {
+		morph1 = script1[i];
+		morph2 = script2[i];
+		morphR = result[i];
+		type1 = typeof(morph1);
+		type2 = typeof(morph2);
+
+		if ((type1 === "string") && (type2 === "string")) {
+			if (morph1 !== morph2) {
+
+				var newKey = JSONtoString([morph1, morph2]);
+				if (newMap.hasOwnProperty(newKey)) {
+					result[i] = newMap[newKey];
+				} else {
+					result[i] = currChar.val;
+					newMap[newKey] = currChar.val;
+					templateVariables.push(currChar.val);
+					currChar.val = nextChar(currChar.val);
+				}
+			}
+		} else if ((Object.prototype.toString.call(morph1) === '[object Array]')
+			&& (Object.prototype.toString.call(morph2) === '[object Array]')) {
+
+			genPattern(morph1, morph2, morphR, newMap, currChar, templateVariables);
+
+		} else {
+			genPattern(morph1.inputs, morph2.inputs, morphR.inputs, newMap, currChar, templateVariables);
+		}
+	}
+
+	return result;
+}
+
+/* Takes in two JSONscripts, SCRIPT1 and SCRIPT2 from calling JSONscript(...)
+ * and returns a two element array of the grading template and the variables
+ * in the grading template. This is a wrapper function for genPattern().
+ *
+ * Get a deep copy by calling: var result = jQuery.extend(true, [], script1);
+ *
+ * We need this deep copy because we need a completely new object that doesn't
+ * modify either of the original student's scripts.
+ */
+function getTemplate(script1, script2) {
+	var result = jQuery.extend(true, [], script1);
+	var newMap = {};
+	var chars = {val: "A"};
+	var newMap = {};
+	var templateVariables = [];
+	return [genPattern(script1, script2, result, newMap, chars, templateVariables), templateVariables];
+}
+
+/* Shortcut function initializes onscreen scripts for use with getTemplate.
+ * This function can only be used if exactly 2 scripts of the expected form
+ * are present in the scripts window.
+ */
+function fastTemplate() {
+	var scripts = getScripts(0);
+	var script1 = JSONscript(scripts[0]);
+	var script2 = JSONscript(scripts[1]);
+	return getTemplate(script1, script2);
+}
+
+/* Takes in a TEMPLATE and a student's SCRIPT and grades it by checking the pattern
+ * against the student's pattern. Also takes in TEMPLATEVARIABLES, which is an array
+ * containing the variables in TEMPLATE. This is a wrapper function for scriptsMatch(...).
+ * Must pass in a parameter for vars in scriptsMatch as {}. Returns true if pattern
+ * matches, else false. If softMatch is false, then it will literally check exactly
+ * the values in the student's SCRIPT.
+ */
+function checkTemplate(template, script, templateVariables) {
+	var vars = {};
+	var softMatch = true;
+	return scriptsMatch(template, script, softMatch, vars, templateVariables);
+}
+
+/* Checks if scripts are identical. */
+function testScriptIdentical(scriptString, spriteIndex, outputLog) {
+	//Populate optional parameters
+	if (outputLog === undefined) {
+		outputLog = new gradingLog();
+	}
+	if (spriteIndex === undefined) {
+		spriteIndex = 0;
+	}
+
+	var JSONtemplate = stringToJSON(scriptString);
+	var blockSpec = JSONtemplate[0].blockSp;
+	var testID = outputLog.addTest(blockSpec, "n/a", true, -1);
+	var JSONtarget = JSONscript(getScript(blockSpec, spriteIndex));
+	//test that scripts match
+		//TODO: update scriptsMatch function to take block objects, not objects on screen
+	//var isPresent = scriptsMatch(JSONtemplate, JSONtarget, false);
+	var vars = {};
+	var softMatch = false;
+	var isPresent = scriptsMatch(JSONtemplate, JSONtarget, softMatch, vars);
+	if (isPresent) {
+		feedback = "The targeted script is present in the scripts tab.";
+	} else {
+		feedback = "Script Missing: The target script was not found in the scripts tab";
+	}
+	outputLog.updateLog(testID, isPresent, feedback);
+	evaluateLog(outputLog);
+	return outputLog;
+
+}

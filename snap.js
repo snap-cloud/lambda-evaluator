@@ -38341,6 +38341,14 @@ IDE_Morph.prototype.settingsMenu = function () {
         'check for block\nto text mapping features',
         false
     );
+    //Autograder - Added Grading Button
+    menu.addLine();
+    menu.addItem(
+        'Grade Question',
+        function () {
+            AGTest();
+        }
+    );
     menu.popup(world, pos);
 };
 

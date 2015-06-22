@@ -1,0 +1,90 @@
+span.message {
+	text-align: left;
+	font-weight: normal;
+	white-space: nowrap;
+	display: none;
+}
+
+td.correctans {
+	color: green;
+	font-weight: bold;
+	white-space:nowrap;
+}
+
+td.incorrectans {
+	color: red;
+	font-weight: bold;
+	white-space:nowrap;
+}
+
+td.tests {
+	background-color: #e7e3e3;
+    color: #4F5150;
+}
+
+
+
+.toggle-box {
+	display: none;
+}
+
+.toggle-box + label {
+	cursor: pointer;
+	display: block;
+	font-weight: bold;
+}
+
+.toggle-box + label + div {
+	display: none;
+}
+
+
+.toggle-box:checked + label + div {
+	display: block;
+	height: auto;
+}
+
+.toggle-box + label:before {
+	background-color: #e7e3e3;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	color: #4F5150;
+	content: "+";
+	display: block;
+	float: left;
+	font-weight: bold;
+	height: 20px;
+	line-height: 20px;
+	margin-right: 5px;
+	text-align: center;
+	width: 20px;
+}
+
+
+.toggle-box:checked + label:before {
+	content: "\2212";
+}
+
+
+
+table.results {
+  display: block;
+  -webkit-font-smoothing: antialiased;
+  font-size: 115%;
+  overflow: auto;
+  width: auto;
+ }
+
+  th.titles {
+    background-color: #4F5150;
+    color: white;
+    font-weight: normal;
+  }
+
+  td.data {
+    color: #4F5150;
+  }
+		
+
+

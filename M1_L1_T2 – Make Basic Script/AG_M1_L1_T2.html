@@ -5,24 +5,42 @@
         <link rel="shortcut icon" href="http://snap.berkeley.edu/fav3.gif" type="image/gif">
         <script src="jschannel.js"></script>
         <script type="text/javascript" src="SnapPLE.js"></script>
-        <script type="text/javascript" src="AGDrawSquare.js"></script>
+        <script type="text/javascript" src="AG_M1_L1_T2.js"></script>
         <script type="text/javascript" src="snap.js"></script>
         
 
         <script type="text/javascript">
 
             //recover stored save
+            console.log(id);
             var pageXML = localStorage.getItem(id);
             var world;
             
             window.onload = function () {
 
+                // Checks if problem has been checked and modifies the autograded output if it has been checked
                 if (parent.document.getElementsByClassName("message").length !== 0) {
                     var hint = parent.document.getElementsByClassName("message")[0];
                     hint.innerHTML = formatFeedback(hint);
                     hint.style.display = "inline";
                 }
 
+                //UPDATE GRADING FLAG
+                var grade_flag = document.getElementById("autograding");
+                var prev_AG_state = JSON.parse(localStorage.getItem(id + "answer"));
+                console.log(prev_AG_state);
+                if (prev_AG_state !== null) {
+                    grade_flag.innerHTML = "GRADED";
+                    if (prev_AG_state.checkState) {
+                        grade_flag.style.color = "green";
+                    } else {
+                        grade_flag.style.color = "orange";
+                    }
+                } else {
+                    grade_flag.innerHTML = "UNGRADED!";
+                }
+
+                //INITIALIZE UP SNAP
                 world = new WorldMorph(document.getElementById('world'));
                 new IDE_Morph().openIn(world);
 
@@ -34,15 +52,14 @@
                 if (localStorage.getItem(id) !== null) {
                     ide.openProjectString(pageXML);
                 }
-
-
                 setInterval(loop, 1);
             };
             function loop() {
                 world.doOneCycle();
             }
+
             function escapeRegExp(string) {
-                    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+                return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
             }
 
             function replaceall(string, find, replace) {
@@ -80,12 +97,13 @@
                 }
                 return message;
             }
-
         </script>
+        
     </head>
     <body style="margin: 0;">
         <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
-        <div id="autograding" style="position: absolute; padding-top: 5px; padding-left: 5px; color:red;">
+        <!-- <input id="clickMe" type="button" value="XXXXXX" onclick='multiTestBlock("%s my plus %s", [[1,2],[2,2],[2,3],[3,3]], [3,4,6,6]);'/> -->
+        <div id="autograding" style="position: absolute; padding-top: 5px; padding-left: 5px; color:red; font-family:helvetica">
             UNGRADED
         </div>
 
