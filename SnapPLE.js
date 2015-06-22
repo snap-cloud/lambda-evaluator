@@ -248,6 +248,7 @@ function testBlock(outputLog, testID) {
 	setValues(block, test["input"]);
 	var proc = evalReporter(block, outputLog, testID);
 	outputLog["" + testID]["proc"] = proc;
+	evalSingleProc(block, outputLog, testID);
 	return testID;
 }
 
@@ -340,6 +341,8 @@ function evaluateLog(outputLog, testIDs) {
 	return outputLog;
 }
 
+/* ------ START DAVID'S MESS ------ */
+
 //SpriteEvent.prototype = new SpriteEvent();
 SpriteEvent.prototype.constructor = SpriteEvent;
 
@@ -374,6 +377,7 @@ SpriteEvent.prototype.equals = function(sEvent) {
 //SpriteEventLog constructor
 function SpriteEventLog() {
 	this.numSprites = 0;
+	this.callVal = null;
 }
 
 //adds events to the event log
@@ -385,7 +389,7 @@ SpriteEventLog.prototype.addEvent = function(_sprite, index) {
 		this["" + index] = [];
 		this.numSprites++;
 	}
-	this["" + index].push(new SpriteEvent(_sprite));
+	this["" + index].push(new SpriteEvent(_sprite, index));
 	this.checkDup(index);
 }
 
@@ -401,6 +405,44 @@ SpriteEventLog.prototype.checkDup = function(index) {
 	} else if (this["" + index][len - 1]["scale"] !== this["" + index][len - 2]["scale"]) {
 		this["" + index][len - 1].ignore = true;
 	}
+}
+
+//takes out all of the "ignored" events from the event log
+//Warning! Modifies object!
+//cascadeable
+SpriteEventLog.prototype.spliceIgnores = function() {
+	function helper(ary) {
+		var newAry = [];
+		for (var i = 0; i < ary.length; i++) {
+			if (!ary[i].ignore) {
+				newAry.push(ary[i]);
+			}
+		}
+		return newAry;
+	}
+
+	for (var j = 0; j < this.numSprites; j++) {
+		this["" + j] = helper(this["" + j]);
+	}
+
+	return this;
+}
+
+//Caompares one or more sprites according to an input function
+//the input function must take care of all event errors and
+//base cases (ex: must be 4 sprites)
+SpriteEventLog.prototype.compareSprites = function(f) {
+	if (this["" + 0] === undefined) {
+		return false;
+	}
+
+	for (var i = 0; i < this["0"].length; i++) {
+		if (!f(this, i)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 //Prints out the event log
@@ -424,81 +466,214 @@ function printEventLog(eventLog, ignore) {
 	}
 }
 
-//fires off a keyboard event
-//The key variable is a string representing the key
-//or a sequence of keys
-//if key = "green flag" - fires the green flag event
-//if key = "stop all" - stops all events
-function fireKeyEvent(key) {
-	if (key === undefined) {
-		return;
-	}
-	if (key === "green flag") {
-		//do green flag event
-		world.keyboardReceiver.fireGreenFlagEvent();
-	} else if (key === "stop all") {
-		world.keyboardReceiver.fireStopAllEvent();
-	} else {
-		world.keyboardReceiver.fireKeyEvent(key);
-	}
+
+//Very specific test for kalidiscope
+//Does not test "clear"/"penup"/"pendown"
+//Only tests for prescence of 4 sprites and 
+//proper sprite movements
+function testKScope(iter) {
+	var eLog = new SpriteEventLog(),
+		iterations = iter || 5,
+		spriteList = world.children[0].sprites.contents;
+
+	var collect = setInterval(function() {
+        for (var i = 0; i < spriteList.length; i++) {
+            eLog.addEvent(spriteList[i], i);
+        }
+	}, 5);
+
+	var callback = function() {
+		clearInterval(collect);
+		eLog.callVal = eLog.spliceIgnores().compareSprites(function(log, i) {
+				if (log && log.numSprites !== 4) {
+					return false;
+				}
+				var x1 = log["0"][i].x, penDown1 = log["0"][i].penDown,
+					x2 = log["1"][i].x, penDown2 = log["1"][i].penDown,
+					x3 = log["2"][i].x, penDown3 = log["2"][i].penDown,
+					x4 = log["3"][i].x, penDown4 = log["3"][i].penDown,
+					y1 = log["0"][i].y,
+					y2 = log["1"][i].y,
+					y3 = log["2"][i].y,
+					y4 = log["3"][i].y;
+
+				if (x1 + x2 + x3 + x4 !== 0 ||
+					y1 + y2 + y3 + y4 !== 0 ||
+					penDown1 !== penDown2 !== penDown3 !== penDown4) {
+					return false;
+				}
+
+				return true;
+		});
+		// this is where we would add a callback to getGrade or whatevers
+		console.log(eLog.callVal);
+	};
+
+	makeDragon(iterations, callback);
+	return eLog;
+
 }
 
-//Make a mouse event with new MouseEvent("mousemove", {clientX: x, clientY: y})
-function moveMouse(event) {
-	if (event === undefined) {
-		//consider making the default be a move to the realitive 0, 0s
-		return;
-	}
-	world.hand.processMouseMove(event);
+//turn an x coordinate into an x coordinate realitive to the 
+//drawing area in snap
+function realitiveX(coord) {
+	var centerStage = world.children[0].stage;
+	var stageSize = centerStage.scale;
+	return centerStage.center().x + coord / stageSize;
 }
 
-/*
-*  Create new Mouse Event at x, y coordiantes
-*  UNDER CONSTRUCTION!!!
-*  (Need to generalize x, y coords regardless of window size, ect.)
-*/
-function mouseAction(action, x, y, element) {
-	if (element === undefined) {
-		element = "canvas";
-	}
-	//when we can generalize the x, y loaction update this function
-	var evt = new MouseEvent(action, {clientX: x, clientY: y});
-	if (action === "mousemove") {
-		world.hand.processMouseMove(evt);
-	}
+//turn an y coordinate into a y coordinate realitive to the 
+//drawing area in snap
+function realitiveY(coord) {
+	var centerStage = world.children[0].stage;
+	var stageSize = centerStage.scale;
+	return centerStage.center().y + coord / stageSize;
+}
+
+//Creates a protected function used to spoof user input
+//timeout is how many milliseconds you want each action to take
+//callback is an optional paramiter for a callback function
+//element is an optional paramiter for a DOM element
+function createInputSpoof(timeout, callback, element) {
+	var timeoutCount = 0,
+		timeoutInc = timeout,
+		call = callback || function() {return null;},
+		element = element || "canvas";
+
+	return (function(action, x, y) {
+		var relX = x || 0,
+			relY = y || 0,
+			callVal = null,
+			evt = null;
+
+		relX = realitiveX(relX);
+		relY = realitiveY(relY);
+
+		switch(action){
+			case "mousemove":
+				evt = new MouseEvent(action, {clientX: relX, clientY: relY});
+				setTimeout(function() {world.hand.processMouseMove(evt)}, timeoutCount);
+				break;
+			case "stop all":
+				setTimeout(function() {world.keyboardReceiver.fireStopAllEvent()}, timeoutCount);
+				break;
+			case "green flag":
+				setTimeout(function() {world.keyboardReceiver.fireGreenFlagEvent()}, timeoutCount);
+				break;
+			case "callback":
+				setTimeout(function() {callVal = call();}, timeoutCount);
+			default:
+				setTimeout(function() {world.keyboardReceiver.fireKeyEvent(action)}, timeoutCount);
+		}
+		timeoutCount += timeoutInc;
+	});
 }
 
 //Demo for *GreenFlag Hat -> pen down -> forever(go to mouse x, y)*
 function doTheThing() {
-	var evt = new MouseEvent("mousemove", {clientX: 1200, clientY: 200});
-	moveMouse(evt);
-	fireKeyEvent("green flag");//move hand to x, y, and pen down forever
-	var evt2 = new MouseEvent("mousemove", {clientX: 1150, clientY: 150});
-	setTimeout(function () {moveMouse(evt2);}, 50);
-	var evt3 = new MouseEvent("mousemove", {clientX: 1200, clientY: 100});
-	setTimeout(function () {moveMouse(evt3);}, 100);
-	var evt4 = new MouseEvent("mousemove", {clientX: 1250, clientY: 150});
-	setTimeout(function () {moveMouse(evt4);}, 150);
-	var evt5 = new MouseEvent("mousemove", {clientX: 1200, clientY: 200});
-	setTimeout(function () {moveMouse(evt5);}, 200);
-	setTimeout(function () {fireKeyEvent("stop all");}, 250);
+	var act = createInputSpoof(50);
+	act("mousemove", 0, 0);
+	act("green flag");
+	act("mousemove", -10, 10);
+	act("mousemove", 0, 20);
+	act("mousemove", 10, 10);
+	act("mousemove", 0, 0);
+	act("stop all");
 }
 
 //Demo for *When space pressed Hat -> pen down -> forever(go to mouse x, y)*
 function doTheOtherThing() {
-	var evt = new MouseEvent("mousemove", {clientX: 1200, clientY: 200});
-	moveMouse(evt);
-	fireKeyEvent("space");//move hand to x, y, and pen down forever
-	var evt2 = new MouseEvent("mousemove", {clientX: 1150, clientY: 250});
-	setTimeout(function () {moveMouse(evt2);}, 50);
-	var evt3 = new MouseEvent("mousemove", {clientX: 1200, clientY: 300});
-	setTimeout(function () {moveMouse(evt3);}, 100);
-	var evt4 = new MouseEvent("mousemove", {clientX: 1250, clientY: 250});
-	setTimeout(function () {moveMouse(evt4);}, 150);
-	var evt5 = new MouseEvent("mousemove", {clientX: 1200, clientY: 200});
-	setTimeout(function () {moveMouse(evt5);}, 200);
-	setTimeout(function () {fireKeyEvent("stop all");}, 250);
+var act = createInputSpoof(50);
+	act("mousemove", 0, 0);
+	act("space");
+	act("mousemove", -10, -10);
+	act("mousemove", 0, -20);
+	act("mousemove", 10, -10);
+	act("mousemove", 0, 0);
+	act("stop all");
 }
+
+//The following functions will create a dragon fractal
+//using spoofed mouse movements and the correct 
+//Snap! code
+
+//Creates the dragon curve
+function createCurve(iterations) {
+	var ret = [],
+		temp = [];
+	for (var i = 0; i < iterations; i++) {
+		for (var j = ret.length - 1; j >= 0; j--) {
+			if (ret[j] === "R") {
+				temp.push("L");
+			} else {
+				temp.push("R");
+			}
+		}
+		ret.push("R");
+		for (var k = 0; k < temp.length; k++) {
+			ret.push(temp[k]);
+		}
+		temp = [];
+	}
+	return ret;
+}
+
+//Draws the dragon curve with spoofed mouse movemnets
+//takes in the array of turns and the spoof function
+function drawDragon(turns, func) {
+	var lastMove = "up",
+		lastX = 0,
+		lastY = 0,
+		dist = 5;
+	for (var turn of turns) {
+		if (turn === "R"){
+			if (lastMove === "up") {
+				lastMove = "right";
+				lastX += dist;
+			} else if (lastMove === "down") {
+				lastMove = "left";
+				lastX -= dist;
+			} else if (lastMove === "left") {
+				lastMove = "up";
+				lastY += dist;
+			} else {
+				lastMove = "down";
+				lastY -= dist;
+			}
+		} else {
+			if (lastMove === "up") {
+				lastMove = "left";
+				lastX -= dist;
+			} else if (lastMove === "down") {
+				lastMove = "right";
+				lastX += dist;
+			} else if (lastMove === "left") {
+				lastMove = "down";
+				lastY -= dist;
+			} else {
+				lastMove = "up";
+				lastY += dist;
+			}
+		}
+		func("mousemove", lastX, lastY);
+	}
+}
+
+//the function that is called to create and draw the dragon
+//iterations is the number of folds the dragon has and 
+//callback is an optional callback function
+function makeDragon(iterations, callback) {
+	var turns = createCurve(iterations);
+	var act = createInputSpoof(100, callback);
+	act("mousemove", 0, 0);
+	act("space");
+	drawDragon(turns, act);
+	act("stop all");
+	act("callback");
+}
+
+/* ------ END DAVID'S MESS ------ */
+
 
 /*
 *  JSONify the output log 
