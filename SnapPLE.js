@@ -612,15 +612,15 @@ function createInputSpoof(timeout, callback, element) {
 				setTimeout(function() {world.hand.processMouseMove(evt)}, timeoutCount);
 				break;
 			case "stop all":
-				setTimeout(function() {world.keyboardReceiver.fireStopAllEvent()}, timeoutCount);
+				setTimeout(function() {world.children[0].stage.fireStopAllEvent()}, timeoutCount);
 				break;
 			case "green flag":
-				setTimeout(function() {world.keyboardReceiver.fireGreenFlagEvent()}, timeoutCount);
+				setTimeout(function() {world.children[0].stage.fireGreenFlagEvent()}, timeoutCount);
 				break;
 			case "callback":
 				setTimeout(function() {callVal = call();}, timeoutCount);
 			default:
-				setTimeout(function() {world.keyboardReceiver.fireKeyEvent(action)}, timeoutCount);
+				setTimeout(function() {world.children[0].stage.fireKeyEvent(action)}, timeoutCount);
 		}
 		timeoutCount += timeoutInc;
 	});
