@@ -4,9 +4,12 @@
         <title>Snap! Build Your Own Blocks. Beta</title>
         <link rel="shortcut icon" href="http://snap.berkeley.edu/fav3.gif" type="image/gif">
         <script src="jschannel.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="http://underscorejs.org/underscore-min.js"></script>
         <script type="text/javascript" src="SnapPLE.js"></script>
         <script type="text/javascript" src="AG_M1_L1_T3.js"></script>
         <script type="text/javascript" src="snap.js"></script>
+
         
 
         <script type="text/javascript">
@@ -17,6 +20,13 @@
             var world;
             
             window.onload = function () {
+
+                // Checks if problem has been checked and modifies the autograded output if it has been checked
+                if (parent.document.getElementsByClassName("message").length !== 0) {
+                    var hint = parent.document.getElementsByClassName("message")[0];
+                    hint.innerHTML = formatFeedback(hint);
+                    hint.style.display = "inline";
+                }
 
                 //UPDATE GRADING FLAG
                 var grade_flag = document.getElementById("autograding");
@@ -34,14 +44,14 @@
                 }
 
                 //Check if Pre-requisite task has completed
-                if (preReqID !== null &&
-                    localStorage.getItem(preReqID + "answer") !== null) {
-                    preReqState = JSON.parse(localStorage.getItem(preReqID + "answer"));
+                if (preReqID !== null) {
+                    var preReqState = JSON.parse(localStorage.getItem(preReqID + "answer"));
                     if (preReqState === null || !preReqState.checkState) {
                         var req_check = parent.document.getElementById("pre_req");
-                        req_check.innerHTML = "WARNING: The previous task must be completed before continuing."
+                        req_check.innerHTML = "[WARNING: The previous task must be completed before continuing.]"
                     }
                 }
+
 
                 //INITIALIZE UP SNAP
                 world = new WorldMorph(document.getElementById('world'));
@@ -54,12 +64,62 @@
                 //If this page has already been loaded
                 if (localStorage.getItem(id) !== null) {
                     ide.openProjectString(pageXML);
+                } else if (preReqID !== null) {
+                    //Load the previous Snap XML file if the the pre-requisite is complete
+                    var preReqState = JSON.parse(localStorage.getItem(preReqID + "answer"));
+                    if (preReqState !== null && preReqState.checkState) {
+                        ide.openProjectString(localStorage.getItem(preReqID));
+                    }
                 }
+
+
                 setInterval(loop, 1);
             };
+
             function loop() {
                 world.doOneCycle();
             }
+
+            function escapeRegExp(string) {
+                return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+            }
+
+            function replaceall(string, find, replace) {
+                return (string.replace(new RegExp(escapeRegExp(find), 'g'), replace));
+            }
+
+            /*
+             * Re-format the contents of a the hint string to add HTML tags and
+             * appropriate CSS. Return the re-formatted string.
+             */
+            function formatFeedback(hint) {
+                var tags = 
+                [['collapsedivstart', '<input class="toggle-box" id="expander" type="checkbox" ><label for="expander">Details</label><div id="table-wrapper">'], 
+                ['collapsedivend', '</div>'], 
+                ['linebreak', '<br /></br />'], 
+                ['tablestart', '<table class="results">'], 
+                ['tableend', '</table>'], 
+                ['rowstart', '<tr>'], 
+                ['rowend', '</tr>'], 
+                ['headstart', '<th class="titles" style="text-align: center;">'], 
+                ['headend', '</th>'], 
+                ['datastart', '<td class="data" style="text-align: center;">'], 
+                ['dataend', '</td>'], 
+                ['correctstart', '<td class="correctans">'],
+                ['wrongstart', '<td class="incorrectans">'],
+                ['teststart', '<td class="tests">'],
+                ['spanend', '</span>'], 
+                ['spanstart', '<span class="message">']];
+
+                var taglength = tags.length;
+                var message = String(hint.innerHTML);
+
+                for (var i = 0; i < taglength; i++) {
+                    message = replaceall(message, tags[i][0], tags[i][1]);
+                }
+                return message;
+            }
+
         </script>
         
     </head>

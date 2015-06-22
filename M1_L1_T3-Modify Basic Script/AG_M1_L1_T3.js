@@ -3,7 +3,6 @@
 //             : document.location;
 var id = ""
 
-
 var AG_state = {
     'checkState': false,
     'comment': "Please run 'Grade Question' before clicking the 'Check' button.",
@@ -15,7 +14,8 @@ var preReqID = "AG_M1_L1_T2";
 var taskID = "AG_M1_L1_T3";
 id = id + taskID;
 function AGTest() {
-    testLog = testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]', 0);
+    
+    testLog = testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]', ["A"], 0);
 }
 
 var AG_M1_L1_T3 = (function() {

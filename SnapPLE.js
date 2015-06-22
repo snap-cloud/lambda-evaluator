@@ -22,8 +22,8 @@ function gradingLog() {
 *  		gradingLog.[""+(testID)]
 *  Test Class include:
 *		"p" - presence test
-		"r" - reporter test
-		"s" - stage event test
+*		"r" - reporter test
+*		"s" - stage event test
 */
 gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, timeOut) {
 	this.testCount += 1;
@@ -70,8 +70,12 @@ gradingLog.prototype.finishTest = function(testID, output, feedback, correct) {
 	}
 };
 
-//Unused function that makes sure the test exisits in the log
-//and updates the output and feedback accordingly
+/*
+ * Modifies an entry of the gradingLog without calling subsequent tests
+ * as with .finishTest
+ * Used to update the log in the event of a timeout, error, 
+ * or entry modification.
+ */
 gradingLog.prototype.updateLog = function(testID, output, feedback, correct) {
 	if (this["" + testID] !== undefined) {
 		this["" + testID]["output"] = output;
@@ -84,9 +88,47 @@ gradingLog.prototype.updateLog = function(testID, output, feedback, correct) {
 }
 
 /*
-	Snap block getters and setters used to retrieve blocks,
-	set values, and initiates blocks.
+ * Convert the gradingLog into a dictionary that is returned by 
+ * edX getGrade(). 
+ */
+function dictLog(outputLog) {
+	var outDict = {};
+	for (var i = 1; i <=outputLog.testCount;i++) {
+		var testDict = {};
+		testDict["id"] = i;
+		testDict["testClass"] = outputLog[i]["testClass"];
+		testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+		testDict["input"] = outputLog[i]["input"];
+		testDict["expOut"] = outputLog[i]["expOut"];
+		testDict["output"] = outputLog[i]["output"];
+		testDict["correct"] = outputLog[i]["correct"];
+		testDict["feedback"] = outputLog[i]["feedback"];
+		outDict[i] = testDict;
+	}
+	return outDict;
+}
+
+/*
+*  print out the output log in a nice format
 */
+function printLog(outputLog) {
+	var testString = ""; //TODO: Consider putting Output Header
+	for (var i = 1; i<=outputLog.testCount;i++) {
+		testString += "[Test " + i + "]";
+		testString += "Class: " + outputLog[i]["correct"];
+		testString += " Block: '(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+		testString += " Input: " + outputLog[i]["input"];
+		testString += " Expected Ans: " + outputLog[i]["expOut"];
+		testString += " Got: " + outputLog[i]["output"];
+		testString += " Correct: " + outputLog[i]["correct"];
+		testString += " Feedback: " + outputLog[i]["feedback"] + "\n";
+	}
+	return testString;
+}
+
+/* Snap block getters and setters used to retrieve blocks,
+ * set values, and initiates blocks.
+ */
 
 function getSprite(index) {
 	try {
@@ -95,8 +137,6 @@ function getSprite(index) {
 		throw "This Snap instance is very broken"
 	}
 }
-
-
 
 //Returns the scripts of the script at 'index', undefined otherwise.
 function getScripts(index) {
@@ -170,9 +210,9 @@ function testBlockPresent(blockSpec, spriteIndex, outputLog) {
 	var isPresent = isScriptPresent(blockSpec, spriteIndex);
 	var feedback = null;
 	if (isPresent) {
-		feedback = "(" + blockSpec + ") is in the scripts tab.";
+		feedback = "" + blockSpec + " is in the scripts tab.";
 	} else {
-		feedback = "Block Missing: (" + blockSpec + ") , was not found in the scripts tab";
+		feedback = "Block Missing: " + blockSpec + " , was not found in the scripts tab";
 	}
 	outputLog.updateLog(testID, isPresent, feedback, isPresent);
 	evaluateLog(outputLog);
@@ -187,7 +227,7 @@ function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog
 	if (spriteIndex === undefined) {
 		spriteIndex = 0;
 	}
-
+	
 	var JSONtemplate = stringToJSON(scriptString);
 	var blockSpec = JSONtemplate[0].blockSp;
 	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1);
@@ -235,7 +275,10 @@ function evalReporter(block, outputLog, testID) {
 	return proc
 }
 
-//FUNCTION NEEDS TO FIND THE PROCESS AND CHECK IF IT HAS COMPLETED
+/* Read the return value of a Snap! process. The process
+ * is an evaluating reporter block that updates a field in the
+ * process on completion.
+ */
 function readValue(proc) {
 	return proc.homeContext.inputs[0];
 }
@@ -244,8 +287,6 @@ function readValue(proc) {
 	Test and evaluate Snap! blocks. Uses a gradingLog to initilize tests,
 	launch processes, and update the log, and launch the next test
 */
-
-
 function testBlock(outputLog, testID) {
 	if (outputLog[testID] === undefined) {
 		throw "testBlock: Output Log Contains no test with ID: " + testID;
@@ -516,43 +557,7 @@ function doTheOtherThing() {
 	setTimeout(function () {fireKeyEvent("stop all");}, 250);
 }
 
-/*
-*  JSONify the output log 
-*/
-function dictLog(outputLog) {
-	var outDict = {};
-	for (var i = 1; i <=outputLog.testCount;i++) {
-		var testDict = {};
-		testDict["id"] = i;
-		testDict["testClass"] = outputLog[i]["testClass"];
-		testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
-		testDict["input"] = outputLog[i]["input"];
-		testDict["expOut"] = outputLog[i]["expOut"];
-		testDict["output"] = outputLog[i]["output"];
-		testDict["correct"] = outputLog[i]["correct"];
-		testDict["feedback"] = outputLog[i]["feedback"];
-		outDict[i] = testDict;
-	}
-	return outDict;
-}
 
-/*
-*  print out the output log in a nice format
-*/
-function printLog(outputLog) {
-	var testString = ""; //TODO: Consider putting Output Header
-	for (var i = 1; i<=outputLog.testCount;i++) {
-		testString += "[Test " + i + "]";
-		testString += "Class: " + outputLog[i]["correct"];
-		testString += " Block: '(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
-		testString += " Input: " + outputLog[i]["input"];
-		testString += " Expected Ans: " + outputLog[i]["expOut"];
-		testString += " Got: " + outputLog[i]["output"];
-		testString += " Correct: " + outputLog[i]["correct"];
-		testString += " Feedback: " + outputLog[i]["feedback"] + "\n";
-	}
-	return testString;
-}
 
 /* Takes in a single block and converts it into JSON format.
  * For example, will take in a block like:
@@ -981,6 +986,17 @@ function getTemplate(script1, script2) {
 	var newMap = {};
 	var templateVariables = [];
 	return [genPattern(script1, script2, result, newMap, chars, templateVariables), templateVariables];
+}
+
+/* Shortcut function initializes onscreen scripts for use with getTemplate.
+ * This function can only be used if exactly 2 scripts of the expected form
+ * are present in the scripts window.
+ */
+function fastTemplate() {
+	var scripts = getScripts(0);
+	var script1 = JSONscript(scripts[0]);
+	var script2 = JSONscript(scripts[1]);
+	return getTemplate(script1, script2);
 }
 
 /* Takes in a TEMPLATE and a student's SCRIPT and grades it by checking the pattern

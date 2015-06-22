@@ -15,7 +15,8 @@ var preRecID = null;
 var taskID = "AG_M1_L1_T2";
 id = id + taskID;
 function AGTest() {
-    testLog = testScriptIdentical('[{"blockSp":"move %n steps","inputs":["10"]},{"blockSp":"turn %clockwise %n degrees","inputs":["15"]}]', 0);
+    // testLog = testScriptIdentical('[{"blockSp":"move %n steps","inputs":["10"]},{"blockSp":"turn %clockwise %n degrees","inputs":["15"]}]', 0);
+    testLog = testScriptPresent('[{"blockSp":"move %n steps","inputs":["10"]},{"blockSp":"turn %clockwise %n degrees","inputs":["15"]}]', [], 0);
 }
 
 var AG_M1_L1_T2 = (function() {

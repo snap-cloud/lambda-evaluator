@@ -1,6 +1,7 @@
-var id = (window.location != window.parent.location)
-            ? document.referrer
-            : document.location;
+// var id = (window.location != window.parent.location)
+//             ? document.referrer
+//             : document.location;
+var id = ""
 
 var AG_state = {
     'checkState': false,
@@ -9,11 +10,12 @@ var AG_state = {
 }
 //This is unsafe. Store this elsewhere
 var testLog;
-
+var preReqID = null;
 var taskID = "AG_M1_L1_T1";
 id = id + taskID;
 function AGTest() {
-    testLog = testBlockPresent("move %n steps", 0);
+    testLog = testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]}]', ["A"], 0);
+    console.log(testLog);
 }
 
 var AG_M1_L1_T1 = (function() {
