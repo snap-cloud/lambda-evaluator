@@ -48,7 +48,7 @@ def hint_fn(answer_ids, student_answers, new_cmap, old_cmap):
 			#new_cmap.set_hint_and_mode(aid,str(current_test),'always')
 			for key in ["input", "output", "expOut"]:
 				test_string += "datastart" + str(current_test[key]) + "dataend"
-			if str(current_test["feedback"]) == "Correct!":
+			if str(current_test["correct"]) == "True":
 				test_string += "correctstart" + "Correct!" + "dataend"
 				numcorrect += 1
 			else:
