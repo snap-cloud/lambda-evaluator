@@ -7,8 +7,9 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="http://underscorejs.org/underscore-min.js"></script>
         <script type="text/javascript" src="SnapPLE.js"></script>
-        <script type="text/javascript" src="AG_M1_L1_T1.js"></script>
+        <script type="text/javascript" src="AG_M1_L1_T3.js"></script>
         <script type="text/javascript" src="snap.js"></script>
+
         
 
         <script type="text/javascript">
@@ -19,7 +20,7 @@
             var world;
             
             window.onload = function () {
-            
+
                 // Checks if problem has been checked and modifies the autograded output if it has been checked
                 if (parent.document.getElementsByClassName("message").length !== 0) {
                     var hint = parent.document.getElementsByClassName("message")[0];
@@ -43,14 +44,14 @@
                 }
 
                 //Check if Pre-requisite task has completed
-                if (preReqID !== null &&
-                    localStorage.getItem(preReqID + "answer") !== null) {
+                if (preReqID !== null) {
                     var preReqState = JSON.parse(localStorage.getItem(preReqID + "answer"));
                     if (preReqState === null || !preReqState.checkState) {
                         var req_check = parent.document.getElementById("pre_req");
-                        req_check.innerHTML = "WARNING: The previous task must be completed before continuing."
+                        req_check.innerHTML = "[WARNING: The previous task must be completed before continuing.]"
                     }
                 }
+
 
                 //INITIALIZE UP SNAP
                 world = new WorldMorph(document.getElementById('world'));
@@ -63,9 +64,18 @@
                 //If this page has already been loaded
                 if (localStorage.getItem(id) !== null) {
                     ide.openProjectString(pageXML);
+                } else if (preReqID !== null) {
+                    //Load the previous Snap XML file if the the pre-requisite is complete
+                    var preReqState = JSON.parse(localStorage.getItem(preReqID + "answer"));
+                    if (preReqState !== null && preReqState.checkState) {
+                        ide.openProjectString(localStorage.getItem(preReqID));
+                    }
                 }
+
+
                 setInterval(loop, 1);
             };
+
             function loop() {
                 world.doOneCycle();
             }
@@ -111,6 +121,7 @@
             }
 
         </script>
+        
     </head>
     <body style="margin: 0;">
         <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>

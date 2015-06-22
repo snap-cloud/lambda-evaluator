@@ -10,15 +10,15 @@ var AG_state = {
 }
 //This is unsafe. Store this elsewhere
 var testLog;
-var preReqID = null;
-var taskID = "AG_M1_L1_T1";
+var preReqID = "AG_M1_L1_T2";
+var taskID = "AG_M1_L1_T3";
 id = id + taskID;
 function AGTest() {
-    testLog = testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]}]', ["A"], 0);
-    console.log(testLog);
+    
+    testLog = testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]', ["A"], 0);
 }
 
-var AG_M1_L1_T1 = (function() {
+var AG_M1_L1_T3 = (function() {
 	
 	var channel;
 
@@ -50,6 +50,7 @@ var AG_M1_L1_T1 = (function() {
 
         //Convert world to XML and store in local Storage
         var xmlString = ide.serializer.serialize(ide.stage);
+        
         localStorage.setItem(id, xmlString); 
 
         if (glog !== undefined) {
