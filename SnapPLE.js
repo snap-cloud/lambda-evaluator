@@ -179,7 +179,7 @@ function testBlockPresent(blockSpec, spriteIndex, outputLog) {
 	return outputLog;
 }
 
-function testScriptPresent(scriptString, spriteIndex, outputLog) {
+function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog) {
 	//Populate optional parameters
 	if (outputLog === undefined) {
 		outputLog = new gradingLog();
@@ -195,7 +195,7 @@ function testScriptPresent(scriptString, spriteIndex, outputLog) {
 	//test that scripts match
 		//TODO: update scriptsMatch function to take block objects, not objects on screen
 	//var isPresent = scriptsMatch(JSONtemplate, JSONtarget, false);
-	var isPresent = (JSONtoString(JSONtemplate) == JSONtoString(JSONtarget));
+	var isPresent = checkTemplate(JSONtemplate, JSONtarget, scriptVariables);
 	if (isPresent) {
 		feedback = "The targeted script is present in the scripts tab.";
 	} else {
@@ -691,8 +691,8 @@ function getAllGlobalVars() {
 	return world.children[0].globalVariables.vars;
 }
 
-/* Returns the value of a specific global variable. Takes in a string
- * that is the global variable to search for and a JavaScript object
+/* Returns the value of a specific global variable. Takes in a string VARTOGET
+ * that is the global variable to search for and a JavaScript object GLOBALVARS
  * that contains all of the global variables as keys and their values as the
  * corresponding values.
  */
@@ -703,101 +703,96 @@ function getGlobalVar(varToGet, globalVars) {
 	return globalVars[varToGet].value;
 }
 
-/* Takes in a blockMorph BLOCK and checks if its blockspec matches the input
- * string BLOCKSPEC. Returns true if the given block has the same blockSpec
- * as the input, else false.
- * To get the script for a sprite you run the command:
+/* Takes in an entire Sprite's SCRIPT and checks recursively if it contains
+ * the JavaScript object BLOCK that we are looking for with specific inputs.
+ * Returns true if BLOCK is found, otherwise returns false.
  *
- * world.children[0].sprites.contents[0].scripts.children[0]
- *
- * this command gives you the first block, and access to all the ensueing
- * blocks too.
- */
-function blockContainsBlockSpec(block, blockSpec) {
-	return (block.blockSpec === blockSpec);
-}
-
-/* Takes in an entire Sprite's script and checks recursively if it contains
- * the string BLOCKSPEC that we are looking for. Returns true if BLOCKSPEC
- * is found, otherwise returns false.
- *
- * The script can be obtained by running the command, which gives you the
+ * The SCRIPT can be obtained by running the command, which gives you the
  * first block and access to all the blocks connected to that block:
  *
- * world.children[0].sprites.contents[0].scripts.children[0]
+ * JSONscript(...)
  */
-function scriptContainsBlockSpec(script, blockSpec) {
-	if (blockContainsBlockSpec(script, blockSpec)) {
-		return true;
-	}
+function scriptContains(script, block) {
+	var morph1, type1;
+	for (var i = 0; i < script.length; i++) {
+		morph1 = script[i];
+		type1 = typeof(morph1);
 
-	var morph;
-	for (var i = 0; i < script.children.length; i++) {
-		morph = script.children[i];
-		if ((morph instanceof CSlotMorph)
-			&& scriptContainsBlockSpec(morph.children[0], blockSpec)) {
-			return true;
-		} else if ((morph instanceof ReporterBlockMorph)
-			&& scriptContainsBlockSpec(morph, blockSpec)) {
-			return true;
+		if ((type1 === "string")) {
+			continue;
+		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
+			if (scriptContains(morph1, block)) {
+				return true;
+			}
+		} else {
+			if (morph1.blockSp === block.blockSp) {
+				if (_.isEqual(morph1, block)) {
+					return true;
+				}
+			}
+			if (scriptContains(morph1.inputs, block)) {
+				return true;
+			}
 		}
 	}
 
-	if(!(script.children[script.children.length - 1] instanceof BlockMorph)) {
-		return false;
-	}
-
-	return scriptContainsBlockSpec(script.children[script.children.length - 1], blockSpec);
+	return false;
 }
 
-/* Takes in a blockSpec string BLOCK and a script SCRIPT
- * (which consists of many blocks) and returns which number block BLOCK is
- * within the entire script for the first occurance. For example, if we had
- * the following lines in Snap!:
- *
- * "move (10) steps"
- * "go to x:(6) y:(44)"
- * "turn clockwise (90) degrees"
- *
- * then calling our function with the blockSpec "move %n steps" would return 0.
- * Returns -1 if the block is not in the script.
- *
- * DOES NOT HANDLE IF STATEMENTS. ONLY CONTINOUS BLOCKS.
+/* A wrapper function that calls scriptContainsBlock by taking in the BLOCKARRAY
+ * which is the result of calling JSONscript(...) which gives you back an array
+ * of JavaScript objects. Since we are only working with one block, and hence only
+ * one JavaScript object, we will just extract the sole element of this array and
+ * pass that into scriptContains to get check if SCRIPT (also the result of calling
+ * JSONscript(...)) contains the given element in BLOCKARRAY. Returns true if we find
+ * the element in BLOCKARRAY, else return false.
  */
-function getBlockIndex(blockSpec, script) {
-	var index = 0;
-	if (blockContainsBlockSpec(script, blockSpec)) {
-		return index;
-	}
+function scriptContainsBlock(script, blockArray) {
+	var block = blockArray[0];
+	return scriptContains(script, block);
+}
 
-	var childrenList = script.children;
-	var lastChild = childrenList[childrenList.length - 1];
-	while (lastChild instanceof BlockMorph) {
-		index ++;
-		if (blockContainsBlockSpec(lastChild, blockSpec)) {
-			return index;
+/* Takes in two blockSpecs and boolean SEEN1, which is initialized to false.
+ * Returns true if blockSpec string BLOCK1 precedes the blockSpec string BLOCK2
+ * in terms of the order that they appear in the script SCRIPT which can be
+ * obtained by calling:
+ *
+ * JSONscript(...)
+ *
+ * For further clarification, a block this:
+ *
+ * "move (20 + (30 - 50)) steps"
+ *
+ * would count the (%n + %n) block as coming before the (%n - %n) block.
+ */
+function blockPrecedes(block1, block2, script, seen1) {
+	var morph1, type1;
+	for (var i = 0; i < script.length; i++) {
+		morph1 = script[i];
+		type1 = typeof(morph1);
+
+		if ((type1 === "string")) {
+			continue;
+		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
+			if (blockPrecedes(block1, block2, morph1, seen1)) {
+				return true;
+			}
+		} else {
+			if (morph1.blockSp === block2) {
+				if (!seen1) {
+					return false;
+				}
+				return true;
+			}
+			if ((morph1.blockSp === block1)) {
+				seen1 = true;
+			}
+			if (blockPrecedes(block1, block2, morph1.inputs, seen1)) {
+				return true;
+			}
 		}
-		lastChild = lastChild.children[lastChild.children.length - 1];
 	}
 
-	return -1;
-}
-
-/* Takes in two blockSpecs and returns true if blockSpec string BLOCK1
- * precedes the blockSpec string BLOCK2 in terms of the order that they
- * appear in the script SCRIPT which can be obtained by calling:
- *
- * world.children[0].sprites.contents[0].scripts.children[0]
- *
- * DO WE NEED TO HANDLE IF STATEMENTS? HOW TO DO SO?
- */
-function blockPrecedes(block1, block2, script) {
-	var position1, position2;
-	position1 = getBlockIndex(block1, script);
-	position2 = getBlockIndex(block2, script);
-	if (position1 < position2) {
-		return true;
-	}
 	return false;
 }
 
@@ -806,54 +801,82 @@ function blockPrecedes(block1, block2, script) {
  *
  * Get the block by calling:
  *
- * world.children[0].sprites.contents[0].scripts.children[0]
+ * JSONscript(...)
  */
 function occurancesOfBlockSpec(blockSpec, block) {
+	var morph1, type1;
 	var result = 0;
-	var morph;
-	if (block.blockSpec === blockSpec) {
-		result ++;
-	}
-	for (var i = 0; i < block.children.length; i++) {
-		morph = block.children[i];
-		if (morph instanceof CSlotMorph) {
-			result += occurancesOfBlockSpec(blockSpec, morph.children[0]);
-		} else if (morph instanceof BlockMorph) {
-			result += occurancesOfBlockSpec(blockSpec, morph);
+	for (var i = 0; i < block.length; i++) {
+		morph1 = block[i];
+		type1 = typeof(morph1);
+
+		if ((type1 === "string")) {
+			continue;
+		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
+			result += occurancesOfBlockSpec(blockSpec, morph1);
+		} else {
+			if (morph1.blockSp === blockSpec) {
+				result += 1;
+			}
+			result += occurancesOfBlockSpec(blockSpec, morph1.inputs);
 		}
 	}
 
 	return result;
 }
 
-/* Returns true if the two scripts are exactly the same. Else returns false.
- * Takes in two scripts, SCRIPT1 and SCRIPT2. Also takes in a boolean called
- * SOFTMATCH, if this is true then we ignore the inputs and just match up the
- * blocks. Can obtain sprite's first script by calling:
+/* Returns true if the two JSON scripts are exactly the same. Else returns false.
+ * Takes in two scripts, TEMPLATE (our template) and SCRIPT (student's template).
+ * Also takes in a boolean called SOFTMATCH, if this is true then we match the
+ * pattern of the template with the student's answer. VARS is initially an empty
+ * dictionary of mapping of variables in template to the actual values seen in the
+ * script. Pattern must match up, else false. Can obtain sprite's script by calling:
  *
- * world.children[0].sprites.contents[0].scripts.children[0]
+ * JSONscript(...)
  *
  */
-function scriptsMatch(script1, script2, softMatch) {
-	if (script1.blockSpec !== script2.blockSpec) {
-		return false;
-	}
-	if (script1.children.length !== script2.children.length) {
-		return false;
-	}
+function scriptsMatch(template, script, softMatch, vars, templateVariables) {
+	var morph1, morph2, type1, type2;
+	for (var i = 0; i < template.length; i++) {
+		morph1 = template[i];
+		morph2 = script[i];
+		type1 = typeof(morph1);
+		type2 = typeof(morph2);
 
-	var morph1, morph2;
-	for (var i = 0; i < script1.children.length; i++) {
-		morph1 = script1.children[i];
-		morph2 = script2.children[i];
-		if (morph1.constructor !== morph2.constructor) {
+
+		if (type1 !== type2) {
 			return false;
-		} else if ((morph1 instanceof CSlotMorph) && !(scriptsMatch(morph1.children[0], morph2.children[0], softMatch))) {
-			return false;
-		} else if ((morph1 instanceof BlockMorph) && !(scriptsMatch(morph1, morph2, softMatch))) {
-			return false;
-		} else if (!softMatch && (morph1 instanceof InputSlotMorph)) {
-			if (morph1.children[0].text !== morph2.children[0].text) {
+		}
+
+		if ((type1 === "string") && (type2 === "string")) {
+			if (softMatch && (morph1 !== morph2)) {
+				if (vars.hasOwnProperty(morph1)) {
+					if (vars[morph1] !== morph2) {
+						return false;
+					}
+				} else if (templateVariables.indexOf(morph1) === -1) {
+					return false;
+				} else {
+					vars[morph1] = morph2;
+				}
+			} else if (!softMatch && (morph1 !== morph2)) {
+				return false;
+			}
+		} else if ((Object.prototype.toString.call(morph1) === '[object Array]')
+			&& (Object.prototype.toString.call(morph2) === '[object Array]')) {
+
+			if (!scriptsMatch(morph1, morph2, softMatch, vars, templateVariables)) {
+				return false;
+			}
+
+		} else {
+			if (morph1.blockSp !== morph2.blockSp) {
+				return false;
+			}
+			if (morph1.inputs.length !== morph2.inputs.length) {
+				return false;
+			}
+			if (!scriptsMatch(morph1.inputs, morph2.inputs, softMatch, vars, templateVariables)) {
 				return false;
 			}
 		}
@@ -862,7 +885,7 @@ function scriptsMatch(script1, script2, softMatch) {
 	return true;
 }
 
-/* Takes in a JavaScript object that is the result of calling JSONscript() on
+/* Takes in a JavaScript object SCRIPT that is the result of calling JSONscript() on
  * a piece of Snap! code and converts it to a string. Use this to pass into
  * isScriptPresent() function for grading purposes.
  */
@@ -870,7 +893,7 @@ function JSONtoString(script) {
 	return JSON.stringify(script);
 }
 
-/* Takes in a string that is the representation of a JavaScript object and
+/* Takes in a string SCRIPT that is the representation of a JavaScript object and
  * converts it back into JSON format (the same format as a result of calling
  * JSONscript() on a piece of Snap! code).
  */
@@ -878,100 +901,124 @@ function stringToJSON(script) {
 	return JSON.parse(script);
 }
 
+/* Returns the next character after C. Got this from StackOverflow at this link:
+ * http://stackoverflow.com/questions/12504042/what-is-a-method-that-can-be-used-to-increment-letters
+ * Put in a case where "Z" then goes to "a" and "z" goes to "A" to prevent weird
+ * characters from being set to variables in our patterns like "[" or "}". Basically
+ * only uses alphabeticaly characters, just increments using the character's unicode value.
+ */
+function nextChar(c) {
+	if (c === "Z") {
+		return "a";
+	}
+	if (c === "z") {
+		return "A";
+	}
+    return String.fromCharCode(c.charCodeAt(0) + 1);
+}
 
+/* Takes in two correct JSONscript(...) representations of answers, SCRIPT1 and SCRIPT2,
+ * and constructs a general pattern template that we can use to grade other answers
+ * to a given question. Also Takes in a deep copy of the first JSONscript(...) called RESULT,
+ * which will be our template, and a NEWMAP JavaScript object (should be initialized to empty)
+ * that maps values to variables and the CURRCHAR JavaScript object that keeps track of
+ * the variable we are using for a given line in the template. This gets incremented bythe
+ * nextChar() function. Also takes in TEMPLATEVARIABLES, which is an array of all of the
+ * variables that will be in the returned template RESULT.
+ */
+function genPattern(script1, script2, result, newMap, currChar, templateVariables) {
+	var morph1, morph2, type1, type2;
+	for (var i = 0; i < script1.length; i++) {
+		morph1 = script1[i];
+		morph2 = script2[i];
+		morphR = result[i];
+		type1 = typeof(morph1);
+		type2 = typeof(morph2);
 
+		if ((type1 === "string") && (type2 === "string")) {
+			if (morph1 !== morph2) {
 
+				var newKey = JSONtoString([morph1, morph2]);
+				if (newMap.hasOwnProperty(newKey)) {
+					result[i] = newMap[newKey];
+				} else {
+					result[i] = currChar.val;
+					newMap[newKey] = currChar.val;
+					templateVariables.push(currChar.val);
+					currChar.val = nextChar(currChar.val);
+				}
+			}
+		} else if ((Object.prototype.toString.call(morph1) === '[object Array]')
+			&& (Object.prototype.toString.call(morph2) === '[object Array]')) {
 
-//Everything below here is trying to get genPattern() to work, just ignore it for now.
+			genPattern(morph1, morph2, morphR, newMap, currChar, templateVariables);
 
+		} else {
+			genPattern(morph1.inputs, morph2.inputs, morphR.inputs, newMap, currChar, templateVariables);
+		}
+	}
 
+	return result;
+}
 
+/* Takes in two JSONscripts, SCRIPT1 and SCRIPT2 from calling JSONscript(...)
+ * and returns a two element array of the grading template and the variables
+ * in the grading template. This is a wrapper function for genPattern().
+ *
+ * Get a deep copy by calling: var result = jQuery.extend(true, [], script1);
+ *
+ * We need this deep copy because we need a completely new object that doesn't
+ * modify either of the original student's scripts.
+ */
+function getTemplate(script1, script2) {
+	var result = jQuery.extend(true, [], script1);
+	var newMap = {};
+	var chars = {val: "A"};
+	var newMap = {};
+	var templateVariables = [];
+	return [genPattern(script1, script2, result, newMap, chars, templateVariables), templateVariables];
+}
 
+/* Takes in a TEMPLATE and a student's SCRIPT and grades it by checking the pattern
+ * against the student's pattern. Also takes in TEMPLATEVARIABLES, which is an array
+ * containing the variables in TEMPLATE. This is a wrapper function for scriptsMatch(...).
+ * Must pass in a parameter for vars in scriptsMatch as {}. Returns true if pattern
+ * matches, else false. If softMatch is false, then it will literally check exactly
+ * the values in the student's SCRIPT.
+ */
+function checkTemplate(template, script, templateVariables) {
+	var vars = {};
+	var softMatch = true;
+	return scriptsMatch(template, script, softMatch, vars, templateVariables);
+}
 
-// /* Checks the inputs for the scripts, assuming that they match in terms
-//  * of the blocks and if/else statements. The input EXPECTED is a JavaScript
-//  * that object is our version of the correct answer with variables for the
-//  * input (because each student's answer could be different). The input
-//  * ACTUAL is the student's given JavaScript object that we are checking.
-//  * This function returns true if the EXPECTED variable pattern matches
-//  * the student's ACTUAL value pattern throughout their script. Returns
-//  * false otherwise. Also, EXPECTED and ACTUAL need to be the result of calling
-//  * JSONscript(EXPECTED) and JSONscript(ACTUAL) so that they are in this format:
-//  *
-//  * [{blockSp: "move %n steps",
-//  *   inputs: [10]},
-//  *  {blockSp: "turn %n degrees",
-//  *   inputs: [{blockSpec: "%n + %n",
-//  *             inputs: ["3", "2"]}]}]
-//  */
-// function inputsMatch(expected, actual) {
-// 	var args = {};
+/* Checks if scripts are identical. */
+function testScriptIdentical(scriptString, spriteIndex, outputLog) {
+	//Populate optional parameters
+	if (outputLog === undefined) {
+		outputLog = new gradingLog();
+	}
+	if (spriteIndex === undefined) {
+		spriteIndex = 0;
+	}
 
-// 	for (var i = 0; i < expected.inputs.length; i++) {     //need to finish this!!!
-// 		ourScript.inputs[i]
-// 	}
-// }
+	var JSONtemplate = stringToJSON(scriptString);
+	var blockSpec = JSONtemplate[0].blockSp;
+	var testID = outputLog.addTest(blockSpec, "n/a", true, -1);
+	var JSONtarget = JSONscript(getScript(blockSpec, spriteIndex));
+	//test that scripts match
+		//TODO: update scriptsMatch function to take block objects, not objects on screen
+	//var isPresent = scriptsMatch(JSONtemplate, JSONtarget, false);
+	var vars = {};
+	var softMatch = false;
+	var isPresent = scriptsMatch(JSONtemplate, JSONtarget, softMatch, vars);
+	if (isPresent) {
+		feedback = "The targeted script is present in the scripts tab.";
+	} else {
+		feedback = "Script Missing: The target script was not found in the scripts tab";
+	}
+	outputLog.updateLog(testID, isPresent, feedback);
+	evaluateLog(outputLog);
+	return outputLog;
 
-// /* Returns the next character. Got this from StackOverflow at this link:
-//  * http://stackoverflow.com/questions/12504042/what-is-a-method-that-can-be-used-to-increment-letters
-//  */
-// function nextChar(c) {
-//     return String.fromCharCode(c.charCodeAt(0) + 1);
-// }
-
-//  Takes in two scripts that are both correct (and in the JSON format as
-//  * returned by JSONscript())and returns a general pattern of the script
-//  * (also in JSONscript() format) Where the inputs are the same, those
-//  * must be the same in the general pattern. Where the inputs differ,
-//  * we replace with a variable. Say we have these two scripts:
-//  *
-//  * move 30 steps      and    move 50 steps
-//  * turn 90 degrees           turn 90 degrees
-//  *
-//  * then we will return a JSON representation with the input for the move as a
-//  * variable and the input for the turn block as the value "90":
-//  *
-//  * move x steps
-//  * turn 90 degrees
-//  *
-//  * must also take in another copy of script 1 as result. Do not want to modify
-//  * script 1 because JavaScript passes a copy of the reference to script1.
-//  * Also need to pass in JavaScript object VARIABLES that contains a mapping of
-//  * the differeing values to different variables
-//  * that will be used in our general pattern, in order. Array starts with the
-//  * object that maps val:currVar. CurrVar should start with "a". {val: "a"}.
- 
-// function genPattern(script1, script2, result, variables, currVar) {
-// 	for (var block = 0; block < script1.length; block++) {
-// 		var currBlock1 = script1[block];
-// 		var currBlock2 = script2[block];
-// 		var currBlockResult = result[block];
-// 		if (Object.prototype.toString.call(currBlock1) === "[object Array]") {
-// 			genPattern(currBlock1, currBlock2, currBlockResult, variables, currVar);
-// 		} else {
-// 			var args1 = currBlock1.inputs;
-// 			var args2 = currBlock2.inputs;
-// 			var argsResult = currBlockResult.inputs;
-// 			for (var i = 0; i < args1.length; i++) {
-// 				if ((typeof(args1[i]) === "string") && (typeof(args2[i]) === "string")) {
-// 					if (args1[i] !== args2[i]) {
-// 						if (variables.hasOwnProperty(args1[i])) {
-// 							argsResult[i] = variables[args1[i]];
-// 						} else {
-// 							variables[args1[i]] = currVar.val;
-// 							argsResult[i] = currVar.val;
-// 							currVar.val = nextChar(currVar.val);
-// 						}
-// 					}
-// 				} else {
-// 					genPattern(args1, args2, argsResult, variables, currVar);
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	//return $.extend(variables, currVars);
-// 	return result;
-// }
-
-
+}

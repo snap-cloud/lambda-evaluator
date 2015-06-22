@@ -52,8 +52,8 @@ def hint_fn(answer_ids, student_answers, new_cmap, old_cmap):
 				test_string += "correctstart" + "Correct!" + "dataend"
 				numcorrect += 1
 			else:
-				test_string += "incorrectstart" + "Incorrect!" + "dataend"
-				test_string += "correctstart" + str(current_test["feedback"]) + "dataend"
+				test_string += "wrongstart" + "Incorrect!" + "dataend"
+				test_string += "wrongstart" + str(current_test["feedback"]) + "dataend"
 			output += "rowstart" + test_string[:] + "rowend"
 		output = ": {0}% ({1}/{2})".format(round(numcorrect/numtests * 100), numcorrect, numtests) + \
     		"""linebreak collapsedivstart
@@ -75,6 +75,3 @@ Make a "%x my plus %y" block to test!
     <hintgroup hintfn="hint_fn"/>
   </customresponse>
 </problem>
-
-
-
