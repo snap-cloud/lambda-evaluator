@@ -186,7 +186,6 @@ function testBlock(outputLog, testID) {
 	setValues(block, test["input"]);
 	var proc = evalReporter(block, outputLog, testID);
 	outputLog["" + testID]["proc"] = proc;
-	evalSingleProc(block, outputLog, testID);
 	return testID;
 }
 
@@ -448,6 +447,7 @@ function testKScope(iter) {
 	};
 
 	makeDragon(iterations, callback);
+
 	return eLog;
 
 }
@@ -603,6 +603,7 @@ function drawDragon(turns, func) {
 function makeDragon(iterations, callback) {
 	var turns = createCurve(iterations);
 	var act = createInputSpoof(100, callback);
+	act("c");
 	act("mousemove", 0, 0);
 	act("space");
 	drawDragon(turns, act);

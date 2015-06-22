@@ -28063,7 +28063,7 @@ Process.prototype.reportContextFor = function (context, otherObj) {
     }
     return result;
 };
-
+//bookmark
 Process.prototype.reportMouseX = function () {
     var stage, world;
     if (this.homeContext.receiver) {
@@ -31388,7 +31388,7 @@ SpriteMorph.prototype.userMenu = function () {
 };
 
 SpriteMorph.prototype.exportSprite = function () {
-    if (this.isCoone) {return; }
+    if (this.isClone) {return; }
     var ide = this.parentThatIsA(IDE_Morph);
     if (ide) {
         ide.exportSprite(this);
