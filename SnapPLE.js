@@ -731,25 +731,6 @@ function makeDragon(iterations, callback) {
 /* ------ END DAVID'S MESS ------ */
 
 
-/*
-*  JSONify the output log 
-*/
-function dictLog(outputLog) {
-	var outDict = {};
-	for (var i = 1; i <=outputLog.testCount;i++) {
-		var testDict = {};
-		testDict["id"] = i;
-		testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
-		testDict["input"] = outputLog[i]["input"];
-		testDict["expOut"] = outputLog[i]["expOut"];
-		testDict["output"] = outputLog[i]["output"];
-		testDict["feedback"] = outputLog[i]["feedback"];
-		outDict[i] = testDict;
-	}
-	return outDict;
-}
-
-
 /* Takes in a single block and converts it into JSON format.
  * For example, will take in a block like:
  *
