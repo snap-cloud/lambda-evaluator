@@ -16,6 +16,17 @@
             var world;
             
             window.onload = function () {
+                world = new WorldMorph(document.getElementById('world'));
+                new IDE_Morph().openIn(world);
+
+                //Reduce Stage Size on initialization
+                var ide = world.children[0];
+                ide.toggleStageSize(true);
+                
+                //If this page has already been loaded
+                if (localStorage.getItem(id) !== null) {
+                    ide.openProjectString(pageXML);
+                }
 
                 var hint = parent.document.getElementsByClassName("message")[0];
                 var tags = 
@@ -36,51 +47,33 @@
                 ['spanend', '</span>'], 
                 ['spanstart', '<span class="message">']];
 
+
+                function escapeRegExp(string) {
+                    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+                }
+
+                function replaceall(string, find, replace) {
+                    return (string.replace(new RegExp(escapeRegExp(find), 'g'), replace));
+                }
+
                 var message = String(hint.innerHTML);
                 var taglength = tags.length;
 
                 for (var i = 0; i < taglength; i++) {
-                    message = replaceall(message, tags[i][0], tags[i][1]);
+                    setTimeout(message = replaceall(message, tags[i][0], tags[i][1]), 300);
                 }
                 hint.innerHTML = message;
-
-                world = new WorldMorph(document.getElementById('world'));
-                new IDE_Morph().openIn(world);
-
-                //Reduce Stage Size on initialization
-                var ide = world.children[0];
-                ide.toggleStageSize(true);
-                
-                //If this page has already been loaded
-                if (localStorage.getItem(id) !== null) {
-                    ide.openProjectString(pageXML);
-                }
 
                 setInterval(loop, 1);
             };
             function loop() {
                 world.doOneCycle();
             }
-            function escapeRegExp(string) {
-                    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-            }
-
-            function replaceall(string, find, replace) {
-                return (string.replace(new RegExp(escapeRegExp(find), 'g'), replace));
-            }
-
-            /*
-             * Re-format the contents of a the hint string to add HTML tags and
-             * appropriate CSS. Return the re-formatted string.
-             */
-            function formatFeedback() {
-
-            }
-
         </script>
     </head>
     <body style="margin: 0;">
         <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
+        <!-- <input id="clickMe" type="button" value="XXXXXX" onclick='multiTestBlock("%s my plus %s", [[1,2],[2,2],[2,3],[3,3]], [3,4,6,6]);'/> -->
         <div id="autograding" style="position: absolute; padding-top: 5px; padding-left: 5px; color:red;">
             UNGRADED
         </div>

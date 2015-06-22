@@ -11,14 +11,14 @@ var AG_state = {
 }
 //This is unsafe. Store this elsewhere
 var testLog;
-var preRecID = null;
-var taskID = "AG_M1_L1_T2";
+var preReqID = "AG_M1_L1_T2";
+var taskID = "AG_M1_L1_T3";
 id = id + taskID;
 function AGTest() {
-    testLog = testScriptIdentical('[{"blockSp":"move %n steps","inputs":["10"]},{"blockSp":"turn %clockwise %n degrees","inputs":["15"]}]', 0);
+    testLog = testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]', 0);
 }
 
-var AG_M1_L1_T2 = (function() {
+var AG_M1_L1_T3 = (function() {
 	
 	var channel;
 

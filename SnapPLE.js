@@ -19,14 +19,20 @@ function gradingLog() {
 *  Add a test to the gradingLog object
 *  tests are tracked by a test ID number. 
 *  Access specific parts of each test by:
-*  		gradingLog.[""+(testID)]["testDesciption"]
+*  		gradingLog.[""+(testID)]
+*  Test Class include:
+*		"p" - presence test
+		"r" - reporter test
+		"s" - stage event test
 */
-gradingLog.prototype.addTest = function(blockSpec, input, expOut, timeOut) {
+gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, timeOut) {
 	this.testCount += 1;
-	this["" + this.testCount] = {"blockSpec": blockSpec,
+	this["" + this.testCount] = {"testClass": testClass,
+								 "blockSpec": blockSpec,
 								 "input": input, 
 								 "expOut": expOut, 
 								 "output": null, 
+								 "correct": false,
 								 "feedback": null,
 								 "timeOut": timeOut,
 								 "proc": null};
@@ -40,36 +46,37 @@ gradingLog.prototype.addTest = function(blockSpec, input, expOut, timeOut) {
 *  Uses a series of setTimeouts to make sure the asyncronous 
 *  test threads do not clash with one another on setup.
 */
-gradingLog.prototype.finishTest = function(testID, output, feedback) {
+gradingLog.prototype.finishTest = function(testID, output, feedback, correct) {
+
+	//Populate Grade Log
 	if (this["" + testID] !== undefined) {
 		this["" + testID]["output"] = output;
-		if (feedback !== undefined) {
-			this["" + testID]["feedback"] = feedback;
-		}
+		this["" + testID]["feedback"] = feedback || this["" + testID]["feedback"];
+		this["" + testID]["correct"] = correct || this["" + testID]["correct"];
 	} else {
 		throw "gradingLog.finishTest: TestID is invalid.";
 	}
+
+	//Initiate next test, kill timeout function for previous test
+	// if this is the last test, evaluate the log
+	// TODO: Integrate evaluateLog into finishTest
 	var glog = this;
 	if (testID < this.testCount) {
 		clearTimeout(this.currentTimeout);
 		setTimeout(function() {testBlock(glog, testID+1)},1);
-		//TODO: generalize for all sprites?
-		//TODO: Figure out a good default timeout NOW -> 1000ms
 		this.currentTimeout = infLoopCheck(glog, testID+1);
 	} else {
 		setTimeout(function() {evaluateLog(glog)}, 1);
 	}
-	// return this["" + testID];
 };
 
 //Unused function that makes sure the test exisits in the log
 //and updates the output and feedback accordingly
-gradingLog.prototype.updateLog = function(testID, output, feedback) {
+gradingLog.prototype.updateLog = function(testID, output, feedback, correct) {
 	if (this["" + testID] !== undefined) {
 		this["" + testID]["output"] = output;
-		if (feedback !== undefined) {
-			this["" + testID]["feedback"] = feedback;
-		}
+		this["" + testID]["feedback"] = feedback || this["" + testID]["feedback"]
+		this["" + testID]["correct"] = correct || this["" + testID]["correct"]
 	} else {
 		throw "gradingLog.finishTest: TestID is invalid.";
 	}
@@ -159,7 +166,7 @@ function testBlockPresent(blockSpec, spriteIndex, outputLog) {
 	}
 
 	//Generate Log
-	var testID = outputLog.addTest(blockSpec, "n/a", true, -1);
+	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1);
 	var isPresent = isScriptPresent(blockSpec, spriteIndex);
 	var feedback = null;
 	if (isPresent) {
@@ -167,7 +174,7 @@ function testBlockPresent(blockSpec, spriteIndex, outputLog) {
 	} else {
 		feedback = "Block Missing: (" + blockSpec + ") , was not found in the scripts tab";
 	}
-	outputLog.updateLog(testID, isPresent, feedback);
+	outputLog.updateLog(testID, isPresent, feedback, isPresent);
 	evaluateLog(outputLog);
 	return outputLog;
 }
@@ -183,7 +190,7 @@ function testScriptPresent(scriptString, spriteIndex, outputLog) {
 
 	var JSONtemplate = stringToJSON(scriptString);
 	var blockSpec = JSONtemplate[0].blockSp;
-	var testID = outputLog.addTest(blockSpec, "n/a", true, -1);
+	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1);
 	var JSONtarget = JSONscript(getScript(blockSpec, spriteIndex));
 	//test that scripts match
 		//TODO: update scriptsMatch function to take block objects, not objects on screen
@@ -194,7 +201,7 @@ function testScriptPresent(scriptString, spriteIndex, outputLog) {
 	} else {
 		feedback = "Script Missing: The target script was not found in the scripts tab";
 	}
-	outputLog.updateLog(testID, isPresent, feedback);
+	outputLog.updateLog(testID, isPresent, feedback, isPresent);
 	evaluateLog(outputLog);
 	return outputLog;
 
@@ -268,7 +275,7 @@ function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
 	}
 
 	for (var i=0;i<inputs.length; i++) {
-		testIDs[i] = outputLog.addTest(blockSpec, inputs[i], expOuts[i], timeOuts[i]);
+		testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i]);
 	}
 	testBlock(outputLog, testIDs[0]);
 	outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
@@ -321,6 +328,9 @@ function evaluateLog(outputLog, testIDs) {
 	for (var id of testIDs) {
 		//Changed === snapEquals() to better evaluate snap output
 		//re ordered the conditionals to make more sense and reduce errors
+		if (outputLog[id]["correct"] === true) {
+			continue;
+		}
 		if (outputLog[id]["feedback"] === "Error!") {
 			outputLog.allCorrect = false;
 			outputLog[id]["output"] = "Error!";
@@ -331,10 +341,16 @@ function evaluateLog(outputLog, testIDs) {
 				((outputLog[id]["timeOut"] < 0) ? 1000 : outputLog[id]["timeOut"]) + " ms.";
 		} else if (snapEquals(outputLog[id]["output"], outputLog[id]["expOut"])) {
 			outputLog[id]["feedback"] = "Correct!";
+			outputLog[id]["correct"] = true;
 		} else {
 			outputLog.allCorrect = false;
-			outputLog[id]["feedback"] = "Incorrect Answer; Expected: " +
-				outputLog[id]["expOut"] + " , Got: " + outputLog[id]["output"];
+			if (outputLog[id]["testClass"] === "r") {
+				outputLog[id]["feedback"] = "Expected: " +
+					outputLog[id]["expOut"] + " , Got: " + outputLog[id]["output"];
+			} else if (outputLog[id]["testClass"] === "p") {
+				//outputLog[id]["feedback"] = "Script is not"
+			}
+			outputLog[id]["correct"] = false;
 		}
 	}
 	return outputLog;
