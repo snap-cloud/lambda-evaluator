@@ -524,10 +524,12 @@ function dictLog(outputLog) {
 	for (var i = 1; i <=outputLog.testCount;i++) {
 		var testDict = {};
 		testDict["id"] = i;
+		testDict["testClass"] = outputLog[i]["testClass"];
 		testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
 		testDict["input"] = outputLog[i]["input"];
 		testDict["expOut"] = outputLog[i]["expOut"];
 		testDict["output"] = outputLog[i]["output"];
+		testDict["correct"] = outputLog[i]["correct"];
 		testDict["feedback"] = outputLog[i]["feedback"];
 		outDict[i] = testDict;
 	}
@@ -541,10 +543,12 @@ function printLog(outputLog) {
 	var testString = ""; //TODO: Consider putting Output Header
 	for (var i = 1; i<=outputLog.testCount;i++) {
 		testString += "[Test " + i + "]";
+		testString += "Class: " + outputLog[i]["correct"];
 		testString += " Block: '(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
 		testString += " Input: " + outputLog[i]["input"];
 		testString += " Expected Ans: " + outputLog[i]["expOut"];
 		testString += " Got: " + outputLog[i]["output"];
+		testString += " Correct: " + outputLog[i]["correct"];
 		testString += " Feedback: " + outputLog[i]["feedback"] + "\n";
 	}
 	return testString;
