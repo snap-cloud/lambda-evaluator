@@ -50,6 +50,10 @@ def hint_fn(answer_ids, student_answers, new_cmap, old_cmap):
 				test_string += "datastart" + str(current_test[key]) + "dataend"
 			if str(current_test["correct"]) == "True":
 				test_string += "correctstart" + "Correct!" + "dataend"
+
+				#include for feedback on correct answers
+				test_string += "correctstart" + str(current_test["feedback"]) + "dataend" 
+				
 				numcorrect += 1
 			else:
 				test_string += "wrongstart" + "Incorrect!" + "dataend"
