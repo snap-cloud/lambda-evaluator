@@ -885,24 +885,15 @@ function getGlobalVar(varToGet, globalVars) {
 }
 
 /* Takes in an entire Sprite's SCRIPT and checks recursively if it contains
-<<<<<<< HEAD
- * the string BLOCKSPEC that we are looking for. Returns true if BLOCKSPEC
- * is found, otherwise returns false.
-=======
  * the JavaScript object BLOCK that we are looking for with specific inputs.
  * Returns true if BLOCK is found, otherwise returns false.
->>>>>>> upstream/master
  *
  * The SCRIPT can be obtained by running the command, which gives you the
  * first block and access to all the blocks connected to that block:
  *
  * JSONscript(...)
  */
-<<<<<<< HEAD
-function scriptContainsBlockSpec(script, blockSpec) {
-=======
 function scriptContains(script, block) {
->>>>>>> upstream/master
 	var morph1, type1;
 	for (var i = 0; i < script.length; i++) {
 		morph1 = script[i];
@@ -911,16 +902,6 @@ function scriptContains(script, block) {
 		if ((type1 === "string")) {
 			continue;
 		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
-<<<<<<< HEAD
-			if (scriptContainsBlockSpec(morph1, blockSpec)) {
-				return true;
-			}
-		} else {
-			if (morph1.blockSp === blockSpec) {
-				return true;
-			}
-			if (scriptContainsBlockSpec(morph1.inputs, blockSpec)) {
-=======
 			if (scriptContains(morph1, block)) {
 				return true;
 			}
@@ -931,15 +912,12 @@ function scriptContains(script, block) {
 				}
 			}
 			if (scriptContains(morph1.inputs, block)) {
->>>>>>> upstream/master
 				return true;
 			}
 		}
 	}
 
 	return false;
-<<<<<<< HEAD
-=======
 }
 
 /* A wrapper function that calls scriptContainsBlock by taking in the BLOCKARRAY
@@ -953,7 +931,6 @@ function scriptContains(script, block) {
 function scriptContainsBlock(script, blockArray) {
 	var block = blockArray[0];
 	return scriptContains(script, block);
->>>>>>> upstream/master
 }
 
 /* Takes in two blockSpecs and boolean SEEN1, which is initialized to false.
@@ -1039,11 +1016,7 @@ function occurancesOfBlockSpec(blockSpec, block) {
  * JSONscript(...)
  *
  */
-<<<<<<< HEAD
-function scriptsMatch(template, script, softMatch, vars) {
-=======
 function scriptsMatch(template, script, softMatch, vars, templateVariables) {
->>>>>>> upstream/master
 	var morph1, morph2, type1, type2;
 	for (var i = 0; i < template.length; i++) {
 		morph1 = template[i];
@@ -1062,11 +1035,8 @@ function scriptsMatch(template, script, softMatch, vars, templateVariables) {
 					if (vars[morph1] !== morph2) {
 						return false;
 					}
-<<<<<<< HEAD
-=======
 				} else if (templateVariables.indexOf(morph1) === -1) {
 					return false;
->>>>>>> upstream/master
 				} else {
 					vars[morph1] = morph2;
 				}
@@ -1076,11 +1046,7 @@ function scriptsMatch(template, script, softMatch, vars, templateVariables) {
 		} else if ((Object.prototype.toString.call(morph1) === '[object Array]')
 			&& (Object.prototype.toString.call(morph2) === '[object Array]')) {
 
-<<<<<<< HEAD
-			if (!scriptsMatch(morph1, morph2, softMatch, vars)) {
-=======
 			if (!scriptsMatch(morph1, morph2, softMatch, vars, templateVariables)) {
->>>>>>> upstream/master
 				return false;
 			}
 
@@ -1091,11 +1057,7 @@ function scriptsMatch(template, script, softMatch, vars, templateVariables) {
 			if (morph1.inputs.length !== morph2.inputs.length) {
 				return false;
 			}
-<<<<<<< HEAD
-			if (!scriptsMatch(morph1.inputs, morph2.inputs, softMatch, vars)) {
-=======
 			if (!scriptsMatch(morph1.inputs, morph2.inputs, softMatch, vars, templateVariables)) {
->>>>>>> upstream/master
 				return false;
 			}
 		}
@@ -1135,77 +1097,6 @@ function nextChar(c) {
 	}
     return String.fromCharCode(c.charCodeAt(0) + 1);
 }
-<<<<<<< HEAD
-
-/* Takes in two correct JSONscript(...) representations of answers, SCRIPT1 and SCRIPT2,
- * and constructs a general pattern template that we can use to grade other answers
- * to a given question. Also Takes in a deep copy of the first JSONscript(...) called RESULT,
- * which will be our template, and a NEWMAP JavaScript object (should be initialized to empty)
- * that maps values to variables and the CURRCHAR JavaScript object that keeps track of
- * the variable we are using for a given line in the template. This gets incremented by
- * the nextChar() function.
- */
-function genPattern(script1, script2, result, newMap, currChar) {
-	var morph1, morph2, type1, type2;
-	for (var i = 0; i < script1.length; i++) {
-		morph1 = script1[i];
-		morph2 = script2[i];
-		morphR = result[i];
-		type1 = typeof(morph1);
-		type2 = typeof(morph2);
-
-		if ((type1 === "string") && (type2 === "string")) {
-			if (morph1 !== morph2) {
-
-				var newKey = JSONtoString([morph1, morph2]);
-				if (newMap.hasOwnProperty(newKey)) {
-					result[i] = newMap[newKey];
-				} else {
-					result[i] = currChar.val;
-					newMap[newKey] = currChar.val;
-					currChar.val = nextChar(currChar.val);
-				}
-			}
-		} else if ((Object.prototype.toString.call(morph1) === '[object Array]')
-			&& (Object.prototype.toString.call(morph2) === '[object Array]')) {
-
-			genPattern(morph1, morph2, morphR, newMap, currChar);
-
-		} else {
-			genPattern(morph1.inputs, morph2.inputs, morphR.inputs, newMap, currChar);
-		}
-	}
-
-	return result;
-}
-
-/* Takes in two JSONscripts, SCRIPT1 and SCRIPT2 from calling JSONscript(...)
- * and returns the grading template. This is a wrapper function for genPattern().
- *
- * Get a deep copy by calling: var result = jQuery.extend(true, [], script1);
- *
- * We need this deep copy because we need a completely new object that doesn't
- * modify either of the original student's scripts.
- */
-function getTemplate(script1, script2) {
-	var result = jQuery.extend(true, [], script1);
-	var newMap = {};
-	var chars = {val: "A"};
-	var newMap = {};
-	return genPattern(script1, script2, result, newMap, chars);
-}
-
-/* Takes in a TEMPLATE and a student's SCRIPT and grades it by checking the pattern
- * against the student's pattern. This is a wrapper function for scriptsMatch(...).
- * Must pass in a parameter for vars in scriptsMatch as {}. Returns true if pattern
- * matches, else false. If softMatch is false, then it will literally check exactly
- * the values in the student's SCRIPT.
- */
-function checkTemplate(template, script) {
-	var vars = {};
-	var softMatch = true;
-	return scriptsMatch(template, script, softMatch, vars);
-=======
 
 /* Takes in two correct JSONscript(...) representations of answers, SCRIPT1 and SCRIPT2,
  * and constructs a general pattern template that we can use to grade other answers
@@ -1322,5 +1213,4 @@ function testScriptIdentical(scriptString, spriteIndex, outputLog) {
 	evaluateLog(outputLog);
 	return outputLog;
 
->>>>>>> upstream/master
 }
