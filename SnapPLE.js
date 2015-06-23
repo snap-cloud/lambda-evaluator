@@ -394,6 +394,9 @@ function evaluateLog(outputLog, testIDs) {
 			outputLog[id]["correct"] = false;
 		}
 	}
+	setTimeout(function() {
+		AGFinish();
+	},1);
 	return outputLog;
 }
 

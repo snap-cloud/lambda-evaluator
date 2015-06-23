@@ -1,0 +1,35 @@
+#autograding_bar {
+	position:absolute;
+	
+	right:16em;
+	padding-top: 2px; 
+	padding-left: 5px; 
+	color:red; 
+	font-family:helvetica;
+	text-align:right;
+	
+}
+
+#autograding_flag {
+	margin-right:3px;
+	font-weight:bold;
+	/*line-height:0.8em;*/
+	height:100%;
+	/*background-color:#CCCCEE;*/
+	top:0px;
+}
+
+#autograding_button {
+	top:1px;
+	/*height:1.2em;*/
+	padding-top:2px;
+	padding-right:3px;
+	padding-bottom:0px;
+	padding-left:3px;
+	line-height:.9em;
+	border:1px gray solid;
+	border-radius:4px;
+	background-color:#FF3333;
+	font-size:1.2em;
+	color:white;
+}
