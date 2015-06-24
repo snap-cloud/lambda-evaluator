@@ -7,20 +7,17 @@
 	color:red; 
 	font-family:helvetica;
 	text-align:right;
-	
 }
 
 #autograding_flag {
 	margin-right:3px;
 	font-weight:bold;
-	/*line-height:0.8em;*/
 	height:100%;
-	/*background-color:#CCCCEE;*/
 	top:0px;
 }
 
 #autograding_button {
-	top:1px;
+	margin-top:2px;
 	/*height:1.2em;*/
 	padding-top:2px;
 	padding-right:3px;
@@ -33,3 +30,6 @@
 	font-size:1.2em;
 	color:white;
 }
+
+#autograding_button:hover {
+	border:1px gray solid;

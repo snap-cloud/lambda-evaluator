@@ -53,7 +53,8 @@ var AG_EDX = (function() {
 
 
         //Return the gradeable object (either anew or from previously saved state)
-        if (localStorage.getItem(id + "answer") !== null && xmlString === localStorage.getItem(id + "correctstate")) {
+        if (localStorage.getItem(id + "answer") !== null && 
+            xmlString === localStorage.getItem(id + "correctstate")) {
             return localStorage.getItem(id + "answer");
         } else {
             return JSON.stringify(AG_state);

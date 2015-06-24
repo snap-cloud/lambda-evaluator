@@ -7,11 +7,65 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="http://underscorejs.org/underscore-min.js"></script>
         <script type="text/javascript" src="SnapPLE.js"></script>
-        <script type="text/javascript" src="AG_M1_L1_T1.js"></script>
+        <script type="text/javascript" src="AG_EDX.js"></script>
         <script type="text/javascript" src="snap.js"></script>
         
+        <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
 
         <script type="text/javascript">
+
+            var id = ""
+            var AG_state = {
+                'checkState': false,
+                'comment': "Please run 'Grade Question' before clicking the 'Check' button.",
+                'feedback': {}
+            }
+            //This is unsafe. Store this elsewhere
+            var testLog;
+            var preReqID = null;
+            var taskID = "AG_M1_L1_T3";
+            id = id + taskID;
+            function AGTest() {
+                localStorage.removeItem(id);
+                localStorage.removeItem(id + "answer");
+                localStorage.removeItem(id + "correctstate");
+                testLog = testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]}]', ["A"], 0);
+
+            }
+
+            function AGFinish() {
+                var grade_flag = document.getElementById("autograding_flag");
+                var grade_button = document.getElementById("autograding_button");
+                var prev_AG_state = JSON.parse(localStorage.getItem(id + "answer"));
+                console.log(prev_AG_state);
+                if (testLog === undefined && prev_AG_state === null) {
+                    grade_flag.innerHTML = "UNGRADED";
+                    grade_flag.style.color = "#FF3333"
+                    grade_button.innerHTML = "&#x2713;";
+                    grade_button.style.color = "white";
+                    grade_button.style.background = "#FF3333";
+                    grade_button.style.font = "1.2em";
+                    grade_button.style.padding = "2px 3px 0px 3px";
+                } else if ((testLog !== undefined && testLog.allCorrect) ||
+                        (prev_AG_state!==null && prev_AG_state.checkState)) {
+                    grade_flag.innerHTML = "GRADED";
+                    grade_flag.style.color = "#33FF33";
+                    grade_button.style.font = "1.2em";
+                    grade_button.style.color = "white";
+                    grade_button.style.background = "#33FF33";
+                    grade_button.innerHTML = "&#x2713;";
+                    grade_button.style.padding = "2px 3px 0px 3px";
+                } else {
+                    grade_flag.innerHTML = "GRADED";
+                    grade_flag.style.color = "orange";
+                    grade_button.style.font = "1.4em";
+                    grade_button.style.color = "black";
+                    grade_button.style.background = "orange";
+                    grade_button.style.padding = "2px 1px 0px 1px";
+                    grade_button.innerHTML = "&#x26A0;";
+
+                }
+            }
 
             //recover stored save
             console.log(id);
@@ -27,20 +81,6 @@
                     hint.style.display = "inline";
                 }
 
-                //UPDATE GRADING FLAG
-                var grade_flag = document.getElementById("autograding");
-                var prev_AG_state = JSON.parse(localStorage.getItem(id + "answer"));
-                console.log(prev_AG_state);
-                if (prev_AG_state !== null) {
-                    grade_flag.innerHTML = "GRADED";
-                    if (prev_AG_state.checkState) {
-                        grade_flag.style.color = "green";
-                    } else {
-                        grade_flag.style.color = "orange";
-                    }
-                } else {
-                    grade_flag.innerHTML = "UNGRADED!";
-                }
 
                 //Check if Pre-requisite task has completed
                 if (preReqID !== null &&
@@ -115,9 +155,23 @@
     <body style="margin: 0;">
         <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
         <!-- <input id="clickMe" type="button" value="XXXXXX" onclick='multiTestBlock("%s my plus %s", [[1,2],[2,2],[2,3],[3,3]], [3,4,6,6]);'/> -->
-        <div id="autograding" style="position: absolute; padding-top: 5px; padding-left: 5px; color:red; font-family:helvetica">
-            UNGRADED
+        <div id="autograding_bar">
+            <div id="autograding_flag" style="display:inline-block">
+                UNGRADED
+            </div>
+            <div id="autograding_button" style="display:inline-block">
+                 &#x2713;
+            </div>
         </div>
+        <script type="text/javascript">
+            AGFinish();
+            var grade_button = document.getElementById("autograding_button");
+            grade_button.style.cursor = "pointer";
+            grade_button.onclick = function() {
+                AGTest();
+
+            }
+        </script>
 
     </body>
 </html>

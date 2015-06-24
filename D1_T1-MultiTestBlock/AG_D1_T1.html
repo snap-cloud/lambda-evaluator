@@ -23,19 +23,49 @@
             //This is unsafe. Store this elsewhere
             var testLog;
             var preReqID = null;
-            var taskID = "AG_M1_L2_T6";
+            var taskID = "AG_D1_T1";
             id = id + taskID;
             function AGTest() {
-                
+                localStorage.removeItem(id);
+                localStorage.removeItem(id + "answer");
+                localStorage.removeItem(id + "correctstate");
                 testLog = testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]', ["A"], 0);
+                // testLog = multiTestBlock("%s my plus %s",[[1,2],[2,2],[2,3],[3,4],[5,5]],[3,4,5,7,10],[-1,-1,-1,-1,-1]);
 
             }
+            //Currently only works for one sprite with scripts
+            //TODO: Extend to all script groups
+            function isSameSnapXML(prev_xml, curr_xml) {
+                //replace script coordinates with generic 'x="0" y="0"'
+                prev_xml = prev_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
+                curr_xml = curr_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
 
-            function AGFinish() {
+                //split between brackets
+                prev_xml_scripts = prev_xml.match(/(<script x)(.*?)(<\/script>)/g);
+                curr_xml_scripts = curr_xml.match(/(<script x)(.*?)(<\/script>)/g);
+                
+                //sort script tags and convert back to strings
+                prev_xml_scripts.sort().join("");
+                curr_xml_scripts.sort().join("");
+
+                //replace unsorted scripts with sorted scripts
+                prev_xml = prev_xml.replace(/(<script x)(.*)(<\/script>)/g,prev_xml_scripts);
+                curr_xml = curr_xml.replace(/(<script x)(.*)(<\/script>)/g,curr_xml_scripts);
+
+                return prev_xml === curr_xml;
+            }
+
+            function AGFinish(prev_xml) {
+
                 var grade_flag = document.getElementById("autograding_flag");
                 var grade_button = document.getElementById("autograding_button");
+                if (prev_xml !== undefined) {
+                    var ide = world.children[0];
+                    var curr_xml = ide.serializer.serialize(ide.stage);
+                }
                 var prev_AG_state = JSON.parse(localStorage.getItem(id + "answer"));
-                if (testLog === undefined && prev_AG_state === null) {
+                if ((testLog === undefined && prev_AG_state === null) ||
+                ((prev_xml !== undefined) && (!isSameSnapXML(prev_xml, curr_xml)))) {
                     grade_flag.innerHTML = "UNGRADED";
                     grade_flag.style.color = "#FF3333"
                     grade_button.innerHTML = "&#x2713;";
@@ -43,7 +73,8 @@
                     grade_button.style.background = "#FF3333";
                     grade_button.style.font = "1.2em";
                     grade_button.style.padding = "2px 3px 0px 3px";
-                } else if (testLog.allCorrect || (prev_AG_state!==null && prev_AG_state.allCorrect)) {
+                } else if ((testLog !== undefined && testLog.allCorrect) ||
+                        (prev_AG_state!==null && prev_AG_state.checkState)) {
                     grade_flag.innerHTML = "GRADED";
                     grade_flag.style.color = "#33FF33";
                     grade_button.style.font = "1.2em";
@@ -63,6 +94,7 @@
                 }
             }
 
+
             //recover stored save
             console.log(id);
             var pageXML = localStorage.getItem(id);
@@ -76,7 +108,6 @@
                     hint.innerHTML = formatFeedback(hint);
                     hint.style.display = "inline";
                 }
-
 
 
                 //Check if Pre-requisite task has completed
@@ -159,7 +190,7 @@
         </script>
         
     </head>
-    <body style="margin: 0; width:100%">
+    <body style="margin: 0;">
         <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
         <!-- <input id="clickMe" type="button" value="XXXXXX" onclick='multiTestBlock("%s my plus %s", [[1,2],[2,2],[2,3],[3,3]], [3,4,6,6]);'/> -->
         <div id="autograding_bar">
@@ -174,7 +205,6 @@
             AGFinish();
             var grade_button = document.getElementById("autograding_button");
             grade_button.style.cursor = "pointer";
-            var ide = world.children[0];
             var prev_xml;
             grade_button.onclick = function() {
                 var ide = world.children[0];
@@ -182,9 +212,14 @@
                 AGTest();
 
             }
-            setInterval(function() {
+
+            /* Check if the snap xml has changed "significantly".
+             * Exclude script position and edit history.
+             */
+            document.addEventListener("mouseup", function() {
                 AGFinish(prev_xml);
-            }, 500);
+            });
         </script>
+
     </body>
 </html>

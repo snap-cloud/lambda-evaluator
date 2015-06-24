@@ -231,7 +231,18 @@ function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog
 	var JSONtemplate = stringToJSON(scriptString);
 	var blockSpec = JSONtemplate[0].blockSp;
 	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1);
-	var JSONtarget = JSONscript(getScript(blockSpec, spriteIndex));
+	//Handle case when no scripts present on stage.
+	try {
+		var JSONtarget = JSONscript(getScript(blockSpec, spriteIndex));
+	} catch(e) {
+		var isPresent = false;
+		var feedback = "Script Missing: The target script was not found in the scripts tab"
+		outputLog.updateLog(testID, isPresent, feedback, isPresent);
+		evaluateLog(outputLog)
+		// return outputLog
+		//Return undefined so the grade state doesn't change when no script is present.
+		return undefined;
+	}
 	//test that scripts match
 		//TODO: update scriptsMatch function to take block objects, not objects on screen
 	//var isPresent = scriptsMatch(JSONtemplate, JSONtarget, false);
@@ -239,7 +250,7 @@ function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog
 	if (isPresent) {
 		feedback = "The targeted script is present in the scripts tab.";
 	} else {
-		feedback = "Script Missing: The target script was not found in the scripts tab";
+		feedback = "The tested script did not match the target.";
 	}
 	outputLog.updateLog(testID, isPresent, feedback, isPresent);
 	evaluateLog(outputLog);
