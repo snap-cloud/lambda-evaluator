@@ -8,11 +8,55 @@
 	updated when the Snap! process finishes. Finishing
 	the last test causes the grading log to be evaluated.
 */
-function gradingLog() {
+function gradingLog(snapWorld, taskID) {
 	this.testCount = 0;
-	this.qID = null;
 	this.allCorrect = false;
 	this.currentTimeout = null;
+	this.taskID = taskID || null;
+	this.pScore = null;
+	this.snapWorld = snapWorld || null;
+}
+
+/* Save the gradingLog in localStorage.
+ * 	- key = gradingLog.taskID + "_test_log"
+ * If the state is correct, save it separately. 
+ * 	- key = gradingLog.taskID + "_c_test_log"
+ * 	- This is used to restore a corrected log if the Snap! state is 
+ *    reverted.
+ */
+gradingLog.prototype.saveLog = function() {
+	// Save the JSON string of the gradingLog,
+	// without the Snap 'world' reference [To minimize stored data]
+	var world_ref = this.snapWorld;
+	this.snapWorld = null;
+	var log_string = JSON.stringify(this);
+	this.snapWorld = world_ref;
+
+	// Store the log string in localStorage
+	localStorage.setItem(this.taskID + "_test_log", log_string);
+	if (this.allCorrect) { // If all tests passed.
+		// Store the correct log in localStorage
+		localStorage.setItem(this.taskID + "_c_test_log", log_string);
+	}
+
+}
+/* Save the gradingLog.snapWorld into localStorage with the
+ * specified key. Does nothing if 'store_key' or 
+ * gradingLog.snapWorld are unspecified (null or undefined).
+ * @param {String} store_key
+ */
+gradingLog.prototype.saveSnapXML = function(store_key) {
+	if (this.snapWorld !== null && store_key !== undefined) {
+        localStorage.setItem(store_key, this.stringifySnapXML());
+	}
+}
+
+gradingLog.prototype.stringifySnapXML = function() {
+	if (this.snapWorld !== null) {
+		var ide = this.snapWorld.children[0];
+		var world_string = ide.serializer.serialize(ide.stage);
+		return world_string;
+	}
 }
 
 /*
@@ -88,11 +132,85 @@ gradingLog.prototype.updateLog = function(testID, output, feedback, correct) {
 }
 
 /*
+ * Evaluate the gradingLog, match the expected output with the recieved output
+ * Add relevant feedback with associated issue. (Timeout, Error, bad output)
+ * Additional processing occurs if all tests are evaluated:
+ *	- pScore is calculated
+ *  - Store the gradingLog in localStorage //TODO: Move this to a separate function?
+ *  - Store the Snap! state in localStorage
+ *  - Update the AG_status_bar, AGFinish()
+*/
+gradingLog.prototype.evaluateLog = function(testIDs) {
+	// Evaluate all tests if no specific testIDs are specified.
+	var outputLog = this;
+	if (testIDs === undefined) {
+		testIDs = [];
+		for (var i = 1; i <= outputLog.testCount; i++) {
+		   testIDs.push(i);
+		}
+	}
+	// .allCorrect is initially true, and set to false if a test has failed.
+	outputLog.allCorrect = true;
+	// Passed test counter.
+	var tests_passed = 0; 
+	//Set 'correct' and 'feedback' fields for all in testIDs
+	for (var id of testIDs) {
+		//TODO: Terribly ugly. This should be abstracted. 
+		if (outputLog[id]["correct"] === true) {
+			tests_passed += 1;
+			continue;
+		}
+		if (outputLog[id]["feedback"] === "Error!") {
+			outputLog.allCorrect = false;
+			outputLog[id]["output"] = "Error!";
+		} else if (outputLog["" + id]["output"] === undefined) {
+			outputLog.allCorrect = false;
+			outputLog[id]["output"] = "Timeout error.";
+			outputLog[id]["feedback"] = "Timeout error: Function did not finish before " + 
+				((outputLog[id]["timeOut"] < 0) ? 1000 : outputLog[id]["timeOut"]) + " ms.";
+		} else if (snapEquals(outputLog[id]["output"], outputLog[id]["expOut"])) {
+			//Changed === snapEquals() to better evaluate snap output
+			outputLog[id]["feedback"] = "Correct!";
+			outputLog[id]["correct"] = true;
+		} else {
+			outputLog.allCorrect = false;
+			if (outputLog[id]["testClass"] === "r") {
+				outputLog[id]["feedback"] = "Expected: " +
+					outputLog[id]["expOut"] + " , Got: " + outputLog[id]["output"];
+			} else if (outputLog[id]["testClass"] === "p") {
+				//outputLog[id]["feedback"] = "Script is not"
+			}
+			outputLog[id]["correct"] = false;
+		}
+	}
+
+	
+	//Additional gradingLog fields are updated if all tests are evaluated.
+	if (outputLog.testCount === testIDs.length) {
+		// Calculate the pScore, the percentage of tests that have passed.
+		outputLog.pScore = tests_passed / outputLog.testCount;
+		//Save the output log to localStorage. 
+		//Saves _c_ 'correct' log if all tests passed.
+		outputLog.saveLog();
+
+		if (outputLog.allCorrect) {
+			//TODO: Consider saving the XML in runAGTest()
+			//Save the passing evaluated Log. key = taskID + "_c_test_log"
+			//Save the passing Snap! XML string. key = taskID + "_c_test_state"
+		}
+	}
+
+	//Update the AG status bar when the gradingLog is complete.
+	AGFinish(this);
+}
+
+/*
  * Convert the gradingLog into a dictionary that is returned by 
  * edX getGrade(). 
  */
 function dictLog(outputLog) {
 	var outDict = {};
+	//Populate tests
 	for (var i = 1; i <=outputLog.testCount;i++) {
 		var testDict = {};
 		testDict["id"] = i;
@@ -105,6 +223,11 @@ function dictLog(outputLog) {
 		testDict["feedback"] = outputLog[i]["feedback"];
 		outDict[i] = testDict;
 	}
+	//Populate outDict with outputLog instantiation variables.
+	outDict["testCount"] = outputLog.testCount;
+	outDict["allCorrect"] = outputLog.allCorrect;
+	outDict["taskID"] = outputLog.taskID;
+	outDict["pScore"] = outputLog.pScore;
 	return outDict;
 }
 
@@ -124,6 +247,27 @@ function printLog(outputLog) {
 		testString += " Feedback: " + outputLog[i]["feedback"] + "\n";
 	}
 	return testString;
+}
+
+/* Wrap the outputLog in an AG_State format. Used by AG_EDX.getGrade().
+ * The 'checkState' is equivalent to gradingLog.allCorrect.
+ * The 'feedback' is a copy of the gradingLog.
+ * The 'comment' is updated if the gradeLog.evaluateLog() has been run.
+ * @param {gradingLog} outputLog
+ */
+function AG_log(outputLog) {
+ 	var AG_state = {
+	    'checkState': outputLog.allCorrect,
+	    'comment': "Please run the Snap Autograder before using the 'Check' button.",
+	    'feedback': dictLog(outputLog)
+	};
+	//Only update the 
+	if (outputLog.pScore !== null) {
+		var percent_score = Number((outputLog.pScore * 100).toFixed(1));
+		AG_state['comment'] = "Autograder Score: " + percent_score + "%"
+	}
+	return AG_state;
+
 }
 
 /* Snap block getters and setters used to retrieve blocks,
@@ -238,10 +382,10 @@ function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog
 		var isPresent = false;
 		var feedback = "Script Missing: The target script was not found in the scripts tab"
 		outputLog.updateLog(testID, isPresent, feedback, isPresent);
-		evaluateLog(outputLog)
+		outputLog.evaluateLog();
 		// return outputLog
 		//Return undefined so the grade state doesn't change when no script is present.
-		return undefined;
+		return outputLog;
 	}
 	//test that scripts match
 		//TODO: update scriptsMatch function to take block objects, not objects on screen
@@ -253,7 +397,7 @@ function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog
 		feedback = "The tested script did not match the target.";
 	}
 	outputLog.updateLog(testID, isPresent, feedback, isPresent);
-	evaluateLog(outputLog);
+	outputLog.evaluateLog();
 	return outputLog;
 
 }
@@ -362,54 +506,6 @@ function infLoopCheck(outputLog, testID) {
 		}, timeout);
 }
 
-/*
-Evaluate the outputLog, match the expected output with the recieved output
-Add relevant feedback with associated issue.
-TODO: Explore input of conditional comments
-*/
-function evaluateLog(outputLog, testIDs) {
-
-	//
-	if (testIDs === undefined) {
-		testIDs = [];
-		for (var i = 1; i <= outputLog.testCount; i++) {
-		   testIDs.push(i);
-		}
-	}
-	outputLog.allCorrect = true;
-	for (var id of testIDs) {
-		//Changed === snapEquals() to better evaluate snap output
-		//re ordered the conditionals to make more sense and reduce errors
-		if (outputLog[id]["correct"] === true) {
-			continue;
-		}
-		if (outputLog[id]["feedback"] === "Error!") {
-			outputLog.allCorrect = false;
-			outputLog[id]["output"] = "Error!";
-		} else if (outputLog["" + id]["output"] === undefined) {
-			outputLog.allCorrect = false;
-			outputLog[id]["output"] = "Timeout error.";
-			outputLog[id]["feedback"] = "Timeout error: Function did not finish before " + 
-				((outputLog[id]["timeOut"] < 0) ? 1000 : outputLog[id]["timeOut"]) + " ms.";
-		} else if (snapEquals(outputLog[id]["output"], outputLog[id]["expOut"])) {
-			outputLog[id]["feedback"] = "Correct!";
-			outputLog[id]["correct"] = true;
-		} else {
-			outputLog.allCorrect = false;
-			if (outputLog[id]["testClass"] === "r") {
-				outputLog[id]["feedback"] = "Expected: " +
-					outputLog[id]["expOut"] + " , Got: " + outputLog[id]["output"];
-			} else if (outputLog[id]["testClass"] === "p") {
-				//outputLog[id]["feedback"] = "Script is not"
-			}
-			outputLog[id]["correct"] = false;
-		}
-	}
-	setTimeout(function() {
-		AGFinish();
-	},1);
-	return outputLog;
-}
 
 /* ------ START DAVID'S MESS ------ */
 
@@ -1227,4 +1323,4 @@ function testScriptIdentical(scriptString, spriteIndex, outputLog) {
 	evaluateLog(outputLog);
 	return outputLog;
 
-}
+}//}
