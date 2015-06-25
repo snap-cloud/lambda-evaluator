@@ -11,6 +11,7 @@
     <script type="text/javascript" src="snap.js"></script>
 
     <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
+    <link type="text/javascript" src="AG_hint_format.js"></script>
 
     <script type="text/javascript">
         // The id is to act as a course identifier.
@@ -64,17 +65,26 @@
 
             var outputLog;
             //If the current XML matches the stored correct XML
+            // console.log("Current XML");
+            // console.log(curr_xml);
+            // console.log(isSameSnapXML(c_prev_xml, curr_xml));
             if (isSameSnapXML(c_prev_xml, curr_xml)) {
+                //Restore the AG status bar to a graded state
+                AG_bar_graded(grade_flag, grade_button);
                 var outputLog = JSON.parse(localStorage.getItem(taskID + "_c_test_log"));
                 outputLog.snapWorld = snapWorld;
                 return outputLog;
             }
             //If the current XML matches the last stored gradingLog
             if (isSameSnapXML(prev_xml, curr_xml)) {
+                //Restore the AG status bar to a graded state
+                AG_bar_semigraded(grade_flag, grade_button);
                 var outputLog = JSON.parse(localStorage.getItem(taskID + "_test_log"));
                 outputLog.snapWorld = snapWorld;
                 return outputLog; 
             } else {
+                //Restore the AG status bar to a graded state
+                AG_bar_ungraded(grade_flag, grade_button);
                 //If no previous state is recognized, return new {gradingLog}.
                 outputLog = new gradingLog(snapWorld, taskID); 
                 return outputLog;
@@ -145,7 +155,6 @@
             var grade_flag = document.getElementById("autograding_flag");
             var grade_button = document.getElementById("autograding_button");
             // Verify correctness
-            console.log(outputLog);
             if (outputLog.allCorrect) {
                 // Update AG_status_bar to Passing state
                 // Save the correct XML string into localStorage
@@ -199,6 +208,8 @@
          * TODO: Improve XML scrubbing (Consider the following)
          *  - If correct solution (scripts) is subset of other [DONE]
          *  - Optional tags for variables, sprite position  
+         *  - Option to restore the highest scoring {gradingLog}
+         *  
          * Note: Apparently works with multiple sprites, but produces a malformed
          * Snap XML string. Each sprite gets all scripts in sorted order. Needs
          * further testing.
@@ -206,12 +217,16 @@
         function isSameSnapXML(prev_xml, curr_xml) {
             //replace script coordinates with generic 'x="0" y="0"'
             if ((prev_xml === null) || (curr_xml === null)) {
+                console.log("Seriously this hasn't happened yet?");
                 return false;
             }
-            prev_xml = prev_xml.replace(/script x="[\d]*" y="[\d]*"/g, 
-                'script x="0" y="0"');
-            curr_xml = curr_xml.replace(/script x="[\d]*" y="[\d]*"/g, 
-                'script x="0" y="0"');
+            
+            //Remove script coordinates
+            prev_xml = prev_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
+            curr_xml = curr_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
+            //Remove data hashes hashes (to allow coherence b/w reloads).
+            prev_xml = prev_xml.replace(/data:image(.*?)(?=<)/g, '');
+            curr_xml = curr_xml.replace(/data:image(.*?)(?=<)/g, '');
 
             //split between brackets
             prev_xml_scripts = prev_xml.match(/(<script x)(.*?)(<\/script>)/g);
@@ -229,8 +244,11 @@
             }
 
             //replace unsorted scripts with sorted scripts
+            //TODO: Replace them properly
             prev_xml = prev_xml.replace(/(<script x)(.*)(<\/script>)/g,prev_xml_scripts);
             curr_xml = curr_xml.replace(/(<script x)(.*)(<\/script>)/g,curr_xml_scripts);
+            // console.log(prev_xml);
+            // console.log(curr_xml);
 
             return prev_xml === curr_xml;
         }
@@ -309,6 +327,7 @@
             world = new WorldMorph(document.getElementById('world'));
             new IDE_Morph().openIn(world);
 
+
             var ide = world.children[0];
             //Reduce Stage Size on initialization
             ide.toggleStageSize(true);
@@ -333,12 +352,13 @@
                     ide.openProjectString(localStorage.getItem(preReqID));
                 }
             }
+            setInterval(loop, 1);
 
             //AUTOGRADER ADDITION - 
             //Forced to use setTimeout() to let the world load before... Maybe not.
             
             //Create a gradingLog and initialize the AG status bar (AGSB).
-            var testLog = AGStart(world, id);
+            // var testLog = AGStart(world, id);
 
             //Initialize AGSB button.
             var grade_button = document.getElementById("autograding_button");
@@ -353,9 +373,12 @@
             document.addEventListener("mouseup", function() {
                 AGUpdate(world, id);
             });
-
-
-            setInterval(loop, 1);
+            setTimeout(function() {
+                console.log(world);
+                AGStart(world,id);
+            },75);
+            
+            
         };
 
         function loop() {
