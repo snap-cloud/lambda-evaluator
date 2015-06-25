@@ -294,38 +294,11 @@ function getScripts(index) {
 	}
 }
 
+//Get just the most recently touched block that matches
 function getScript(blockSpec, spriteIndex) {
-	//TODO: Consider expanding to grab from additional sprites
-	//Try to get a sprite's scripts
-	//Throw exception if none exist.
-	try {
-		//Does the sprite exist?
-		if (spriteIndex === undefined) {
-			var scripts = getScripts(0);
-		} else {
-			var scripts = getScripts(spriteIndex);
-		}
-		//If no sprites exist, throw an exception.
-		if (scripts === undefined) {
-			throw "No scripts"
-		}
-	} catch(e) {
-		throw "getScript: No Sprite available."
-	}
-	//Try to return the first block matching 'blockSpec'.
-	//Throw exception if none exist/
-	var validScripts = scripts.filter(function (morph) {
-		if (morph.selector) {
-			//TODO: consider adding selector type check (morph.selector === "evaluateCustomBlock")
-			return (morph.blockSpec === blockSpec);
-		}
-	});
-	if (validScripts.length === 0) {
-		throw "getScript: No block named: '" + blockSpec.replace(/%[a-z]/g, "[]") + "'" +" in script window.";
-	}
-	return validScripts[0]
+	return getAllScripts(blockSpec, spriteIndex)[0];
 }
-function getAllScript(blockSpec, spriteIndex) {
+function getAllScripts(blockSpec, spriteIndex) {
 	//TODO: Consider expanding to grab from additional sprites
 	//Try to get a sprite's scripts
 	//Throw exception if none exist.
