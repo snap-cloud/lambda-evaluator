@@ -529,8 +529,12 @@ function printEventLog(eventLog, ignore) {
 //proper sprite movements
 function testKScope(iter) {
 	var eLog = new SpriteEventLog(),
+		gLog = new gradingLog(),
+		testID = gLog.addTest("n/a", "n/a", null, true, -1),
 		iterations = iter || 5,
 		spriteList = world.children[0].sprites.contents;
+
+
 
 	var collect = setInterval(function() {
         for (var i = 0; i < spriteList.length; i++) {
@@ -554,20 +558,31 @@ function testKScope(iter) {
 					y4 = log["3"][i].y;
 
 				if (x1 + x2 + x3 + x4 !== 0 ||
-					y1 + y2 + y3 + y4 !== 0 ||
-					penDown1 !== penDown2 !== penDown3 !== penDown4) {
+					y1 + y2 + y3 + y4 !== 0) {
+					gLog["" + testID]["feedback"] = "One or more sprite X, Y values are incorrect. " +
+													"Make sure your sprites all go to the correct " +
+													"mouse x, y values.";
 					return false;
 				}
 
+				if (penDown1 !== penDown2 !== penDown3 !== penDown4) {
+					gLog["" + testID]["feedback"] = "One of your sprites did not draw to the stage. " +
+													"Make sure your sprites all call pen down before " +
+													"following the mouse.";
+					return false;
+				}
+
+				gLog["" + testID]["feedback"] = "Correct!";
 				return true;
 		});
 		// this is where we would add a callback to getGrade or whatevers
+		gLog["" + testID]["output"] = gLog["" + testID]["correct"] = gLog.allCorrect = eLog.callVal;
 		console.log(eLog.callVal);
 	};
 
 	makeDragon(iterations, callback);
 
-	return eLog;
+	return gLog;
 
 }
 
