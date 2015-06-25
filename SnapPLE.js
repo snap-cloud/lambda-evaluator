@@ -296,7 +296,6 @@ function getScripts(index) {
 
 function getScript(blockSpec, spriteIndex) {
 	//TODO: Consider expanding to grab from additional sprites
-
 	//Try to get a sprite's scripts
 	//Throw exception if none exist.
 	try {
@@ -313,7 +312,6 @@ function getScript(blockSpec, spriteIndex) {
 	} catch(e) {
 		throw "getScript: No Sprite available."
 	}
-
 	//Try to return the first block matching 'blockSpec'.
 	//Throw exception if none exist/
 	var validScripts = scripts.filter(function (morph) {
@@ -325,9 +323,38 @@ function getScript(blockSpec, spriteIndex) {
 	if (validScripts.length === 0) {
 		throw "getScript: No block named: '" + blockSpec.replace(/%[a-z]/g, "[]") + "'" +" in script window.";
 	}
-
 	return validScripts[0]
-
+}
+function getAllScript(blockSpec, spriteIndex) {
+	//TODO: Consider expanding to grab from additional sprites
+	//Try to get a sprite's scripts
+	//Throw exception if none exist.
+	try {
+		//Does the sprite exist?
+		if (spriteIndex === undefined) {
+			var scripts = getScripts(0);
+		} else {
+			var scripts = getScripts(spriteIndex);
+		}
+		//If no sprites exist, throw an exception.
+		if (scripts === undefined) {
+			throw "No scripts"
+		}
+	} catch(e) {
+		throw "getScript: No Sprite available."
+	}
+	//Try to return the first block matching 'blockSpec'.
+	//Throw exception if none exist/
+	var validScripts = scripts.filter(function (morph) {
+		if (morph.selector) {
+			//TODO: consider adding selector type check (morph.selector === "evaluateCustomBlock")
+			return (morph.blockSpec === blockSpec);
+		}
+	});
+	if (validScripts.length === 0) {
+		throw "getScript: No block named: '" + blockSpec.replace(/%[a-z]/g, "[]") + "'" +" in script window.";
+	}
+	return validScripts
 }
 
 function isScriptPresent(blockSpec, spriteIndex) {
@@ -637,9 +664,9 @@ function printEventLog(eventLog, ignore) {
 //Does not test "clear"/"penup"/"pendown"
 //Only tests for prescence of 4 sprites and 
 //proper sprite movements
-function testKScope(iter) {
+function testKScope(snapWorld, taskID, iter) {
 	var eLog = new SpriteEventLog(),
-		gLog = new gradingLog(),
+		gLog = new gradingLog(snapWorld, taskID),
 		testID = gLog.addTest("n/a", "n/a", null, true, -1),
 		iterations = iter || 5,
 		spriteList = world.children[0].sprites.contents;
