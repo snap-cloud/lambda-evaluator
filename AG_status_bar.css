@@ -33,3 +33,72 @@
 
 #autograding_button:hover {
 	border:1px gray solid;
+
+}
+
+
+
+
+.site-navigation {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.site-navigation ul {
+  	background: #373737;
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+}
+
+.site-navigation li {
+    color: #fff;
+  	background: #373737;
+    display: block;
+    float: left;
+    margin: 0 2px 0 0;
+    position: relative;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+  
+.site-navigation li a {
+  	color: #fff;
+  	text-decoration: none;
+  	display: block;
+}
+
+.site-navigation li:hover {
+    @include transition(background, 0.2s);
+    background: #1C1C1C;
+    cursor: pointer;
+}
+
+.site-navigation ul li ul {
+    background: #474747;
+    visibility: hidden;
+    float: left;
+  	min-width: 150px;
+    position: absolute;
+  	transition: visibility 0.65s ease-in;
+  	margin-top:12px;
+    right: 0;
+    z-index: 999;
+    position: absolute;
+
+}
+
+.site-navigation ul li:hover > ul,
+.site-navigation ul li ul:hover {
+   visibility: visible;
+}
+
+.site-navigation ul li ul li {
+    clear: both;
+  	width: 100%;
+}
+
+.site-navigation ul li ul li:hover {
+    background: #1C1C1C;
+}
