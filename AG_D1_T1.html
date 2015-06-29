@@ -7,7 +7,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="http://underscorejs.org/underscore-min.js"></script>
     <script type="text/javascript" src="SnapPLE.js"></script>
-    <script type="text/javascript" src="AG_EDX.js"></script>
+    <!-- Moved down to the bottom to have var id. -->
+    
     <script type="text/javascript" src="snap.js"></script>
 
     <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
@@ -16,13 +17,13 @@
     <script type="text/javascript">
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
-        var id = ""  // e.g. "BJCx"
+        var courseID = "";  // e.g. "BJCx"
         // Specify a prerequisite task id, should be null if no such requirement.
         var preReqTaskID = null;
-        var preReqID = id + preReqTaskID;
+        var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser localStorage.
         var taskID = "AG_D1_T1";
-        id = id + taskID;
+        var id = courseID + taskID;
 
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
@@ -111,10 +112,14 @@
             //Retrieve previous grade logs (if in localStorage). As {String}s
             var c_prev_log = localStorage.getItem(taskID + "_c_test_log");
             var prev_log = localStorage.getItem(taskID + "_test_log");
+            if (!prev_xml || !curr_xml) {
+                console.log(prev_xml);
+                console.log(curr_xml);
+            }
 
             var outputLog;
             //If current XML is different from prev_xml
-            if (isSameSnapXML(c_prev_xml, curr_xml)) {               
+            if (c_prev_xml && isSameSnapXML(c_prev_xml, curr_xml)) {               
                 //Restore the AG status bar to a graded state
                 AG_bar_graded(grade_flag, grade_button);
                 // TODO: Write a good comment
@@ -127,7 +132,7 @@
                 return outputLog;
             }
             //If current XML is same as prev correct
-            if (isSameSnapXML(prev_xml, curr_xml)) {
+            if (prev_xml && isSameSnapXML(prev_xml, curr_xml)) {
                 //Restore the AG status bar to a graded state
                 AG_bar_semigraded(grade_flag, grade_button);
                 //Retrieve the previous test log from localStorage
@@ -217,7 +222,9 @@
         function isSameSnapXML(prev_xml, curr_xml) {
             //replace script coordinates with generic 'x="0" y="0"'
             if ((prev_xml === null) || (curr_xml === null)) {
-                console.log("Seriously this hasn't happened yet?");
+                console.log("isSameSnapXML: prev_xml or curr_xml are null");
+                console.log(prev_xml);
+                console.log(curr_xml);
                 return false;
             }
             
@@ -269,7 +276,6 @@
             }
             return true;
         }
-
 
         function escapeRegExp(string) {
             return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
@@ -335,7 +341,7 @@
             //AUTOGRADER ADDITION
             //Check if Pre-requisite task has completed
             var req_check = parent.document.getElementById("pre_req");
-            if (preReqID !== null) {
+            if (preReqTaskID !== null) {
                 var preReqLog = JSON.parse(localStorage.getItem(preReqID + "_test_log"));
                 if ((preReqLog === null || !preReqLog.allCorrect) && req_check) {
                     req_check.innerHTML = "[WARNING: The previous task must be completed before continuing.]"
@@ -347,7 +353,7 @@
             var prev_xml = localStorage.getItem(id + "_test_state");
             if (prev_xml !== null) {
                 ide.openProjectString(prev_xml);
-            } else if (preReqID !== null) {
+            } else if (preReqTaskID !== null) {
                 if (preReqLog !== null && preReqLog.allCorrect) {
                     ide.openProjectString(localStorage.getItem(preReqID));
                 }
@@ -373,10 +379,11 @@
             document.addEventListener("mouseup", function() {
                 AGUpdate(world, id);
             });
+            //TODO: Fix this timeout.
             setTimeout(function() {
                 console.log(world);
                 AGStart(world,id);
-            },75);
+            },300);
             
             
         };
@@ -386,7 +393,7 @@
         }
 
     </script>
-        
+    <script type="text/javascript" src="AG_EDX.js"></script>
 </head>
 <body style="margin: 0;">
     <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>

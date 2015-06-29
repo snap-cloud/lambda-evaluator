@@ -183,8 +183,6 @@ gradingLog.prototype.evaluateLog = function(testIDs) {
 			outputLog[id]["correct"] = false;
 		}
 	}
-
-	
 	//Additional gradingLog fields are updated if all tests are evaluated.
 	if (outputLog.testCount === testIDs.length) {
 		// Calculate the pScore, the percentage of tests that have passed.
@@ -255,11 +253,12 @@ function printLog(outputLog) {
  * The 'comment' is updated if the gradeLog.evaluateLog() has been run.
  * @param {gradingLog} outputLog
  */
-function AG_log(outputLog) {
+function AG_log(outputLog, snapXMLString) {
  	var AG_state = {
 	    'checkState': outputLog.allCorrect,
 	    'comment': "Please run the Snap Autograder before using the 'Check' button.",
-	    'feedback': dictLog(outputLog)
+	    'feedback': dictLog(outputLog),
+	    'snapXML' : snapXMLString
 	};
 	//Only update the 
 	if (outputLog.pScore !== null) {
