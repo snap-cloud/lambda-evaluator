@@ -6,20 +6,23 @@ span.message {
 }
 
 td.correctans {
-	color: green;
 	font-weight: bold;
 	white-space:nowrap;
+	background-color: #80E680;
+	word-wrap: break-word;
 }
 
 td.incorrectans {
-	color: red;
 	font-weight: bold;
 	white-space:nowrap;
+	background-color: #FF9999;
+	word-wrap: break-word;
 }
 
 td.tests {
 	background-color: #e7e3e3;
     color: #4F5150;
+    word-wrap: break-word;
 }
 
 
@@ -74,6 +77,7 @@ table.results {
   font-size: 115%;
   overflow: auto;
   width: auto;
+  table-layout: fixed;
  }
 
   th.titles {
