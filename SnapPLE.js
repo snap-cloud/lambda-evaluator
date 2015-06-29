@@ -1179,7 +1179,14 @@ function occurancesOfBlockSpec(blockSpec, block) {
  *
  */
 function scriptsMatch(template, script, softMatch, vars, templateVariables) {
-	var morph1, morph2, type1, type2;
+	var morph1, morph2, type1, type2, templateIsArray, scriptIsArray;
+	templateIsArray = (Object.prototype.toString.call(template) === '[object Array]');
+	scriptIsArray = (Object.prototype.toString.call(script) === '[object Array]');
+	if (templateIsArray && scriptIsArray) {
+		if (template.length !== script.length) {
+			return false;
+		}
+	}
 	for (var i = 0; i < template.length; i++) {
 		morph1 = template[i];
 		morph2 = script[i];
