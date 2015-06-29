@@ -398,13 +398,24 @@ function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog
 	if (spriteIndex === undefined) {
 		spriteIndex = 0;
 	}
-	
+
 	var JSONtemplate = stringToJSON(scriptString);
 	var blockSpec = JSONtemplate[0].blockSp;
 	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1);
 	//Handle case when no scripts present on stage.
 	try {
-		var JSONtarget = JSONscript(getScript(blockSpec, spriteIndex));
+		var JSONtarget;
+		var scriptsOnScreen = getAllScript(blockSpec, spriteIndex);
+		var isPresent;
+		for (var i = 0; i < scriptsOnScreen.length; i++) {
+			JSONtarget = JSONscript(scriptsOnScreen[i]);
+			if (JSONtarget[0].blockSp === blockSpec) {
+				isPresent = checkTemplate(JSONtemplate, JSONtarget, scriptVariables);
+				if (isPresent) {
+					break;
+				}
+			}
+		}
 	} catch(e) {
 		var isPresent = false;
 		var feedback = "Script Missing: The target script was not found in the scripts tab"
@@ -415,9 +426,6 @@ function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog
 		return outputLog;
 	}
 	//test that scripts match
-		//TODO: update scriptsMatch function to take block objects, not objects on screen
-	//var isPresent = scriptsMatch(JSONtemplate, JSONtarget, false);
-	var isPresent = checkTemplate(JSONtemplate, JSONtarget, scriptVariables);
 	if (isPresent) {
 		feedback = "The targeted script is present in the scripts tab.";
 	} else {
