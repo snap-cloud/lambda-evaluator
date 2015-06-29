@@ -172,7 +172,7 @@
         }
 
         function AG_bar_ungraded(grade_flag, grade_button) {
-            grade_flag.innerHTML = "UNGRADED";
+            grade_flag.innerHTML = "SET-UP FOR CHECK";
             grade_flag.style.color = "#FF3333"
             grade_button.innerHTML = "&#x2713;";
             grade_button.style.color = "white";
@@ -182,7 +182,7 @@
         }
 
         function AG_bar_graded(grade_flag, grade_button) {
-            grade_flag.innerHTML = "GRADED";
+            grade_flag.innerHTML = "READY TO BE CHECKED";
             grade_flag.style.color = "#33FF33";
             grade_button.style.font = "1.2em";
             grade_button.style.color = "white";
@@ -192,7 +192,7 @@
         }
 
         function AG_bar_semigraded(grade_flag, grade_button) {
-            grade_flag.innerHTML = "GRADED";
+            grade_flag.innerHTML = "READY TO BE CHECKED";
             grade_flag.style.color = "orange";
             grade_button.style.font = "1.4em";
             grade_button.style.color = "black";
@@ -317,6 +317,26 @@
             return message;
         }
 
+        /*function resetState() {
+            localStorage.removeItem(taskID + "_test_log");
+            localStorage.removeItem(taskID + "_test_state");
+        }*/
+
+        function revertToBestState() {
+            world = new WorldMorph(document.getElementById('world'));
+            new IDE_Morph().openIn(world);
+
+            var ide = world.children[0];
+            //Reduce Stage Size on initialization
+            ide.toggleStageSize(true);
+
+            var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
+            if (c_prev_xml !== null) {
+                localStorage.setItem(taskID + "_test_state", taskID + "_c_test_state");
+                ide.openProjectString(c_prev_xml);
+            }
+        }
+
         var world;
         window.onload = function () {
 
@@ -373,6 +393,17 @@
             grade_button.onclick = function() {
                 runAGTest(world, id);
             }
+
+            var reset_button = document.getElementById("reset-button");
+            var revert_button = document.getElementById("revert-button");
+
+            /*reset_button.onclick = function() {
+                resetState();
+            }*/
+
+            revert_button.onclick = function() { 
+                revertToBestState();
+            }
             /* Check if the snap xml has changed "significantly".
              * Exclude script position and edit history.
              */
@@ -398,12 +429,28 @@
 <body style="margin: 0;">
     <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
     <div id="autograding_bar">
-        <div id="autograding_flag" style="display:inline-block">
-            UNGRADED
-        </div>
-        <div id="autograding_button" style="display:inline-block">
-             &#x2713;
-        </div>
+        <!--<div id="autograding_flag" style="display:inline-block">
+            SET-UP FOR CHECK
+        </div>-->
+
+<div style="display:inline-block">
+  <nav id="navigation" class="site-navigation" role="navigation">
+  <ul class="menu">
+    <li class="menu-item"><a href="#"><div id="autograding_flag" style="display:inline-block">
+            SET-UP FOR CHECK
+        </div></a>
+      <ul class="dropdown">
+        <li class="menu-item sub-menu"><a href="#" id="reset-button">Reset</a></li>
+        <li class="menu-item sub-menu"><a href="#" id="revert-button">Revert To Best Attempt</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+</div>
+    <div id="autograding_button" style="display:inline-block">
+        &#x2713;
+    </div>
+
     </div>
     <script type="text/javascript" src="AG_status_bar.js" />
 </body>
