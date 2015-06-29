@@ -525,6 +525,8 @@ SpriteEvent.prototype.init = function(_sprite, index) {
 	this.penDown = _sprite.isDown;
 	this.scale = _sprite.parent.scale;
 	this.ignore = false;
+	this.bubble = _sprite.talkBubble();
+	this.bubbleData = (this.bubble && this.bubble.data) || "nothing...";
 }
 
 //compares another SpriteEvent to this one for "equality"
@@ -533,7 +535,8 @@ SpriteEvent.prototype.equals = function(sEvent) {
 		this.x === sEvent.x &&
 		this.y === sEvent.y &&
 		this.direction === sEvent.direction &&
-		this.penDown === sEvent.penDown) {
+		this.penDown === sEvent.penDown &&
+		this.bubbleData === sEvent.bubbleData) {
 		return true;
 	}
 	return false;
@@ -627,6 +630,7 @@ function printEventLog(eventLog, ignore) {
 			console.log("Direction: " + eventLog["" + j][i].direction + "\n");
 			console.log("Pen Down: " + eventLog["" + j][i].penDown + "\n");
 			console.log("Stage Scale: " + eventLog["" + j][i].scale + "\n");
+			console.log("Sprite says: " + eventLog["" + j][i].bubbleData);
 		}
 	}
 }
