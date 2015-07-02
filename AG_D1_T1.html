@@ -113,6 +113,8 @@
             //Retrieve previously graded Snap XML strings (if in localStorage).
             var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
             var prev_xml = localStorage.getItem(taskID + "_test_state");
+
+            var last_submission = localStorage.getItem(taskID + "_last_submitted_state");
             //Retrieve previous grade logs (if in localStorage). As {String}s
             var c_prev_log = localStorage.getItem(taskID + "_c_test_log");
             var prev_log = localStorage.getItem(taskID + "_test_log");
@@ -122,10 +124,10 @@
             }
 
 
-            //menu bar grays out options that are not available (ex. current state is same as best attempt)
+            //menu bar grays out options that are not available (ex. current state is same as best attempt) and restores the button state
 
             var last_submit = document.getElementById("last-submit");
-            if (prev_xml === null || isSameSnapXML(prev_xml, curr_xml)) {
+            if (last_submission === null || isSameSnapXML(last_submission, curr_xml)) {
                 last_submit.style.color = "#373737";
                 last_submit.style.pointerEvents = "none";
                 last_submit.parentNode.id = "disabled-button";
@@ -144,6 +146,17 @@
                 revert_button.parentNode.id = "enabled-button";
                 revert_button.style.color = "white";
                 revert_button.style.pointerEvents = "auto";
+            }
+
+            var undo_button = document.getElementById("undo-button");
+            if (prev_xml === null || isSameSnapXML(prev_xml, curr_xml)) {
+                undo_button.style.color = "#373737";
+                undo_button.style.pointerEvents = "none";
+                undo_button.parentNode.id = "disabled-button";
+            } else {
+                undo_button.parentNode.id = "enabled-button";
+                undo_button.style.color = "white";
+                undo_button.style.pointerEvents = "auto";
             }
 
             var outputLog;
@@ -353,8 +366,12 @@
         }
 
         function resetState() {
-            localStorage.removeItem(taskID + "_test_log");
-            localStorage.removeItem(taskID + "_test_state");
+            var grade_flag = document.getElementById("autograding_flag");
+            var grade_button = document.getElementById("autograding_button");
+            AG_bar_ungraded(grade_flag, grade_button);
+
+            /*localStorage.removeItem(taskID + "_test_log");
+            localStorage.removeItem(taskID + "_test_state");*/
             AGStart(world,id);
 
             world = new WorldMorph(document.getElementById('world'));
@@ -364,19 +381,28 @@
             var ide = world.children[0];
             //Reduce Stage Size on initialization
             ide.toggleStageSize(true);
+            AG_bar_ungraded(grade_flag, grade_button);
         }
 
         function revertToBestState() {
-            world = new WorldMorph(document.getElementById('world'));
-            new IDE_Morph().openIn(world);
+            
+            //world = new WorldMorph(document.getElementById('world'));
+            //new IDE_Morph().openIn(world);
             var ide = world.children[0];
-            ide.toggleStageSize(true);
+            //ide.toggleStageSize(true);
 
             var curr_xml = ide.serializer.serialize(ide.stage);
             var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
-            localStorage.setItem(taskID + "_test_state", taskID + "_c_test_state");
-            localStorage.setItem(taskID + "_test_log", taskID + "_c_test_log");
+            var grade_flag = document.getElementById("autograding_flag");
+            var grade_button = document.getElementById("autograding_button");
+            AG_bar_graded(grade_flag, grade_button);
             ide.openProjectString(c_prev_xml);
+
+
+            /*localStorage.setItem(taskID + "_test_state", taskID + "_c_test_state");
+            localStorage.setItem(taskID + "_test_log", taskID + "_c_test_log");*/
+            //AG_bar_graded(grade_flag, grade_button);
+            
             /*if (c_prev_xml !== null && !(isSameSnapXML(c_prev_xml, curr_xml))) {
                 localStorage.setItem(taskID + "_test_state", taskID + "_c_test_state");
                 localStorage.setItem(taskID + "_test_log", taskID + "_c_test_log");
@@ -389,15 +415,29 @@
             }*/
         }
 
-        function revertToLastSubmit() {
-            world = new WorldMorph(document.getElementById('world'));
-            new IDE_Morph().openIn(world);
+        function revertToLastState() {
+            
+            //world = new WorldMorph(document.getElementById('world'));
+            //new IDE_Morph().openIn(world);
             var ide = world.children[0];
-            ide.toggleStageSize(true);
+            //ide.toggleStageSize(true);
 
             var prev_xml = localStorage.getItem(taskID + "_test_state");
             var curr_xml = ide.serializer.serialize(ide.stage);
+            var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
+            var grade_flag = document.getElementById("autograding_flag");
+            var grade_button = document.getElementById("autograding_button");
+            var undo_button = document.getElementById("undo-button");
+
+            if (isSameSnapXML(c_prev_xml, prev_xml)) {
+                AG_bar_graded(grade_flag, grade_button);
+            } else {
+                AG_bar_semigraded(grade_flag, grade_button);
+            }
             ide.openProjectString(prev_xml);
+
+            //AG_bar_semigraded(grade_flag, grade_button);
+            
             /*if (prev_xml !== null && !(isSameSnapXML(prev_xml, curr_xml))) {
                 ide.openProjectString(prev_xml);
             } /*else {
@@ -406,6 +446,21 @@
                 last_submit.style.pointerEvents = "none";
                 last_submit.parentNode.id = "disabled";
             }*/
+        }
+
+        function revertToLastSubmit() {
+            var last_submission = localStorage.getItem(taskID + "_last_submitted_state");
+            var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
+            var grade_flag = document.getElementById("autograding_flag");
+            var grade_button = document.getElementById("autograding_button");
+            var ide = world.children[0];
+            if (isSameSnapXML(c_prev_xml, last_submission)) {
+                AG_bar_graded(grade_flag, grade_button);
+            } else {
+                AG_bar_semigraded(grade_flag, grade_button);
+            }
+            ide.openProjectString(last_submission);
+
         }
 
         function toggleMenu() {
@@ -476,6 +531,7 @@
 
             var reset_button = document.getElementById("reset-button");
             var revert_button = document.getElementById("revert-button");
+            var undo_button = document.getElementById("undo-button");
             var last_submit = document.getElementById("last-submit");
             var menu_button = document.getElementsByClassName("onclick-menu")[0];
 
@@ -491,6 +547,10 @@
                 revertToLastSubmit();
             }
 
+            undo_button.onclick = function() {
+                revertToLastState();
+            }
+
             menu_button.onclick = function() {
                 toggleMenu();
             }
@@ -501,9 +561,9 @@
                 AGUpdate(world, id);
             });
 
-            document.addEventListener("click", function() {
+            /*document.addEventListener("click", function() {
                 AGUpdate(world, id);
-            });
+            });*/
             //TODO: Fix this timeout.
             setTimeout(function() {
                 console.log(world);
@@ -538,6 +598,7 @@
       <ul id="dropdown-closed" class="bubble">
         <li class="menu-item-sub-menu" id="enabled-button"><a href="#" id="revert-button">Revert To Best Attempt</a></li>
         <li class="menu-item-sub-menu" id="enabled-button"><a href="#" id="last-submit">Revert To Last Submission</a></li>
+        <li class="menu-item-sub-menu" id="enabled-button"><a href="#" id="undo-button">Undo</a></li>
         <li class="menu-item-sub-menu" id="enabled-button"><a href="#" id="reset-button">Reset</a></li>
       </ul>
     <!--</li>

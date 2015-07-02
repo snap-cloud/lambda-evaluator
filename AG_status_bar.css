@@ -67,7 +67,7 @@
 }
 
 
-#reset-button, #revert-button, #last-submit{
+#reset-button, #revert-button, #last-submit, #undo-button {
     color: inherit;
     text-decoration: none;
     display: block;
@@ -148,10 +148,10 @@
     cursor: default;
 }
 
-#circle:before {
+/*#circle:before {
     content: ?;
     color: white;
-}
+}*/
 
 /*#circle {
     width: 15px;
