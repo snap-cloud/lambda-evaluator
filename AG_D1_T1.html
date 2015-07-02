@@ -7,7 +7,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="http://underscorejs.org/underscore-min.js"></script>
     <script type="text/javascript" src="SnapPLE.js"></script>
-    <script type="text/javascript" src="AG_EDX.js"></script>
+    <!-- Moved down to the bottom to have var id. -->
+    
     <script type="text/javascript" src="snap.js"></script>
 
     <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
@@ -16,13 +17,13 @@
     <script type="text/javascript">
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
-        var id = ""  // e.g. "BJCx"
+        var courseID = "";  // e.g. "BJCx"
         // Specify a prerequisite task id, should be null if no such requirement.
         var preReqTaskID = null;
-        var preReqID = id + preReqTaskID;
+        var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser localStorage.
         var taskID = "AG_D1_T1";
-        id = id + taskID;
+        var id = courseID + taskID;
 
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
@@ -98,6 +99,10 @@
          *  - Should only be called from a "mouseup" event.
          */
         function AGUpdate(snapWorld, taskID) {
+
+
+            
+
             //TODO: Are there any optional parameters that may be useful?
             //Grabs HTML divs
             var grade_flag = document.getElementById("autograding_flag");
@@ -111,10 +116,39 @@
             //Retrieve previous grade logs (if in localStorage). As {String}s
             var c_prev_log = localStorage.getItem(taskID + "_c_test_log");
             var prev_log = localStorage.getItem(taskID + "_test_log");
+            if (!prev_xml || !curr_xml) {
+                console.log(prev_xml);
+                console.log(curr_xml);
+            }
+
+
+            //menu bar grays out options that are not available (ex. current state is same as best attempt)
+
+            var last_submit = document.getElementById("last-submit");
+            if (prev_xml === null || isSameSnapXML(prev_xml, curr_xml)) {
+                last_submit.style.color = "#373737";
+                last_submit.style.pointerEvents = "none";
+                last_submit.parentNode.id = "disabled-button";
+            } else {
+                last_submit.parentNode.id = "enabled-button";
+                last_submit.style.color = "white";
+                last_submit.style.pointerEvents = "auto";
+            }
+
+            var revert_button = document.getElementById("revert-button");
+            if (c_prev_xml === null || isSameSnapXML(c_prev_xml, curr_xml)) {
+                revert_button.style.color = "#373737";
+                revert_button.style.pointerEvents = "none";
+                revert_button.parentNode.id = "disabled-button";
+            } else {
+                revert_button.parentNode.id = "enabled-button";
+                revert_button.style.color = "white";
+                revert_button.style.pointerEvents = "auto";
+            }
 
             var outputLog;
             //If current XML is different from prev_xml
-            if (isSameSnapXML(c_prev_xml, curr_xml)) {               
+            if (c_prev_xml && isSameSnapXML(c_prev_xml, curr_xml)) {               
                 //Restore the AG status bar to a graded state
                 AG_bar_graded(grade_flag, grade_button);
                 // TODO: Write a good comment
@@ -127,7 +161,7 @@
                 return outputLog;
             }
             //If current XML is same as prev correct
-            if (isSameSnapXML(prev_xml, curr_xml)) {
+            if (prev_xml && isSameSnapXML(prev_xml, curr_xml)) {
                 //Restore the AG status bar to a graded state
                 AG_bar_semigraded(grade_flag, grade_button);
                 //Retrieve the previous test log from localStorage
@@ -167,33 +201,39 @@
         }
 
         function AG_bar_ungraded(grade_flag, grade_button) {
-            grade_flag.innerHTML = "SET-UP FOR CHECK";
+            grade_flag.innerHTML = "";
             grade_flag.style.color = "#FF3333"
-            grade_button.innerHTML = "&#x2713;";
-            grade_button.style.color = "white";
+            //grade_button.innerHTML = "&#x2713;";
+            grade_button.innerHTML = "&#9744;";
+            grade_button.style.color = "#FF3333";
             grade_button.style.background = "#FF3333";
             grade_button.style.font = "1.2em";
             grade_button.style.padding = "2px 3px 0px 3px";
+            /*grade_button.style.border = "4px gray solid";*/
         }
 
         function AG_bar_graded(grade_flag, grade_button) {
-            grade_flag.innerHTML = "READY TO BE CHECKED";
+            //grade_flag.innerHTML = "READY TO BE CHECKED";
+            grade_flag.innerHTML = "";
             grade_flag.style.color = "#33FF33";
             grade_button.style.font = "1.2em";
             grade_button.style.color = "white";
             grade_button.style.background = "#33FF33";
             grade_button.innerHTML = "&#x2713;";
             grade_button.style.padding = "2px 3px 0px 3px";
+            /*grade_button.style.border = "4px gray solid";*/
         }
 
         function AG_bar_semigraded(grade_flag, grade_button) {
-            grade_flag.innerHTML = "READY TO BE CHECKED";
+            //grade_flag.innerHTML = "READY TO BE CHECKED";
+            grade_flag.innerHTML = "&#x26A0;";
             grade_flag.style.color = "orange";
             grade_button.style.font = "1.4em";
             grade_button.style.color = "black";
             grade_button.style.background = "orange";
-            grade_button.style.padding = "2px 1px 0px 1px";
-            grade_button.innerHTML = "&#x26A0;";
+            grade_button.style.padding = "2px 3px 0px 3px";
+            grade_button.innerHTML = "&#x2713;";
+            /*grade_button.style.border = "4px gray solid";*/
         }
 
         /* Checks if two Snap! XML strings have approximately the same state.
@@ -217,7 +257,9 @@
         function isSameSnapXML(prev_xml, curr_xml) {
             //replace script coordinates with generic 'x="0" y="0"'
             if ((prev_xml === null) || (curr_xml === null)) {
-                console.log("Seriously this hasn't happened yet?");
+                console.log("isSameSnapXML: prev_xml or curr_xml are null");
+                console.log(prev_xml);
+                console.log(curr_xml);
                 return false;
             }
             
@@ -270,7 +312,6 @@
             return true;
         }
 
-
         function escapeRegExp(string) {
             return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
         }
@@ -311,23 +352,68 @@
             return message;
         }
 
-        /*function resetState() {
+        function resetState() {
             localStorage.removeItem(taskID + "_test_log");
             localStorage.removeItem(taskID + "_test_state");
-        }*/
+            AGStart(world,id);
 
-        function revertToBestState() {
             world = new WorldMorph(document.getElementById('world'));
             new IDE_Morph().openIn(world);
+
 
             var ide = world.children[0];
             //Reduce Stage Size on initialization
             ide.toggleStageSize(true);
+        }
 
+        function revertToBestState() {
+            world = new WorldMorph(document.getElementById('world'));
+            new IDE_Morph().openIn(world);
+            var ide = world.children[0];
+            ide.toggleStageSize(true);
+
+            var curr_xml = ide.serializer.serialize(ide.stage);
             var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
-            if (c_prev_xml !== null) {
+            localStorage.setItem(taskID + "_test_state", taskID + "_c_test_state");
+            localStorage.setItem(taskID + "_test_log", taskID + "_c_test_log");
+            ide.openProjectString(c_prev_xml);
+            /*if (c_prev_xml !== null && !(isSameSnapXML(c_prev_xml, curr_xml))) {
                 localStorage.setItem(taskID + "_test_state", taskID + "_c_test_state");
+                localStorage.setItem(taskID + "_test_log", taskID + "_c_test_log");
                 ide.openProjectString(c_prev_xml);
+            } /*else {
+                var revert_button = document.getElementById("revert-button");
+                revert_button.style.color = "#373737";
+                revert_button.style.pointerEvents = "none";
+                revert_button.parentNode.id = "disabled";
+            }*/
+        }
+
+        function revertToLastSubmit() {
+            world = new WorldMorph(document.getElementById('world'));
+            new IDE_Morph().openIn(world);
+            var ide = world.children[0];
+            ide.toggleStageSize(true);
+
+            var prev_xml = localStorage.getItem(taskID + "_test_state");
+            var curr_xml = ide.serializer.serialize(ide.stage);
+            ide.openProjectString(prev_xml);
+            /*if (prev_xml !== null && !(isSameSnapXML(prev_xml, curr_xml))) {
+                ide.openProjectString(prev_xml);
+            } /*else {
+                var last_submit = document.getElementById("last-submit");
+                last_submit.style.color = "#373737";
+                last_submit.style.pointerEvents = "none";
+                last_submit.parentNode.id = "disabled";
+            }*/
+        }
+
+        function toggleMenu() {
+            var menu_items = document.getElementsByClassName("bubble")[0];
+            if (menu_items.id === "dropdown-closed") {
+                menu_items.id = "dropdown-open";
+            } else {
+                menu_items.id = "dropdown-closed";
             }
         }
 
@@ -355,7 +441,7 @@
             //AUTOGRADER ADDITION
             //Check if Pre-requisite task has completed
             var req_check = parent.document.getElementById("pre_req");
-            if (preReqID !== null) {
+            if (preReqTaskID !== null) {
                 var preReqLog = JSON.parse(localStorage.getItem(preReqID + "_test_log"));
                 if ((preReqLog === null || !preReqLog.allCorrect) && req_check) {
                     req_check.innerHTML = "[WARNING: The previous task must be completed before continuing.]"
@@ -367,7 +453,7 @@
             var prev_xml = localStorage.getItem(id + "_test_state");
             if (prev_xml !== null) {
                 ide.openProjectString(prev_xml);
-            } else if (preReqID !== null) {
+            } else if (preReqTaskID !== null) {
                 if (preReqLog !== null && preReqLog.allCorrect) {
                     ide.openProjectString(localStorage.getItem(preReqID));
                 }
@@ -390,13 +476,23 @@
 
             var reset_button = document.getElementById("reset-button");
             var revert_button = document.getElementById("revert-button");
+            var last_submit = document.getElementById("last-submit");
+            var menu_button = document.getElementsByClassName("onclick-menu")[0];
 
-            /*reset_button.onclick = function() {
+            reset_button.onclick = function() {
                 resetState();
-            }*/
+            }
 
             revert_button.onclick = function() { 
                 revertToBestState();
+            }
+
+            last_submit.onclick = function() {
+                revertToLastSubmit();
+            }
+
+            menu_button.onclick = function() {
+                toggleMenu();
             }
             /* Check if the snap xml has changed "significantly".
              * Exclude script position and edit history.
@@ -404,10 +500,15 @@
             document.addEventListener("mouseup", function() {
                 AGUpdate(world, id);
             });
+
+            document.addEventListener("click", function() {
+                AGUpdate(world, id);
+            });
+            //TODO: Fix this timeout.
             setTimeout(function() {
                 console.log(world);
                 AGStart(world,id);
-            },75);
+            },300);
             
             
         };
@@ -417,32 +518,35 @@
         }
 
     </script>
-        
+    <script type="text/javascript" src="AG_EDX.js"></script>
 </head>
 <body style="margin: 0;">
     <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
     <div id="autograding_bar">
-        <!--<div id="autograding_flag" style="display:inline-block">
-            SET-UP FOR CHECK
-        </div>-->
+        <div id="autograding_flag" style="display:inline-block">
+            Unchecked
+        </div>
+        <div id="autograding_button" style="display:inline-block; color:white;">
+            <!--&#x2713;   #FF3333-->
+            &#9633;
+        </div>
 
-<div style="display:inline-block">
+<div tabindex="0" class="onclick-menu" style="display:inline-block">&#9776;
   <nav id="navigation" class="site-navigation" role="navigation">
-  <ul class="menu">
-    <li class="menu-item"><a href="#"><div id="autograding_flag" style="display:inline-block">
-            SET-UP FOR CHECK
-        </div></a>
-      <ul class="dropdown">
-        <li class="menu-item sub-menu"><a href="#" id="reset-button">Reset</a></li>
-        <li class="menu-item sub-menu"><a href="#" id="revert-button">Revert To Best Attempt</a></li>
+  <!--<ul class="menu">
+    <li class="menu-item"><a href="#" id="grading-menu">&#9660</a>-->
+      <ul id="dropdown-closed" class="bubble">
+        <li class="menu-item-sub-menu" id="enabled-button"><a href="#" id="revert-button">Revert To Best Attempt</a></li>
+        <li class="menu-item-sub-menu" id="enabled-button"><a href="#" id="last-submit">Revert To Last Submission</a></li>
+        <li class="menu-item-sub-menu" id="enabled-button"><a href="#" id="reset-button">Reset</a></li>
       </ul>
-    </li>
-  </ul>
+    <!--</li>
+  </ul>-->
 </nav>
 </div>
-    <div id="autograding_button" style="display:inline-block">
-        &#x2713;
-    </div>
+
+<!--<div id="circle" style="display:inline-block"></div>-->
+
 
     </div>
     <script type="text/javascript" src="AG_status_bar.js" />

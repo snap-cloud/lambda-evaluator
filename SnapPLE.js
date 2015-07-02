@@ -183,8 +183,6 @@ gradingLog.prototype.evaluateLog = function(testIDs) {
 			outputLog[id]["correct"] = false;
 		}
 	}
-
-	
 	//Additional gradingLog fields are updated if all tests are evaluated.
 	if (outputLog.testCount === testIDs.length) {
 		// Calculate the pScore, the percentage of tests that have passed.
@@ -255,11 +253,12 @@ function printLog(outputLog) {
  * The 'comment' is updated if the gradeLog.evaluateLog() has been run.
  * @param {gradingLog} outputLog
  */
-function AG_log(outputLog) {
+function AG_log(outputLog, snapXMLString) {
  	var AG_state = {
 	    'checkState': outputLog.allCorrect,
 	    'comment': "Please run the Snap Autograder before using the 'Check' button.",
-	    'feedback': dictLog(outputLog)
+	    'feedback': dictLog(outputLog),
+	    'snapXML' : snapXMLString
 	};
 	//Only update the 
 	if (outputLog.pScore !== null) {
@@ -294,38 +293,11 @@ function getScripts(index) {
 	}
 }
 
+//Get just the most recently touched block that matches
 function getScript(blockSpec, spriteIndex) {
-	//TODO: Consider expanding to grab from additional sprites
-	//Try to get a sprite's scripts
-	//Throw exception if none exist.
-	try {
-		//Does the sprite exist?
-		if (spriteIndex === undefined) {
-			var scripts = getScripts(0);
-		} else {
-			var scripts = getScripts(spriteIndex);
-		}
-		//If no sprites exist, throw an exception.
-		if (scripts === undefined) {
-			throw "No scripts"
-		}
-	} catch(e) {
-		throw "getScript: No Sprite available."
-	}
-	//Try to return the first block matching 'blockSpec'.
-	//Throw exception if none exist/
-	var validScripts = scripts.filter(function (morph) {
-		if (morph.selector) {
-			//TODO: consider adding selector type check (morph.selector === "evaluateCustomBlock")
-			return (morph.blockSpec === blockSpec);
-		}
-	});
-	if (validScripts.length === 0) {
-		throw "getScript: No block named: '" + blockSpec.replace(/%[a-z]/g, "[]") + "'" +" in script window.";
-	}
-	return validScripts[0]
+	return getAllScripts(blockSpec, spriteIndex)[0];
 }
-function getAllScript(blockSpec, spriteIndex) {
+function getAllScripts(blockSpec, spriteIndex) {
 	//TODO: Consider expanding to grab from additional sprites
 	//Try to get a sprite's scripts
 	//Throw exception if none exist.
@@ -398,13 +370,24 @@ function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog
 	if (spriteIndex === undefined) {
 		spriteIndex = 0;
 	}
-	
+
 	var JSONtemplate = stringToJSON(scriptString);
 	var blockSpec = JSONtemplate[0].blockSp;
 	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1);
 	//Handle case when no scripts present on stage.
 	try {
-		var JSONtarget = JSONscript(getScript(blockSpec, spriteIndex));
+		var JSONtarget;
+		var scriptsOnScreen = getAllScript(blockSpec, spriteIndex);
+		var isPresent;
+		for (var i = 0; i < scriptsOnScreen.length; i++) {
+			JSONtarget = JSONscript(scriptsOnScreen[i]);
+			if (JSONtarget[0].blockSp === blockSpec) {
+				isPresent = checkTemplate(JSONtemplate, JSONtarget, scriptVariables);
+				if (isPresent) {
+					break;
+				}
+			}
+		}
 	} catch(e) {
 		var isPresent = false;
 		var feedback = "Script Missing: The target script was not found in the scripts tab"
@@ -415,9 +398,6 @@ function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog
 		return outputLog;
 	}
 	//test that scripts match
-		//TODO: update scriptsMatch function to take block objects, not objects on screen
-	//var isPresent = scriptsMatch(JSONtemplate, JSONtarget, false);
-	var isPresent = checkTemplate(JSONtemplate, JSONtarget, scriptVariables);
 	if (isPresent) {
 		feedback = "The targeted script is present in the scripts tab.";
 	} else {
@@ -553,6 +533,8 @@ SpriteEvent.prototype.init = function(_sprite, index) {
 	this.penDown = _sprite.isDown;
 	this.scale = _sprite.parent.scale;
 	this.ignore = false;
+	this.bubble = _sprite.talkBubble();
+	this.bubbleData = (this.bubble && this.bubble.data) || "nothing...";
 }
 
 //compares another SpriteEvent to this one for "equality"
@@ -561,7 +543,8 @@ SpriteEvent.prototype.equals = function(sEvent) {
 		this.x === sEvent.x &&
 		this.y === sEvent.y &&
 		this.direction === sEvent.direction &&
-		this.penDown === sEvent.penDown) {
+		this.penDown === sEvent.penDown &&
+		this.bubbleData === sEvent.bubbleData) {
 		return true;
 	}
 	return false;
@@ -655,6 +638,7 @@ function printEventLog(eventLog, ignore) {
 			console.log("Direction: " + eventLog["" + j][i].direction + "\n");
 			console.log("Pen Down: " + eventLog["" + j][i].penDown + "\n");
 			console.log("Stage Scale: " + eventLog["" + j][i].scale + "\n");
+			console.log("Sprite says: " + eventLog["" + j][i].bubbleData);
 		}
 	}
 }
@@ -1171,7 +1155,14 @@ function occurancesOfBlockSpec(blockSpec, block) {
  *
  */
 function scriptsMatch(template, script, softMatch, vars, templateVariables) {
-	var morph1, morph2, type1, type2;
+	var morph1, morph2, type1, type2, templateIsArray, scriptIsArray;
+	templateIsArray = (Object.prototype.toString.call(template) === '[object Array]');
+	scriptIsArray = (Object.prototype.toString.call(script) === '[object Array]');
+	if (templateIsArray && scriptIsArray) {
+		if (template.length !== script.length) {
+			return false;
+		}
+	}
 	for (var i = 0; i < template.length; i++) {
 		morph1 = template[i];
 		morph2 = script[i];

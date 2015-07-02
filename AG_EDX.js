@@ -31,6 +31,7 @@ var AG_EDX = (function() {
         //Grab Snap ide and testLog, null if AGTest() has not been called.
         var ide = world.children[0];
         // console.log("THE ID IS: " + id);
+
         if (localStorage.getItem(id + "_test_log") !== null){
             var glog = JSON.parse(localStorage.getItem(id + "_test_log"));
             var snapXML = localStorage.getItem(id + "_test_state");
@@ -44,8 +45,8 @@ var AG_EDX = (function() {
                 edx_log["snapXML"] = snapXML;
                 console.log(JSON.stringify(edx_log));
                 //saves correct student answer, as well as state, in case student returns to question
-                localStorage.setItem(id + "answer", JSON.stringify(AG_state));
-                localStorage.setItem(id + "correctstate", snapXML); 
+                /*localStorage.setItem(id + "answer", JSON.stringify(AG_state));
+                localStorage.setItem(id + "correctstate", snapXML);*/
             }
             console.log("GET GRADE SUCCEEDING");
 
