@@ -374,13 +374,14 @@
             localStorage.removeItem(taskID + "_test_state");*/
             AGStart(world,id);
 
-            world = new WorldMorph(document.getElementById('world'));
-            new IDE_Morph().openIn(world);
+            //world = new WorldMorph(document.getElementById('world'));
+            //new IDE_Morph().openIn(world);
 
 
             var ide = world.children[0];
+            ide.newProject();
             //Reduce Stage Size on initialization
-            ide.toggleStageSize(true);
+            //ide.toggleStageSize(true);
             AG_bar_ungraded(grade_flag, grade_button);
         }
 
@@ -396,7 +397,14 @@
             var grade_flag = document.getElementById("autograding_flag");
             var grade_button = document.getElementById("autograding_button");
             AG_bar_graded(grade_flag, grade_button);
-            ide.openProjectString(c_prev_xml);
+            // ide.openProjectString(c_prev_xml);
+
+            var topscroll = window.scrollY;
+            var leftscroll = window.scrollX;
+
+
+            ide.serializer.openProject(ide.serializer.load(c_prev_xml, ide), ide);
+            window.scrollTo(leftscroll, topscroll);
 
 
             /*localStorage.setItem(taskID + "_test_state", taskID + "_c_test_state");
@@ -472,6 +480,14 @@
             }
         }
 
+        function openPopup(){
+            overlay.classList.remove("is-hidden");
+        }
+
+        function closePopup(){
+            overlay.classList.add("is-hidden");
+        }
+
         var world;
         window.onload = function () {
 
@@ -534,6 +550,8 @@
             var undo_button = document.getElementById("undo-button");
             var last_submit = document.getElementById("last-submit");
             var menu_button = document.getElementsByClassName("onclick-menu")[0];
+            //var help_menu = document.getElementById("circle");
+            var overlay = document.getElementById('overlay');
 
             reset_button.onclick = function() {
                 resetState();
@@ -554,6 +572,10 @@
             menu_button.onclick = function() {
                 toggleMenu();
             }
+
+            /*help_menu.onclick = function() {
+                openModal();
+            }*/
             /* Check if the snap xml has changed "significantly".
              * Exclude script position and edit history.
              */
@@ -586,7 +608,7 @@
         <div id="autograding_flag" style="display:inline-block">
             Unchecked
         </div>
-        <div id="autograding_button" style="display:inline-block; color:white;">
+        <div id="autograding_button" style="display:inline-block;">
             <!--&#x2713;   #FF3333-->
             &#9633;
         </div>
@@ -606,7 +628,20 @@
 </nav>
 </div>
 
-<!--<div id="circle" style="display:inline-block"></div>-->
+<div style="display:inline-block"><a class="AG-help-button" onclick="openPopup();" href="#">?</a></div>
+
+<div class="overlay is-hidden" id="overlay">
+    <div class="popup-content">
+        <span class="button-close" onclick="closePopup();">X</span>
+        <p>Help Information Goes Here</p>
+    </div>
+</div>
+
+<!--<div class="center">
+    <p><a class="button button-primary" onclick="openModal();" href="#">Open modal</a></p>
+</div>-->
+
+
 
 
     </div>
