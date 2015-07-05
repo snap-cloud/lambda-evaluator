@@ -368,20 +368,11 @@
         function resetState() {
             var grade_flag = document.getElementById("autograding_flag");
             var grade_button = document.getElementById("autograding_button");
-            AG_bar_ungraded(grade_flag, grade_button);
 
-            /*localStorage.removeItem(taskID + "_test_log");
-            localStorage.removeItem(taskID + "_test_state");*/
             AGStart(world,id);
-
-            //world = new WorldMorph(document.getElementById('world'));
-            //new IDE_Morph().openIn(world);
-
 
             var ide = world.children[0];
             ide.newProject();
-            //Reduce Stage Size on initialization
-            //ide.toggleStageSize(true);
             AG_bar_ungraded(grade_flag, grade_button);
         }
 
@@ -581,7 +572,7 @@
       <ul id="dropdown-closed" class="bubble">
         <li class="menu-item-sub-menu" id="enabled-button"><a id="revert-button">Revert To Best Attempt</a></li>
         <li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last Submission</a></li>
-        <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Undo</a></li>
+        <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Revert To Last Graded Attempt</a></li>
         <li class="menu-item-sub-menu" id="enabled-button"><a id="reset-button">Reset</a></li>
       </ul>
     <!--</li>
@@ -594,7 +585,31 @@
 <div class="overlay is-hidden" id="overlay">
     <div class="popup-content">
         <span class="button-close" onclick="closePopup();">X</span>
-        <p>Help Information Goes Here</p>
+            <p>
+                Please remember to click the 'Submit' button below the Snap! window to obtain credit for this problem!
+            </p>
+            <div class="example-ag-buttons" id="ex-ungraded" style="display:inline-block;">
+                &#9744;
+            </div>
+            <p style="display:inline-block;">
+                The Snap! autograder has not been run yet.
+            </p>
+            </br>
+            <div style="display:inline-block; color: orange;">&#x26A0;</div>
+            <div class="example-ag-buttons" id="ex-semigraded" style="display:inline-block;">
+                &#x2713;
+            </div>
+            <p style="display:inline-block;">
+                The Snap! autograder has been run, but there are some errors in the code.
+            </p>
+            </br>
+            <div class="example-ag-buttons" id="ex-graded" style="display:inline-block;">
+                &#x2713;
+            </div>
+            <p style="display:inline-block;">
+                The Snap! autograder has been run, and all the tests have passed!
+            </p>
+            </br>
     </div>
 </div>
 
