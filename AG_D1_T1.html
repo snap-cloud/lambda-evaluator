@@ -386,11 +386,8 @@
         }
 
         function revertToBestState() {
-            
-            //world = new WorldMorph(document.getElementById('world'));
-            //new IDE_Morph().openIn(world);
+    
             var ide = world.children[0];
-            //ide.toggleStageSize(true);
 
             var curr_xml = ide.serializer.serialize(ide.stage);
             var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
@@ -399,35 +396,11 @@
             AG_bar_graded(grade_flag, grade_button);
 
             ide.openProjectString(c_prev_xml);
-
-
-
-            //ide.serializer.openProject(ide.serializer.load(c_prev_xml, ide), ide);
-            //setTimeout(window.parent.parent.scrollTo(0,0), 3000);
-
-
-            /*localStorage.setItem(taskID + "_test_state", taskID + "_c_test_state");
-            localStorage.setItem(taskID + "_test_log", taskID + "_c_test_log");*/
-            //AG_bar_graded(grade_flag, grade_button);
-            
-            /*if (c_prev_xml !== null && !(isSameSnapXML(c_prev_xml, curr_xml))) {
-                localStorage.setItem(taskID + "_test_state", taskID + "_c_test_state");
-                localStorage.setItem(taskID + "_test_log", taskID + "_c_test_log");
-                ide.openProjectString(c_prev_xml);
-            } /*else {
-                var revert_button = document.getElementById("revert-button");
-                revert_button.style.color = "#373737";
-                revert_button.style.pointerEvents = "none";
-                revert_button.parentNode.id = "disabled";
-            }*/
         }
 
         function revertToLastState() {
-            
-            //world = new WorldMorph(document.getElementById('world'));
-            //new IDE_Morph().openIn(world);
+
             var ide = world.children[0];
-            //ide.toggleStageSize(true);
 
             var prev_xml = localStorage.getItem(taskID + "_test_state");
             var curr_xml = ide.serializer.serialize(ide.stage);
@@ -442,17 +415,6 @@
                 AG_bar_semigraded(grade_flag, grade_button);
             }
             ide.openProjectString(prev_xml);
-
-            //AG_bar_semigraded(grade_flag, grade_button);
-            
-            /*if (prev_xml !== null && !(isSameSnapXML(prev_xml, curr_xml))) {
-                ide.openProjectString(prev_xml);
-            } /*else {
-                var last_submit = document.getElementById("last-submit");
-                last_submit.style.color = "#373737";
-                last_submit.style.pointerEvents = "none";
-                last_submit.parentNode.id = "disabled";
-            }*/
         }
 
         function revertToLastSubmit() {
