@@ -166,8 +166,10 @@
                 AG_bar_graded(grade_flag, grade_button);
                 // TODO: Write a good comment
                 // TODO: Give gradeLog ability to recover log data and xml string
-                localStorage.setItem(taskID + "_test_log", c_prev_log);
-                localStorage.setItem(taskID + "_test_state", curr_xml);
+
+                //localStorage.setItem(taskID + "_test_log", c_prev_log);
+                //localStorage.setItem(taskID + "_test_state", curr_xml);
+
                 //Retrieve the correct test log from localStorage
                 outputLog = JSON.parse(c_prev_log);
                 outputLog.snapWorld = snapWorld;
@@ -400,12 +402,16 @@
             var grade_button = document.getElementById("autograding_button");
             var undo_button = document.getElementById("undo-button");
 
-            if (isSameSnapXML(c_prev_xml, prev_xml)) {
+            var prev_xml = localStorage.getItem(taskID + "_test_state");
+            var curr_xml = ide.serializer.serialize(ide.stage);
+            var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
+
+            if (isSameSnapXML(localStorage.getItem(taskID + "_c_test_state"), localStorage.getItem(taskID + "_test_state"))) {
                 AG_bar_graded(grade_flag, grade_button);
             } else {
                 AG_bar_semigraded(grade_flag, grade_button);
             }
-            ide.openProjectString(prev_xml);
+            ide.openProjectString(localStorage.getItem(taskID + "_test_state"));
         }
 
         function revertToLastSubmit() {
@@ -414,7 +420,7 @@
             var grade_flag = document.getElementById("autograding_flag");
             var grade_button = document.getElementById("autograding_button");
             var ide = world.children[0];
-            if (isSameSnapXML(c_prev_xml, last_submission)) {
+            if (JSON.parse(localStorage.getItem(taskID + "_last_submitted_answer"))['checkState'] === true) {
                 AG_bar_graded(grade_flag, grade_button);
             } else {
                 AG_bar_semigraded(grade_flag, grade_button);
