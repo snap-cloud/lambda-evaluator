@@ -150,24 +150,6 @@
     cursor: default;
 }
 
-/*#circle:before {
-    content: ?;
-    color: white;
-}*/
-
-/*#circle {
-    text-align: center;
-    width: 15px;
-    height: 15px;
-    color: white;
-    -moz-border-radius: 7.5px;
-    -webkit-border-radius: 7.5px;
-    border-radius: 7.5px;
-    border: #FFFFFF solid 1.5px;
-    position: relative;
-    cursor: pointer;
-}*/
-
 
 .is-hidden {
   display: none;
