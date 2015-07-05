@@ -397,14 +397,13 @@
             var grade_flag = document.getElementById("autograding_flag");
             var grade_button = document.getElementById("autograding_button");
             AG_bar_graded(grade_flag, grade_button);
-            // ide.openProjectString(c_prev_xml);
 
-            var topscroll = window.scrollY;
-            var leftscroll = window.scrollX;
+            ide.openProjectString(c_prev_xml);
 
 
-            ide.serializer.openProject(ide.serializer.load(c_prev_xml, ide), ide);
-            window.scrollTo(leftscroll, topscroll);
+
+            //ide.serializer.openProject(ide.serializer.load(c_prev_xml, ide), ide);
+            //setTimeout(window.parent.parent.scrollTo(0,0), 3000);
 
 
             /*localStorage.setItem(taskID + "_test_state", taskID + "_c_test_state");
@@ -618,17 +617,17 @@
   <!--<ul class="menu">
     <li class="menu-item"><a href="#" id="grading-menu">&#9660</a>-->
       <ul id="dropdown-closed" class="bubble">
-        <li class="menu-item-sub-menu" id="enabled-button"><a href="#" id="revert-button">Revert To Best Attempt</a></li>
-        <li class="menu-item-sub-menu" id="enabled-button"><a href="#" id="last-submit">Revert To Last Submission</a></li>
-        <li class="menu-item-sub-menu" id="enabled-button"><a href="#" id="undo-button">Undo</a></li>
-        <li class="menu-item-sub-menu" id="enabled-button"><a href="#" id="reset-button">Reset</a></li>
+        <li class="menu-item-sub-menu" id="enabled-button"><a id="revert-button">Revert To Best Attempt</a></li>
+        <li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last Submission</a></li>
+        <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Undo</a></li>
+        <li class="menu-item-sub-menu" id="enabled-button"><a id="reset-button">Reset</a></li>
       </ul>
     <!--</li>
   </ul>-->
 </nav>
 </div>
 
-<div style="display:inline-block"><a class="AG-help-button" onclick="openPopup();" href="#">?</a></div>
+<div style="display:inline-block"><a class="AG-help-button" onclick="openPopup();">?</a></div>
 
 <div class="overlay is-hidden" id="overlay">
     <div class="popup-content">
