@@ -382,7 +382,6 @@
     
             var ide = world.children[0];
 
-            var curr_xml = ide.serializer.serialize(ide.stage);
             var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
             var grade_flag = document.getElementById("autograding_flag");
             var grade_button = document.getElementById("autograding_button");
@@ -396,27 +395,20 @@
             var ide = world.children[0];
 
             var prev_xml = localStorage.getItem(taskID + "_test_state");
-            var curr_xml = ide.serializer.serialize(ide.stage);
-            var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
             var grade_flag = document.getElementById("autograding_flag");
             var grade_button = document.getElementById("autograding_button");
-            var undo_button = document.getElementById("undo-button");
 
-            var prev_xml = localStorage.getItem(taskID + "_test_state");
-            var curr_xml = ide.serializer.serialize(ide.stage);
-            var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
 
-            if (isSameSnapXML(localStorage.getItem(taskID + "_c_test_state"), localStorage.getItem(taskID + "_test_state"))) {
+            if (JSON.parse(localStorage.getItem(taskID + "_test_log"))['checkState'] === true) {
                 AG_bar_graded(grade_flag, grade_button);
             } else {
                 AG_bar_semigraded(grade_flag, grade_button);
             }
-            ide.openProjectString(localStorage.getItem(taskID + "_test_state"));
+            ide.openProjectString(prev_xml);
         }
 
         function revertToLastSubmit() {
             var last_submission = localStorage.getItem(taskID + "_last_submitted_state");
-            var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
             var grade_flag = document.getElementById("autograding_flag");
             var grade_button = document.getElementById("autograding_button");
             var ide = world.children[0];
