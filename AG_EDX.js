@@ -1,4 +1,7 @@
-
+var courseID = "";  // e.g. "BJCx"
+// taskID uniquely identifies the task for saving in browser localStorage.
+var taskID = "AG_D1_T1";
+var id = courseID + taskID;
 
 var AG_state = {
     'checkState': false,
@@ -43,9 +46,10 @@ var AG_EDX = (function() {
                 var edx_log = AG_log(glog, snapXML);
                 edx_log["snapXML"] = snapXML;
                 console.log(JSON.stringify(edx_log));
+                console.log("hello");
                 //saves correct student answer, as well as state, in case student returns to question
-                localStorage.setItem(id + "answer", JSON.stringify(AG_state));
-                localStorage.setItem(id + "correctstate", snapXML); 
+                localStorage.setItem(id + "_last_submitted_answer", JSON.stringify(edx_log));
+                localStorage.setItem(id + "_last_submitted_state", snapXML);
             }
             console.log("GET GRADE SUCCEEDING");
 
