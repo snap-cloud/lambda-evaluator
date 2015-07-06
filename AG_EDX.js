@@ -1,4 +1,7 @@
-
+var courseID = "";  // e.g. "BJCx"
+// taskID uniquely identifies the task for saving in browser localStorage.
+var taskID = "AG_D1_T1";
+var id = courseID + taskID;
 
 var AG_state = {
     'checkState': false,
@@ -31,26 +34,6 @@ var AG_EDX = (function() {
         //Grab Snap ide and testLog, null if AGTest() has not been called.
         var ide = world.children[0];
         // console.log("THE ID IS: " + id);
-<<<<<<< HEAD
-        var glog = JSON.parse(localStorage.getItem(id + "_test_log"));
-        var snapXML = localStorage.getItem(id + "_test_state");
-        // console.log(snapXML);
-        //Save Snap XML in Local Storage
-        // localStorage.setItem(id, xmlString); 
-        //If AGTest() has been called, save the gradeLog in 
-        if (glog !== undefined) {
-            //Convert to an AG_state
-            var edx_log = AG_log(glog, snapXML);
-            edx_log["snapXML"] = snapXML;
-            console.log(JSON.stringify(edx_log));
-            //saves correct student answer, as well as state, in case student returns to question
-            localStorage.setItem(id + 'answer', JSON.stringify(AG_state));
-            localStorage.setItem(id + "correctstate", snapXML); 
-        } 
-        console.log("GET GRADE SUCCEEDING");
-
-        return encodeURIComponent(JSON.stringify(edx_log));
-=======
         if (localStorage.getItem(id + "_test_log") !== null){
             var glog = JSON.parse(localStorage.getItem(id + "_test_log"));
             var snapXML = localStorage.getItem(id + "_test_state");
@@ -63,9 +46,10 @@ var AG_EDX = (function() {
                 var edx_log = AG_log(glog, snapXML);
                 edx_log["snapXML"] = snapXML;
                 console.log(JSON.stringify(edx_log));
+                console.log("hello");
                 //saves correct student answer, as well as state, in case student returns to question
-                localStorage.setItem(id + "answer", JSON.stringify(AG_state));
-                localStorage.setItem(id + "correctstate", snapXML); 
+                localStorage.setItem(id + "_last_submitted_answer", JSON.stringify(edx_log));
+                localStorage.setItem(id + "_last_submitted_state", snapXML);
             }
             console.log("GET GRADE SUCCEEDING");
 
@@ -74,7 +58,6 @@ var AG_EDX = (function() {
         } else {
             return JSON.stringify(AG_state);
         }
->>>>>>> 9d25f0b8cc587464b395904b5ae6cc937a15c8c7
         // return encodeURIComponent(JSON.stringify(edx_log));
         // //Return the gradeable object (either anew or from previously saved state)
         // //TODO: [Tina] This needs to be fixed for the new saving strategy

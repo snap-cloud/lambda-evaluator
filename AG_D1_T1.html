@@ -99,6 +99,10 @@
          *  - Should only be called from a "mouseup" event.
          */
         function AGUpdate(snapWorld, taskID) {
+
+
+            
+
             //TODO: Are there any optional parameters that may be useful?
             //Grabs HTML divs
             var grade_flag = document.getElementById("autograding_flag");
@@ -109,12 +113,50 @@
             //Retrieve previously graded Snap XML strings (if in localStorage).
             var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
             var prev_xml = localStorage.getItem(taskID + "_test_state");
+
+            var last_submission = localStorage.getItem(taskID + "_last_submitted_state");
             //Retrieve previous grade logs (if in localStorage). As {String}s
             var c_prev_log = localStorage.getItem(taskID + "_c_test_log");
             var prev_log = localStorage.getItem(taskID + "_test_log");
             if (!prev_xml || !curr_xml) {
                 console.log(prev_xml);
                 console.log(curr_xml);
+            }
+
+
+            //menu bar grays out options that are not available (ex. current state is same as best attempt) and restores the button state
+
+            var last_submit = document.getElementById("last-submit");
+            if (last_submission === null || isSameSnapXML(last_submission, curr_xml)) {
+                last_submit.style.color = "#373737";
+                last_submit.style.pointerEvents = "none";
+                last_submit.parentNode.id = "disabled-button";
+            } else {
+                last_submit.parentNode.id = "enabled-button";
+                last_submit.style.color = "white";
+                last_submit.style.pointerEvents = "auto";
+            }
+
+            var revert_button = document.getElementById("revert-button");
+            if (c_prev_xml === null || isSameSnapXML(c_prev_xml, curr_xml)) {
+                revert_button.style.color = "#373737";
+                revert_button.style.pointerEvents = "none";
+                revert_button.parentNode.id = "disabled-button";
+            } else {
+                revert_button.parentNode.id = "enabled-button";
+                revert_button.style.color = "white";
+                revert_button.style.pointerEvents = "auto";
+            }
+
+            var undo_button = document.getElementById("undo-button");
+            if (prev_xml === null || isSameSnapXML(prev_xml, curr_xml)) {
+                undo_button.style.color = "#373737";
+                undo_button.style.pointerEvents = "none";
+                undo_button.parentNode.id = "disabled-button";
+            } else {
+                undo_button.parentNode.id = "enabled-button";
+                undo_button.style.color = "white";
+                undo_button.style.pointerEvents = "auto";
             }
 
             var outputLog;
@@ -124,8 +166,10 @@
                 AG_bar_graded(grade_flag, grade_button);
                 // TODO: Write a good comment
                 // TODO: Give gradeLog ability to recover log data and xml string
+
                 localStorage.setItem(taskID + "_test_log", c_prev_log);
                 localStorage.setItem(taskID + "_test_state", curr_xml);
+
                 //Retrieve the correct test log from localStorage
                 outputLog = JSON.parse(c_prev_log);
                 outputLog.snapWorld = snapWorld;
@@ -172,33 +216,39 @@
         }
 
         function AG_bar_ungraded(grade_flag, grade_button) {
-            grade_flag.innerHTML = "SET-UP FOR CHECK";
+            grade_flag.innerHTML = "";
             grade_flag.style.color = "#FF3333"
-            grade_button.innerHTML = "&#x2713;";
-            grade_button.style.color = "white";
+            //grade_button.innerHTML = "&#x2713;";
+            grade_button.innerHTML = "&#9744;";
+            grade_button.style.color = "#FF3333";
             grade_button.style.background = "#FF3333";
             grade_button.style.font = "1.2em";
             grade_button.style.padding = "2px 3px 0px 3px";
+            /*grade_button.style.border = "4px gray solid";*/
         }
 
         function AG_bar_graded(grade_flag, grade_button) {
-            grade_flag.innerHTML = "READY TO BE CHECKED";
+            //grade_flag.innerHTML = "READY TO BE CHECKED";
+            grade_flag.innerHTML = "";
             grade_flag.style.color = "#33FF33";
             grade_button.style.font = "1.2em";
             grade_button.style.color = "white";
             grade_button.style.background = "#33FF33";
             grade_button.innerHTML = "&#x2713;";
             grade_button.style.padding = "2px 3px 0px 3px";
+            /*grade_button.style.border = "4px gray solid";*/
         }
 
         function AG_bar_semigraded(grade_flag, grade_button) {
-            grade_flag.innerHTML = "READY TO BE CHECKED";
+            //grade_flag.innerHTML = "READY TO BE CHECKED";
+            grade_flag.innerHTML = "&#x26A0;";
             grade_flag.style.color = "orange";
             grade_button.style.font = "1.4em";
             grade_button.style.color = "black";
             grade_button.style.background = "orange";
-            grade_button.style.padding = "2px 1px 0px 1px";
-            grade_button.innerHTML = "&#x26A0;";
+            grade_button.style.padding = "2px 3px 0px 3px";
+            grade_button.innerHTML = "&#x2713;";
+            /*grade_button.style.border = "4px gray solid";*/
         }
 
         /* Checks if two Snap! XML strings have approximately the same state.
@@ -317,24 +367,75 @@
             return message;
         }
 
-        /*function resetState() {
-            localStorage.removeItem(taskID + "_test_log");
-            localStorage.removeItem(taskID + "_test_state");
-        }*/
+        function resetState() {
+            var grade_flag = document.getElementById("autograding_flag");
+            var grade_button = document.getElementById("autograding_button");
 
-        function revertToBestState() {
-            world = new WorldMorph(document.getElementById('world'));
-            new IDE_Morph().openIn(world);
+            AGStart(world,id);
 
             var ide = world.children[0];
-            //Reduce Stage Size on initialization
-            ide.toggleStageSize(true);
+            ide.newProject();
+            AG_bar_ungraded(grade_flag, grade_button);
+        }
+
+        function revertToBestState() {
+    
+            var ide = world.children[0];
 
             var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
-            if (c_prev_xml !== null) {
-                localStorage.setItem(taskID + "_test_state", taskID + "_c_test_state");
-                ide.openProjectString(c_prev_xml);
+            var grade_flag = document.getElementById("autograding_flag");
+            var grade_button = document.getElementById("autograding_button");
+            AG_bar_graded(grade_flag, grade_button);
+
+            ide.openProjectString(c_prev_xml);
+        }
+
+        function revertToLastState() {
+
+            var ide = world.children[0];
+
+            var prev_xml = localStorage.getItem(taskID + "_test_state");
+            var grade_flag = document.getElementById("autograding_flag");
+            var grade_button = document.getElementById("autograding_button");
+
+
+            if (JSON.parse(localStorage.getItem(taskID + "_test_log"))['checkState'] === true) {
+                AG_bar_graded(grade_flag, grade_button);
+            } else {
+                AG_bar_semigraded(grade_flag, grade_button);
             }
+            ide.openProjectString(prev_xml);
+        }
+
+        function revertToLastSubmit() {
+            var last_submission = localStorage.getItem(taskID + "_last_submitted_state");
+            var grade_flag = document.getElementById("autograding_flag");
+            var grade_button = document.getElementById("autograding_button");
+            var ide = world.children[0];
+            if (JSON.parse(localStorage.getItem(taskID + "_last_submitted_answer"))['checkState'] === true) {
+                AG_bar_graded(grade_flag, grade_button);
+            } else {
+                AG_bar_semigraded(grade_flag, grade_button);
+            }
+            ide.openProjectString(last_submission);
+
+        }
+
+        function toggleMenu() {
+            var menu_items = document.getElementsByClassName("bubble")[0];
+            if (menu_items.id === "dropdown-closed") {
+                menu_items.id = "dropdown-open";
+            } else {
+                menu_items.id = "dropdown-closed";
+            }
+        }
+
+        function openPopup(){
+            overlay.classList.remove("is-hidden");
+        }
+
+        function closePopup(){
+            overlay.classList.add("is-hidden");
         }
 
         var world;
@@ -396,20 +497,45 @@
 
             var reset_button = document.getElementById("reset-button");
             var revert_button = document.getElementById("revert-button");
+            var undo_button = document.getElementById("undo-button");
+            var last_submit = document.getElementById("last-submit");
+            var menu_button = document.getElementsByClassName("onclick-menu")[0];
+            //var help_menu = document.getElementById("circle");
+            var overlay = document.getElementById('overlay');
 
-            /*reset_button.onclick = function() {
+            reset_button.onclick = function() {
                 resetState();
-            }*/
+            }
 
             revert_button.onclick = function() { 
                 revertToBestState();
             }
+
+            last_submit.onclick = function() {
+                revertToLastSubmit();
+            }
+
+            undo_button.onclick = function() {
+                revertToLastState();
+            }
+
+            menu_button.onclick = function() {
+                toggleMenu();
+            }
+
+            /*help_menu.onclick = function() {
+                openModal();
+            }*/
             /* Check if the snap xml has changed "significantly".
              * Exclude script position and edit history.
              */
             document.addEventListener("mouseup", function() {
                 AGUpdate(world, id);
             });
+
+            /*document.addEventListener("click", function() {
+                AGUpdate(world, id);
+            });*/
             //TODO: Fix this timeout.
             setTimeout(function() {
                 console.log(world);
@@ -429,27 +555,61 @@
 <body style="margin: 0;">
     <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
     <div id="autograding_bar">
-        <!--<div id="autograding_flag" style="display:inline-block">
-            SET-UP FOR CHECK
-        </div>-->
+        <div id="autograding_flag" style="display:inline-block">
+            Unchecked
+        </div>
+        <div id="autograding_button" style="display:inline-block;">
+            <!--&#x2713;   #FF3333-->
+            &#9633;
+        </div>
 
-<div style="display:inline-block">
+<!-- Snap Autograding Menu -->
+<div tabindex="0" class="onclick-menu" style="display:inline-block">&#9776;
   <nav id="navigation" class="site-navigation" role="navigation">
-  <ul class="menu">
-    <li class="menu-item"><a href="#"><div id="autograding_flag" style="display:inline-block">
-            SET-UP FOR CHECK
-        </div></a>
-      <ul class="dropdown">
-        <li class="menu-item sub-menu"><a href="#" id="reset-button">Reset</a></li>
-        <li class="menu-item sub-menu"><a href="#" id="revert-button">Revert To Best Attempt</a></li>
+      <ul id="dropdown-closed" class="bubble">
+        <li class="menu-item-sub-menu" id="enabled-button"><a id="revert-button">Revert To Best Attempt</a></li>
+        <li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last Submission</a></li>
+        <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Revert To Last Graded Attempt</a></li>
+        <li class="menu-item-sub-menu" id="enabled-button"><a id="reset-button">Reset</a></li>
       </ul>
-    </li>
-  </ul>
 </nav>
 </div>
-    <div id="autograding_button" style="display:inline-block">
-        &#x2713;
+
+<!-- Autograding Menu Help Button -->
+<div style="display:inline-block">
+    <a class="AG-help-button" onclick="openPopup();">?</a>
+</div>
+<div class="overlay is-hidden" id="overlay">
+    <div class="popup-content">
+        <span class="button-close" onclick="closePopup();">X</span>
+            <p>
+                Please remember to click the 'Submit' button below the Snap! window to obtain credit for this problem!
+            </p>
+            <div class="example-ag-buttons" id="ex-ungraded" style="display:inline-block;">
+                &#9744;
+            </div>
+            <p style="display:inline-block;">
+                The Snap! autograder has not been run yet.
+            </p>
+            </br>
+            <div style="display:inline-block; color: orange;">&#x26A0;</div>
+            <div class="example-ag-buttons" id="ex-semigraded" style="display:inline-block;">
+                &#x2713;
+            </div>
+            <p style="display:inline-block;">
+                The Snap! autograder has been run, but there are some errors in the code.
+            </p>
+            </br>
+            <div class="example-ag-buttons" id="ex-graded" style="display:inline-block;">
+                &#x2713;
+            </div>
+            <p style="display:inline-block;">
+                The Snap! autograder has been run, and all the tests have passed!
+            </p>
+            </br>
     </div>
+</div>
+
 
     </div>
     <script type="text/javascript" src="AG_status_bar.js" />

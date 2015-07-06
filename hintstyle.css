@@ -89,6 +89,10 @@ table.results {
   td.data {
     color: #4F5150;
   }
+
+span {
+  text-transform: initial;
+}
 		
 
 
