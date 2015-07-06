@@ -377,7 +377,7 @@ function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog
 	//Handle case when no scripts present on stage.
 	try {
 		var JSONtarget;
-		var scriptsOnScreen = getAllScript(blockSpec, spriteIndex);
+		var scriptsOnScreen = getAllScripts(blockSpec, spriteIndex);
 		var isPresent;
 		for (var i = 0; i < scriptsOnScreen.length; i++) {
 			JSONtarget = JSONscript(scriptsOnScreen[i]);
