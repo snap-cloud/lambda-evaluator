@@ -167,8 +167,8 @@
                 // TODO: Write a good comment
                 // TODO: Give gradeLog ability to recover log data and xml string
 
-                //localStorage.setItem(taskID + "_test_log", c_prev_log);
-                //localStorage.setItem(taskID + "_test_state", curr_xml);
+                localStorage.setItem(taskID + "_test_log", c_prev_log);
+                localStorage.setItem(taskID + "_test_state", curr_xml);
 
                 //Retrieve the correct test log from localStorage
                 outputLog = JSON.parse(c_prev_log);
