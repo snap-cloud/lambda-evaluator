@@ -7,6 +7,10 @@
   color:red; 
   font-family:helvetica;
   text-align:right;
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
 }
 
 #autograding_flag {
@@ -160,16 +164,31 @@
   font-weight: 600;
   text-decoration: none;
   color: #333;
-  background: #e3e3e3;
-  padding: 2px 5px 0px 5px;
+  /*background: #e3e3e3;
+  padding: 2px 5px 0px 5px;*/
+  background: rgb(0, 23, 255);
   display: inline-block;
   border-radius: 5px;
   cursor: pointer;
-  border-bottom-width: 2px;
+  /*border-bottom-width: 2px;
   border-bottom-style: solid;
-  border-bottom-color: #999;
+  border-bottom-color: #999;*/
   position: relative;
   top: -2px;
+  text-align: center;
+  color: white;
+  line-height: 1.2;
+  border: 1.5px solid white;
+  font-size: 0.8em;
+  top: -3px;
+}
+
+#circle {
+    width: 15px;
+    height: 15px;
+    -webkit-border-radius: 7.5px;
+    -moz-border-radius: 7.5px;
+    border-radius: 7.5px; 
 }
 
 
