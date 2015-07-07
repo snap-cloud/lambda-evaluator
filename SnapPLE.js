@@ -154,6 +154,9 @@ gradingLog.prototype.updateLog = function(testID, output, feedback, correct) {
 gradingLog.prototype.evaluateLog = function(testIDs) {
 	// Evaluate all tests if no specific testIDs are specified.
 	var outputLog = this;
+	if (gradingLog.testCount === 0) {
+		return gradingLog;
+	}
 	if (testIDs === undefined) {
 		testIDs = [];
 		for (var i = 1; i <= outputLog.testCount; i++) {
@@ -168,6 +171,9 @@ gradingLog.prototype.evaluateLog = function(testIDs) {
 	for (var id of testIDs) {
 		//TODO: Terribly ugly. This should be abstracted. 
 		if (outputLog[id]['testClass'] === "a") {
+			if (outputLog[id]['correct']) {
+				tests_passed += 1;
+			}
 			continue;
 		}
 		if (outputLog[id]["correct"] === true) {
@@ -283,14 +289,19 @@ function AG_log(outputLog, snapXMLString) {
 
 }
 
-function testAssert(outputLog, statement, pos_fb, neg_fb, ass_text) {
+/* Add a test case to the outputLog if the assertion fails. 
+ * Currently does not add a test if the assertion succeeds.
+ * TODO: Consider separating assertions into two classes
+ * WARNING: DOES NOT EVALUATE LOG
+ */
+function testAssert(outputLog, assertion, pos_fb, neg_fb, ass_text) {
 	var testIDs = [];
-	if (statement) {
-		testIDs.push(outputLog.addAssert("a", statement, pos_fb, ass_text));
+	if (assertion) {
+		// testIDs.push(outputLog.addAssert("a", statement, pos_fb, ass_text));
 	} else {
-		testIDs.push(outputLog.addAssert("a", statement, neg_fb, ass_text));
+		testIDs.push(outputLog.addAssert("a", assertion, neg_fb, ass_text));
 	}
-	outputLog.evaluateLog(testIDs);
+	// outputLog.evaluateLog(testIDs);
 	return outputLog;
 }
 
