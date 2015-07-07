@@ -26,8 +26,6 @@
         var taskID = "AG_D1_T1";
         var id = courseID + taskID;
 
-        var feedbackPopulated = false;
-
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
@@ -476,8 +474,6 @@
 
             //if the feedback is not the same as it was before
 
-            //if (not(isSameSnapXML(curr_xml, prev_xml)) || feedbackPopulated === false) {
-
                 var glog = JSON.parse(localStorage.getItem(taskID + "_test_log"));
                 var log = AG_log(glog);
 
@@ -614,8 +610,6 @@
                 header.classList.add("titles");
                 header.appendChild(text);
                 titles.insertBefore(header, lastCol);*/
-
-                var feedbackPopulated = true;
             //}
         }
 
@@ -804,7 +798,7 @@
     </div>
 </div>
 
-<div style="display:inline-block" class="AG-help-button" id="circle" onclick="openResults();">?
+<div style="display:inline-block" class="view-results" id="circle" onclick="openResults();">Results
 </div>
 <div class="overlay is-hidden" id="ag-output">
     <div class="popup-content" id="ag-results">
