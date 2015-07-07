@@ -65,6 +65,7 @@ gradingLog.prototype.stringifySnapXML = function() {
 *  Access specific parts of each test by:
 *  		gradingLog.[""+(testID)]
 *  Test Class include:
+*		"a" - assertion
 *		"p" - presence test
 *		"r" - reporter test
 *		"s" - stage event test
@@ -82,6 +83,16 @@ gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, tim
 								 "proc": null};
 	return this.testCount;
 };
+
+gradingLog.prototype.addAssert = function(testClass, statement, feedback, text) {
+	this.testCount += 1;
+	this[this.testCount] = {'testClass': "a",
+							'text': text,
+							'correct': statement,
+							'feedback': feedback};
+	return this.testCount;
+
+}
 
 /*
 *  Asyncronysly runs the input tests
@@ -156,6 +167,9 @@ gradingLog.prototype.evaluateLog = function(testIDs) {
 	//Set 'correct' and 'feedback' fields for all in testIDs
 	for (var id of testIDs) {
 		//TODO: Terribly ugly. This should be abstracted. 
+		if (outputLog[id]['testClass'] === "a") {
+			continue;
+		}
 		if (outputLog[id]["correct"] === true) {
 			tests_passed += 1;
 			continue;
@@ -269,6 +283,17 @@ function AG_log(outputLog, snapXMLString) {
 
 }
 
+function testAssert(outputLog, statement, pos_fb, neg_fb, ass_text) {
+	var testIDs = [];
+	if (statement) {
+		testIDs.push(outputLog.addAssert("a", statement, pos_fb, ass_text));
+	} else {
+		testIDs.push(outputLog.addAssert("a", statement, neg_fb, ass_text));
+	}
+	outputLog.evaluateLog(testIDs);
+	return outputLog;
+}
+
 /* Snap block getters and setters used to retrieve blocks,
  * set values, and initiates blocks.
  */
@@ -292,7 +317,6 @@ function getScripts(index) {
 		return undefined;
 	}
 }
-
 //Get just the most recently touched block that matches
 function getScript(blockSpec, spriteIndex) {
 	return getAllScripts(blockSpec, spriteIndex)[0];
@@ -327,39 +351,6 @@ function getAllScripts(blockSpec, spriteIndex) {
 		throw "getScript: No block named: '" + blockSpec.replace(/%[a-z]/g, "[]") + "'" +" in script window.";
 	}
 	return validScripts
-}
-
-function isScriptPresent(blockSpec, spriteIndex) {
-	var script;
-	try {
-		script = getScript(blockSpec, spriteIndex);
-		return true;
-	} catch(e) {
-		return false;
-	}
-}
-
-function testBlockPresent(blockSpec, spriteIndex, outputLog) {
-	//Populate optional parameters
-	if (outputLog === undefined) {
-		outputLog = new gradingLog();
-	}
-	if (spriteIndex === undefined) {
-		spriteIndex = 0;
-	}
-
-	//Generate Log
-	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1);
-	var isPresent = isScriptPresent(blockSpec, spriteIndex);
-	var feedback = null;
-	if (isPresent) {
-		feedback = "" + blockSpec + " is in the scripts tab.";
-	} else {
-		feedback = "Block Missing: " + blockSpec + " , was not found in the scripts tab";
-	}
-	outputLog.updateLog(testID, isPresent, feedback, isPresent);
-	evaluateLog(outputLog);
-	return outputLog;
 }
 
 function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog) {
@@ -409,40 +400,37 @@ function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog
 
 }
 
-
-function setValues(block, values) {
-	var valIndex = 0;
-
-	var morphList = block.children;
-
-	for (var morph of morphList) {
-		if (morph.constructor.name === "InputSlotMorph") {
-			morph.setContents(values[valIndex]);
-			valIndex += 1;
-		}
+function testBlockPresent(blockSpec, spriteIndex, outputLog) {
+	//Populate optional parameters
+	if (outputLog === undefined) {
+		outputLog = new gradingLog();
 	}
-	if (valIndex + 1 !== values.length) {
-		//TODO: THROW ERROR FOR INVALID BLOCK DEFINITION
+	if (spriteIndex === undefined) {
+		spriteIndex = 0;
 	}
+
+	//Generate Log
+	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1);
+	var isPresent = isScriptPresent(blockSpec, spriteIndex);
+	var feedback = null;
+	if (isPresent) {
+		feedback = "" + blockSpec + " is in the scripts tab.";
+	} else {
+		feedback = "Block Missing: " + blockSpec + " , was not found in the scripts tab";
+	}
+	outputLog.updateLog(testID, isPresent, feedback, isPresent);
+	evaluateLog(outputLog);
+	return outputLog;
 }
 
-function evalReporter(block, outputLog, testID) {
-	var stage = world.children[0].stage;
-	var proc = stage.threads.startProcess(block, 
-					stage.isThreadSafe,
-					false,
-					function() {
-						outputLog.finishTest(testID, readValue(proc));
-					});
-	return proc
-}
-
-/* Read the return value of a Snap! process. The process
- * is an evaluating reporter block that updates a field in the
- * process on completion.
- */
-function readValue(proc) {
-	return proc.homeContext.inputs[0];
+function isScriptPresent(blockSpec, spriteIndex) {
+	var script;
+	try {
+		script = getScript(blockSpec, spriteIndex);
+		return true;
+	} catch(e) {
+		return false;
+	}
 }
 
 /*
@@ -483,6 +471,41 @@ function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
 	testBlock(outputLog, testIDs[0]);
 	outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
 	return outputLog;
+}
+
+function setValues(block, values) {
+	var valIndex = 0;
+
+	var morphList = block.children;
+
+	for (var morph of morphList) {
+		if (morph.constructor.name === "InputSlotMorph") {
+			morph.setContents(values[valIndex]);
+			valIndex += 1;
+		}
+	}
+	if (valIndex + 1 !== values.length) {
+		//TODO: THROW ERROR FOR INVALID BLOCK DEFINITION
+	}
+}
+
+function evalReporter(block, outputLog, testID) {
+	var stage = world.children[0].stage;
+	var proc = stage.threads.startProcess(block, 
+					stage.isThreadSafe,
+					false,
+					function() {
+						outputLog.finishTest(testID, readValue(proc));
+					});
+	return proc
+}
+
+/* Read the return value of a Snap! process. The process
+ * is an evaluating reporter block that updates a field in the
+ * process on completion.
+ */
+function readValue(proc) {
+	return proc.homeContext.inputs[0];
 }
 
 function prettyBlockString(blockSpec, inputs) {

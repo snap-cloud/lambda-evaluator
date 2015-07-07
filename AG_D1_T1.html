@@ -29,9 +29,14 @@
         // var testLog;
         function AGTest(outputLog) {
             
+            testAssert(outputLog, (1===1), "YOU DID IT!", "YOU FAILED!", "This is intro text");
             testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]', ["A"], 0, outputLog);
             // testLog = multiTestBlock("%s my plus %s",[[1,2],[2,2],[2,3],[3,4],[5,5]],[3,4,5,7,10],[-1,-1,-1,-1,-1]);
             // return outputLog;
+            console.log(outputLog);
+            outputLog.evaluateLog();
+            console.log(outputLog);
+            return outputLog;
         }
 
         /* Removes the previously saved AG_state. Runs the tests in
