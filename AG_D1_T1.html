@@ -114,7 +114,7 @@
             var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
             var prev_xml = localStorage.getItem(taskID + "_test_state");
 
-            var last_submission = localStorage.getItem(taskID + "_last_submitted_state");
+            var last_xml = localStorage.getItem(taskID + "_last_submitted_state");
             //Retrieve previous grade logs (if in localStorage). As {String}s
             var c_prev_log = localStorage.getItem(taskID + "_c_test_log");
             var prev_log = localStorage.getItem(taskID + "_test_log");
@@ -127,7 +127,7 @@
             //menu bar grays out options that are not available (ex. current state is same as best attempt) and restores the button state
 
             var last_submit = document.getElementById("last-submit");
-            if (last_submission === null || isSameSnapXML(last_submission, curr_xml)) {
+            if (last_xml === null || isSameSnapXML(last_xml, curr_xml)) {
                 last_submit.style.color = "#373737";
                 last_submit.style.pointerEvents = "none";
                 last_submit.parentNode.id = "disabled-button";
@@ -367,30 +367,38 @@
             return message;
         }
 
-        function resetState() {
+        function resetState(taskID) {
             var grade_flag = document.getElementById("autograding_flag");
             var grade_button = document.getElementById("autograding_button");
 
-            AGStart(world,id);
+            //AGStart(world,id);
+
+            localStorage.removeItem(taskID + "_test_log");
+            localStorage.removeItem(taskID + "_test_state");
 
             var ide = world.children[0];
             ide.newProject();
             AG_bar_ungraded(grade_flag, grade_button);
         }
 
-        function revertToBestState() {
+        function revertToBestState(taskID) {
     
             var ide = world.children[0];
 
             var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
+            var c_prev_log = localStorage.getItem(taskID + "_c_test_log");
             var grade_flag = document.getElementById("autograding_flag");
             var grade_button = document.getElementById("autograding_button");
+
+            localStorage.setItem(taskID + "_test_state", c_prev_xml);
+            localStorage.setItem(taskID + "_test_log", c_prev_log);
+
             AG_bar_graded(grade_flag, grade_button);
 
             ide.openProjectString(c_prev_xml);
         }
 
-        function revertToLastState() {
+        function revertToLastState(taskID) {
 
             var ide = world.children[0];
 
@@ -399,7 +407,7 @@
             var grade_button = document.getElementById("autograding_button");
 
 
-            if (JSON.parse(localStorage.getItem(taskID + "_test_log"))['checkState'] === true) {
+            if (JSON.parse(localStorage.getItem(taskID + "_test_log"))['allCorrect'] === true) {
                 AG_bar_graded(grade_flag, grade_button);
             } else {
                 AG_bar_semigraded(grade_flag, grade_button);
@@ -407,17 +415,22 @@
             ide.openProjectString(prev_xml);
         }
 
-        function revertToLastSubmit() {
-            var last_submission = localStorage.getItem(taskID + "_last_submitted_state");
+        function revertToLastSubmit(taskID) {
+            var last_xml = localStorage.getItem(taskID + "_last_submitted_state");
+            var last_log = localStorage.getItem(taskID + "_last_submitted_log");
             var grade_flag = document.getElementById("autograding_flag");
             var grade_button = document.getElementById("autograding_button");
             var ide = world.children[0];
-            if (JSON.parse(localStorage.getItem(taskID + "_last_submitted_answer"))['checkState'] === true) {
+
+            localStorage.setItem(taskID + "_test_state", last_xml);
+            localStorage.setItem(taskID + "_test_log", last_log);
+
+            if (JSON.parse(last_log)['allCorrect'] === true) {
                 AG_bar_graded(grade_flag, grade_button);
             } else {
                 AG_bar_semigraded(grade_flag, grade_button);
             }
-            ide.openProjectString(last_submission);
+            ide.openProjectString(last_xml);
 
         }
 
@@ -431,10 +444,12 @@
         }
 
         function openPopup(){
+            var overlay = document.getElementById('overlay');
             overlay.classList.remove("is-hidden");
         }
 
         function closePopup(){
+            var overlay = document.getElementById('overlay');
             overlay.classList.add("is-hidden");
         }
 
@@ -504,23 +519,23 @@
             var overlay = document.getElementById('overlay');
 
             reset_button.onclick = function() {
-                resetState();
+                resetState(id);
             }
 
             revert_button.onclick = function() { 
-                revertToBestState();
+                revertToBestState(id);
             }
 
             last_submit.onclick = function() {
-                revertToLastSubmit();
+                revertToLastSubmit(id);
             }
 
             undo_button.onclick = function() {
-                revertToLastState();
+                revertToLastState(id);
             }
 
             menu_button.onclick = function() {
-                toggleMenu();
+                toggleMenu(id);
             }
 
             /*help_menu.onclick = function() {
@@ -576,8 +591,7 @@
 </div>
 
 <!-- Autograding Menu Help Button -->
-<div style="display:inline-block">
-    <a class="AG-help-button" onclick="openPopup();">?</a>
+<div style="display:inline-block" class="AG-help-button" id="circle" onclick="openPopup();">?
 </div>
 <div class="overlay is-hidden" id="overlay">
     <div class="popup-content">
