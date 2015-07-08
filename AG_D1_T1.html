@@ -232,26 +232,57 @@
             outputLog.saveSnapXML(outputLog.taskID + "_test_state");
         }
 
+
+
         function AG_bar_ungraded(menu_button, grade_button) {
-            grade_button.style.background = 'orange';
-            var grade_button_text = grade_button.querySelector('span');
-            grade_button_text.innerHTML = "GRADE";
-            menu_button.style.color = 'white';
+            
+            var button_text = "GRADE";
+            var button_elem = $('#autograding_button span');
+            var regex = new RegExp(button_text,"g");
+            if (button_elem.html().match(regex) !== null) {
+                return;
+            }
+            button_elem.fadeOut('fast', function() {
+                button_elem.html(button_text);
+                button_elem.slideDown('fast');
+                grade_button.style.background = 'orange';
+            });          
+            
+            $('#onclick-menu').css('color', 'white');
+            $('#feedback-button').html("View Previous Feedback");
         }
 
         function AG_bar_graded(menu_button, grade_button) {
-            grade_button.style.background = "#29A629";
-            var grade_button_text = grade_button.querySelector('span');
-            grade_button_text.innerHTML = "TESTS PASS";
-            menu_button.style.color = 'white';
+            var button_text = "TESTS PASS";
+            var button_elem = $('#autograding_button span');
+            var regex = new RegExp(button_text,"g");
+            if (button_elem.html().match(regex) !== null) {
+                return;
+            }
+            $('#autograding_button span').fadeOut('fast', function() {
+                $('#autograding_button span').html(button_text);
+                $('#autograding_button span').slideDown('fast');
+                grade_button.style.background = "#29A629";
+            });
+            $('#onclick-menu').css('color', 'white');
+            $('#feedback-button').html("Review Feedback");
+
         }
 
         function AG_bar_semigraded(menu_button, grade_button) {
-            grade_button.style.background = "red";
-
-            var grade_button_text = grade_button.querySelector('span');
-            grade_button_text.innerHTML = "&#x2770&#x2770 FEEDBACK";
-            menu_button.style.color = 'orange';
+            var button_text = "&#x2770&#x2770 FEEDBACK";
+            var button_elem = $('#autograding_button span');
+            var regex = new RegExp("FEEDBACK","g");
+            if (button_elem.html().match(regex) !== null) {
+                return;
+            }
+            $('#autograding_button span').fadeOut('fast', function() {
+                $('#autograding_button span').html(button_text);
+                $('#autograding_button span').slideDown('fast');
+                grade_button.style.background = "red";
+            });
+            $('#onclick-menu').css('color', 'orange');
+            $('#feedback-button').html("View Feedback (" + " Error)");
         }
 
         /* Checks if two Snap! XML strings have approximately the same state.
@@ -690,25 +721,11 @@
             //var help_menu = document.getElementById("circle");
             var overlay = document.getElementById('overlay');
 
-            reset_button.onclick = function() {
-                resetState(id);
-            }
-
-            revert_button.onclick = function() { 
-                revertToBestState(id);
-            }
-
-            last_submit.onclick = function() {
-                revertToLastSubmit(id);
-            }
-
-            undo_button.onclick = function() {
-                revertToLastState(id);
-            }
-
-            menu_button.onclick = function() {
-                toggleMenu(id);
-            }
+            reset_button.onclick = function() { resetState(id); };
+            revert_button.onclick = function() { revertToBestState(id); };
+            last_submit.onclick = function() { revertToLastSubmit(id); };
+            undo_button.onclick = function() { revertToLastState(id); };
+            menu_button.onclick = function() { toggleMenu(id); };
 
             /*help_menu.onclick = function() {
                 openModal();
@@ -766,7 +783,7 @@
     <!-- <div id="autograding_flag" style="display:inline-block"></div> -->
     <!-- <div style="display:inline-block"> -->
     <div id="autograding_button" style="display:inline-block;">
-        <span>VERIFY</span>
+        <span></span>
         <div class='hover_darken'></div>
     </div>
     <!-- </div> -->

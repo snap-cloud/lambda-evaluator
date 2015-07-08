@@ -1,7 +1,9 @@
 #autograding_bar {
   position:absolute;
-  height: 25px;
+  height: 1em;
+  width:8em;
   right:16em;
+  top:3px;
   /*padding-top: 2px;*/
   /*padding-left: 5px; */
   color:white; 
@@ -21,17 +23,19 @@
 }
 
 #autograding_button {
-  height:60%;
+  position:absolute;
+  height:1em;
   width: 6.5em;
-  padding-top:4px;
+  right:0px;
+  padding-top:2px;
   padding-right:3px;
   padding-bottom:2px;
   padding-left:3px;
-  line-height:.9em;
+
+  /*line-height:.9em;*/
   text-align:center;
-  margin-top: 2px;
   border-radius:0px 4px 4px 0px;
-  background-color:#FF3333;
+  background-color:#333333;
   font-size:1em;
   color:#FFFFFF;
   display:inline-block;
@@ -50,43 +54,43 @@
 
 }*/
 
-#autograding_button:hover > .hover_darken {
+#autograding_button > .hover_darken {
     position:absolute;
     width:6.88em;
-    height:calc(100% - 4px);
-    top:3px;
+    height:calc(100%);
+    top:0px;
+    right:0em;
     background-color:#000000;
-    opacity: 0.2;
+    opacity: 0.1;
     border-radius: 0px 4px 4px 0px;
-    right: 0.05em;
 }
 
-#onclick-menu:hover > .hover_darken {
+#autograding_button:hover > .hover_darken {
+    opacity:0;
+}
+
+#onclick-menu > .hover_darken {
     position:absolute;
     width:calc(100%);
     height: calc(100%);
-    /*width:100px;
-    height:100px;*/
     top:0px;
     background-color:#000000;
-    opacity: 0.2;
+    opacity: 0.1;
     border-radius: 4px 0px 0px 4px;
     right: 0em;
 }
-
-
-
-
-
-
+#onclick-menu:hover > .hover_darken {
+    opacity:0;
+}
 .onclick-menu {
-    position: relative;
+    position: absolute;
     display: inline-block;
     color: white;
     cursor: pointer;
     outline: 0;
     outline: none;
-    top: 1px;
+    right: 7.25em;
+    height:1.25em;
     margin-right: -5px;
     margin-left: 0px;
     padding-left:3px;
@@ -97,7 +101,7 @@
     transition: color 0.8s;
     border:1px solid #666666;
     border-radius:4px 0px 0px 4px;
-    height:calc(100% - 4px);
+
     /*line-height:1em;*/
 }
 
