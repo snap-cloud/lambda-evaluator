@@ -41,7 +41,6 @@
             testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]', ["A"], 0, outputLog);
             // testLog = multiTestBlock("%s my plus %s",[[1,2],[2,2],[2,3],[3,4],[5,5]],[3,4,5,7,10],[-1,-1,-1,-1,-1]);
             // return outputLog;
-            console.log(outputLog);
             return outputLog;
         }
 
@@ -57,7 +56,6 @@
             var test_log = AGTest(outputLog);
 
             if(!test_log.runSnapTests()) {
-                console.log("NO REPORTER TESTS");
                 outputLog.scoreLog();
             }
         }
@@ -215,7 +213,6 @@
          */
         function AGFinish(outputLog) {
             //Grab HTML divs
-            console.log("AGFINISH is being called.");
             var menu_button = document.getElementById("onclick-menu");
             var grade_button = document.getElementById("autograding_button");
             // Verify correctness
