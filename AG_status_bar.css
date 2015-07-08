@@ -288,6 +288,7 @@
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.6);
+
 }
 
 .popup-content {
@@ -336,4 +337,8 @@
 .view-results {
   color: white;
   cursor: pointer;
+}
+
+#different-feedback, #edx-submit-different {
+  color: red;
 }

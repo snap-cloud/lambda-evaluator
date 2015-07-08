@@ -5,7 +5,7 @@ var id = courseID + taskID;
 
 var AG_state = {
     'checkState': false,
-    'comment': "Please run the Snap Autograder before using the 'Check' button.",
+    'comment': "Please run the Snap Autograder before clicking the 'Submit' button.",
     'feedback': {}
 };
 
