@@ -353,7 +353,9 @@ function dictLog(outputLog) {
 		var testDict = {};
 		testDict["id"] = i;
 		testDict["testClass"] = outputLog[i]["testClass"];
-		testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+		if (outputLog[i]["blockSpec"] !== undefined) {
+			testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+		}
 		testDict["input"] = outputLog[i]["input"];
 		testDict["expOut"] = outputLog[i]["expOut"];
 		testDict["output"] = outputLog[i]["output"];
@@ -396,7 +398,7 @@ function printLog(outputLog) {
 function AG_log(outputLog, snapXMLString) {
  	var AG_state = {
 	    'checkState': outputLog.allCorrect,
-	    'comment': "Please run the Snap Autograder before using the 'Check' button.",
+	    'comment': "Please run the Snap Autograder before clicking the 'Submit' button.",
 	    'feedback': dictLog(outputLog),
 	    'snapXML' : snapXMLString
 	};
