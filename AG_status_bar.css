@@ -21,29 +21,26 @@
 }
 
 #autograding_button {
-  /*margin-top:2px;*/
-  height:80%;
-  width: 5.5em;
+  height:60%;
+  width: 6.5em;
   padding-top:4px;
   padding-right:3px;
   padding-bottom:2px;
   padding-left:3px;
   line-height:.9em;
   text-align:center;
-  /*border:1px gray solid;*/
-  /*margin-right:1px;*/
-  margin-top: 4px;
-  border-radius:4px;
+  margin-top: 2px;
+  border-radius:0px 4px 4px 0px;
   background-color:#FF3333;
   font-size:1em;
   color:#FFFFFF;
   display:inline-block;
-  /*font-weight:bold;*/
-  /*top:-5px;*/
-  /*max-width: 14.672px;*/
+
   -moz-transition: all 0.5s;
   -webkit-transition: all 0.5s;
   transition: all 0.5s;
+
+  border:1px solid #666666;
 }
 
 /*#autograding_button:hover {
@@ -54,16 +51,27 @@
 }*/
 
 #autograding_button:hover > .hover_darken {
-    width:64%;
-    /*display:inline-block;*/
-    height:80%;
-    left:0px;
-    top:4px;
     position:absolute;
-    background-color:#000;
-    opacity:0.3;
-    border-radius:4px;
-    /*border-radius:30px;*/
+    width:6.88em;
+    height:calc(100% - 4px);
+    top:3px;
+    background-color:#000000;
+    opacity: 0.2;
+    border-radius: 0px 4px 4px 0px;
+    right: 0.05em;
+}
+
+#onclick-menu:hover > .hover_darken {
+    position:absolute;
+    width:calc(100%);
+    height: calc(100%);
+    /*width:100px;
+    height:100px;*/
+    top:0px;
+    background-color:#000000;
+    opacity: 0.2;
+    border-radius: 4px 0px 0px 4px;
+    right: 0em;
 }
 
 
@@ -78,20 +86,45 @@
     cursor: pointer;
     outline: 0;
     outline: none;
-    top: -2px;
-    margin-right: 3px;
-    margin-left: 4px;
-    -moz-transition: all 0.8s;
-    -webkit-transition: all 0.8s;
-    transition: all 0.8s;
+    top: 1px;
+    margin-right: -5px;
+    margin-left: 0px;
+    padding-left:3px;
+    padding-right:3px;
+    /*padding-top:2px;*/
+    -moz-transition: color 0.8s;
+    -webkit-transition: color 0.8s;
+    transition: color 0.8s;
+    border:1px solid #666666;
+    border-radius:4px 0px 0px 4px;
+    height:calc(100% - 4px);
+    /*line-height:1em;*/
 }
 
 .onclick-menu:before {
     content: &#9776;
 }
 
+.onclick-menu:hover {
+  /*font-weight:bold;*/
+  /*margin-right:-4px;*/
+  /*margin-top:5px;*/
+  
+  /*background-color:black;*/
+  /*opacity: 0.8;*/
+}
+.onclick-menu:hover nav {
+  /*opacity:1.0;*/
+}
+
+.onclick-menu span {
+  line-height:1em;
+  font-size:1.3em;
+}
+
 .onclick-menu nav {
   color:white;
+  /*opacity:1;*/
 }
 
 .menu-item-sub-menu{

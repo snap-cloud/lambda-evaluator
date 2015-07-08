@@ -33,10 +33,10 @@
                 "Move block is present", //Positive statement
                 "Don't forget the move block!", //Negative statement
                 "Make sure you have all required blocks."); //General assertion text
-            testAssert(outputLog, isScriptPresent('turn %clockwise %n degrees',0), 
-                "Turn block is present", //Positive statement
-                "Don't forget the turn block!", //Negative statement
-                "Make sure you have all required blocks."); //General assertion text
+            // testAssert(outputLog, isScriptPresent('turn %clockwise %n degrees',0), 
+            //     "Turn block is present", //Positive statement
+            //     "Don't forget the turn block!", //Negative statement
+            //     "Make sure you have all required blocks."); //General assertion text
 
             testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]', ["A"], 0, outputLog);
             // testLog = multiTestBlock("%s my plus %s",[[1,2],[2,2],[2,3],[3,4],[5,5]],[3,4,5,7,10],[-1,-1,-1,-1,-1]);
@@ -54,9 +54,12 @@
             outputLog = outputLog || new gradingLog(snapWorld, taskID);
             // Populate, run, and evaluate the tests specified in AGTest()
             // These tests specified by the Course Designer. 
-            AGTest(outputLog);
-            //Save the Snap XML string
-            outputLog.saveSnapXML(taskID + "_test_state");
+            var test_log = AGTest(outputLog);
+
+            if(!test_log.runSnapTests()) {
+                console.log("NO REPORTER TESTS");
+                outputLog.scoreLog();
+            }
         }
 
         /* After loading the XML, check if the current XML is a known
@@ -212,6 +215,7 @@
          */
         function AGFinish(outputLog) {
             //Grab HTML divs
+            console.log("AGFINISH is being called.");
             var menu_button = document.getElementById("onclick-menu");
             var grade_button = document.getElementById("autograding_button");
             // Verify correctness
@@ -224,46 +228,29 @@
                 // Update AG_status_bar to 'graded, but incorrect state
                 AG_bar_semigraded(menu_button, grade_button);
             }
+            outputLog.saveSnapXML(outputLog.taskID + "_test_state");
         }
 
         function AG_bar_ungraded(menu_button, grade_button) {
-            // grade_flag.innerHTML = "GRADE";
-            // grade_flag.style.color = "#FF3333"
-            //grade_button.innerHTML = "&#x2713;";
-            grade_button.innerHTML = "GRADE";
-            // grade_button.style.color = "#FF3333";
             grade_button.style.background = 'orange';
-            // grade_button.style.font = "1em";
-            // grade_button.style.padding = "2px 3px 0px 3px";
-            /*grade_button.style.border = "4px gray solid";*/
-            // menu_button.style.color = 
-            grade_button.style.color = 'white';
+            var grade_button_text = grade_button.querySelector('span');
+            grade_button_text.innerHTML = "GRADE";
+            menu_button.style.color = 'white';
         }
 
         function AG_bar_graded(menu_button, grade_button) {
-            // grade_flag.innerHTML = "GRADED";
-            // grade_flag.innerHTML = "";
-            // grade_flag.style.color = "#33FF33";
-            // grade_button.style.font = "1.2em";
-            // grade_button.style.color = "white";
-            grade_button.style.background = "#33FF33";
-            grade_button.innerHTML = "GRADED";
+            grade_button.style.background = "#29A629";
+            var grade_button_text = grade_button.querySelector('span');
+            grade_button_text.innerHTML = "TESTS PASS";
             menu_button.style.color = 'white';
-            // grade_button.style.padding = "2px 3px 0px 3px";
-            /*grade_button.style.border = "4px gray solid";*/
         }
 
         function AG_bar_semigraded(menu_button, grade_button) {
-            //grade_flag.innerHTML = "RE-GRADE";
-            // grade_flag.innerHTML = "&#x26A0;";
-            // grade_flag.style.color = "orange";
-            // grade_button.style.font = "1em";
-            // grade_button.style.color = "black";
             grade_button.style.background = "red";
-            // grade_button.style.padding = "2px 3px 0px 3px";
-            grade_button.innerHTML = "RE-GRADE";
+
+            var grade_button_text = grade_button.querySelector('span');
+            grade_button_text.innerHTML = "&#x2770&#x2770 FEEDBACK";
             menu_button.style.color = 'orange';
-            /*grade_button.style.border = "4px gray solid";*/
         }
 
         /* Checks if two Snap! XML strings have approximately the same state.
@@ -383,7 +370,7 @@
         }
 
         function resetState(taskID) {
-            var grade_flag = document.getElementById("autograding_flag");
+            var menu_button = document.getElementById("onclick-menu");
             var grade_button = document.getElementById("autograding_button");
 
             //AGStart(world,id);
@@ -393,7 +380,7 @@
 
             var ide = world.children[0];
             ide.newProject();
-            AG_bar_ungraded(grade_flag, grade_button);
+            AG_bar_ungraded(menu_button, grade_button);
         }
 
         function revertToBestState(taskID) {
@@ -402,13 +389,13 @@
 
             var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
             var c_prev_log = localStorage.getItem(taskID + "_c_test_log");
-            var grade_flag = document.getElementById("autograding_flag");
+            var menu_button = document.getElementById("onclick-menu");
             var grade_button = document.getElementById("autograding_button");
 
             localStorage.setItem(taskID + "_test_state", c_prev_xml);
             localStorage.setItem(taskID + "_test_log", c_prev_log);
 
-            AG_bar_graded(grade_flag, grade_button);
+            AG_bar_graded(menu_button, grade_button);
 
             ide.openProjectString(c_prev_xml);
         }
@@ -418,7 +405,7 @@
             var ide = world.children[0];
 
             var prev_xml = localStorage.getItem(taskID + "_test_state");
-            var menu_button = document.getElementByClassName("onclick-menu");
+            var menu_button = document.getElementById("onclick-menu");
             var grade_button = document.getElementById("autograding_button");
 
 
@@ -589,7 +576,9 @@
 
 <!-- Snap Autograding Button -->
 <div id="autograding_bar">
-    <div tabindex="0" class="onclick-menu" id='onclick-menu' style="display:inline-block">&#9776;
+    <div tabindex="0" class="onclick-menu" id='onclick-menu' style="display:inline-block">
+        <span>&#9776;</span>
+        <div class='hover_darken'></div>
       <nav id="navigation" class="site-navigation" role="navigation">
           <ul id="dropdown-closed" class="bubble">
             <li class="menu-item-sub-menu" id="enabled-button"><a id="feedback-button">View Feedback</a></li>
@@ -604,12 +593,12 @@
     </nav>
     </div>
     <!-- <div id="autograding_flag" style="display:inline-block"></div> -->
-    <div style="display:inline-block">
+    <!-- <div style="display:inline-block"> -->
     <div id="autograding_button" style="display:inline-block;">
         <span>VERIFY</span>
         <div class='hover_darken'></div>
     </div>
-    </div>
+    <!-- </div> -->
 
 
 <!-- Snap Autograding Menu -->
