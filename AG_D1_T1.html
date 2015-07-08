@@ -12,6 +12,7 @@
     <script type="text/javascript" src="snap.js"></script>
 
     <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
+    <link rel="stylesheet" type="text/css" href="hintstyle.css" />
     <link type="text/javascript" src="AG_hint_format.js"></script>
 
     <script type="text/javascript">
@@ -53,6 +54,7 @@
             outputLog = outputLog || new gradingLog(snapWorld, taskID);
             // Populate, run, and evaluate the tests specified in AGTest()
             // These tests specified by the Course Designer. 
+
             var test_log = AGTest(outputLog);
 
             if(!test_log.runSnapTests()) {
@@ -201,6 +203,7 @@
                 outputLog = new gradingLog(snapWorld, taskID);
                 return outputLog
             }
+
         }
 
         /* Updates the AG_status_bar with respect to the outputLog. 
@@ -212,6 +215,7 @@
          *  - Should only be called from outputLog.evaluateLog()
          */
         function AGFinish(outputLog) {
+
             //Grab HTML divs
             var menu_button = document.getElementById("onclick-menu");
             var grade_button = document.getElementById("autograding_button");
@@ -452,6 +456,174 @@
             overlay.classList.add("is-hidden");
         }
 
+        function openResults(){
+            var overlay = document.getElementById('ag-output');
+            overlay.classList.remove("is-hidden");
+        }
+
+        function closeResults(){
+            var overlay = document.getElementById('ag-output');
+            overlay.classList.add("is-hidden");
+        }
+
+        function populateFeedback(taskID) {
+            var ide = world.children[0];
+            var curr_xml = ide.serializer.serialize(ide.stage);
+            var prev_xml = localStorage.getItem(taskID + "_test_state");
+
+            //if the feedback is not the same as it was before
+
+                var glog = JSON.parse(localStorage.getItem(taskID + "_test_log"));
+                var log = AG_log(glog);
+
+                //var log = JSON.parse(localStorage.getItem(taskID + "_ag_output"));
+                var feedback = log["feedback"];
+                var title = log["comment"];
+                var hasReporter = false;
+
+                for (i=1; i<=feedback["testCount"]; i++) {
+                    var test = String(i);
+                    if (feedback[test]["testClass"] === "r") {
+                        hasReporter = true;
+                    }
+                }
+
+                
+
+                if (document.getElementById("last-column") !== null) {
+                    document.getElementById("comment").innerHTML = "";
+                    var tableTitles = document.getElementsByClassName("titles");
+                    var tableResults = document.getElementById("table-data");
+                    if (tableTitles.length !== 2 && hasReporter === false) {
+                        while (tableTitles.length > 2) {
+                            document.getElementById("table-titles").removeChild(tableTitles[1]);
+                        }
+                    }
+                    while (tableResults.children.length > 1) {
+                        tableResults.removeChild(tableResults.children[1]);
+                    }
+                        //document.getElementById("table-titles").innerHTML = "";
+                } else {
+                    var testCol = document.createElement("th");
+                    var testColText = document.createTextNode("Test");
+                    testCol.appendChild(testColText);
+                    testCol.classList.add("titles");
+                    document.getElementById("table-titles").appendChild(testCol);
+
+                    var feedbackCol = document.createElement("th");
+                    var feedbackColText = document.createTextNode("Feedback");
+                    feedbackCol.appendChild(feedbackColText);
+                    feedbackCol.classList.add("titles");
+                    feedbackCol.setAttribute("id", "last-column");
+                    document.getElementById("table-titles").appendChild(feedbackCol);
+                }
+
+                document.getElementById("comment").innerHTML = title;
+
+                /*var testCol = document.createElement("th");
+                var testColText = document.createTextNode("Test");
+                testCol.appendChild(testColText);
+                testCol.classList.add("titles");
+                document.getElementById("table-titles").appendChild(testCol);
+
+                var feedbackCol = document.createElement("th");
+                var feedbackColText = document.createTextNode("Feedback");
+                feedbackCol.appendChild(feedbackColText);
+                feedbackCol.classList.add("titles");
+                feedbackCol.setAttribute("id", "last-column");
+                document.getElementById("table-titles").appendChild(feedbackCol);*/
+
+
+                /*var comment = document.createElement("p");
+                var commentText = document.createTextNode(title);
+                comment.appendChild(commentText);
+                document.getElementById("ag-results").appendChild(comment);*/
+
+                var testString = "";
+
+                
+
+                if (hasReporter === true) {
+                    addTableHeadings();
+                }
+
+                for (i=1; i<=feedback["testCount"]; i++) {
+                    var test = String(i);
+                    /*if (feedback[test]["testClass"] === "r") {
+                        addTableHeadings();
+                    }*/
+
+                    // Is it possible to put a key in the log that will say whether or not any of the tests is a reporter test? 
+
+
+                    
+
+                    var newRow = document.createElement("tr");
+
+                    var testNum = document.createElement("td");
+                    var testNumText = document.createTextNode(test);
+                    testNum.appendChild(testNumText);
+                    testNum.classList.add("tests");
+                    newRow.appendChild(testNum);
+                    //document.getElementById("table-data").appendChild(newRow);
+
+                    if (hasReporter === true) {
+                        for (key in ["input", "output", "expOut"]) {
+                            var tableData = document.createElement("td");
+                            if (feedback[test]["testClass"] === "r") {
+                                var tableDataText = document.createTextNode(feedback[test][key]);
+                            } else {
+                                var tableDataText = document.createTextNode("N/A");
+                            }
+                            tableData.appendChild(tableDataText);
+                            tableData.classList.add("data");
+                            newRow.appendChild(tableData);
+                        }
+                    }
+
+                    var agFeedback = document.createElement("td");
+                    var agFeedbackText = document.createTextNode(feedback[test]["feedback"]);
+                    agFeedback.appendChild(agFeedbackText);
+                    if (feedback[test]["correct"] === true) {
+                        agFeedback.classList.add("correctans");
+                    } else {
+                        agFeedback.classList.add("incorrectans");
+                    }
+                    newRow.appendChild(agFeedback);
+                    document.getElementById("table-data").appendChild(newRow);
+
+                    testString += test;
+                    testString += feedback[test]["feedback"];
+                    //testString += feedback[test]
+                }
+                /*var output = title + testString;
+                var table = document.createElement("p");
+                var agOutput = document.createTextNode(output);
+                table.appendChild(agOutput);
+                document.getElementById("ag-results").appendChild(table);*/
+
+                /*var header = document.createElement("th");
+                var text = document.createTextNode("hello");
+                var lastCol = document.getElementById("last-column");
+                var titles = document.getElementById("table-titles");
+                header.classList.add("titles");
+                header.appendChild(text);
+                titles.insertBefore(header, lastCol);*/
+            //}
+        }
+
+        function addTableHeadings() {
+            for (key in ["Input", "Output", "Expected"]) {
+                var header = document.createElement("th");
+                var text = document.createTextNode(key);
+                var lastCol = document.getElementById("last-column");
+                var titles = document.getElementById("table-titles");
+                header.classList.add("titles");
+                header.appendChild(text);
+                titles.insertBefore(header, lastCol);
+            }
+        }
+
         var world;
         window.onload = function () {
 
@@ -507,6 +679,7 @@
             //Call the test suite when this element is clicked.
             grade_button.onclick = function() {
                 runAGTest(world, id);
+                populateFeedback(id);
             }
 
             var reset_button = document.getElementById("reset-button");
@@ -545,6 +718,7 @@
              */
             document.addEventListener("mouseup", function() {
                 AGUpdate(world, id);
+                //populateFeedback(id);
             });
 
             /*document.addEventListener("click", function() {
@@ -633,6 +807,23 @@
                 The Snap! autograder has been run, and all the tests have passed!
             </p>
             </br>
+    </div>
+</div>
+
+<div style="display:inline-block" class="view-results" id="circle" onclick="openResults();">Results
+</div>
+<div class="overlay is-hidden" id="ag-output">
+    <div class="popup-content" id="ag-results">
+        <span class="button-close" onclick="closeResults();" id="popup">X</span>
+        <p id="comment"></p>
+        <table class="results">
+            <tbody id="table-data">
+                <tr id="table-titles"> 
+                    <!--<th class="titles"> Test </th> 
+                    <th class="titles" id="last-column"> Feedback </th>-->
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 

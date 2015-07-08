@@ -50,6 +50,7 @@ var AG_EDX = (function() {
                 //saves correct student answer, as well as state, in case student returns to question
                 localStorage.setItem(id + "_last_submitted_log", localStorage.getItem(id + "_test_log"));
                 localStorage.setItem(id + "_last_submitted_state", snapXML);
+                localStorage.setItem(id + "_ag_output", JSON.stringify(edx_log));
             }
             console.log("GET GRADE SUCCEEDING");
 

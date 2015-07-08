@@ -332,3 +332,8 @@
   background-color: orange;
   color: black;
 }
+
+.view-results {
+  color: white;
+  cursor: pointer;
+}
