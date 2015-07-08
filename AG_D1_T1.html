@@ -56,7 +56,7 @@
             // These tests specified by the Course Designer. 
 
             var test_log = AGTest(outputLog);
-
+            
             if(!test_log.runSnapTests()) {
                 outputLog.scoreLog();
             }
@@ -682,13 +682,16 @@
                 populateFeedback(id);
             }
 
+
             var reset_button = document.getElementById("reset-button");
             var revert_button = document.getElementById("revert-button");
             var undo_button = document.getElementById("undo-button");
             var last_submit = document.getElementById("last-submit");
             var menu_button = document.getElementsByClassName("onclick-menu")[0];
             //var help_menu = document.getElementById("circle");
-            var overlay = document.getElementById('overlay');
+            var help_overlay = document.getElementById('overlay');
+            var feedback_button = document.getElementById("feedback-button");
+            var results_overlay = document.getElementById("ag-output");
 
             reset_button.onclick = function() {
                 resetState(id);
@@ -710,6 +713,22 @@
                 toggleMenu(id);
             }
 
+            feedback_button.onclick = function() {
+                openResults();
+            }
+
+            help_overlay.onclick = function(e) {
+                if (!(document.getElementById('help-popup').contains(e.target))) {
+                    closePopup();
+                }
+            }
+
+            results_overlay.onclick = function(e) {
+                if (!(document.getElementById('ag-results').contains(e.target))) {
+                    closeResults();
+                }
+            }
+
             /*help_menu.onclick = function() {
                 openModal();
             }*/
@@ -720,6 +739,8 @@
                 AGUpdate(world, id);
                 //populateFeedback(id);
             });
+
+            populateFeedback(id);
 
             /*document.addEventListener("click", function() {
                 AGUpdate(world, id);
@@ -780,7 +801,7 @@
 <!-- <div style="display:inline-block" class="AG-help-button" id="circle" onclick="openPopup();">?
 </div> -->
 <div class="overlay is-hidden" id="overlay">
-    <div class="popup-content">
+    <div class="popup-content" id="help-popup">
         <span class="button-close" onclick="closePopup();">X</span>
             <p>
                 Please remember to click the 'Submit' button below the Snap! window to obtain credit for this problem!

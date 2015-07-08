@@ -145,7 +145,7 @@
 }
 
 
-#reset-button, #revert-button, #last-submit, #undo-button {
+#reset-button, #revert-button, #last-submit, #undo-button, #feedback-button {
     color: inherit;
     text-decoration: none;
     display: block;
