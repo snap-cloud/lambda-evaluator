@@ -189,20 +189,23 @@
                 return outputLog;
             }
             //If current XML is same as prev correct
-            if (prev_xml && isSameSnapXML(prev_xml, curr_xml)) {
+            if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
                 //Restore the AG status bar to a graded state
-                AG_bar_semigraded(menu_button, grade_button);
+
+                
                 //Retrieve the previous test log from localStorage
 
                 document.getElementById("different-feedback").innerHTML = "";
 
                 outputLog = JSON.parse(prev_log);
                 outputLog.snapWorld = snapWorld;
+                AG_bar_semigraded(outputLog);
                 return outputLog;
             } else {
                 //Restore the AG status bar to a graded state
-                AG_bar_ungraded(menu_button, grade_button);
+                
                 outputLog = new gradingLog(snapWorld, taskID);
+                AG_bar_ungraded(outputLog);
                 document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
                 return outputLog
             }
@@ -314,7 +317,7 @@
          * Snap XML string. Each sprite gets all scripts in sorted order. Needs
          * further testing.
         */
-        function isSameSnapXML(prev_xml, curr_xml) {
+        function isSameSnapXML(prev_xml, curr_xml, no_subset) {
             //replace script coordinates with generic 'x="0" y="0"'
             if ((prev_xml === null) || (curr_xml === null)) {
                 console.log("isSameSnapXML: prev_xml or curr_xml are null");
@@ -340,7 +343,7 @@
             curr_xml_scripts && curr_xml_scripts.sort().join("");
 
             //If the previous scripts are a subset of current scripts
-            if (isArrSubset(curr_xml_scripts, prev_xml_scripts)) {
+            if (!no_subset && isArrSubset(curr_xml_scripts, prev_xml_scripts)) {
                 //Then the solution is still present and in-tact
                 return true;
             }
