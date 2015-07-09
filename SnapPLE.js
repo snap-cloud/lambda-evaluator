@@ -128,13 +128,14 @@ gradingLog.prototype.startSnapTest = function(testID) {
 	//Set the selected block's inputs for the test
 	setValues(block, test['input']);
 	//Initiate the Snap Process with a callback to .finishSnapTest
+
 	var stage = this.snapWorld.children[0].stage;
 	var outputLog = this; //Reference for the anonymouse function to follow
 	var proc = stage.threads.startProcess(block,
 		stage.isThreadSafe,
 		false,
 		function() {
-			outputLog.finishTest(testID, readValue(proc));
+			outputLog.finishSnapTest(testID, readValue(proc));
 		});
 	//Add reference to proc in gradingLog for error handling
 	test.proc = proc;
@@ -146,7 +147,7 @@ gradingLog.prototype.startSnapTest = function(testID) {
 	}
 	//Launch timeout to handle Snap errors and infinitely looping scripts
 	var timeout_id = setTimeout(function() {
-		var stage = this.snapWorld.children[0].stage;
+		var stage = outputLog.snapWorld.children[0].stage;
 		if (test['proc'].errorFlag) {
 			test['feedback'] = "Snap Error." //TODO: Find error message from process or block
 		} else {

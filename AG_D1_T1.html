@@ -40,7 +40,7 @@
             //     "Make sure you have all required blocks."); //General assertion text
 
             testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]', ["A"], 0, outputLog);
-            // testLog = multiTestBlock("%s my plus %s",[[1,2],[2,2],[2,3],[3,4],[5,5]],[3,4,5,7,10],[-1,-1,-1,-1,-1]);
+            multiTestBlock("%s my plus %s",[[1,2],[2,2],[2,3],[3,4],[5,5]],[3,4,5,7,10],[-1,-1,-1,-1,-1], outputLog);
             // return outputLog;
             return outputLog;
         }
@@ -56,7 +56,6 @@
             // These tests specified by the Course Designer. 
 
             var test_log = AGTest(outputLog);
-            
             if(!test_log.runSnapTests()) {
                 outputLog.scoreLog();
             }
@@ -237,6 +236,7 @@
                 AG_bar_semigraded(outputLog);
             }
             outputLog.saveSnapXML(outputLog.taskID + "_test_state");
+            console.log(outputLog);
         }
 
 
@@ -512,8 +512,6 @@
 
             var edx_caution = document.getElementById("edx-submit-different");
             var caution = document.getElementById("different-feedback");
-
-            
 
             //if the feedback is not the same as it was before
 
