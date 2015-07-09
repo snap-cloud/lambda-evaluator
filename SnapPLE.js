@@ -199,8 +199,9 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	if (test === undefined) {
 		throw "gradingLog.finishSnapTest: TestID: " + testID + ", is invalid.";
 	}
-
+	
 	test.output = output;
+
 	//Update feedback and 'correct' flag depending on output.
 	if (snapEquals(test.output, test.expOut)) {
 		test.correct = true;
@@ -216,6 +217,7 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	clearTimeout(this.currentTimeout);
 	test.proc = null;
 	//Reference this gradingLog for the anonymous function
+	this[testID] = test;
 	var outputLog = this;
 	//Find the next Snap reporter test
 	for (var id = testID+1; id <= this.testCount;id++) {
@@ -229,6 +231,7 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 		}
 	}
 	//If this was the last test, grade the log
+	// console.log(this);
 	this.scoreLog();
 };
 
