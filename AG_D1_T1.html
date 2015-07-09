@@ -31,17 +31,15 @@
         // var testLog;
         function AGTest(outputLog) {
             
-            testAssert(outputLog, isScriptPresent('move %n steps',0), 
-                "Move block is present", //Positive statement
-                "Don't forget the move block!", //Negative statement
-                "Make sure you have all required blocks."); //General assertion text
-            // testAssert(outputLog, isScriptPresent('turn %clockwise %n degrees',0), 
-            //     "Turn block is present", //Positive statement
-            //     "Don't forget the turn block!", //Negative statement
-            //     "Make sure you have all required blocks."); //General assertion text
-
-            testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]', ["A"], 0, outputLog);
-            multiTestBlock("%s my plus %s",[[1,2],[2,2],[2,3],[3,4],[5,5]],[3,4,5,7,10],[-1,-1,-1,-1,-1], outputLog);
+            testAssert(outputLog, isScriptPresent('factorial %s',0),
+                "The 'factorial' block is present.",
+                "The 'factorial %num' block was not found on-screen.",
+                "Make sure you name your custom block, 'factorial %num'.");
+            multiTestBlock('factorial %s',
+                [[0],[1],[2],[4],[5],[10]],
+                [1,1,2,24,120,3628800],
+                [-1,-1,-1,-1,-1,-1],
+                outputLog);
             // return outputLog;
             return outputLog;
         }
