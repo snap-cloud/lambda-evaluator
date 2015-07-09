@@ -795,11 +795,9 @@ function printEventLog(eventLog, ignore) {
 function testKScope(snapWorld, taskID, iter) {
 	var eLog = new SpriteEventLog(),
 		gLog = new gradingLog(snapWorld, taskID),
-		testID = gLog.addTest("n/a", "n/a", null, true, -1),
-		iterations = iter || 5,
+		testID = gLog.addTest("s", null, null, true, -1),
+		iterations = iter || 3,
 		spriteList = world.children[0].sprites.contents;
-
-
 
 	var collect = setInterval(function() {
         for (var i = 0; i < spriteList.length; i++) {
@@ -811,8 +809,12 @@ function testKScope(snapWorld, taskID, iter) {
 		clearInterval(collect);
 		eLog.callVal = eLog.spliceIgnores().compareSprites(function(log, i) {
 				if (log && log.numSprites !== 4) {
+					gLog["" + testID]["feedback"] = "You do not have the correct amount of Sprites." +
+													"Make sure you have four different sprites.";
+		
 					return false;
 				}
+
 				var x1 = log["0"][i].x, penDown1 = log["0"][i].penDown,
 					x2 = log["1"][i].x, penDown2 = log["1"][i].penDown,
 					x3 = log["2"][i].x, penDown3 = log["2"][i].penDown,
@@ -841,11 +843,129 @@ function testKScope(snapWorld, taskID, iter) {
 				return true;
 		});
 		// this is where we would add a callback to getGrade or whatevers
-		gLog["" + testID]["output"] = gLog["" + testID]["correct"] = gLog.allCorrect = eLog.callVal;
+
+		gLog.updateLog(testID, eLog.callVal, null, eLog.callVal);
+		
 		console.log(eLog.callVal);
 	};
 
 	makeDragon(iterations, callback);
+
+	return gLog;
+
+}
+
+//Get the distance between two points
+//x1, y1 - from point coordinates
+//x2, y2 - to point coordinates
+function distance(x1, x2, y1, y2) {
+	return Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
+}
+
+//check to see if a number is within a tolerance +/-
+//actual - the actual value you want to check
+//projected - the value that you want to check actual against
+//tolerance - the tolerance you are willing to accept
+function inTolerance(actual, projected, tolerance) {
+	return projected - tolerance < actual && projected + tolerance > actual;
+}
+
+//Get the smallest measured angle between two directions in degrees
+//a, b - the directions in degrees to measure
+function getAngle(a, b) {
+	var result = Math.min(Math.abs(a - b), Math.abs(b - a));
+
+	if (result > 180) {
+		return 360 - result;
+	}
+	return result;
+}
+
+//find out if we can force the user to use the green flag top block
+//test a script for drawing a simple uniform shape
+//sides - the number of sides of the shape
+//angle - the inner angle of the shape
+//length - the length the sides should be
+//blockSpec - not required at this time
+//gradeLog - the grading log this test will be added to
+function testUniformShapeInLoop(sides, angle, length, gradeLog, blockSpec) {
+	var gLog = gradeLog || new gradingLog(),
+		testID = gLog.addTest("s", blockSpec, null, true, -1),
+		eLog = new SpriteEventLog(),
+		block = blockSpec && getScript(blockSpec),
+		//this collects the sprite log data
+		collect = setInterval(function() {
+        	for (var i = 0; i < spriteList.length; i++) {
+            	eLog.addEvent(spriteList[i], i);
+        	}
+		}, 1),
+		//the keyboard input spoof. Kicks off the test and does the final checks.
+		spoof = new createInputSpoof(100, function() {
+			var sidesCounted = 0,
+				flag = false,
+				result = true,
+				feedback = "Correct!";
+
+			clearInterval(collect);
+
+			eLog.spliceIgnores();
+
+			if (eLog["0"].length < 2) {
+				gLog.updateLog(testID, result, "Not enough data points. Please run autograder again. " +
+					"If this problem persists please contact the faculty.", result);
+				console.log("not enough data points!");
+				return;
+			} else if (eLog["0"].length <= sides) {
+				gLog.updateLog(testID, result, "Not enough sides in your shape. " +
+					"Try raising your repeat loop iterations.", result);
+				console.log("not enough sides!");
+				return;
+			} else if (eLog["0"].length > sides + 1) {
+				gLog.updateLog(testID, result, "Too many sides in your shape. " +
+					"Try lowering your repeat loop iterations.", result);
+				console.log("too many sides!");
+				return;
+			}
+
+			var initPos = eLog["0"][0],
+				nextPos = eLog["0"][1],
+				tol = 0.01;
+				dist = 0,
+				checkAngle = 0,
+				i = 2;
+
+			while (flag === false) {
+				dist = distance(initPos.x, nextPos.x, initPos.y, nextPos.y);
+				checkAngle = getAngle(initPos.direction, nextPos.direction);
+				if (!inTolerance(dist, length, tol)) {
+					flag = true;
+					result = false;
+					feedback = "Side length not correct! Make sure you are moving the sprite " +
+						"the correct distance.";
+					console.log("side not correct length");
+				} else if (checkAngle !== angle) {
+					flag = true;
+					result = false;
+					feedback = "Shape angle not correct! Make sure you are turning the sprite " +
+						"the correct angle.";
+					console.log("angle not correct");
+				} else if (sidesCounted >= sides) {
+					flag = true;
+				} else {
+					initPos = nextPos;
+					if (i === eLog["0"].length) {
+						i = 1;
+					}
+					nextPos = eLog["0"][i];
+					sidesCounted += 1;
+					i += 1;
+				}
+			}
+			gLog.updateLog(testID, result, feedback, result);
+		});
+
+	spoof("green flag");
+	spoof("callback");
 
 	return gLog;
 
@@ -899,6 +1019,9 @@ function createInputSpoof(timeout, callback, element) {
 				break;
 			case "callback":
 				setTimeout(function() {callVal = call();}, timeoutCount);
+				break;
+			case "time":
+				return timeoutCount;
 			default:
 				setTimeout(function() {world.children[0].stage.fireKeyEvent(action)}, timeoutCount);
 		}
@@ -1008,6 +1131,7 @@ function makeDragon(iterations, callback) {
 	drawDragon(turns, act);
 	act("stop all");
 	act("callback");
+	return act("time");
 }
 
 /* ------ END DAVID'S MESS ------ */
