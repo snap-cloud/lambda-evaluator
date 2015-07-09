@@ -9,14 +9,14 @@ td.correctans {
 	font-weight: bold;
 	white-space:nowrap;
 	background-color: #80E680;
-	word-wrap: break-word;
+	white-space: normal;
 }
 
 td.incorrectans {
 	font-weight: bold;
 	white-space:nowrap;
 	background-color: #FF9999;
-	word-wrap: break-word;
+	white-space: normal;
 }
 
 td.tests {
@@ -80,6 +80,7 @@ table.results {
   width: auto;
   table-layout: fixed;
   border-spacing: 0px;
+  text-align: center;
  }
 
   th.titles {
