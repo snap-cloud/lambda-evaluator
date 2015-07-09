@@ -281,7 +281,7 @@ function getSprite(index) {
 	}
 }
 
-//Returns the scripts of the script at 'index', undefined otherwise.
+//Returns the scripts of the sprite at 'index', undefined otherwise.
 function getScripts(index) {
 
 	var sprite = getSprite(index);
@@ -355,7 +355,7 @@ function testBlockPresent(blockSpec, spriteIndex, outputLog) {
 	if (isPresent) {
 		feedback = "" + blockSpec + " is in the scripts tab.";
 	} else {
-		feedback = "Block Missing: " + blockSpec + " , was not found in the scripts tab";
+		feedback = "Block Missing: " + blockSpec + ", was not found in the scripts tab";
 	}
 	outputLog.updateLog(testID, isPresent, feedback, isPresent);
 	evaluateLog(outputLog);
@@ -377,7 +377,7 @@ function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog
 	//Handle case when no scripts present on stage.
 	try {
 		var JSONtarget;
-		var scriptsOnScreen = getAllScript(blockSpec, spriteIndex);
+		var scriptsOnScreen = getAllScripts(blockSpec, spriteIndex);
 		var isPresent;
 		for (var i = 0; i < scriptsOnScreen.length; i++) {
 			JSONtarget = JSONscript(scriptsOnScreen[i]);
@@ -1058,7 +1058,7 @@ function scriptContains(script, block) {
 	return false;
 }
 
-/* A wrapper function that calls scriptContainsBlock by taking in the BLOCKARRAY
+/* A wrapper function that calls scriptContains by taking in the BLOCKARRAY
  * which is the result of calling JSONscript(...) which gives you back an array
  * of JavaScript objects. Since we are only working with one block, and hence only
  * one JavaScript object, we will just extract the sole element of this array and
@@ -1071,6 +1071,59 @@ function scriptContainsBlock(script, blockArray) {
 	return scriptContains(script, block);
 }
 
+/* Takes in two javascript objects (block1 and block2) and a script.
+ * Returns true if the block represented by BLOCK1 occurs inside 
+ * the C-shaped block represented by BLOCK2. SCRIPT can be
+ * obtained by calling:
+ *
+ * JSONscript(...)
+ *
+ * The following 7 blocks are considered C-shaped:
+ *  -repeat, repeat until, warp, forever, for loop, if, if-else
+ *
+ */
+function CBlockContains(block1, block2, script) {
+    var morph1, type1, CblockSpecs;
+    CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
+    CblockSpecs = CblockSpecs.concat(["repeat until %b %c", "if %b %c", "if %b %c else %c"]);
+
+    if (CblockSpecs.indexOf(block2.blockSp) < 0) {
+        var rValue = "The second input should be a C-shaped block. See CBlockContains";
+        rValue += " definition for a list of the blocks designated as C-shaped blocks.";
+        return rValue;
+    }
+
+    for (var i = 0; i < script.length; i++) {
+        morph1 = script[i];
+        type1 = typeof(morph1);
+        if ((type1 === "string")) {
+            continue;
+        } else if (Object.prototype.toString.call(morph1) === '[object Array]') { 
+            if (CBlockContains(block1, block2, morph1)) {
+                return true;
+            }
+        } else if (morph1.blockSp === block2.blockSp) {
+            if (scriptContains(morph1.inputs[morph1.inputs.length - 1], block1)) {
+                return true;
+            }
+            if ((morph1.blockSp === "if %b %c else %c")
+                && (scriptContains(morph1.inputs[morph1.inputs.length - 2], block1))) {
+                return true;
+            }
+        } else if (CblockSpecs.indexOf(morph1.blockSp) >= 0) {
+            if (CBlockContains(block1, block2, morph1.inputs[morph1.inputs.length - 1])) {
+                return true;
+            }
+            if ((morph1.blockSp === "if %b %c else %c")
+                && (CBlockContains(block1, block2, morph1.inputs[morph1.inputs.length - 2]))) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
 /* Takes in two blockSpecs and boolean SEEN1, which is initialized to false.
  * Returns true if blockSpec string BLOCK1 precedes the blockSpec string BLOCK2
  * in terms of the order that they appear in the script SCRIPT which can be
@@ -1078,7 +1131,7 @@ function scriptContainsBlock(script, blockArray) {
  *
  * JSONscript(...)
  *
- * For further clarification, a block this:
+ * For further clarification, a block like this:
  *
  * "move (20 + (30 - 50)) steps"
  *
@@ -1115,6 +1168,59 @@ function blockPrecedes(block1, block2, script, seen1) {
 	return false;
 }
 
+
+/* Takes in two BLOCKSTRINGs representating the two blocks to be searched for, a 
+* SPRITEINDEX, and the current state of the OUTPUTLOG. 
+* 
+* Records to the OUTPUTLOG if block1 precedes block2 in any script in 
+* the Scripts tab of the given sprite. See documentation of blockPrecedes for 
+* details of what "precedes" means.
+*/
+function testBlockPrecedes(block1String, block2String, spriteIndex, outputLog) {
+	//Populate optional parameters
+	if (outputLog === undefined) {
+		outputLog = new gradingLog();
+	}
+	if (spriteIndex === undefined) {
+		spriteIndex = 0;
+	}
+
+	var block1Spec = stringToJSON(block1String)[0].blockSp;
+	var block2Spec = stringToJSON(block2String)[0].blockSp;
+	var testID = outputLog.addTest("p", block1Spec + ", " + block2Spec, "n/a", true, -1); //needs changing?
+	var feedback;
+	try {
+		var JSONtarget;
+		var doesPrecede;
+		var scriptsOnScreen = getScripts(spriteIndex);
+		for (var i = 0; i < scriptsOnScreen.length; i++) {
+			JSONtarget = JSONscript(scriptsOnScreen[i]);
+			doesPrecede = blockPrecedes(block1Spec, block2Spec, JSONtarget, false);
+			if (doesPrecede) {
+				break; //if any script on the scripting area has block1
+					//occuring before block2, then this test will pass.
+			}
+		}
+	} catch(e) {
+		doesPrecede = false;
+		feedback = "Error when looking to see if " + block1Spec + " precedes";
+		feedback += " " + block2Spec + " in script.";
+		outputLog.updateLog(testID, doesPrecede, feedback, doesPrecede);
+		outputLog.evaluateLog();
+		//Return undefined so the grade state doesn't change when no script is present??
+		return outputLog;
+	}
+	if (doesPrecede) {
+		feedback = "The " + block1Spec + " block precedes the " + block2Spec + " block.";
+	} else {
+		feedback = "The " + block1Spec + " block does not precede the " + block2Spec + " block.";
+	}
+	outputLog.updateLog(testID, doesPrecede, feedback, doesPrecede);
+	outputLog.evaluateLog();
+	return outputLog;
+}
+
+
 /* Takes in a block BLOCK and returns the number of occurances
  * of the string BLOCKSPEC.
  *
@@ -1143,6 +1249,70 @@ function occurancesOfBlockSpec(blockSpec, block) {
 
 	return result;
 }
+
+/* Takes in a BLOCKSTRING representation of the block to be counted, an EXPECTED 
+* number of occurances of said block, a SPRITEINDEX, and the current state of the
+* OUTPUTLOG. 
+* 
+* Records to the OUTPUTLOG if the given block occurs EXPECTED times in any script in 
+* the Scripts tab of the given sprite. EXPECTED should be the minimum number of 
+* times the given block must occur in order for the answer to be correct (if the 
+* block doesn't occur at least EXPECTED times in a script, the feedback will notify 
+* the student that the block does not occur enough times for the solution to be correct.
+*/
+function testOccurancesOfBlock(blockString, expected, spriteIndex, outputLog) {
+	//Populate optional parameters
+	if (outputLog === undefined) {
+		outputLog = new gradingLog();
+	}
+	if (spriteIndex === undefined) {
+		spriteIndex = 0;
+	}
+
+	var script = stringToJSON(blockString);
+	var blockSpec = script[0].blockSp;
+	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1); //needs changing?
+	var feedback;
+	try {
+		var JSONtarget;
+		var actual;
+		var isCorrect = false;
+		var maxTimes = 0;
+		var scriptsOnScreen = getScripts(spriteIndex);
+		for (var i = 0; i < scriptsOnScreen.length; i++) {
+			JSONtarget = JSONscript(scriptsOnScreen[i]);
+			actual = occurancesOfBlockSpec(blockSpec, JSONtarget);
+			if (actual === expected) {
+				isCorrect = true;
+				break; //if any script on the scripting area has EXPECTED
+					//occurances of the block, then this test will pass.
+			}
+			if (actual > maxTimes) {
+				maxTimes = actual;
+			}
+		}
+	} catch(e) {
+		isCorrect = false;
+		feedback = "Script does not occur in the scripts tab."
+		outputLog.updateLog(testID, isCorrect, feedback, isCorrect);
+		outputLog.evaluateLog();
+		//Return undefined so the grade state doesn't change when no script is present??
+		return outputLog;
+	}
+	if (isCorrect) {
+		feedback = "The " + blockSpec + " block occurs " + expected + " times in your script.";
+	} else if (maxTimes < expected) {
+		feedback = "The " + blockSpec + " block should occur more than";
+		feedback += " " + maxTimes + " times in your script.";
+	} else {
+		feedback = "The " + blockSpec + " block does not occur the correct number of";
+		feedback += " times in your script.";
+	}
+	outputLog.updateLog(testID, isCorrect, feedback, isCorrect);
+	outputLog.evaluateLog();
+	return outputLog;
+}
+
 
 /* Returns true if the two JSON scripts are exactly the same. Else returns false.
  * Takes in two scripts, TEMPLATE (our template) and SCRIPT (student's template).
