@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- THIS TASK TESTS FACTORIAL -->
 <html>
 <head>
     <title>Snap! Build Your Own Blocks. Beta</title>
@@ -23,23 +24,34 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser localStorage.
-        var taskID = "AG_D1_T1";
+        var taskID = "AG_D1_T2";
         var id = courseID + taskID;
-        var agOutput;
 
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
             
-            testAssert(outputLog, isScriptPresent('factorial %s',0),
-                "The 'factorial' block is present.",
-                "The 'factorial %num' block was not found on-screen.",
-                "Make sure you name your custom block, 'factorial %num'.");
-            multiTestBlock('factorial %s',
-                [[0],[1],[2],[4],[5],[10]],
-                [1,1,2,24,120,3628800],
-                [-1,-1,-1,-1,-1,-1],
-                outputLog);
+        	testAssert(outputLog, isScriptPresent('factorial %s',0),
+        		"The 'factorial' block is present.",
+        		"The 'factorial %num' block was not found on-screen.",
+        		"Make sure you name your custom block, 'factorial %num'.");
+        	multiTestBlock('factorial %s',
+        		[[0],[1],[2],[4],[5],[10]],
+        		[1,1,2,24,120,3628800],
+        		[-1,-1,-1,-1,-1,-1],
+        		outputLog);
+
+            // testAssert(outputLog, isScriptPresent('move %n steps',0), 
+            //     "Move block is present", //Positive statement
+            //     "Don't forget the move block!", //Negative statement
+            //     "Make sure you have all required blocks."); //General assertion text
+            // testAssert(outputLog, isScriptPresent('turn %clockwise %n degrees',0), 
+            //     "Turn block is present", //Positive statement
+            //     "Don't forget the turn block!", //Negative statement
+            //     "Make sure you have all required blocks."); //General assertion text
+
+            // testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]', ["A"], 0, outputLog);
+            // multiTestBlock("%s my plus %s",[[1,2],[2,2],[2,3],[3,4],[5,5]],[3,4,5,7,10],[-1,-1,-1,-1,-1], outputLog);
             // return outputLog;
             return outputLog;
         }
@@ -235,8 +247,7 @@
                 AG_bar_semigraded(outputLog);
             }
             outputLog.saveSnapXML(outputLog.taskID + "_test_state");
-            populateFeedback(outputLog);
-            console.log(outputLog);
+            // console.log(outputLog);
         }
 
 
@@ -293,6 +304,8 @@
             $('#autograding_button .hover_darken').show();
             $('#onclick-menu').css('color', 'orange');
             var num_errors = outputLog.testCount - outputLog.numCorrect;
+            console.log('SEMIGRADED LOG');
+            console.log(outputLog);
             var plural = "";
             if (num_errors > 1) { plural = "s"};
             $('#feedback-button').html("View Feedback ("+ 
@@ -530,11 +543,6 @@
                     }
                 }
 
-                if (title === "Please run the Snap Autograder before clicking the 'Submit' button.") {
-                    document.getElementById("table-data").style.display = "none";
-                } else {
-                    document.getElementById("table-data").style.display = "table-row-group";
-                }
                 
 
                 if (document.getElementById("last-column") !== null) {
@@ -573,6 +581,25 @@
                     edx_caution.innerHTML = "[WARNING: These results differ from your last edX submission.]"
                 }
 
+                /*var testCol = document.createElement("th");
+                var testColText = document.createTextNode("Test");
+                testCol.appendChild(testColText);
+                testCol.classList.add("titles");
+                document.getElementById("table-titles").appendChild(testCol);
+
+                var feedbackCol = document.createElement("th");
+                var feedbackColText = document.createTextNode("Feedback");
+                feedbackCol.appendChild(feedbackColText);
+                feedbackCol.classList.add("titles");
+                feedbackCol.setAttribute("id", "last-column");
+                document.getElementById("table-titles").appendChild(feedbackCol);*/
+
+
+                /*var comment = document.createElement("p");
+                var commentText = document.createTextNode(title);
+                comment.appendChild(commentText);
+                document.getElementById("ag-results").appendChild(comment);*/
+
                 var testString = "";
 
                 
@@ -602,11 +629,10 @@
                     //document.getElementById("table-data").appendChild(newRow);
 
                     if (hasReporter === true) {
-                        var keys = ["input", "output", "expOut"];
-                        for (key=0; key<3; key++) {
+                        for (key in ["input", "output", "expOut"]) {
                             var tableData = document.createElement("td");
                             if (feedback[test]["testClass"] === "r") {
-                                var tableDataText = document.createTextNode(feedback[test][keys[key]]);
+                                var tableDataText = document.createTextNode(feedback[test][key]);
                             } else {
                                 var tableDataText = document.createTextNode("N/A");
                             }
@@ -631,13 +657,26 @@
                     testString += feedback[test]["feedback"];
                     //testString += feedback[test]
                 }
+                /*var output = title + testString;
+                var table = document.createElement("p");
+                var agOutput = document.createTextNode(output);
+                table.appendChild(agOutput);
+                document.getElementById("ag-results").appendChild(table);*/
+
+                /*var header = document.createElement("th");
+                var text = document.createTextNode("hello");
+                var lastCol = document.getElementById("last-column");
+                var titles = document.getElementById("table-titles");
+                header.classList.add("titles");
+                header.appendChild(text);
+                titles.insertBefore(header, lastCol);*/
+            //}
         }
 
         function addTableHeadings() {
-            var extraCols = ["Input", "Output", "Expected"];
-            for (i=0; i<3; i++) {
+            for (key in ["Input", "Output", "Expected"]) {
                 var header = document.createElement("th");
-                var text = document.createTextNode(extraCols[i]);
+                var text = document.createTextNode(key);
                 var lastCol = document.getElementById("last-column");
                 var titles = document.getElementById("table-titles");
                 header.classList.add("titles");
@@ -701,9 +740,7 @@
             //Call the test suite when this element is clicked.
             grade_button.onclick = function() {
                 runAGTest(world, id);
-                var outputLog = AGStart(world, id);
-                //console.log(outputLog);
-                //populateFeedback(outputLog);
+                populateFeedback(id);
             }
 
 
