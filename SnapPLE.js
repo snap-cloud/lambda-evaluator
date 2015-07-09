@@ -120,47 +120,69 @@ gradingLog.prototype.startSnapTest = function(testID) {
 	var test = this[testID];
 	if (test === undefined) {
 		throw 'startSnapTest: OutputLog Contains no test with ID: ' + testID;
+	} else if (test.testClass !== 'r') {
+
 	}
 
 	//Retrieve the block from the stage TODO: Handle Errors
-	// try {
-	var block = getScript(test.blockSpec);
+	try {
+		var block = getScript(test.blockSpec);
 	//Set the selected block's inputs for the test
-	setValues(block, test['input']);
+		setValues(block, test['input']);
 	//Initiate the Snap Process with a callback to .finishSnapTest
 
-	var stage = this.snapWorld.children[0].stage;
-	var outputLog = this; //Reference for the anonymouse function to follow
-	var proc = stage.threads.startProcess(block,
-		stage.isThreadSafe,
-		false,
-		function() {
-			outputLog.finishSnapTest(testID, readValue(proc));
+		var stage = this.snapWorld.children[0].stage;
+		var outputLog = this; //Reference for the anonymouse function to follow
+		var proc = stage.threads.startProcess(block,
+			stage.isThreadSafe,
+			false,
+			function() {
+				outputLog.finishSnapTest(testID, readValue(proc));
 		});
 	//Add reference to proc in gradingLog for error handling
-	test.proc = proc;
+		test.proc = proc;
 	//Timeouts for infinitely looping script or an Error.
-	var timeout = test.timeOut;
+		var timeout = test.timeOut;
 	//Set default time if none is specified
-	if (timeout < 0) {
-		timeout = 1000;
-	}
-	//Launch timeout to handle Snap errors and infinitely looping scripts
-	var timeout_id = setTimeout(function() {
-		var stage = outputLog.snapWorld.children[0].stage;
-		if (test['proc'].errorFlag) {
-			test['feedback'] = "Snap Error." //TODO: Find error message from process or block
-		} else {
-			test['feedback'] = "Test Timeout Occurred."
+		if (timeout < 0) {
+			timeout = 1000;
 		}
-		test.correct = false;
-		//Set the graded flag to true for this test.
-		test.graded = true;
-	});
-	//Save timeout id, to stop error handling timeout if test succeeds.
-	this.currentTimeout = timeout_id;
+		//Launch timeout to handle Snap errors and infinitely looping scripts
+		var timeout_id = setTimeout(function() {
+			var stage = outputLog.snapWorld.children[0].stage;
+			if (test['proc'].errorFlag) {
+				test['feedback'] = "Snap Error." //TODO: Find error message from process or block
+			} else {
+				test['feedback'] = "Test Timeout Occurred."
+			}
+			stage.threads.stopProcess(getScript(outputLog[testID]["blockSpec"]));
+			test.correct = false;
+			//Set the graded flag to true for this test.
+			console.log(timeout);
+			test.graded = true;
+		},timeout);
+		//Save timeout id, to stop error handling timeout if test succeeds.
+		this.currentTimeout = timeout_id;
 
-	return this;
+		return this;
+	} catch(e) {
+		test.feedback = e;
+		test.correct = false;
+		test.graded = true;
+		test.proc = null;
+		var outputLog = this;
+		//Find the next Snap reporter test
+		for (var id = testID+1; id <= this.testCount;id++) {
+			var next_test = this[id];
+			//Continue to the next test if not a 'reporter' test type
+			if (next_test.testClass === 'r' && !next_test.graded) {
+				setTimeout(function() {
+					outputLog.startSnapTest(id);
+				},1);
+				return;
+			}
+		}
+	}
 }
 
 /*
@@ -182,10 +204,10 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	//Update feedback and 'correct' flag depending on output.
 	if (snapEquals(test.output, test.expOut)) {
 		test.correct = true;
-		test.feedback = "Test Passed.";
+		test.feedback = test.feedback || "Test Passed.";
 	} else {
 		test.correct = false;
-		test.feedback = "Unexpected Output: " + String(output);
+		test.feedback = test.feedback || "Unexpected Output: " + String(output);
 	}
 	//Set test graded flag to true, for gradingLog.gradeLog()
 
@@ -421,7 +443,7 @@ function AG_log(outputLog, snapXMLString) {
  */
 function testAssert(outputLog, assertion, pos_fb, neg_fb, ass_text) {
 	if (assertion) {
-		//outputLog.addAssert("a", statement, pos_fb, ass_text);
+		outputLog.addAssert("a", assertion, pos_fb, ass_text);
 	} else {
 		outputLog.addAssert("a", assertion, neg_fb, ass_text);
 	}
