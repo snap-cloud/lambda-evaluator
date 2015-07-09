@@ -56,7 +56,7 @@
             // These tests specified by the Course Designer. 
 
             var test_log = AGTest(outputLog);
-
+            
             if(!test_log.runSnapTests()) {
                 outputLog.scoreLog();
             }
@@ -87,6 +87,8 @@
                 //Restore the AG status bar to a graded state
                 AG_bar_graded(menu_button, grade_button);
                 var outputLog = JSON.parse(localStorage.getItem(taskID + "_c_test_log"));
+
+
                 outputLog.snapWorld = snapWorld;
                 return outputLog;
             }
@@ -184,6 +186,8 @@
                 localStorage.setItem(taskID + "_test_log", c_prev_log);
                 localStorage.setItem(taskID + "_test_state", curr_xml);
 
+                document.getElementById("different-feedback").innerHTML = "";
+
                 //Retrieve the correct test log from localStorage
                 outputLog = JSON.parse(c_prev_log);
                 outputLog.snapWorld = snapWorld;
@@ -194,6 +198,9 @@
                 //Restore the AG status bar to a graded state
                 AG_bar_semigraded(menu_button, grade_button);
                 //Retrieve the previous test log from localStorage
+
+                document.getElementById("different-feedback").innerHTML = "";
+
                 outputLog = JSON.parse(prev_log);
                 outputLog.snapWorld = snapWorld;
                 return outputLog;
@@ -201,6 +208,7 @@
                 //Restore the AG status bar to a graded state
                 AG_bar_ungraded(menu_button, grade_button);
                 outputLog = new gradingLog(snapWorld, taskID);
+                document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
                 return outputLog
             }
 
@@ -225,6 +233,7 @@
                 // Save the correct XML string into localStorage
                 AG_bar_graded(menu_button, grade_button);
                 outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
+
             } else {
                 // Update AG_status_bar to 'graded, but incorrect state
                 AG_bar_semigraded(menu_button, grade_button);
@@ -501,6 +510,13 @@
             var ide = world.children[0];
             var curr_xml = ide.serializer.serialize(ide.stage);
             var prev_xml = localStorage.getItem(taskID + "_test_state");
+            var last_log = localStorage.getItem(taskID + "_last_submitted_log");
+            var prev_log = localStorage.getItem(taskID + "_test_log");
+
+            var edx_caution = document.getElementById("edx-submit-different");
+            var caution = document.getElementById("different-feedback");
+
+            
 
             //if the feedback is not the same as it was before
 
@@ -522,6 +538,8 @@
                 
 
                 if (document.getElementById("last-column") !== null) {
+                    caution.innerHTML = "";
+                    edx_caution.innerHTML = "";
                     document.getElementById("comment").innerHTML = "";
                     var tableTitles = document.getElementsByClassName("titles");
                     var tableResults = document.getElementById("table-data");
@@ -550,6 +568,10 @@
                 }
 
                 document.getElementById("comment").innerHTML = title;
+
+                if (last_log !== prev_log) {
+                    edx_caution.innerHTML = "These graded tests differ from your last edX submission."
+                }
 
                 /*var testCol = document.createElement("th");
                 var testColText = document.createTextNode("Test");
@@ -713,19 +735,38 @@
                 populateFeedback(id);
             }
 
+
             var reset_button = document.getElementById("reset-button");
             var revert_button = document.getElementById("revert-button");
             var undo_button = document.getElementById("undo-button");
             var last_submit = document.getElementById("last-submit");
             var menu_button = document.getElementsByClassName("onclick-menu")[0];
             //var help_menu = document.getElementById("circle");
-            var overlay = document.getElementById('overlay');
+            var help_overlay = document.getElementById('overlay');
+            var feedback_button = document.getElementById("feedback-button");
+            var results_overlay = document.getElementById("ag-output");
 
             reset_button.onclick = function() { resetState(id); };
             revert_button.onclick = function() { revertToBestState(id); };
             last_submit.onclick = function() { revertToLastSubmit(id); };
             undo_button.onclick = function() { revertToLastState(id); };
             menu_button.onclick = function() { toggleMenu(id); };
+
+            feedback_button.onclick = function() {
+                openResults();
+            }
+
+            help_overlay.onclick = function(e) {
+                if (!(document.getElementById('help-popup').contains(e.target))) {
+                    closePopup();
+                }
+            }
+
+            results_overlay.onclick = function(e) {
+                if (!(document.getElementById('ag-results').contains(e.target))) {
+                    closeResults();
+                }
+            }
 
             /*help_menu.onclick = function() {
                 openModal();
@@ -737,6 +778,8 @@
                 AGUpdate(world, id);
                 //populateFeedback(id);
             });
+
+            populateFeedback(id);
 
             /*document.addEventListener("click", function() {
                 AGUpdate(world, id);
@@ -797,7 +840,7 @@
 <!-- <div style="display:inline-block" class="AG-help-button" id="circle" onclick="openPopup();">?
 </div> -->
 <div class="overlay is-hidden" id="overlay">
-    <div class="popup-content">
+    <div class="popup-content" id="help-popup">
         <span class="button-close" onclick="closePopup();">X</span>
             <p>
                 Please remember to click the 'Submit' button below the Snap! window to obtain credit for this problem!
@@ -832,6 +875,8 @@
 <div class="overlay is-hidden" id="ag-output">
     <div class="popup-content" id="ag-results">
         <span class="button-close" onclick="closeResults();" id="popup">X</span>
+        <p id = "different-feedback"></p>
+        <p id = "edx-submit-different"></p>
         <p id="comment"></p>
         <table class="results">
             <tbody id="table-data">

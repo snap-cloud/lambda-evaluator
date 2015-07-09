@@ -149,7 +149,7 @@
 }
 
 
-#reset-button, #revert-button, #last-submit, #undo-button {
+#reset-button, #revert-button, #last-submit, #undo-button, #feedback-button {
     color: inherit;
     text-decoration: none;
     display: block;
@@ -292,6 +292,7 @@
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.6);
+
 }
 
 .popup-content {
@@ -340,4 +341,8 @@
 .view-results {
   color: white;
   cursor: pointer;
+}
+
+#different-feedback, #edx-submit-different {
+  color: red;
 }
