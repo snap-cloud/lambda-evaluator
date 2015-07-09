@@ -10,7 +10,7 @@
         <script type="text/javascript" src="AG_EDX.js"></script>
         <script type="text/javascript" src="snap.js"></script>
 
-        
+        <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
 
         <script type="text/javascript">
 
@@ -28,8 +28,41 @@
             function AGTest() {
                 
                 testLog = testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]', ["A"], 0);
-                testLog = 
+
             }
+
+            function AGFinish() {
+                var grade_flag = document.getElementById("autograding_flag");
+                var grade_button = document.getElementById("autograding_button");
+                var prev_AG_state = JSON.parse(localStorage.getItem(id + "answer"));
+                if (testLog === undefined && prev_AG_state === null) {
+                    grade_flag.innerHTML = "UNGRADED";
+                    grade_flag.style.color = "#FF3333"
+                    grade_button.innerHTML = "&#x2713;";
+                    grade_button.style.color = "white";
+                    grade_button.style.background = "#FF3333";
+                    grade_button.style.font = "1.2em";
+                    grade_button.style.padding = "2px 3px 0px 3px";
+                } else if (testLog.allCorrect || (prev_AG_state!==null && prev_AG_state.allCorrect)) {
+                    grade_flag.innerHTML = "GRADED";
+                    grade_flag.style.color = "#33FF33";
+                    grade_button.style.font = "1.2em";
+                    grade_button.style.color = "white";
+                    grade_button.style.background = "#33FF33";
+                    grade_button.innerHTML = "&#x2713;";
+                    grade_button.style.padding = "2px 3px 0px 3px";
+                } else {
+                    grade_flag.innerHTML = "GRADED";
+                    grade_flag.style.color = "orange";
+                    grade_button.style.font = "1.4em";
+                    grade_button.style.color = "black";
+                    grade_button.style.background = "orange";
+                    grade_button.style.padding = "2px 1px 0px 1px";
+                    grade_button.innerHTML = "&#x26A0;";
+
+                }
+            }
+
             //recover stored save
             console.log(id);
             var pageXML = localStorage.getItem(id);
@@ -44,20 +77,7 @@
                     hint.style.display = "inline";
                 }
 
-                //UPDATE GRADING FLAG
-                var grade_flag = document.getElementById("autograding");
-                var prev_AG_state = JSON.parse(localStorage.getItem(id + "answer"));
-                console.log(prev_AG_state);
-                if (prev_AG_state !== null) {
-                    grade_flag.innerHTML = "GRADED";
-                    if (prev_AG_state.checkState) {
-                        grade_flag.style.color = "green";
-                    } else {
-                        grade_flag.style.color = "orange";
-                    }
-                } else {
-                    grade_flag.innerHTML = "UNGRADED!";
-                }
+
 
                 //Check if Pre-requisite task has completed
                 if (preReqID !== null) {
@@ -139,12 +159,32 @@
         </script>
         
     </head>
-    <body style="margin: 0;">
+    <body style="margin: 0; width:100%">
         <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
         <!-- <input id="clickMe" type="button" value="XXXXXX" onclick='multiTestBlock("%s my plus %s", [[1,2],[2,2],[2,3],[3,3]], [3,4,6,6]);'/> -->
-        <div id="autograding" style="position: absolute; padding-top: 5px; padding-left: 5px; color:red; font-family:helvetica">
-            UNGRADED
+        <div id="autograding_bar">
+            <div id="autograding_flag" style="display:inline-block">
+                UNGRADED
+            </div>
+            <div id="autograding_button" style="display:inline-block">
+                 &#x2713;
+            </div>
         </div>
+        <script type="text/javascript">
+            AGFinish();
+            var grade_button = document.getElementById("autograding_button");
+            grade_button.style.cursor = "pointer";
+            var ide = world.children[0];
+            var prev_xml;
+            grade_button.onclick = function() {
+                var ide = world.children[0];
+                prev_xml = ide.serializer.serialize(ide.stage);
+                AGTest();
 
+            }
+            setInterval(function() {
+                AGFinish(prev_xml);
+            }, 500);
+        </script>
     </body>
 </html>

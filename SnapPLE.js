@@ -8,11 +8,56 @@
 	updated when the Snap! process finishes. Finishing
 	the last test causes the grading log to be evaluated.
 */
-function gradingLog() {
+function gradingLog(snapWorld, taskID) {
 	this.testCount = 0;
-	this.qID = null;
 	this.allCorrect = false;
 	this.currentTimeout = null;
+	this.taskID = taskID || null;
+	this.pScore = null;
+	this.snapWorld = snapWorld || null;
+	this.graded = false;
+}
+
+/* Save the gradingLog in localStorage.
+ * 	- key = gradingLog.taskID + "_test_log"
+ * If the state is correct, save it separately. 
+ * 	- key = gradingLog.taskID + "_c_test_log"
+ * 	- This is used to restore a corrected log if the Snap! state is 
+ *    reverted.
+ */
+gradingLog.prototype.saveLog = function() {
+	// Save the JSON string of the gradingLog,
+	// without the Snap 'world' reference [To minimize stored data]
+	var world_ref = this.snapWorld;
+	this.snapWorld = null;
+	var log_string = JSON.stringify(this);
+	this.snapWorld = world_ref;
+
+	// Store the log string in localStorage
+	localStorage.setItem(this.taskID + "_test_log", log_string);
+	if (this.allCorrect) { // If all tests passed.
+		// Store the correct log in localStorage
+		localStorage.setItem(this.taskID + "_c_test_log", log_string);
+	}
+
+}
+/* Save the gradingLog.snapWorld into localStorage with the
+ * specified key. Does nothing if 'store_key' or 
+ * gradingLog.snapWorld are unspecified (null or undefined).
+ * @param {String} store_key
+ */
+gradingLog.prototype.saveSnapXML = function(store_key) {
+	if (this.snapWorld !== null && store_key !== undefined) {
+        localStorage.setItem(store_key, this.stringifySnapXML());
+	}
+}
+
+gradingLog.prototype.stringifySnapXML = function() {
+	if (this.snapWorld !== null) {
+		var ide = this.snapWorld.children[0];
+		var world_string = ide.serializer.serialize(ide.stage);
+		return world_string;
+	}
 }
 
 /*
@@ -21,6 +66,7 @@ function gradingLog() {
 *  Access specific parts of each test by:
 *  		gradingLog.[""+(testID)]
 *  Test Class include:
+*		"a" - assertion
 *		"p" - presence test
 *		"r" - reporter test
 *		"s" - stage event test
@@ -35,9 +81,85 @@ gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, tim
 								 "correct": false,
 								 "feedback": null,
 								 "timeOut": timeOut,
-								 "proc": null};
+								 "proc": null,
+								 'graded': false};
 	return this.testCount;
 };
+
+gradingLog.prototype.addAssert = function(testClass, statement, feedback, text) {
+	this.testCount += 1;
+	this[this.testCount] = {'testClass': "a",
+							'text': text,
+							'correct': statement,
+							'feedback': feedback,
+							'graded': true};
+	return this.testCount;
+
+}
+
+/*
+ * Initiates Reporter tests if they exist, and returns true in such a case,
+ * false otherwise.
+ */
+gradingLog.prototype.runSnapTests = function() {
+
+	//Find the first reporter test and start it.
+	for (var id = 1; id <= this.testCount; id++) {
+		var test = this[id];
+		if (test.testClass === 'r') {
+			this.startSnapTest(id);
+			return true;
+		}
+	}
+	//return this gradingLog
+	return false;
+}
+
+gradingLog.prototype.startSnapTest = function(testID) {
+	var test = this[testID];
+	if (test === undefined) {
+		throw 'startSnapTest: OutputLog Contains no test with ID: ' + testID;
+	}
+
+	//Retrieve the block from the stage TODO: Handle Errors
+	// try {
+	var block = getScript(test.blockSpec);
+	//Set the selected block's inputs for the test
+	setValues(block, test['input']);
+	//Initiate the Snap Process with a callback to .finishSnapTest
+	var stage = this.snapWorld.children[0].stage;
+	var outputLog = this; //Reference for the anonymouse function to follow
+	var proc = stage.threads.startProcess(block,
+		stage.isThreadSafe,
+		false,
+		function() {
+			outputLog.finishTest(testID, readValue(proc));
+		});
+	//Add reference to proc in gradingLog for error handling
+	test.proc = proc;
+	//Timeouts for infinitely looping script or an Error.
+	var timeout = test.timeOut;
+	//Set default time if none is specified
+	if (timeout < 0) {
+		timeout = 1000;
+	}
+	//Launch timeout to handle Snap errors and infinitely looping scripts
+	var timeout_id = setTimeout(function() {
+		var stage = this.snapWorld.children[0].stage;
+		if (test['proc'].errorFlag) {
+			test['feedback'] = "Snap Error." //TODO: Find error message from process or block
+		} else {
+			test['feedback'] = "Test Timeout Occurred."
+		}
+		test.correct = false;
+		//Set the graded flag to true for this test.
+		test.graded = true;
+	});
+	//Save timeout id, to stop error handling timeout if test succeeds.
+	this.currentTimeout = timeout_id;
+
+	return this;
+}
 
 /*
 *  Asyncronysly runs the input tests
@@ -46,28 +168,44 @@ gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, tim
 *  Uses a series of setTimeouts to make sure the asyncronous 
 *  test threads do not clash with one another on setup.
 */
-gradingLog.prototype.finishTest = function(testID, output, feedback, correct) {
+gradingLog.prototype.finishSnapTest = function(testID, output) {
 
-	//Populate Grade Log
-	if (this["" + testID] !== undefined) {
-		this["" + testID]["output"] = output;
-		this["" + testID]["feedback"] = feedback || this["" + testID]["feedback"];
-		this["" + testID]["correct"] = correct || this["" + testID]["correct"];
-	} else {
-		throw "gradingLog.finishTest: TestID is invalid.";
+	//Populate Grade Log //May be DEPRICATED.
+	var test = this[testID]
+	if (test === undefined) {
+		throw "gradingLog.finishSnapTest: TestID: " + testID + ", is invalid.";
 	}
 
-	//Initiate next test, kill timeout function for previous test
-	// if this is the last test, evaluate the log
-	// TODO: Integrate evaluateLog into finishTest
-	var glog = this;
-	if (testID < this.testCount) {
-		clearTimeout(this.currentTimeout);
-		setTimeout(function() {testBlock(glog, testID+1)},1);
-		this.currentTimeout = infLoopCheck(glog, testID+1);
+	test.output = output;
+	//Update feedback and 'correct' flag depending on output.
+	if (snapEquals(test.output, test.expOut)) {
+		test.correct = true;
+		test.feedback = "Test Passed.";
 	} else {
-		setTimeout(function() {evaluateLog(glog)}, 1);
+		test.correct = false;
+		test.feedback = "Unexpected Output: " + String(output);
 	}
+	//Set test graded flag to true, for gradingLog.gradeLog()
+
+	test.graded = true;
+	//Kill error handling timeout
+	clearTimeout(this.currentTimeout);
+	test.proc = null;
+	//Reference this gradingLog for the anonymous function
+	var outputLog = this;
+	//Find the next Snap reporter test
+	for (var id = testID+1; id <= this.testCount;id++) {
+		var next_test = this[id];
+		//Continue to the next test if not a 'reporter' test type
+		if (next_test.testClass === 'r' && !next_test.graded) {
+			setTimeout(function() {
+				outputLog.startSnapTest(id);
+			},1);
+			return;
+		}
+	}
+	//If this was the last test, grade the log
+	this.scoreLog();
 };
 
 /*
@@ -77,14 +215,131 @@ gradingLog.prototype.finishTest = function(testID, output, feedback, correct) {
  * or entry modification.
  */
 gradingLog.prototype.updateLog = function(testID, output, feedback, correct) {
-	if (this["" + testID] !== undefined) {
-		this["" + testID]["output"] = output;
-		this["" + testID]["feedback"] = feedback || this["" + testID]["feedback"]
-		this["" + testID]["correct"] = correct || this["" + testID]["correct"]
-	} else {
+	var test = this[testID];
+	try {
+		test.graded = true;
+		test.output = output;
+		test.feedback = feedback || test.feedback;
+		test.correct = correct || test.correct;
+
+	} catch(e) {
 		throw "gradingLog.finishTest: TestID is invalid.";
 	}
 
+}
+
+/*
+ * Evaluate the gradingLog, match the expected output with the recieved output
+ * Add relevant feedback with associated issue. (Timeout, Error, bad output)
+ * Additional processing occurs if all tests are evaluated:
+ *	- pScore is calculated
+ *  - Store the gradingLog in localStorage //TODO: Move this to a separate function?
+ *  - Store the Snap! state in localStorage
+ *  - Update the AG_status_bar, AGFinish()
+*/
+gradingLog.prototype.evaluateLog = function(testIDs) {
+	// Evaluate all tests if no specific testIDs are specified.
+	var outputLog = this;
+	if (gradingLog.testCount === 0) {
+		return gradingLog;
+	}
+	if (testIDs === undefined) {
+		testIDs = [];
+		for (var i = 1; i <= outputLog.testCount; i++) {
+		   testIDs.push(i);
+		}
+	}
+	// .allCorrect is initially true, and set to false if a test has failed.
+	outputLog.allCorrect = true;
+	// Passed test counter.
+	var tests_passed = 0; 
+	//Set 'correct' and 'feedback' fields for all in testIDs
+	for (var id of testIDs) {
+		//TODO: Terribly ugly. This should be abstracted. 
+		if (outputLog[id]['testClass'] === "a") {
+			if (outputLog[id]['correct']) {
+				tests_passed += 1;
+			}
+			continue;
+		}
+		if (outputLog[id]["correct"] === true) {
+			tests_passed += 1;
+			continue;
+		}
+		if (outputLog[id]["feedback"] === "Error!") {
+			outputLog.allCorrect = false;
+			outputLog[id]["output"] = "Error!";
+		} else if (outputLog["" + id]["output"] === undefined) {
+			outputLog.allCorrect = false;
+			outputLog[id]["output"] = "Timeout error.";
+			outputLog[id]["feedback"] = "Timeout error: Function did not finish before " + 
+				((outputLog[id]["timeOut"] < 0) ? 1000 : outputLog[id]["timeOut"]) + " ms.";
+		} else if (snapEquals(outputLog[id]["output"], outputLog[id]["expOut"])) {
+			//Changed === snapEquals() to better evaluate snap output
+			outputLog[id]["feedback"] = "Correct!";
+			outputLog[id]["correct"] = true;
+		} else {
+			outputLog.allCorrect = false;
+			if (outputLog[id]["testClass"] === "r") {
+				outputLog[id]["feedback"] = "Expected: " +
+					outputLog[id]["expOut"] + " , Got: " + outputLog[id]["output"];
+			} else if (outputLog[id]["testClass"] === "p") {
+				//outputLog[id]["feedback"] = "Script is not"
+			}
+			outputLog[id]["correct"] = false;
+		}
+	}
+	//Additional gradingLog fields are updated if all tests are evaluated.
+	if (outputLog.testCount === testIDs.length) {
+		// Calculate the pScore, the percentage of tests that have passed.
+		outputLog.pScore = tests_passed / outputLog.testCount;
+		//Save the output log to localStorage. 
+		//Saves _c_ 'correct' log if all tests passed.
+		outputLog.saveLog();
+
+		if (outputLog.allCorrect) {
+			//TODO: Consider saving the XML in runAGTest()
+			//Save the passing evaluated Log. key = taskID + "_c_test_log"
+			//Save the passing Snap! XML string. key = taskID + "_c_test_state"
+		}
+	}
+
+	//Update the AG status bar when the gradingLog is complete.
+	AGFinish(this);
+}
+
+gradingLog.prototype.scoreLog = function() {
+	if (this.testCount === 0) {
+		return this;
+	}
+	var testIDs = [];
+	for (var i = 1; i <= this.testCount; i++) {
+	   testIDs.push(i);
+	}
+	// .allCorrect is initially true, and set to false if a test has failed.
+	this.allCorrect = true;
+	// Passed test counter.
+	var tests_passed = 0;
+	var test;
+	for (var id of testIDs) {
+		test = this[id];
+		//If the test is correct, increase the tests_passed counter.
+		if (test.correct) {
+			tests_passed += 1;
+		} else {	//One failed test flips the allCorrect flag.
+			this.allCorrect = false;
+		}
+	}
+	//Calculate the pScore
+	this.pScore = tests_passed / this.testCount;
+	//Save the log in localStorage
+	this.saveLog();
+
+	//flip gradingLog.graded flag to true.
+	this.graded = true;
+	//Update the Autograder Status Bar
+	AGFinish(this);
+	return this;
 }
 
 /*
@@ -93,11 +348,14 @@ gradingLog.prototype.updateLog = function(testID, output, feedback, correct) {
  */
 function dictLog(outputLog) {
 	var outDict = {};
+	//Populate tests
 	for (var i = 1; i <=outputLog.testCount;i++) {
 		var testDict = {};
 		testDict["id"] = i;
 		testDict["testClass"] = outputLog[i]["testClass"];
-		testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+		if (outputLog[i]["blockSpec"] !== undefined) {
+			testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+		}
 		testDict["input"] = outputLog[i]["input"];
 		testDict["expOut"] = outputLog[i]["expOut"];
 		testDict["output"] = outputLog[i]["output"];
@@ -105,6 +363,11 @@ function dictLog(outputLog) {
 		testDict["feedback"] = outputLog[i]["feedback"];
 		outDict[i] = testDict;
 	}
+	//Populate outDict with outputLog instantiation variables.
+	outDict["testCount"] = outputLog.testCount;
+	outDict["allCorrect"] = outputLog.allCorrect;
+	outDict["taskID"] = outputLog.taskID;
+	outDict["pScore"] = outputLog.pScore;
 	return outDict;
 }
 
@@ -126,6 +389,42 @@ function printLog(outputLog) {
 	return testString;
 }
 
+/* Wrap the outputLog in an AG_State format. Used by AG_EDX.getGrade().
+ * The 'checkState' is equivalent to gradingLog.allCorrect.
+ * The 'feedback' is a copy of the gradingLog.
+ * The 'comment' is updated if the gradeLog.evaluateLog() has been run.
+ * @param {gradingLog} outputLog
+ */
+function AG_log(outputLog, snapXMLString) {
+ 	var AG_state = {
+	    'checkState': outputLog.allCorrect,
+	    'comment': "Please run the Snap Autograder before clicking the 'Submit' button.",
+	    'feedback': dictLog(outputLog),
+	    'snapXML' : snapXMLString
+	};
+	//Only update the 
+	if (outputLog.pScore !== null) {
+		var percent_score = Number((outputLog.pScore * 100).toFixed(1));
+		AG_state['comment'] = "Autograder Score: " + percent_score + "%"
+	}
+	return AG_state;
+
+}
+
+/* Add a test case to the outputLog if the assertion fails. 
+ * Currently does not add a test if the assertion succeeds.
+ * TODO: Consider separating assertions into two classes
+ * WARNING: DOES NOT EVALUATE LOG
+ */
+function testAssert(outputLog, assertion, pos_fb, neg_fb, ass_text) {
+	if (assertion) {
+		//outputLog.addAssert("a", statement, pos_fb, ass_text);
+	} else {
+		outputLog.addAssert("a", assertion, neg_fb, ass_text);
+	}
+	return outputLog;
+}
+
 /* Snap block getters and setters used to retrieve blocks,
  * set values, and initiates blocks.
  */
@@ -134,42 +433,30 @@ function getSprite(index) {
 	try {
 		return world.children[0].sprites.contents[index];
 	} catch(e) {
-		throw "This Snap instance is very broken"
+		throw "Sprite: " + index + " was not found."
 	}
 }
 
 //Returns the scripts of the script at 'index', undefined otherwise.
 function getScripts(index) {
-
 	var sprite = getSprite(index);
-
-	if (sprite !== undefined) {
-		return sprite.scripts.children;
-	} else {
-		return undefined;
-	}
+	return sprite.scripts.children;
 }
-
+//Get just the most recently touched block that matches
 function getScript(blockSpec, spriteIndex) {
+	return getAllScripts(blockSpec, spriteIndex)[0];
+}
+function getAllScripts(blockSpec, spriteIndex) {
 	//TODO: Consider expanding to grab from additional sprites
-
 	//Try to get a sprite's scripts
 	//Throw exception if none exist.
-	try {
-		//Does the sprite exist?
-		if (spriteIndex === undefined) {
-			var scripts = getScripts(0);
-		} else {
-			var scripts = getScripts(spriteIndex);
-		}
-		//If no sprites exist, throw an exception.
-		if (scripts === undefined) {
-			throw "No scripts"
-		}
-	} catch(e) {
-		throw "getScript: No Sprite available."
+	spriteIndex = spriteIndex || 0;
+	var scripts = getScripts(spriteIndex);
+	//If no scripts, throw an exception.
+	if (scripts.length === 0) {
+		throw "No blocks/scripts were found."
 	}
-
+	
 	//Try to return the first block matching 'blockSpec'.
 	//Throw exception if none exist/
 	var validScripts = scripts.filter(function (morph) {
@@ -178,22 +465,59 @@ function getScript(blockSpec, spriteIndex) {
 			return (morph.blockSpec === blockSpec);
 		}
 	});
+
 	if (validScripts.length === 0) {
-		throw "getScript: No block named: '" + blockSpec.replace(/%[a-z]/g, "[]") + "'" +" in script window.";
+		throw "The target block/script (" + 
+			blockSpec.replace(/%[a-z]/g, "[]") + 
+			") is not in script window.";
 	}
-
-	return validScripts[0]
-
+	return validScripts;
 }
 
-function isScriptPresent(blockSpec, spriteIndex) {
-	var script;
-	try {
-		script = getScript(blockSpec, spriteIndex);
-		return true;
-	} catch(e) {
-		return false;
+function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog) {
+	//Populate optional parameters
+	if (outputLog === undefined) {
+		outputLog = new gradingLog();
 	}
+	if (spriteIndex === undefined) {
+		spriteIndex = 0;
+	}
+
+	var JSONtemplate = stringToJSON(scriptString);
+	var blockSpec = JSONtemplate[0].blockSp;
+	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1);
+	//Handle case when no scripts present on stage.
+	try {
+		var JSONtarget;
+		var scriptsOnScreen = getAllScripts(blockSpec, spriteIndex);
+		var isPresent;
+		for (var i = 0; i < scriptsOnScreen.length; i++) {
+			JSONtarget = JSONscript(scriptsOnScreen[i]);
+			if (JSONtarget[0].blockSp === blockSpec) {
+				isPresent = checkTemplate(JSONtemplate, JSONtarget, scriptVariables);
+				if (isPresent) {
+					break;
+				}
+			}
+		}
+	} catch(e) {
+		var isPresent = false;
+		var feedback = "Script Missing: The target script was not found in the scripts tab"
+		outputLog.updateLog(testID, isPresent, feedback, isPresent);
+		outputLog.evaluateLog();
+		// return outputLog
+		//Return undefined so the grade state doesn't change when no script is present.
+		return outputLog;
+	}
+	//test that scripts match
+	if (isPresent) {
+		feedback = "The targeted script is present in the scripts tab.";
+	} else {
+		feedback = "The tested script did not match the target.";
+	}
+	outputLog.updateLog(testID, isPresent, feedback, isPresent);
+	return outputLog;
+
 }
 
 function testBlockPresent(blockSpec, spriteIndex, outputLog) {
@@ -219,34 +543,53 @@ function testBlockPresent(blockSpec, spriteIndex, outputLog) {
 	return outputLog;
 }
 
-function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog) {
-	//Populate optional parameters
-	if (outputLog === undefined) {
-		outputLog = new gradingLog();
+function isScriptPresent(blockSpec, spriteIndex) {
+	var script;
+	try {
+		script = getScript(blockSpec, spriteIndex);
+		return true;
+	} catch(e) {
+		return false;
 	}
-	if (spriteIndex === undefined) {
-		spriteIndex = 0;
-	}
-	
-	var JSONtemplate = stringToJSON(scriptString);
-	var blockSpec = JSONtemplate[0].blockSp;
-	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1);
-	var JSONtarget = JSONscript(getScript(blockSpec, spriteIndex));
-	//test that scripts match
-		//TODO: update scriptsMatch function to take block objects, not objects on screen
-	//var isPresent = scriptsMatch(JSONtemplate, JSONtarget, false);
-	var isPresent = checkTemplate(JSONtemplate, JSONtarget, scriptVariables);
-	if (isPresent) {
-		feedback = "The targeted script is present in the scripts tab.";
-	} else {
-		feedback = "Script Missing: The target script was not found in the scripts tab";
-	}
-	outputLog.updateLog(testID, isPresent, feedback, isPresent);
-	evaluateLog(outputLog);
-	return outputLog;
-
 }
 
+/*
+	Test and evaluate Snap! blocks. Uses a gradingLog to initilize tests,
+	launch processes, and update the log, and launch the next test
+*/
+function testBlock(outputLog, testID) {
+	if (outputLog[testID] === undefined) {
+		throw "testBlock: Output Log Contains no test with ID: " + testID;
+	}
+	var test = outputLog[testID];
+	var block = getScript(test["blockSpec"]);
+	setValues(block, test["input"]);
+	var proc = evalReporter(block, outputLog, testID);
+	outputLog["" + testID]["proc"] = proc;
+	return testID;
+}
+
+function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
+
+	if (outputLog === undefined) {
+		outputLog = new gradingLog(world);
+	}
+	if (inputs.length !== expOuts.length && inputs.length !== timeOuts.length) {
+		throw "multiTestBlock: Mismatched arguments";
+	}
+
+	var testIDs = new Array(inputs.length);
+	//TODO: Handle this error in startSnapTest
+	//var scripts = getScript(blockSpec);
+
+
+	for (var i=0;i<inputs.length; i++) {
+		testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i]);
+	}
+	// testBlock(outputLog, testIDs[0]);
+	// outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
+	return outputLog;
+}
 
 function setValues(block, values) {
 	var valIndex = 0;
@@ -283,46 +626,6 @@ function readValue(proc) {
 	return proc.homeContext.inputs[0];
 }
 
-/*
-	Test and evaluate Snap! blocks. Uses a gradingLog to initilize tests,
-	launch processes, and update the log, and launch the next test
-*/
-function testBlock(outputLog, testID) {
-	if (outputLog[testID] === undefined) {
-		throw "testBlock: Output Log Contains no test with ID: " + testID;
-	}
-	var test = outputLog[testID];
-	var block = getScript(test["blockSpec"]);
-	setValues(block, test["input"]);
-	var proc = evalReporter(block, outputLog, testID);
-	outputLog["" + testID]["proc"] = proc;
-	return testID;
-}
-
-function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
-
-	if (outputLog === undefined) {
-		outputLog = new gradingLog();
-	}
-	if (inputs.length !== expOuts.length && inputs.length !== timeOuts.length) {
-		return null;
-	}
-
-	var testIDs = new Array(inputs.length);
-	try {
-		var scripts = getScript(blockSpec);
-	} catch(e) {
-		throw e
-	}
-
-	for (var i=0;i<inputs.length; i++) {
-		testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i]);
-	}
-	testBlock(outputLog, testIDs[0]);
-	outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
-	return outputLog;
-}
-
 function prettyBlockString(blockSpec, inputs) {
 	var pString = blockSpec;
 	for (var inp in inputs) {
@@ -351,51 +654,6 @@ function infLoopCheck(outputLog, testID) {
 		}, timeout);
 }
 
-/*
-Evaluate the outputLog, match the expected output with the recieved output
-Add relevant feedback with associated issue.
-TODO: Explore input of conditional comments
-*/
-function evaluateLog(outputLog, testIDs) {
-
-	//
-	if (testIDs === undefined) {
-		testIDs = [];
-		for (var i = 1; i <= outputLog.testCount; i++) {
-		   testIDs.push(i);
-		}
-	}
-	outputLog.allCorrect = true;
-	for (var id of testIDs) {
-		//Changed === snapEquals() to better evaluate snap output
-		//re ordered the conditionals to make more sense and reduce errors
-		if (outputLog[id]["correct"] === true) {
-			continue;
-		}
-		if (outputLog[id]["feedback"] === "Error!") {
-			outputLog.allCorrect = false;
-			outputLog[id]["output"] = "Error!";
-		} else if (outputLog["" + id]["output"] === undefined) {
-			outputLog.allCorrect = false;
-			outputLog[id]["output"] = "Timeout error.";
-			outputLog[id]["feedback"] = "Timeout error: Function did not finish before " + 
-				((outputLog[id]["timeOut"] < 0) ? 1000 : outputLog[id]["timeOut"]) + " ms.";
-		} else if (snapEquals(outputLog[id]["output"], outputLog[id]["expOut"])) {
-			outputLog[id]["feedback"] = "Correct!";
-			outputLog[id]["correct"] = true;
-		} else {
-			outputLog.allCorrect = false;
-			if (outputLog[id]["testClass"] === "r") {
-				outputLog[id]["feedback"] = "Expected: " +
-					outputLog[id]["expOut"] + " , Got: " + outputLog[id]["output"];
-			} else if (outputLog[id]["testClass"] === "p") {
-				//outputLog[id]["feedback"] = "Script is not"
-			}
-			outputLog[id]["correct"] = false;
-		}
-	}
-	return outputLog;
-}
 
 /* ------ START DAVID'S MESS ------ */
 
@@ -531,9 +789,9 @@ function printEventLog(eventLog, ignore) {
 //Does not test "clear"/"penup"/"pendown"
 //Only tests for prescence of 4 sprites and 
 //proper sprite movements
-function testKScope(gradeLog, iter) {
+function testKScope(snapWorld, taskID, iter) {
 	var eLog = new SpriteEventLog(),
-		gLog = gradeLog || new gradingLog(),
+		gLog = new gradingLog(snapWorld, taskID),
 		testID = gLog.addTest("s", null, null, true, -1),
 		iterations = iter || 3,
 		spriteList = world.children[0].sprites.contents;
@@ -1145,7 +1403,14 @@ function occurancesOfBlockSpec(blockSpec, block) {
  *
  */
 function scriptsMatch(template, script, softMatch, vars, templateVariables) {
-	var morph1, morph2, type1, type2;
+	var morph1, morph2, type1, type2, templateIsArray, scriptIsArray;
+	templateIsArray = (Object.prototype.toString.call(template) === '[object Array]');
+	scriptIsArray = (Object.prototype.toString.call(script) === '[object Array]');
+	if (templateIsArray && scriptIsArray) {
+		if (template.length !== script.length) {
+			return false;
+		}
+	}
 	for (var i = 0; i < template.length; i++) {
 		morph1 = template[i];
 		morph2 = script[i];
@@ -1341,4 +1606,4 @@ function testScriptIdentical(scriptString, spriteIndex, outputLog) {
 	evaluateLog(outputLog);
 	return outputLog;
 
-}
+}//}
