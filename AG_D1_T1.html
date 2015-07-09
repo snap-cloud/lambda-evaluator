@@ -80,30 +80,25 @@
 
             var outputLog;
             //If the current XML matches the stored correct XML
-            // console.log("Current XML");
-            // console.log(curr_xml);
-            // console.log(isSameSnapXML(c_prev_xml, curr_xml));
             if (isSameSnapXML(c_prev_xml, curr_xml)) {
                 //Restore the AG status bar to a graded state
-                AG_bar_graded(menu_button, grade_button);
                 var outputLog = JSON.parse(localStorage.getItem(taskID + "_c_test_log"));
-
-
                 outputLog.snapWorld = snapWorld;
+                AG_bar_graded(outputLog);
                 return outputLog;
             }
             //If the current XML matches the last stored gradingLog
             if (isSameSnapXML(prev_xml, curr_xml)) {
                 //Restore the AG status bar to a graded state
-                AG_bar_semigraded(menu_button, grade_button);
                 var outputLog = JSON.parse(localStorage.getItem(taskID + "_test_log"));
                 outputLog.snapWorld = snapWorld;
+                AG_bar_semigraded(outputLog);
                 return outputLog; 
             } else {
                 //Restore the AG status bar to a graded state
-                AG_bar_ungraded(menu_button, grade_button);
                 //If no previous state is recognized, return new {gradingLog}.
                 outputLog = new gradingLog(snapWorld, taskID); 
+                AG_bar_ungraded(outputLog);
                 return outputLog;
             }   
         }
@@ -231,12 +226,12 @@
             if (outputLog.allCorrect) {
                 // Update AG_status_bar to Passing state
                 // Save the correct XML string into localStorage
-                AG_bar_graded(menu_button, grade_button);
+                AG_bar_graded(outputLog);
                 outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
 
             } else {
                 // Update AG_status_bar to 'graded, but incorrect state
-                AG_bar_semigraded(menu_button, grade_button);
+                AG_bar_semigraded(outputLog);
             }
             outputLog.saveSnapXML(outputLog.taskID + "_test_state");
         }
@@ -294,7 +289,11 @@
             });
             $('#autograding_button .hover_darken').show();
             $('#onclick-menu').css('color', 'orange');
-            $('#feedback-button').html("View Feedback (" + " Error)");
+            var num_errors = outputLog.testCount - outputLog.numCorrect;
+            var plural = "";
+            if (num_errors > 1) { plural = "s"};
+            $('#feedback-button').html("View Feedback ("+ 
+                num_errors +" Error" + plural + ")");
         }
 
         /* Checks if two Snap! XML strings have approximately the same state.
@@ -413,68 +412,59 @@
             return message;
         }
 
-        function resetState(taskID) {
-            var menu_button = document.getElementById("onclick-menu");
-            var grade_button = document.getElementById("autograding_button");
-
-            //AGStart(world,id);
+        function resetState(snapWorld, taskID) {
 
             localStorage.removeItem(taskID + "_test_log");
             localStorage.removeItem(taskID + "_test_state");
+            localStorage.removeItem(taskID + "_c_test_log");
+            localStorage.removeItem(taskID + "_c_test_state");
 
-            var ide = world.children[0];
+            var ide = snapWorld.children[0];
             ide.newProject();
-            AG_bar_ungraded();
+            AGStart(snapWorld, taskID);
         }
 
-        function revertToBestState(taskID) {
+        function revertToBestState(snapWorld, taskID) {
     
-            var ide = world.children[0];
+            var ide = snapWorld.children[0];
 
             var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
             var c_prev_log = localStorage.getItem(taskID + "_c_test_log");
-            var menu_button = document.getElementById("onclick-menu");
-            var grade_button = document.getElementById("autograding_button");
-
             localStorage.setItem(taskID + "_test_state", c_prev_xml);
             localStorage.setItem(taskID + "_test_log", c_prev_log);
-
-            AG_bar_graded(menu_button, grade_button);
+            var prev_log = JSON.parse(c_prev_log);
+            prev_log.snapWorld = snapWorld;
+            AG_bar_graded(prev_log);
 
             ide.openProjectString(c_prev_xml);
         }
 
-        function revertToLastState(taskID) {
+        function revertToLastState(snapWorld, taskID) {
 
-            var ide = world.children[0];
-
+            var ide = snapWorld.children[0];
             var prev_xml = localStorage.getItem(taskID + "_test_state");
-            var menu_button = document.getElementById("onclick-menu");
-            var grade_button = document.getElementById("autograding_button");
-
-
-            if (JSON.parse(localStorage.getItem(taskID + "_test_log"))['allCorrect'] === true) {
-                AG_bar_graded(menu_button, grade_button);
+            var prev_log = JSON.parse(localStorage.getItem(taskID + "_test_log"));
+            prev_log.snapWorld = snapWorld;
+            if (prev_log['allCorrect']) {
+                AG_bar_graded(prev_log);
             } else {
-                AG_bar_semigraded(menu_button, grade_button);
+                AG_bar_semigraded(prev_log);
             }
             ide.openProjectString(prev_xml);
         }
 
-        function revertToLastSubmit(taskID) {
+        function revertToLastSubmit(snapWorld, taskID) {
             var last_xml = localStorage.getItem(taskID + "_last_submitted_state");
             var last_log = localStorage.getItem(taskID + "_last_submitted_log");
-            var menu_button = document.getElementById("onclick-menu");
-            var grade_button = document.getElementById("autograding_button");
-            var ide = world.children[0];
+            var ide = snapWorld.children[0];
 
             localStorage.setItem(taskID + "_test_state", last_xml);
             localStorage.setItem(taskID + "_test_log", last_log);
-
-            if (JSON.parse(last_log)['allCorrect'] === true) {
-                AG_bar_graded(menu_button, grade_button);
+            var prev_log = JSON.parse(last_log);
+            if (prev_log['allCorrect']) {
+                AG_bar_graded(prev_log);
             } else {
-                AG_bar_semigraded(menu_button, grade_button);
+                AG_bar_semigraded(prev_log);
             }
             ide.openProjectString(last_xml);
 
@@ -750,10 +740,10 @@
             var feedback_button = document.getElementById("feedback-button");
             var results_overlay = document.getElementById("ag-output");
 
-            reset_button.onclick = function() { resetState(id); };
-            revert_button.onclick = function() { revertToBestState(id); };
-            last_submit.onclick = function() { revertToLastSubmit(id); };
-            undo_button.onclick = function() { revertToLastState(id); };
+            reset_button.onclick = function() { resetState(world, id); };
+            revert_button.onclick = function() { revertToBestState(world, id); };
+            last_submit.onclick = function() { revertToLastSubmit(world, id); };
+            undo_button.onclick = function() { revertToLastState(world, id); };
             menu_button.onclick = function() { toggleMenu(id); };
 
             feedback_button.onclick = function() {
@@ -821,8 +811,8 @@
             <li class="menu-item-sub-menu" id="enabled-button"><a id="feedback-button">View Feedback</a></li>
             <li class="menu-divider-sub-menu" id='menu-divider'></li>
             <li class="menu-item-sub-menu" id="enabled-button"><a id="revert-button">Revert To Best Attempt</a></li>
-            <li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last Attempt</a></li>
-            <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Revert To Last edX Submission</a></li>
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last edX Submission</a></li>
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Revert To Last Attempt</a></li>
             <li class="menu-item-sub-menu" id="enabled-button"><a id="reset-button">Reset</a></li>
             <li class="menu-divider-sub-menu" id='menu-divider'></li>
             <li class="menu-item-sub-menu" id='enabled-button' onclick="openPopup();"><a id="help-button">Help</a></li>
