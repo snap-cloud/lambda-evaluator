@@ -1391,6 +1391,39 @@ function CBlockContains(block1, block2, script) {
     return false;
 }
 
+/* Takes in a blockSpec BLOCKSPEC1, a nickname BLOCK2NAME, a javascript object SCRIPT,
+ * and optional arguments ARGARRAY1 and ARGARRAY2.
+ * Returns true if the block represented by BLOCKSPEC1 occurs inside 
+ * the C-shaped block represented by BLOCK2NAME. Matches BLOCK2NAME to a blockspec.
+ * SCRIPT can be obtained by calling:
+ *
+ * JSONscript(...)
+ */
+function SimpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArray2) {
+        if (argArray1 === undefined) {
+            argArray1 = [];
+        }
+        if (argArray2 === undefined) {
+            argArray2 = [];
+        }
+        var nicknameDict = {
+            "repeat" : "repeat %n %c",
+            "warp" : "warp %c",
+            "forever" : "forever %c",
+            "for" : "for %upvar = %n to %n %cs",
+            "repeat until" : "repeat until %b %c",
+            "if" : "if %b %c",
+            "if else" : "if %b %c else %c",
+            "for each" : "for each %upvar of %l %cs"
+        }
+        if (!(block2Name in nicknameDict)) {
+            throw "The given C-block nickname is invalid.";
+        }
+        var block2 = (blockSp: nicknameDict[block2Name], inputs: argArray2);
+        var block1 = {blockSp: blockSpec1, inputs: argArray1};
+        return CBlockContains(block1, block2, script);
+}
+
 
 /* Takes in two javascript objects (representating a block (block1) and a C-shaped block (block2)), a
 * SPRITEINDEX, and the current state of the OUTPUTLOG. 
