@@ -21,9 +21,9 @@ function gradingLog(snapWorld, taskID) {
 
 /* Save the gradingLog in localStorage.
  * 	- key = gradingLog.taskID + "_test_log"
- * If the state is correct, save it separately. 
+ * If the state is correct, save it separately.
  * 	- key = gradingLog.taskID + "_c_test_log"
- * 	- This is used to restore a corrected log if the Snap! state is 
+ * 	- This is used to restore a corrected log if the Snap! state is
  *    reverted.
  */
 gradingLog.prototype.saveLog = function() {
@@ -43,7 +43,7 @@ gradingLog.prototype.saveLog = function() {
 
 }
 /* Save the gradingLog.snapWorld into localStorage with the
- * specified key. Does nothing if 'store_key' or 
+ * specified key. Does nothing if 'store_key' or
  * gradingLog.snapWorld are unspecified (null or undefined).
  * @param {String} store_key
  */
@@ -63,7 +63,7 @@ gradingLog.prototype.stringifySnapXML = function() {
 
 /*
 *  Add a test to the gradingLog object
-*  tests are tracked by a test ID number. 
+*  tests are tracked by a test ID number.
 *  Access specific parts of each test by:
 *  		gradingLog.[""+(testID)]
 *  Test Class include:
@@ -76,9 +76,9 @@ gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, tim
 	this.testCount += 1;
 	this["" + this.testCount] = {"testClass": testClass,
 								 "blockSpec": blockSpec,
-								 "input": input, 
-								 "expOut": expOut, 
-								 "output": null, 
+								 "input": input,
+								 "expOut": expOut,
+								 "output": null,
 								 "correct": false,
 								 "feedback": null,
 								 "timeOut": timeOut,
@@ -167,7 +167,7 @@ gradingLog.prototype.startSnapTest = function(testID) {
 *  Asyncronysly runs the input tests
 *  Initiates a test, sets the time out for the test and
 *  evaluates the test log once the last test has ran.
-*  Uses a series of setTimeouts to make sure the asyncronous 
+*  Uses a series of setTimeouts to make sure the asyncronous
 *  test threads do not clash with one another on setup.
 */
 gradingLog.prototype.finishSnapTest = function(testID, output) {
@@ -213,7 +213,7 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 /*
  * Modifies an entry of the gradingLog without calling subsequent tests
  * as with .finishTest
- * Used to update the log in the event of a timeout, error, 
+ * Used to update the log in the event of a timeout, error,
  * or entry modification.
  */
 gradingLog.prototype.updateLog = function(testID, output, feedback, correct) {
@@ -254,10 +254,10 @@ gradingLog.prototype.evaluateLog = function(testIDs) {
 	// .allCorrect is initially true, and set to false if a test has failed.
 	outputLog.allCorrect = true;
 	// Passed test counter.
-	var tests_passed = 0; 
+	var tests_passed = 0;
 	//Set 'correct' and 'feedback' fields for all in testIDs
 	for (var id of testIDs) {
-		//TODO: Terribly ugly. This should be abstracted. 
+		//TODO: Terribly ugly. This should be abstracted.
 		if (outputLog[id]['testClass'] === "a") {
 			if (outputLog[id]['correct']) {
 				tests_passed += 1;
@@ -274,7 +274,7 @@ gradingLog.prototype.evaluateLog = function(testIDs) {
 		} else if (outputLog["" + id]["output"] === undefined) {
 			outputLog.allCorrect = false;
 			outputLog[id]["output"] = "Timeout error.";
-			outputLog[id]["feedback"] = "Timeout error: Function did not finish before " + 
+			outputLog[id]["feedback"] = "Timeout error: Function did not finish before " +
 				((outputLog[id]["timeOut"] < 0) ? 1000 : outputLog[id]["timeOut"]) + " ms.";
 		} else if (snapEquals(outputLog[id]["output"], outputLog[id]["expOut"])) {
 			//Changed === snapEquals() to better evaluate snap output
@@ -295,7 +295,7 @@ gradingLog.prototype.evaluateLog = function(testIDs) {
 	if (outputLog.testCount === testIDs.length) {
 		// Calculate the pScore, the percentage of tests that have passed.
 		outputLog.pScore = tests_passed / outputLog.testCount;
-		//Save the output log to localStorage. 
+		//Save the output log to localStorage.
 		//Saves _c_ 'correct' log if all tests passed.
 		outputLog.saveLog();
 
@@ -346,8 +346,8 @@ gradingLog.prototype.scoreLog = function() {
 }
 
 /*
- * Convert the gradingLog into a dictionary that is returned by 
- * edX getGrade(). 
+ * Convert the gradingLog into a dictionary that is returned by
+ * edX getGrade().
  */
 function dictLog(outputLog) {
 	var outDict = {};
@@ -405,7 +405,7 @@ function AG_log(outputLog, snapXMLString) {
 	    'feedback': dictLog(outputLog),
 	    'snapXML' : snapXMLString
 	};
-	//Only update the 
+	//Only update the
 	if (outputLog.pScore !== null) {
 		var percent_score = Number((outputLog.pScore * 100).toFixed(1));
 		AG_state['comment'] = "Autograder Score: " + percent_score + "%"
@@ -414,7 +414,7 @@ function AG_log(outputLog, snapXMLString) {
 
 }
 
-/* Add a test case to the outputLog if the assertion fails. 
+/* Add a test case to the outputLog if the assertion fails.
  * Currently does not add a test if the assertion succeeds.
  * TODO: Consider separating assertions into two classes
  * WARNING: DOES NOT EVALUATE LOG
@@ -459,7 +459,7 @@ function getAllScripts(blockSpec, spriteIndex) {
 	if (scripts.length === 0) {
 		throw "No blocks/scripts were found."
 	}
-	
+
 	//Try to return the first block matching 'blockSpec'.
 	//Throw exception if none exist/
 	var validScripts = scripts.filter(function (morph) {
@@ -470,8 +470,8 @@ function getAllScripts(blockSpec, spriteIndex) {
 	});
 
 	if (validScripts.length === 0) {
-		throw "The target block/script (" + 
-			blockSpec.replace(/%[a-z]/g, "[]") + 
+		throw "The target block/script (" +
+			blockSpec.replace(/%[a-z]/g, "[]") +
 			") is not in script window.";
 	}
 	return validScripts;
@@ -612,7 +612,7 @@ function setValues(block, values) {
 
 function evalReporter(block, outputLog, testID) {
 	var stage = world.children[0].stage;
-	var proc = stage.threads.startProcess(block, 
+	var proc = stage.threads.startProcess(block,
 					stage.isThreadSafe,
 					false,
 					function() {
@@ -790,7 +790,7 @@ function printEventLog(eventLog, ignore) {
 
 //Very specific test for kalidiscope
 //Does not test "clear"/"penup"/"pendown"
-//Only tests for prescence of 4 sprites and 
+//Only tests for prescence of 4 sprites and
 //proper sprite movements
 function testKScope(snapWorld, taskID, iter) {
 	var eLog = new SpriteEventLog(),
@@ -811,7 +811,7 @@ function testKScope(snapWorld, taskID, iter) {
 				if (log && log.numSprites !== 4) {
 					gLog["" + testID]["feedback"] = "You do not have the correct amount of Sprites." +
 													"Make sure you have four different sprites.";
-		
+
 					return false;
 				}
 
@@ -845,7 +845,7 @@ function testKScope(snapWorld, taskID, iter) {
 		// this is where we would add a callback to getGrade or whatevers
 
 		gLog.updateLog(testID, eLog.callVal, null, eLog.callVal);
-		
+
 		console.log(eLog.callVal);
 	};
 
@@ -971,7 +971,7 @@ function testUniformShapeInLoop(sides, angle, length, gradeLog, blockSpec) {
 
 }
 
-//turn an x coordinate into an x coordinate realitive to the 
+//turn an x coordinate into an x coordinate realitive to the
 //drawing area in snap
 function realitiveX(coord) {
 	var centerStage = world.children[0].stage;
@@ -979,7 +979,7 @@ function realitiveX(coord) {
 	return centerStage.center().x + coord / stageSize;
 }
 
-//turn an y coordinate into a y coordinate realitive to the 
+//turn an y coordinate into a y coordinate realitive to the
 //drawing area in snap
 function realitiveY(coord) {
 	var centerStage = world.children[0].stage;
@@ -1054,7 +1054,7 @@ var act = createInputSpoof(50);
 }
 
 //The following functions will create a dragon fractal
-//using spoofed mouse movements and the correct 
+//using spoofed mouse movements and the correct
 //Snap! code
 
 //Creates the dragon curve
@@ -1120,7 +1120,7 @@ function drawDragon(turns, func) {
 }
 
 //the function that is called to create and draw the dragon
-//iterations is the number of folds the dragon has and 
+//iterations is the number of folds the dragon has and
 //callback is an optional callback function
 function makeDragon(iterations, callback) {
 	var turns = createCurve(iterations);
@@ -1294,6 +1294,89 @@ function getGlobalVar(varToGet, globalVars) {
 	return globalVars[varToGet].value;
 }
 
+/* Takes in two javascript objects (block1 and block2) and a script.
+ * Returns true if the block represented by BLOCK1 occurs inside
+ * the C-shaped block represented by BLOCK2. SCRIPT can be
+ * obtained by calling:
+ *
+ * JSONscript(...)
+ *
+ * The following 7 blocks are considered C-shaped:
+ *  -repeat, repeat until, warp, forever, for loop, if, if-else
+ *
+ */
+function CBlockContains(block1, block2, script) {
+    var morph1, type1, CblockSpecs;
+    CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
+    CblockSpecs = CblockSpecs.concat(["repeat until %b %c", "if %b %c", "if %b %c else %c"]);
+
+    if (CblockSpecs.indexOf(block2.blockSp) < 0) {
+        var rValue = "The second input should be a C-shaped block. See CBlockContains";
+        rValue += " definition for a list of the blocks designated as C-shaped blocks.";
+        return rValue;
+    }
+
+    for (var i = 0; i < script.length; i++) {
+        morph1 = script[i];
+        type1 = typeof(morph1);
+        if ((type1 === "string")) {
+            continue;
+        } else if (Object.prototype.toString.call(morph1) === '[object Array]') {
+            if (CBlockContains(block1, block2, morph1)) {
+                return true;
+            }
+        } else if (morph1.blockSp === block2.blockSp) {
+            if (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 1], block1.blockSp, block1.inputs)) {
+                return true;
+            }
+            if ((morph1.blockSp === "if %b %c else %c")
+                && (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 2], block1.blockSp, block1.inputs))) {
+                return true;
+            }
+        } else if (CblockSpecs.indexOf(morph1.blockSp) >= 0) {
+            if (CBlockContains(block1, block2, morph1.inputs[morph1.inputs.length - 1])) {
+                return true;
+            }
+            if ((morph1.blockSp === "if %b %c else %c")
+                && (CBlockContains(block1, block2, morph1.inputs[morph1.inputs.length - 2]))) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+/* Takes in string CUSTOMBLOCK, the strings BLOCKSPEC1 (any block)
+ * and BLOCKSPEC2 (a conditional block), and their respective
+ * optional arg arrays ARGARRAY1 and ARGARRAY2. Returns true if BLOCKSPEC1 is
+ * inside of the block represented by BLOCKSPEC2.
+ */
+function CBlockContainsInCustom(customBlockSpec, blockSpec1, blockSpec2, argArray1, argArray2, spriteIndex) {
+	if (argArray1 === undefined) {
+		argArray1 = [];
+	}
+	if (argArray2 === undefined) {
+		argArray2 = [];
+	}
+	if (spriteIndex === undefined) {
+		spriteIndex = 0;
+	}
+
+	try {
+		var customBlock = getScript(customBlockSpec, spriteIndex);
+	}
+	catch(e) {
+		return false;
+	}
+	var jsonifiedCustomBlock = JSONcustomBlock(customBlock);
+	var script = jsonifiedCustomBlock.body;
+	var block1 = {blockSp: blockSpec1, inputs: argArray1};
+	var block2 = {blockSp: blockSpec2, inputs: argArray2};
+
+	return CBlockContains(block1, block2, script);
+
+}
+
 /* Takes in an entire Sprite's SCRIPT and checks recursively if it contains
  * the string BLOCKSPEC that we are looking for. Returns true only if it finds
  * the block we are looking for. ARGARRAY only matters if it is populated (not an empty array)
@@ -1434,11 +1517,11 @@ function blockPrecedes(block1, block2, script, seen1) {
 }
 
 
-/* Takes in two BLOCKSTRINGs representating the two blocks to be searched for, a 
-* SPRITEINDEX, and the current state of the OUTPUTLOG. 
-* 
-* Records to the OUTPUTLOG if block1 precedes block2 in any script in 
-* the Scripts tab of the given sprite. See documentation of blockPrecedes for 
+/* Takes in two BLOCKSTRINGs representating the two blocks to be searched for, a
+* SPRITEINDEX, and the current state of the OUTPUTLOG.
+*
+* Records to the OUTPUTLOG if block1 precedes block2 in any script in
+* the Scripts tab of the given sprite. See documentation of blockPrecedes for
 * details of what "precedes" means.
 */
 function testBlockPrecedes(block1String, block2String, spriteIndex, outputLog) {
@@ -1515,14 +1598,14 @@ function occurancesOfBlockSpec(blockSpec, block) {
 	return result;
 }
 
-/* Takes in a BLOCKSTRING representation of the block to be counted, an EXPECTED 
+/* Takes in a BLOCKSTRING representation of the block to be counted, an EXPECTED
 * number of occurances of said block, a SPRITEINDEX, and the current state of the
-* OUTPUTLOG. 
-* 
-* Records to the OUTPUTLOG if the given block occurs EXPECTED times in any script in 
-* the Scripts tab of the given sprite. EXPECTED should be the minimum number of 
-* times the given block must occur in order for the answer to be correct (if the 
-* block doesn't occur at least EXPECTED times in a script, the feedback will notify 
+* OUTPUTLOG.
+*
+* Records to the OUTPUTLOG if the given block occurs EXPECTED times in any script in
+* the Scripts tab of the given sprite. EXPECTED should be the minimum number of
+* times the given block must occur in order for the answer to be correct (if the
+* block doesn't occur at least EXPECTED times in a script, the feedback will notify
 * the student that the block does not occur enough times for the solution to be correct.
 */
 function testOccurancesOfBlock(blockString, expected, spriteIndex, outputLog) {
