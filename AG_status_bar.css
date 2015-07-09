@@ -1,3 +1,7 @@
+div {
+  font-family:helvetica;
+}
+
 #autograding_bar {
   position:absolute;
   height: 1em;

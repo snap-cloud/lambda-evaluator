@@ -243,7 +243,7 @@
 
 
 
-        function AG_bar_ungraded(menu_button, grade_button) {
+        function AG_bar_ungraded(outputLog) {
             
             var button_text = "GRADE";
             var button_elem = $('#autograding_button span');
@@ -254,42 +254,45 @@
             button_elem.fadeOut('fast', function() {
                 button_elem.html(button_text);
                 button_elem.slideDown('fast');
-                grade_button.style.background = 'orange';
+                $('#autograding_button').css('background', 'orange');
             });          
-            
+            $('#autograding_button .hover_darken').show();
             $('#onclick-menu').css('color', 'white');
             $('#feedback-button').html("View Previous Feedback");
         }
 
-        function AG_bar_graded(menu_button, grade_button) {
+        function AG_bar_graded(outputLog) {
             var button_text = "TESTS PASS";
             var button_elem = $('#autograding_button span');
             var regex = new RegExp(button_text,"g");
             if (button_elem.html().match(regex) !== null) {
                 return;
             }
-            $('#autograding_button span').fadeOut('fast', function() {
-                $('#autograding_button span').html(button_text);
-                $('#autograding_button span').slideDown('fast');
-                grade_button.style.background = "#29A629";
+            
+            button_elem.fadeOut('fast', function() {
+                button_elem.html(button_text);
+                button_elem.slideDown('fast');
+                $('#autograding_button').css('background', '#29A629');
             });
+            $('#autograding_button .hover_darken').hide();
             $('#onclick-menu').css('color', 'white');
             $('#feedback-button').html("Review Feedback");
 
         }
 
-        function AG_bar_semigraded(menu_button, grade_button) {
+        function AG_bar_semigraded(outputLog) {
             var button_text = "&#x2770&#x2770 FEEDBACK";
             var button_elem = $('#autograding_button span');
             var regex = new RegExp("FEEDBACK","g");
             if (button_elem.html().match(regex) !== null) {
                 return;
             }
-            $('#autograding_button span').fadeOut('fast', function() {
-                $('#autograding_button span').html(button_text);
-                $('#autograding_button span').slideDown('fast');
-                grade_button.style.background = "red";
+            button_elem.fadeOut('fast', function() {
+                button_elem.html(button_text);
+                button_elem.slideDown('fast');
+                $('#autograding_button').css('background', 'red');
             });
+            $('#autograding_button .hover_darken').show();
             $('#onclick-menu').css('color', 'orange');
             $('#feedback-button').html("View Feedback (" + " Error)");
         }
@@ -421,7 +424,7 @@
 
             var ide = world.children[0];
             ide.newProject();
-            AG_bar_ungraded(menu_button, grade_button);
+            AG_bar_ungraded();
         }
 
         function revertToBestState(taskID) {
@@ -506,7 +509,8 @@
             overlay.classList.add("is-hidden");
         }
 
-        function populateFeedback(taskID) {
+        function populateFeedback(outputLog) {
+            var taskID = outputLog.taskID;
             var ide = world.children[0];
             var curr_xml = ide.serializer.serialize(ide.stage);
             var prev_xml = localStorage.getItem(taskID + "_test_state");
@@ -520,7 +524,7 @@
 
             //if the feedback is not the same as it was before
 
-                var glog = JSON.parse(localStorage.getItem(taskID + "_test_log"));
+                var glog = outputLog;
                 var log = AG_log(glog);
 
                 //var log = JSON.parse(localStorage.getItem(taskID + "_ag_output"));
@@ -570,7 +574,7 @@
                 document.getElementById("comment").innerHTML = title;
 
                 if (last_log !== prev_log) {
-                    edx_caution.innerHTML = "These graded tests differ from your last edX submission."
+                    edx_caution.innerHTML = "[WARNING: These results differ from your last edX submission.]"
                 }
 
                 /*var testCol = document.createElement("th");
@@ -779,7 +783,8 @@
                 //populateFeedback(id);
             });
 
-            populateFeedback(id);
+            
+
 
             /*document.addEventListener("click", function() {
                 AGUpdate(world, id);
@@ -787,7 +792,8 @@
             //TODO: Fix this timeout.
             setTimeout(function() {
                 console.log(world);
-                AGStart(world,id);
+                var outputLog = AGStart(world,id);
+                populateFeedback(outputLog);
             },300);
             
             

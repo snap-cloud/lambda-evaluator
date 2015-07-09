@@ -16,6 +16,7 @@ function gradingLog(snapWorld, taskID) {
 	this.pScore = null;
 	this.snapWorld = snapWorld || null;
 	this.graded = false;
+	this.numCorrect = 0;
 }
 
 /* Save the gradingLog in localStorage.
@@ -331,6 +332,7 @@ gradingLog.prototype.scoreLog = function() {
 		}
 	}
 	//Calculate the pScore
+	this.numCorrect = tests_passed;
 	this.pScore = tests_passed / this.testCount;
 	//Save the log in localStorage
 	this.saveLog();
