@@ -852,16 +852,25 @@ function testKScope(snapWorld, taskID, iter) {
 
 }
 
+//Get the distance between two points
+//x1, y1 - from point coordinates
+//x2, y2 - to point coordinates
 function distance(x1, x2, y1, y2) {
 	return Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
 }
 
+//check to see if a number is within a tolerance +/-
+//actual - the actual value you want to check
+//projected - the value that you want to check actual against
+//tolerance - the tolerance you are willing to accept
 function inTolerance(actual, projected, tolerance) {
 	return projected - tolerance < actual && projected + tolerance > actual;
 }
 
+//Get the smallest measured angle between two directions in degrees
+//a, b - the directions in degrees to measure
 function getAngle(a, b) {
-	var result = Math.abs(Math.min(Math.abs(a - b), Math.abs(b - a)));
+	var result = Math.min(Math.abs(a - b), Math.abs(b - a));
 
 	if (result > 180) {
 		return 360 - result;
@@ -870,16 +879,24 @@ function getAngle(a, b) {
 }
 
 //find out if we can force the user to use the green flag top block
-function testUniformShapeInLoop(sides, angle, length, blockSpec, gradeLog) {
+//test a script for drawing a simple uniform shape
+//sides - the number of sides of the shape
+//angle - the inner angle of the shape
+//length - the length the sides should be
+//blockSpec - not required at this time
+//gradeLog - the grading log this test will be added to
+function testUniformShapeInLoop(sides, angle, length, gradeLog, blockSpec) {
 	var gLog = gradeLog || new gradingLog(),
 		testID = gLog.addTest("s", blockSpec, null, true, -1),
 		eLog = new SpriteEventLog(),
 		block = blockSpec && getScript(blockSpec),
+		//this collects the sprite log data
 		collect = setInterval(function() {
         	for (var i = 0; i < spriteList.length; i++) {
             	eLog.addEvent(spriteList[i], i);
         	}
 		}, 1),
+		//the keyboard input spoof. Kicks off the test and does the final checks.
 		spoof = new createInputSpoof(100, function() {
 			var sidesCounted = 0,
 				flag = false,
