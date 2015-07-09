@@ -15,6 +15,8 @@ function gradingLog(snapWorld, taskID) {
 	this.taskID = taskID || null;
 	this.pScore = null;
 	this.snapWorld = snapWorld || null;
+	this.graded = false;
+	this.numCorrect = 0;
 }
 
 /* Save the gradingLog in localStorage.
@@ -65,6 +67,7 @@ gradingLog.prototype.stringifySnapXML = function() {
 *  Access specific parts of each test by:
 *  		gradingLog.[""+(testID)]
 *  Test Class include:
+*		"a" - assertion
 *		"p" - presence test
 *		"r" - reporter test
 *		"s" - stage event test
@@ -79,9 +82,86 @@ gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, tim
 								 "correct": false,
 								 "feedback": null,
 								 "timeOut": timeOut,
-								 "proc": null};
+								 "proc": null,
+								 'graded': false};
 	return this.testCount;
 };
+
+gradingLog.prototype.addAssert = function(testClass, statement, feedback, text) {
+	this.testCount += 1;
+	this[this.testCount] = {'testClass': "a",
+							'text': text,
+							'correct': statement,
+							'feedback': feedback,
+							'graded': true};
+	return this.testCount;
+
+}
+
+/*
+ * Initiates Reporter tests if they exist, and returns true in such a case,
+ * false otherwise.
+ */
+gradingLog.prototype.runSnapTests = function() {
+
+	//Find the first reporter test and start it.
+	for (var id = 1; id <= this.testCount; id++) {
+		var test = this[id];
+		if (test.testClass === 'r') {
+			this.startSnapTest(id);
+			return true;
+		}
+	}
+	//return this gradingLog
+	return false;
+}
+
+gradingLog.prototype.startSnapTest = function(testID) {
+	var test = this[testID];
+	if (test === undefined) {
+		throw 'startSnapTest: OutputLog Contains no test with ID: ' + testID;
+	}
+
+	//Retrieve the block from the stage TODO: Handle Errors
+	// try {
+	var block = getScript(test.blockSpec);
+	//Set the selected block's inputs for the test
+	setValues(block, test['input']);
+	//Initiate the Snap Process with a callback to .finishSnapTest
+
+	var stage = this.snapWorld.children[0].stage;
+	var outputLog = this; //Reference for the anonymouse function to follow
+	var proc = stage.threads.startProcess(block,
+		stage.isThreadSafe,
+		false,
+		function() {
+			outputLog.finishSnapTest(testID, readValue(proc));
+		});
+	//Add reference to proc in gradingLog for error handling
+	test.proc = proc;
+	//Timeouts for infinitely looping script or an Error.
+	var timeout = test.timeOut;
+	//Set default time if none is specified
+	if (timeout < 0) {
+		timeout = 1000;
+	}
+	//Launch timeout to handle Snap errors and infinitely looping scripts
+	var timeout_id = setTimeout(function() {
+		var stage = outputLog.snapWorld.children[0].stage;
+		if (test['proc'].errorFlag) {
+			test['feedback'] = "Snap Error." //TODO: Find error message from process or block
+		} else {
+			test['feedback'] = "Test Timeout Occurred."
+		}
+		test.correct = false;
+		//Set the graded flag to true for this test.
+		test.graded = true;
+	});
+	//Save timeout id, to stop error handling timeout if test succeeds.
+	this.currentTimeout = timeout_id;
+
+	return this;
+}
 
 /*
 *  Asyncronysly runs the input tests
@@ -90,28 +170,44 @@ gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, tim
 *  Uses a series of setTimeouts to make sure the asyncronous 
 *  test threads do not clash with one another on setup.
 */
-gradingLog.prototype.finishTest = function(testID, output, feedback, correct) {
+gradingLog.prototype.finishSnapTest = function(testID, output) {
 
-	//Populate Grade Log
-	if (this["" + testID] !== undefined) {
-		this["" + testID]["output"] = output;
-		this["" + testID]["feedback"] = feedback || this["" + testID]["feedback"];
-		this["" + testID]["correct"] = correct || this["" + testID]["correct"];
-	} else {
-		throw "gradingLog.finishTest: TestID is invalid.";
+	//Populate Grade Log //May be DEPRICATED.
+	var test = this[testID]
+	if (test === undefined) {
+		throw "gradingLog.finishSnapTest: TestID: " + testID + ", is invalid.";
 	}
 
-	//Initiate next test, kill timeout function for previous test
-	// if this is the last test, evaluate the log
-	// TODO: Integrate evaluateLog into finishTest
-	var glog = this;
-	if (testID < this.testCount) {
-		clearTimeout(this.currentTimeout);
-		setTimeout(function() {testBlock(glog, testID+1)},1);
-		this.currentTimeout = infLoopCheck(glog, testID+1);
+	test.output = output;
+	//Update feedback and 'correct' flag depending on output.
+	if (snapEquals(test.output, test.expOut)) {
+		test.correct = true;
+		test.feedback = "Test Passed.";
 	} else {
-		setTimeout(function() {evaluateLog(glog)}, 1);
+		test.correct = false;
+		test.feedback = "Unexpected Output: " + String(output);
 	}
+	//Set test graded flag to true, for gradingLog.gradeLog()
+
+	test.graded = true;
+	//Kill error handling timeout
+	clearTimeout(this.currentTimeout);
+	test.proc = null;
+	//Reference this gradingLog for the anonymous function
+	var outputLog = this;
+	//Find the next Snap reporter test
+	for (var id = testID+1; id <= this.testCount;id++) {
+		var next_test = this[id];
+		//Continue to the next test if not a 'reporter' test type
+		if (next_test.testClass === 'r' && !next_test.graded) {
+			setTimeout(function() {
+				outputLog.startSnapTest(id);
+			},1);
+			return;
+		}
+	}
+	//If this was the last test, grade the log
+	this.scoreLog();
 };
 
 /*
@@ -121,11 +217,14 @@ gradingLog.prototype.finishTest = function(testID, output, feedback, correct) {
  * or entry modification.
  */
 gradingLog.prototype.updateLog = function(testID, output, feedback, correct) {
-	if (this["" + testID] !== undefined) {
-		this["" + testID]["output"] = output;
-		this["" + testID]["feedback"] = feedback || this["" + testID]["feedback"]
-		this["" + testID]["correct"] = correct || this["" + testID]["correct"]
-	} else {
+	var test = this[testID];
+	try {
+		test.graded = true;
+		test.output = output;
+		test.feedback = feedback || test.feedback;
+		test.correct = correct || test.correct;
+
+	} catch(e) {
 		throw "gradingLog.finishTest: TestID is invalid.";
 	}
 
@@ -143,6 +242,9 @@ gradingLog.prototype.updateLog = function(testID, output, feedback, correct) {
 gradingLog.prototype.evaluateLog = function(testIDs) {
 	// Evaluate all tests if no specific testIDs are specified.
 	var outputLog = this;
+	if (gradingLog.testCount === 0) {
+		return gradingLog;
+	}
 	if (testIDs === undefined) {
 		testIDs = [];
 		for (var i = 1; i <= outputLog.testCount; i++) {
@@ -156,6 +258,12 @@ gradingLog.prototype.evaluateLog = function(testIDs) {
 	//Set 'correct' and 'feedback' fields for all in testIDs
 	for (var id of testIDs) {
 		//TODO: Terribly ugly. This should be abstracted. 
+		if (outputLog[id]['testClass'] === "a") {
+			if (outputLog[id]['correct']) {
+				tests_passed += 1;
+			}
+			continue;
+		}
 		if (outputLog[id]["correct"] === true) {
 			tests_passed += 1;
 			continue;
@@ -202,6 +310,41 @@ gradingLog.prototype.evaluateLog = function(testIDs) {
 	AGFinish(this);
 }
 
+gradingLog.prototype.scoreLog = function() {
+	if (this.testCount === 0) {
+		return this;
+	}
+	var testIDs = [];
+	for (var i = 1; i <= this.testCount; i++) {
+	   testIDs.push(i);
+	}
+	// .allCorrect is initially true, and set to false if a test has failed.
+	this.allCorrect = true;
+	// Passed test counter.
+	var tests_passed = 0;
+	var test;
+	for (var id of testIDs) {
+		test = this[id];
+		//If the test is correct, increase the tests_passed counter.
+		if (test.correct) {
+			tests_passed += 1;
+		} else {	//One failed test flips the allCorrect flag.
+			this.allCorrect = false;
+		}
+	}
+	//Calculate the pScore
+	this.numCorrect = tests_passed;
+	this.pScore = tests_passed / this.testCount;
+	//Save the log in localStorage
+	this.saveLog();
+
+	//flip gradingLog.graded flag to true.
+	this.graded = true;
+	//Update the Autograder Status Bar
+	AGFinish(this);
+	return this;
+}
+
 /*
  * Convert the gradingLog into a dictionary that is returned by 
  * edX getGrade(). 
@@ -213,7 +356,9 @@ function dictLog(outputLog) {
 		var testDict = {};
 		testDict["id"] = i;
 		testDict["testClass"] = outputLog[i]["testClass"];
-		testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+		if (outputLog[i]["blockSpec"] !== undefined) {
+			testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+		}
 		testDict["input"] = outputLog[i]["input"];
 		testDict["expOut"] = outputLog[i]["expOut"];
 		testDict["output"] = outputLog[i]["output"];
@@ -256,7 +401,7 @@ function printLog(outputLog) {
 function AG_log(outputLog, snapXMLString) {
  	var AG_state = {
 	    'checkState': outputLog.allCorrect,
-	    'comment': "Please run the Snap Autograder before using the 'Check' button.",
+	    'comment': "Please run the Snap Autograder before clicking the 'Submit' button.",
 	    'feedback': dictLog(outputLog),
 	    'snapXML' : snapXMLString
 	};
@@ -269,6 +414,20 @@ function AG_log(outputLog, snapXMLString) {
 
 }
 
+/* Add a test case to the outputLog if the assertion fails. 
+ * Currently does not add a test if the assertion succeeds.
+ * TODO: Consider separating assertions into two classes
+ * WARNING: DOES NOT EVALUATE LOG
+ */
+function testAssert(outputLog, assertion, pos_fb, neg_fb, ass_text) {
+	if (assertion) {
+		//outputLog.addAssert("a", statement, pos_fb, ass_text);
+	} else {
+		outputLog.addAssert("a", assertion, neg_fb, ass_text);
+	}
+	return outputLog;
+}
+
 /* Snap block getters and setters used to retrieve blocks,
  * set values, and initiates blocks.
  */
@@ -277,22 +436,15 @@ function getSprite(index) {
 	try {
 		return world.children[0].sprites.contents[index];
 	} catch(e) {
-		throw "This Snap instance is very broken"
+		throw "Sprite: " + index + " was not found."
 	}
 }
 
 //Returns the scripts of the sprite at 'index', undefined otherwise.
 function getScripts(index) {
-
 	var sprite = getSprite(index);
-
-	if (sprite !== undefined) {
-		return sprite.scripts.children;
-	} else {
-		return undefined;
-	}
+	return sprite.scripts.children;
 }
-
 //Get just the most recently touched block that matches
 function getScript(blockSpec, spriteIndex) {
 	return getAllScripts(blockSpec, spriteIndex)[0];
@@ -301,20 +453,13 @@ function getAllScripts(blockSpec, spriteIndex) {
 	//TODO: Consider expanding to grab from additional sprites
 	//Try to get a sprite's scripts
 	//Throw exception if none exist.
-	try {
-		//Does the sprite exist?
-		if (spriteIndex === undefined) {
-			var scripts = getScripts(0);
-		} else {
-			var scripts = getScripts(spriteIndex);
-		}
-		//If no sprites exist, throw an exception.
-		if (scripts === undefined) {
-			throw "No scripts"
-		}
-	} catch(e) {
-		throw "getScript: No Sprite available."
+	spriteIndex = spriteIndex || 0;
+	var scripts = getScripts(spriteIndex);
+	//If no scripts, throw an exception.
+	if (scripts.length === 0) {
+		throw "No blocks/scripts were found."
 	}
+	
 	//Try to return the first block matching 'blockSpec'.
 	//Throw exception if none exist/
 	var validScripts = scripts.filter(function (morph) {
@@ -323,43 +468,13 @@ function getAllScripts(blockSpec, spriteIndex) {
 			return (morph.blockSpec === blockSpec);
 		}
 	});
+
 	if (validScripts.length === 0) {
-		throw "getScript: No block named: '" + blockSpec.replace(/%[a-z]/g, "[]") + "'" +" in script window.";
+		throw "The target block/script (" + 
+			blockSpec.replace(/%[a-z]/g, "[]") + 
+			") is not in script window.";
 	}
-	return validScripts
-}
-
-function isScriptPresent(blockSpec, spriteIndex) {
-	var script;
-	try {
-		script = getScript(blockSpec, spriteIndex);
-		return true;
-	} catch(e) {
-		return false;
-	}
-}
-
-function testBlockPresent(blockSpec, spriteIndex, outputLog) {
-	//Populate optional parameters
-	if (outputLog === undefined) {
-		outputLog = new gradingLog();
-	}
-	if (spriteIndex === undefined) {
-		spriteIndex = 0;
-	}
-
-	//Generate Log
-	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1);
-	var isPresent = isScriptPresent(blockSpec, spriteIndex);
-	var feedback = null;
-	if (isPresent) {
-		feedback = "" + blockSpec + " is in the scripts tab.";
-	} else {
-		feedback = "Block Missing: " + blockSpec + ", was not found in the scripts tab";
-	}
-	outputLog.updateLog(testID, isPresent, feedback, isPresent);
-	evaluateLog(outputLog);
-	return outputLog;
+	return validScripts;
 }
 
 function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog) {
@@ -404,11 +519,80 @@ function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog
 		feedback = "The tested script did not match the target.";
 	}
 	outputLog.updateLog(testID, isPresent, feedback, isPresent);
-	outputLog.evaluateLog();
 	return outputLog;
 
 }
 
+function testBlockPresent(blockSpec, spriteIndex, outputLog) {
+	//Populate optional parameters
+	if (outputLog === undefined) {
+		outputLog = new gradingLog();
+	}
+	if (spriteIndex === undefined) {
+		spriteIndex = 0;
+	}
+
+	//Generate Log
+	var testID = outputLog.addTest("p", blockSpec, "n/a", true, -1);
+	var isPresent = isScriptPresent(blockSpec, spriteIndex);
+	var feedback = null;
+	if (isPresent) {
+		feedback = "" + blockSpec + " is in the scripts tab.";
+	} else {
+		feedback = "Block Missing: " + blockSpec + " , was not found in the scripts tab";
+	}
+	outputLog.updateLog(testID, isPresent, feedback, isPresent);
+	evaluateLog(outputLog);
+	return outputLog;
+}
+
+function isScriptPresent(blockSpec, spriteIndex) {
+	var script;
+	try {
+		script = getScript(blockSpec, spriteIndex);
+		return true;
+	} catch(e) {
+		return false;
+	}
+}
+
+/*
+	Test and evaluate Snap! blocks. Uses a gradingLog to initilize tests,
+	launch processes, and update the log, and launch the next test
+*/
+function testBlock(outputLog, testID) {
+	if (outputLog[testID] === undefined) {
+		throw "testBlock: Output Log Contains no test with ID: " + testID;
+	}
+	var test = outputLog[testID];
+	var block = getScript(test["blockSpec"]);
+	setValues(block, test["input"]);
+	var proc = evalReporter(block, outputLog, testID);
+	outputLog["" + testID]["proc"] = proc;
+	return testID;
+}
+
+function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
+
+	if (outputLog === undefined) {
+		outputLog = new gradingLog(world);
+	}
+	if (inputs.length !== expOuts.length && inputs.length !== timeOuts.length) {
+		throw "multiTestBlock: Mismatched arguments";
+	}
+
+	var testIDs = new Array(inputs.length);
+	//TODO: Handle this error in startSnapTest
+	//var scripts = getScript(blockSpec);
+
+
+	for (var i=0;i<inputs.length; i++) {
+		testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i]);
+	}
+	// testBlock(outputLog, testIDs[0]);
+	// outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
+	return outputLog;
+}
 
 function setValues(block, values) {
 	var valIndex = 0;
@@ -443,46 +627,6 @@ function evalReporter(block, outputLog, testID) {
  */
 function readValue(proc) {
 	return proc.homeContext.inputs[0];
-}
-
-/*
-	Test and evaluate Snap! blocks. Uses a gradingLog to initilize tests,
-	launch processes, and update the log, and launch the next test
-*/
-function testBlock(outputLog, testID) {
-	if (outputLog[testID] === undefined) {
-		throw "testBlock: Output Log Contains no test with ID: " + testID;
-	}
-	var test = outputLog[testID];
-	var block = getScript(test["blockSpec"]);
-	setValues(block, test["input"]);
-	var proc = evalReporter(block, outputLog, testID);
-	outputLog["" + testID]["proc"] = proc;
-	return testID;
-}
-
-function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
-
-	if (outputLog === undefined) {
-		outputLog = new gradingLog();
-	}
-	if (inputs.length !== expOuts.length && inputs.length !== timeOuts.length) {
-		return null;
-	}
-
-	var testIDs = new Array(inputs.length);
-	try {
-		var scripts = getScript(blockSpec);
-	} catch(e) {
-		throw e
-	}
-
-	for (var i=0;i<inputs.length; i++) {
-		testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i]);
-	}
-	testBlock(outputLog, testIDs[0]);
-	outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
-	return outputLog;
 }
 
 function prettyBlockString(blockSpec, inputs) {
@@ -651,11 +795,9 @@ function printEventLog(eventLog, ignore) {
 function testKScope(snapWorld, taskID, iter) {
 	var eLog = new SpriteEventLog(),
 		gLog = new gradingLog(snapWorld, taskID),
-		testID = gLog.addTest("n/a", "n/a", null, true, -1),
-		iterations = iter || 5,
+		testID = gLog.addTest("s", null, null, true, -1),
+		iterations = iter || 3,
 		spriteList = world.children[0].sprites.contents;
-
-
 
 	var collect = setInterval(function() {
         for (var i = 0; i < spriteList.length; i++) {
@@ -667,8 +809,12 @@ function testKScope(snapWorld, taskID, iter) {
 		clearInterval(collect);
 		eLog.callVal = eLog.spliceIgnores().compareSprites(function(log, i) {
 				if (log && log.numSprites !== 4) {
+					gLog["" + testID]["feedback"] = "You do not have the correct amount of Sprites." +
+													"Make sure you have four different sprites.";
+		
 					return false;
 				}
+
 				var x1 = log["0"][i].x, penDown1 = log["0"][i].penDown,
 					x2 = log["1"][i].x, penDown2 = log["1"][i].penDown,
 					x3 = log["2"][i].x, penDown3 = log["2"][i].penDown,
@@ -697,11 +843,129 @@ function testKScope(snapWorld, taskID, iter) {
 				return true;
 		});
 		// this is where we would add a callback to getGrade or whatevers
-		gLog["" + testID]["output"] = gLog["" + testID]["correct"] = gLog.allCorrect = eLog.callVal;
+
+		gLog.updateLog(testID, eLog.callVal, null, eLog.callVal);
+		
 		console.log(eLog.callVal);
 	};
 
 	makeDragon(iterations, callback);
+
+	return gLog;
+
+}
+
+//Get the distance between two points
+//x1, y1 - from point coordinates
+//x2, y2 - to point coordinates
+function distance(x1, x2, y1, y2) {
+	return Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
+}
+
+//check to see if a number is within a tolerance +/-
+//actual - the actual value you want to check
+//projected - the value that you want to check actual against
+//tolerance - the tolerance you are willing to accept
+function inTolerance(actual, projected, tolerance) {
+	return projected - tolerance < actual && projected + tolerance > actual;
+}
+
+//Get the smallest measured angle between two directions in degrees
+//a, b - the directions in degrees to measure
+function getAngle(a, b) {
+	var result = Math.min(Math.abs(a - b), Math.abs(b - a));
+
+	if (result > 180) {
+		return 360 - result;
+	}
+	return result;
+}
+
+//find out if we can force the user to use the green flag top block
+//test a script for drawing a simple uniform shape
+//sides - the number of sides of the shape
+//angle - the inner angle of the shape
+//length - the length the sides should be
+//blockSpec - not required at this time
+//gradeLog - the grading log this test will be added to
+function testUniformShapeInLoop(sides, angle, length, gradeLog, blockSpec) {
+	var gLog = gradeLog || new gradingLog(),
+		testID = gLog.addTest("s", blockSpec, null, true, -1),
+		eLog = new SpriteEventLog(),
+		block = blockSpec && getScript(blockSpec),
+		//this collects the sprite log data
+		collect = setInterval(function() {
+        	for (var i = 0; i < spriteList.length; i++) {
+            	eLog.addEvent(spriteList[i], i);
+        	}
+		}, 1),
+		//the keyboard input spoof. Kicks off the test and does the final checks.
+		spoof = new createInputSpoof(100, function() {
+			var sidesCounted = 0,
+				flag = false,
+				result = true,
+				feedback = "Correct!";
+
+			clearInterval(collect);
+
+			eLog.spliceIgnores();
+
+			if (eLog["0"].length < 2) {
+				gLog.updateLog(testID, result, "Not enough data points. Please run autograder again. " +
+					"If this problem persists please contact the faculty.", result);
+				console.log("not enough data points!");
+				return;
+			} else if (eLog["0"].length <= sides) {
+				gLog.updateLog(testID, result, "Not enough sides in your shape. " +
+					"Try raising your repeat loop iterations.", result);
+				console.log("not enough sides!");
+				return;
+			} else if (eLog["0"].length > sides + 1) {
+				gLog.updateLog(testID, result, "Too many sides in your shape. " +
+					"Try lowering your repeat loop iterations.", result);
+				console.log("too many sides!");
+				return;
+			}
+
+			var initPos = eLog["0"][0],
+				nextPos = eLog["0"][1],
+				tol = 0.01;
+				dist = 0,
+				checkAngle = 0,
+				i = 2;
+
+			while (flag === false) {
+				dist = distance(initPos.x, nextPos.x, initPos.y, nextPos.y);
+				checkAngle = getAngle(initPos.direction, nextPos.direction);
+				if (!inTolerance(dist, length, tol)) {
+					flag = true;
+					result = false;
+					feedback = "Side length not correct! Make sure you are moving the sprite " +
+						"the correct distance.";
+					console.log("side not correct length");
+				} else if (checkAngle !== angle) {
+					flag = true;
+					result = false;
+					feedback = "Shape angle not correct! Make sure you are turning the sprite " +
+						"the correct angle.";
+					console.log("angle not correct");
+				} else if (sidesCounted >= sides) {
+					flag = true;
+				} else {
+					initPos = nextPos;
+					if (i === eLog["0"].length) {
+						i = 1;
+					}
+					nextPos = eLog["0"][i];
+					sidesCounted += 1;
+					i += 1;
+				}
+			}
+			gLog.updateLog(testID, result, feedback, result);
+		});
+
+	spoof("green flag");
+	spoof("callback");
 
 	return gLog;
 
@@ -755,6 +1019,9 @@ function createInputSpoof(timeout, callback, element) {
 				break;
 			case "callback":
 				setTimeout(function() {callVal = call();}, timeoutCount);
+				break;
+			case "time":
+				return timeoutCount;
 			default:
 				setTimeout(function() {world.children[0].stage.fireKeyEvent(action)}, timeoutCount);
 		}
@@ -864,6 +1131,7 @@ function makeDragon(iterations, callback) {
 	drawDragon(turns, act);
 	act("stop all");
 	act("callback");
+	return act("time");
 }
 
 /* ------ END DAVID'S MESS ------ */
@@ -1121,6 +1389,59 @@ function CBlockContains(block1, block2, script) {
         }
     }
     return false;
+}
+
+
+/* Takes in two javascript objects (representating a block (block1) and a C-shaped block (block2)), a
+* SPRITEINDEX, and the current state of the OUTPUTLOG. 
+* 
+* Records to the OUTPUTLOG if the block represented by BLOCK1 occurs inside 
+* the C-shaped block represented by BLOCK2 in any script in 
+* the Scripts tab of the given sprite. See documentation of CBlockContains for 
+* details of what blocks are considered C-shaped.
+*/
+function testCBlockContains(block1, block2, spriteIndex, outputLog) {
+    //Populate optional parameters
+    if (outputLog === undefined) {
+        outputLog = new gradingLog();
+    }
+    if (spriteIndex === undefined) {
+        spriteIndex = 0;
+    }
+
+    var block1Spec = block1.blockSp;
+    var block2Spec = block2.blockSp;
+    var testID = outputLog.addTest("p", block1Spec + ", " + block2Spec, "n/a", true, -1); //needs changing?
+    var feedback;
+    try {
+        var JSONtarget;
+        var doesContain;
+        var scriptsOnScreen = getScripts(spriteIndex);
+        for (var i = 0; i < scriptsOnScreen.length; i++) {
+            JSONtarget = JSONscript(scriptsOnScreen[i]);
+            doesContain = CBlockContains(block1, block2, JSONtarget);
+            if (doesContain) {
+                break; //if any script on the scripting area has block1
+                    //occuring inside block2, then this test will pass.
+            }
+        }
+    } catch(e) {
+        doesContain = false;
+        feedback = "Error when looking to see if " + block1Spec + " is inside of";
+        feedback += " " + block2Spec + " in script.";
+        outputLog.updateLog(testID, doesContain, feedback, doesContain);
+        outputLog.evaluateLog();
+        //Return undefined so the grade state doesn't change when no script is present??
+        return outputLog;
+    }
+    if (doesContain) {
+        feedback = "The " + block1Spec + " block occurs inside of the " + block2Spec + " block.";
+    } else {
+        feedback = "The " + block1Spec + " block does not occur inside of the " + block2Spec + " block.";
+    }
+    outputLog.updateLog(testID, doesContain, feedback, doesContain);
+    outputLog.evaluateLog();
+    return outputLog;
 }
 
 

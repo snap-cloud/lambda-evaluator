@@ -23,6 +23,7 @@ td.tests {
 	background-color: #e7e3e3;
     color: #4F5150;
     word-wrap: break-word;
+    text-align: center;
 }
 
 
@@ -78,17 +79,24 @@ table.results {
   overflow: auto;
   width: auto;
   table-layout: fixed;
+  border-spacing: 0px;
  }
 
   th.titles {
     background-color: #4F5150;
     color: white;
     font-weight: normal;
+    text-align: center;
   }
 
   td.data {
     color: #4F5150;
+    word-wrap: break-word;
   }
+
+span {
+  text-transform: initial;
+}
 		
 
 
