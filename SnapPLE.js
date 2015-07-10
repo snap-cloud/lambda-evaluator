@@ -138,6 +138,7 @@ gradingLog.prototype.startSnapTest = function(testID) {
 			false,
 			function() {
 				outputLog.finishSnapTest(testID, readValue(proc));
+
 		});
 	//Add reference to proc in gradingLog for error handling
 		test.proc = proc;
@@ -182,6 +183,8 @@ gradingLog.prototype.startSnapTest = function(testID) {
 				return;
 			}
 		}
+		this.scoreLog();
+		return;
 	}
 }
 
@@ -218,6 +221,13 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	test.proc = null;
 	//Reference this gradingLog for the anonymous function
 	this[testID] = test;
+	//Clear the input values.
+	try {
+		var block = getScript(test.blockSpec);
+		setValues(block, Array(test['input'].length).join('a').split('a'));
+	} catch(e) {
+		throw "gradingLog.finishSnapTest: Trying to clear values of block that does not exist.";
+	}
 	var outputLog = this;
 	//Find the next Snap reporter test
 	for (var id = testID+1; id <= this.testCount;id++) {
