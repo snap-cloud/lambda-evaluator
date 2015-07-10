@@ -52,12 +52,26 @@
             // Create a new gradingLog if none is specified.
             outputLog = outputLog || new gradingLog(snapWorld, taskID);
             // Populate, run, and evaluate the tests specified in AGTest()
-            // These tests specified by the Course Designer. 
+            // These tests specified by the Course Designer.
 
             var test_log = AGTest(outputLog);
-            if(!test_log.runSnapTests()) {
+            test_log.runSnapTests();
+
+            if (test_log[1]["correct"] === false) {
                 outputLog.scoreLog();
             }
+
+            /*if (test_log.runSnapTests()) {
+                return
+                //test_log.runSnapTests();
+            }
+            outputLog.scoreLog();*/
+            
+
+
+            //if(!test_log.runSnapTests()) {
+                //outputLog.scoreLog();
+            //}
         }
 
         /* After loading the XML, check if the current XML is a known
@@ -543,7 +557,7 @@
                     document.getElementById("comment").innerHTML = "";
                     var tableTitles = document.getElementsByClassName("titles");
                     var tableResults = document.getElementById("table-data");
-                    if (tableTitles.length !== 2 && hasReporter === false) {
+                    if (tableTitles.length !== 2) { //&& hasReporter === false) {
                         while (tableTitles.length > 2) {
                             document.getElementById("table-titles").removeChild(tableTitles[1]);
                         }
@@ -702,8 +716,6 @@
             grade_button.onclick = function() {
                 runAGTest(world, id);
                 var outputLog = AGStart(world, id);
-                //console.log(outputLog);
-                //populateFeedback(outputLog);
             }
 
 
