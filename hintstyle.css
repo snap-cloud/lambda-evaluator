@@ -9,21 +9,30 @@ td.correctans {
 	font-weight: bold;
 	white-space:nowrap;
 	background-color: #80E680;
-	white-space: normal;
+	/*white-space: normal;*/
 }
 
 td.incorrectans {
 	font-weight: bold;
 	white-space:nowrap;
 	background-color: #FF9999;
-	white-space: normal;
+	/*white-space: normal;*/
 }
 
 td.tests {
 	background-color: #e7e3e3;
     color: #4F5150;
-    word-wrap: break-word;
-    text-align: center;
+    /*text-align: center;*/
+}
+
+.correctans, .incorrectans, .tests {
+	white-space: normal;
+	padding: 3px 5px;
+}
+
+.data {
+	white-space: normal;
+	padding: 3px 20px;
 }
 
 
@@ -87,12 +96,12 @@ table.results {
     background-color: #4F5150;
     color: white;
     font-weight: normal;
-    text-align: center;
+    padding: 5px 2px;
+    /*text-align: center;*/
   }
 
   td.data {
     color: #4F5150;
-    word-wrap: break-word;
   }
 
 span {
