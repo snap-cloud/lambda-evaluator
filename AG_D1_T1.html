@@ -452,7 +452,8 @@
 
             var ide = snapWorld.children[0];
             ide.newProject();
-            AGStart(snapWorld, taskID);
+            var new_log = AGStart(snapWorld, taskID);
+            populateFeedback(new_log);
         }
 
         function revertToBestState(snapWorld, taskID) {
@@ -463,10 +464,11 @@
             var c_prev_log = localStorage.getItem(taskID + "_c_test_log");
             localStorage.setItem(taskID + "_test_state", c_prev_xml);
             localStorage.setItem(taskID + "_test_log", c_prev_log);
+
             var prev_log = JSON.parse(c_prev_log);
             prev_log.snapWorld = snapWorld;
             AG_bar_graded(prev_log);
-
+            populateFeedback(prev_log);
             ide.openProjectString(c_prev_xml);
         }
 
@@ -481,6 +483,7 @@
             } else {
                 AG_bar_semigraded(prev_log);
             }
+            populateFeedback(prev_log);
             ide.openProjectString(prev_xml);
         }
 
@@ -497,6 +500,7 @@
             } else {
                 AG_bar_semigraded(prev_log);
             }
+            populateFeedback(prev_log);
             ide.openProjectString(last_xml);
 
         }
@@ -537,15 +541,12 @@
             var prev_xml = localStorage.getItem(taskID + "_test_state");
             var last_log = localStorage.getItem(taskID + "_last_submitted_log");
             var prev_log = localStorage.getItem(taskID + "_test_log");
-
             var edx_caution = document.getElementById("edx-submit-different");
             var caution = document.getElementById("different-feedback");
-
             //if the feedback is not the same as it was before
 
                 var glog = outputLog;
                 var log = AG_log(glog);
-
                 //var log = JSON.parse(localStorage.getItem(taskID + "_ag_output"));
                 var feedback = log["feedback"];
                 var title = log["comment"];
@@ -557,14 +558,11 @@
                         hasReporter = true;
                     }
                 }
-
                 if (title === "Please run the Snap Autograder before clicking the 'Submit' button.") {
                     document.getElementById("table-data").style.display = "none";
                 } else {
                     document.getElementById("table-data").style.display = "table-row-group";
                 }
-                
-
                 if (document.getElementById("last-column") !== null) {
                     caution.innerHTML = "";
                     edx_caution.innerHTML = "";
@@ -594,41 +592,27 @@
                     feedbackCol.setAttribute("id", "last-column");
                     document.getElementById("table-titles").appendChild(feedbackCol);
                 }
-
                 document.getElementById("comment").innerHTML = title;
-
                 if (last_log !== prev_log) {
                     edx_caution.innerHTML = "[WARNING: These results differ from your last edX submission.]"
                 }
-
                 var testString = "";
-
-                
-
                 if (hasReporter === true) {
                     addTableHeadings();
                 }
-
                 for (i=1; i<=feedback["testCount"]; i++) {
                     var test = String(i);
                     /*if (feedback[test]["testClass"] === "r") {
                         addTableHeadings();
                     }*/
-
                     // Is it possible to put a key in the log that will say whether or not any of the tests is a reporter test? 
-
-
-                    
-
                     var newRow = document.createElement("tr");
-
                     var testNum = document.createElement("td");
                     var testNumText = document.createTextNode(test);
                     testNum.appendChild(testNumText);
                     testNum.classList.add("tests");
                     newRow.appendChild(testNum);
                     //document.getElementById("table-data").appendChild(newRow);
-
                     if (hasReporter === true) {
                         var keys = ["input", "output", "expOut"];
                         for (key=0; key<3; key++) {
@@ -643,7 +627,6 @@
                             newRow.appendChild(tableData);
                         }
                     }
-
                     var agFeedback = document.createElement("td");
                     var agFeedbackText = document.createTextNode(feedback[test]["feedback"]);
                     agFeedback.appendChild(agFeedbackText);
@@ -654,7 +637,6 @@
                     }
                     newRow.appendChild(agFeedback);
                     document.getElementById("table-data").appendChild(newRow);
-
                     testString += test;
                     testString += feedback[test]["feedback"];
                     //testString += feedback[test]
