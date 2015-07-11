@@ -282,6 +282,11 @@ gradingLog.prototype.evaluateLog = function(testIDs) {
 	var tests_passed = 0;
 	//Set 'correct' and 'feedback' fields for all in testIDs
 	for (var id of testIDs) {
+		
+		// if (outputLog[id]["output"] instanceof List) {
+		//	console.log(outputLog[id]["output"].contents);
+		// 	outputLog[id]["output"] = outputLog[id]["output"].asArray();
+		// }
 		//TODO: Terribly ugly. This should be abstracted.
 		if (outputLog[id]['testClass'] === "a") {
 			if (outputLog[id]['correct']) {
@@ -609,14 +614,26 @@ function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
 	var testIDs = new Array(inputs.length);
 	//TODO: Handle this error in startSnapTest
 	//var scripts = getScript(blockSpec);
-
+	//checkArrayForList(expOuts);
 
 	for (var i=0;i<inputs.length; i++) {
+		//checkArrayForList(inputs[i]);
 		testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i]);
 	}
 	// testBlock(outputLog, testIDs[0]);
 	// outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
 	return outputLog;
+}
+
+//David's code for checking an array for inner arrays
+//then converting them to snap lists
+//a - the JS Array you want to check for inner Arrays
+function checkArrayForList(a) {
+	for (var i = 0; i < a.length; i++) {
+		if (a[i] instanceof Array) {
+			a[i] = new List(a[i]);
+		}
+	}
 }
 
 function setValues(block, values) {
@@ -628,6 +645,9 @@ function setValues(block, values) {
 		if (morph.constructor.name === "InputSlotMorph") {
 			morph.setContents(values[valIndex]);
 			valIndex += 1;
+		}
+		if (morph instanceof ArgMorph) {
+
 		}
 	}
 	if (valIndex + 1 !== values.length) {
@@ -817,9 +837,9 @@ function printEventLog(eventLog, ignore) {
 //Does not test "clear"/"penup"/"pendown"
 //Only tests for prescence of 4 sprites and
 //proper sprite movements
-function testKScope(snapWorld, taskID, iter) {
+function testKScope(gradingLog, iter) {
 	var eLog = new SpriteEventLog(),
-		gLog = new gradingLog(snapWorld, taskID),
+		gLog = gradingLog,
 		testID = gLog.addTest("s", null, null, true, -1),
 		iterations = iter || 3,
 		spriteList = world.children[0].sprites.contents;
@@ -870,7 +890,7 @@ function testKScope(snapWorld, taskID, iter) {
 		// this is where we would add a callback to getGrade or whatevers
 
 		gLog.updateLog(testID, eLog.callVal, null, eLog.callVal);
-
+		
 		console.log(eLog.callVal);
 	};
 
@@ -987,6 +1007,7 @@ function testUniformShapeInLoop(sides, angle, length, gradeLog, blockSpec) {
 				}
 			}
 			gLog.updateLog(testID, result, feedback, result);
+			//setTimeout(gLog.scoreLog, 50);
 		});
 
 	spoof("green flag");
