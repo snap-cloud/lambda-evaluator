@@ -7,32 +7,59 @@ span.message {
 
 td.correctans {
 	font-weight: bold;
-	white-space:nowrap;
 	background-color: #80E680;
-	/*white-space: normal;*/
 }
 
 td.incorrectans {
 	font-weight: bold;
-	white-space:nowrap;
 	background-color: #FF9999;
-	/*white-space: normal;*/
 }
 
 td.tests {
 	background-color: #e7e3e3;
     color: #4F5150;
-    /*text-align: center;*/
+    width: 20px;
 }
+
+table.results {
+  display: block;
+  -webkit-font-smoothing: antialiased;
+  font-size: 115%;
+  overflow: auto;
+  width: auto;
+  table-layout: fixed;
+  border-spacing: 0px;
+  text-align: center;
+ }
+
+  th.titles {
+    background-color: #4F5150;
+    color: white;
+    font-weight: normal;
+    padding: 5px 2px;
+    /*text-align: center;*/
+  }
+
+  td.data {
+    color: #4F5150;
+    white-space: normal;
+	padding: 3px 20px;
+  }
+
 
 .correctans, .incorrectans, .tests {
 	white-space: normal;
 	padding: 3px 5px;
 }
 
-.data {
-	white-space: normal;
-	padding: 3px 20px;
+#table-data, #reporter-table-data {
+	display: table;
+	width: 100%;
+}
+
+.results tbody {
+	display: table;
+	width: 100%;
 }
 
 
@@ -55,6 +82,7 @@ td.tests {
 .toggle-box:checked + label + div {
 	display: block;
 	height: auto;
+	width: 500px;
 }
 
 .toggle-box + label:before {
@@ -79,30 +107,6 @@ td.tests {
 	content: "\2212";
 }
 
-
-
-table.results {
-  display: block;
-  -webkit-font-smoothing: antialiased;
-  font-size: 115%;
-  overflow: auto;
-  width: auto;
-  table-layout: fixed;
-  border-spacing: 0px;
-  text-align: center;
- }
-
-  th.titles {
-    background-color: #4F5150;
-    color: white;
-    font-weight: normal;
-    padding: 5px 2px;
-    /*text-align: center;*/
-  }
-
-  td.data {
-    color: #4F5150;
-  }
 
 span {
   text-transform: initial;

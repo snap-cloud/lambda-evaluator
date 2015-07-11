@@ -428,9 +428,9 @@
             ['headend', '</th>'], 
             ['datastart', '<td class="data" style="text-align: center;">'], 
             ['dataend', '</td>'], 
-            ['correctstart', '<td class="correctans">'],
-            ['wrongstart', '<td class="incorrectans">'],
-            ['teststart', '<td class="tests">'],
+            ['correctstart', '<td class="correctans" style="text-align: center;">'],
+            ['wrongstart', '<td class="incorrectans" style="text-align: center;">'],
+            ['teststart', '<td class="tests" style="text-align: center;">'],
             ['spanend', '</span>'], 
             ['spanstart', '<span class="message">']];
 
@@ -548,8 +548,10 @@
 
             if (title === "Please run the Snap Autograder before clicking the 'Submit' button.") {
                 document.getElementById("table-data").style.display = "none";
+                document.getElementById("reporter-table-data").style.display = "none";
             } else {
-                document.getElementById("table-data").style.display = "table-row-group";
+                document.getElementById("table-data").style.display = "table";
+                document.getElementById("reporter-table-data").style.display = "table";
             }
 
             caution.innerHTML = "";
@@ -566,7 +568,10 @@
             }
 
             document.getElementById("comment").innerHTML = title;
-            if (last_log !== prev_log) {
+            if (!last_log) {
+                edx_caution.innerHTML = "[WARNING: You have not submitted your results to edX yet.]"
+            }
+            else if (last_log !== prev_log) {
                 edx_caution.innerHTML = "[WARNING: These results differ from your last edX submission.]"
             }
 
@@ -649,6 +654,7 @@
 
             //AUTOGRADER ADDITION - FEEDBACK FORMATTING
             // Checks if problem has been checked and modifies the autograded output if it has been checked
+
             if (parent.document.getElementsByClassName("message").length !== 0) {
                 var hint = parent.document.getElementsByClassName("message")[0];
                 hint.innerHTML = formatFeedback(hint);
@@ -769,13 +775,16 @@
             //TODO: Fix this timeout.
             setTimeout(function() {
                 console.log(world);
+                var outputLog = AGStart(world, id);
+                populateFeedback(outputLog);
+                populateFeedback(outputLog);
                 //var outputLog = AGStart(world,id);
                 //populateFeedback(outputLog);
 
                 //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so runAGTest has to be called twice at the very beginning...
-                runAGTest(world,id);
-                runAGTest(world,id);
-                AGUpdate(world, id);
+                //runAGTest(world,id);
+                //runAGTest(world,id);
+                //AGUpdate(world, id);
             },300);
 
             //runAGTest(world,id);
