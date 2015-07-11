@@ -111,6 +111,9 @@ gradingLog.prototype.runSnapTests = function() {
 			this.startSnapTest(id);
 			return true;
 		}
+		if (test.testClass === 's') {
+			return true;
+		}
 	}
 	//return this gradingLog
 	return false;
@@ -351,7 +354,12 @@ gradingLog.prototype.scoreLog = function() {
 	}
 	var testIDs = [];
 	for (var i = 1; i <= this.testCount; i++) {
-	   testIDs.push(i);
+		//If any tests are incomplete, return the log and prevent updating.
+		if (!this[i].graded) { 
+			console.log("scoreLog: The log is not yet complete.");
+			return this; 
+		}
+	   	testIDs.push(i);
 	}
 	// .allCorrect is initially true, and set to false if a test has failed.
 	this.allCorrect = true;
@@ -367,6 +375,7 @@ gradingLog.prototype.scoreLog = function() {
 			this.allCorrect = false;
 		}
 	}
+
 	//Calculate the pScore
 	this.numCorrect = tests_passed;
 	this.pScore = tests_passed / this.testCount;
@@ -827,10 +836,12 @@ function printEventLog(eventLog, ignore) {
 //Does not test "clear"/"penup"/"pendown"
 //Only tests for prescence of 4 sprites and
 //proper sprite movements
-function testKScope(snapWorld, taskID, iter) {
+function testKScope(outputLog, iter) {
+	var snapWorld = outputLog.snapWorld;
+	var taskID = outputLog.taskID;
+	var gLog = outputLog;
 	var eLog = new SpriteEventLog(),
-		gLog = new gradingLog(snapWorld, taskID),
-		testID = gLog.addTest("s", null, null, true, -1),
+		testID = gLog.addTest("s", undefined, null, true, -1),
 		iterations = iter || 3,
 		spriteList = world.children[0].sprites.contents;
 
@@ -843,49 +854,48 @@ function testKScope(snapWorld, taskID, iter) {
 	var callback = function() {
 		clearInterval(collect);
 		eLog.callVal = eLog.spliceIgnores().compareSprites(function(log, i) {
-				if (log && log.numSprites !== 4) {
-					gLog["" + testID]["feedback"] = "You do not have the correct amount of Sprites." +
-													"Make sure you have four different sprites.";
+			gLog[testID].graded = true;
+			gLog[testID]["feedback"] = "Test Passed.";
+			gLog[testID].correct = true;
+			if (log && log.numSprites !== 4) {
+				gLog[testID]["feedback"] = "You do not have the correct amount of Sprites." +
+												"Make sure you have four different sprites.";
+				gLog[testID].correct = false;
+			}
 
-					return false;
-				}
+			var x1 = log["0"][i].x, penDown1 = log["0"][i].penDown,
+				x2 = log["1"][i].x, penDown2 = log["1"][i].penDown,
+				x3 = log["2"][i].x, penDown3 = log["2"][i].penDown,
+				x4 = log["3"][i].x, penDown4 = log["3"][i].penDown,
+				y1 = log["0"][i].y,
+				y2 = log["1"][i].y,
+				y3 = log["2"][i].y,
+				y4 = log["3"][i].y;
 
-				var x1 = log["0"][i].x, penDown1 = log["0"][i].penDown,
-					x2 = log["1"][i].x, penDown2 = log["1"][i].penDown,
-					x3 = log["2"][i].x, penDown3 = log["2"][i].penDown,
-					x4 = log["3"][i].x, penDown4 = log["3"][i].penDown,
-					y1 = log["0"][i].y,
-					y2 = log["1"][i].y,
-					y3 = log["2"][i].y,
-					y4 = log["3"][i].y;
+			if (x1 + x2 + x3 + x4 !== 0 ||
+				y1 + y2 + y3 + y4 !== 0) {
+				gLog[testID]["feedback"] = "One or more sprite X, Y values are incorrect. " +
+												"Make sure your sprites all go to the correct " +
+												"mouse x, y values.";
+				gLog[testID].correct = false;
+			}
 
-				if (x1 + x2 + x3 + x4 !== 0 ||
-					y1 + y2 + y3 + y4 !== 0) {
-					gLog["" + testID]["feedback"] = "One or more sprite X, Y values are incorrect. " +
-													"Make sure your sprites all go to the correct " +
-													"mouse x, y values.";
-					return false;
-				}
-
-				if (penDown1 !== penDown2 !== penDown3 !== penDown4) {
-					gLog["" + testID]["feedback"] = "One of your sprites did not draw to the stage. " +
-													"Make sure your sprites all call pen down before " +
-													"following the mouse.";
-					return false;
-				}
-
-				gLog["" + testID]["feedback"] = "Correct!";
-				return true;
+			if (penDown1 !== penDown2 !== penDown3 !== penDown4) {
+				gLog[testID]["feedback"] = "One of your sprites did not draw to the stage. " +
+												"Make sure your sprites all call pen down before " +
+												"following the mouse.";
+				gLog[testID].correct = false;
+			}
 		});
 		// this is where we would add a callback to getGrade or whatevers
-
 		gLog.updateLog(testID, eLog.callVal, null, eLog.callVal);
-
-		console.log(eLog.callVal);
+		setTimeout(function() {
+			gLog.scoreLog();
+		}, 100);
+		// console.log(eLog.callVal);
 	};
 
 	makeDragon(iterations, callback);
-
 	return gLog;
 
 }
@@ -1160,9 +1170,9 @@ function drawDragon(turns, func) {
 function makeDragon(iterations, callback) {
 	var turns = createCurve(iterations);
 	var act = createInputSpoof(100, callback);
-	act("c");
 	act("mousemove", 0, 0);
 	act("space");
+	act("c");
 	drawDragon(turns, act);
 	act("stop all");
 	act("callback");
