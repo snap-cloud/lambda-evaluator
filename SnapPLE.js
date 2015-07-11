@@ -1557,7 +1557,7 @@ function CBlockContains(block1, block2, script) {
  *
  * JSONscript(...)
  */
-function SimpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArray2) {
+function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArray2) {
         if (argArray1 === undefined) {
             argArray1 = [];
         }
@@ -1577,7 +1577,8 @@ function SimpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
         if (!(block2Name in nicknameDict)) {
             throw "The given C-block nickname is invalid.";
         }
-        var block2 = (blockSp: nicknameDict[block2Name], inputs: argArray2);
+        var block2Spec = nicknameDict[block2Name];
+        var block2 = (blockSp: block2Spec, inputs: argArray2);
         var block1 = {blockSp: blockSpec1, inputs: argArray1};
         return CBlockContains(block1, block2, script);
 }
