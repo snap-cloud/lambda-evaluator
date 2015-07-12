@@ -13,7 +13,7 @@
 
     <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
     <link rel="stylesheet" type="text/css" href="hintstyle.css" />
-    <link type="text/javascript" src="AG_hint_format.js"></script>
+    <script type="text/javascript" src="AG_hint_format.js"></script>
 
     <script type="text/javascript">
         // The id is to act as a course identifier.
@@ -41,6 +41,38 @@
             //     [-1,-1,-1,-1,-1,-1],
             //     outputLog);
             /* KScopeTest */
+            testAssert(outputLog, 
+                spriteContainsBlock('when %keyHat key pressed', 0, ['space']) &&
+                spriteContainsBlock('when %keyHat key pressed', 1, ['space']) &&
+                spriteContainsBlock('when %keyHat key pressed', 2, ['space']) &&
+                spriteContainsBlock('when %keyHat key pressed', 3, ['space']),
+                "All sprites have the 'when [space] key pressed' hat-block.",
+                "All sprites must have a 'when [space] key pressed' hat-block.",
+                "The Kaleidoscope should begin drawing when the 'space' key is pressed.");
+            testAssert(outputLog,
+                spriteContainsBlock('forever %c', 0) &&
+                spriteContainsBlock('forever %c', 1) &&
+                spriteContainsBlock('forever %c', 2) &&
+                spriteContainsBlock('forever %c', 3),
+                "All sprites have a forever loop",
+                "All sprites must have a 'forever' loop.",
+                "The 'forever' loop is required.");
+            testAssert(outputLog,
+                spriteContainsBlock('go to x: %n y: %n', 0) &&
+                spriteContainsBlock('go to x: %n y: %n', 1) &&
+                spriteContainsBlock('go to x: %n y: %n', 2) &&
+                spriteContainsBlock('go to x: %n y: %n', 3),
+                "All sprites have a 'go to' motion-block",
+                "All sprites must have a 'go to' motion-block",
+                "The 'go to' motion-block is required.");
+            testAssert(outputLog,
+                spriteContainsBlock('pen down', 0) &&
+                spriteContainsBlock('pen down', 1) &&
+                spriteContainsBlock('pen down', 2) &&
+                spriteContainsBlock('pen down', 3),
+                "All sprites have a 'pen down' pen-block",
+                "All sprites must have a 'pen down' pen-block",
+                "The 'pen down' pen-block is required.");
             testKScope(outputLog);
             
             return outputLog;

@@ -843,7 +843,7 @@ function testKScope(outputLog, iter) {
 	var eLog = new SpriteEventLog(),
 		testID = gLog.addTest("s", undefined, null, true, -1),
 		iterations = iter || 3,
-		spriteList = world.children[0].sprites.contents;
+		spriteList = snapWorld.children[0].sprites.contents;
 
 	var collect = setInterval(function() {
         for (var i = 0; i < spriteList.length; i++) {
@@ -854,45 +854,47 @@ function testKScope(outputLog, iter) {
 	var callback = function() {
 		clearInterval(collect);
 		eLog.callVal = eLog.spliceIgnores().compareSprites(function(log, i) {
-			gLog[testID].graded = true;
-			gLog[testID]["feedback"] = "Test Passed.";
-			gLog[testID].correct = true;
-			if (log && log.numSprites !== 4) {
+			if (eLog && eLog.numSprites !== 4) {
 				gLog[testID]["feedback"] = "You do not have the correct amount of Sprites." +
 												"Make sure you have four different sprites.";
-				gLog[testID].correct = false;
+				// gLog[testID].output = gLog[testID].correct = false;
+				return false;
 			}
 
-			var x1 = log["0"][i].x, penDown1 = log["0"][i].penDown,
-				x2 = log["1"][i].x, penDown2 = log["1"][i].penDown,
-				x3 = log["2"][i].x, penDown3 = log["2"][i].penDown,
-				x4 = log["3"][i].x, penDown4 = log["3"][i].penDown,
-				y1 = log["0"][i].y,
-				y2 = log["1"][i].y,
-				y3 = log["2"][i].y,
-				y4 = log["3"][i].y;
+			var x1 = eLog["0"][i].x, penDown1 = eLog["0"][i].penDown,
+				x2 = eLog["1"][i].x, penDown2 = eLog["1"][i].penDown,
+				x3 = eLog["2"][i].x, penDown3 = eLog["2"][i].penDown,
+				x4 = eLog["3"][i].x, penDown4 = eLog["3"][i].penDown,
+				y1 = eLog["0"][i].y,
+				y2 = eLog["1"][i].y,
+				y3 = eLog["2"][i].y,
+				y4 = eLog["3"][i].y;
 
 			if (x1 + x2 + x3 + x4 !== 0 ||
 				y1 + y2 + y3 + y4 !== 0) {
 				gLog[testID]["feedback"] = "One or more sprite X, Y values are incorrect. " +
 												"Make sure your sprites all go to the correct " +
 												"mouse x, y values.";
-				gLog[testID].correct = false;
+				// gLog[testID].output = gLog[testID].correct = false;
+				return false;
 			}
 
 			if (penDown1 !== penDown2 !== penDown3 !== penDown4) {
 				gLog[testID]["feedback"] = "One of your sprites did not draw to the stage. " +
 												"Make sure your sprites all call pen down before " +
 												"following the mouse.";
-				gLog[testID].correct = false;
+				// gLog[testID].output = gLog[testID].correct = false;
+				return false;
 			}
+			
+			return true;
 		});
 		// this is where we would add a callback to getGrade or whatevers
-		gLog.updateLog(testID, eLog.callVal, null, eLog.callVal);
-		setTimeout(function() {
-			gLog.scoreLog();
-		}, 100);
-		// console.log(eLog.callVal);
+		gLog[testID].output = gLog[testID].correct = eLog.callVal;
+		gLog[testID].graded = true;
+		gLog[testID].feedback = gLog[testID].feedback || "Test Passed.";
+		gLog.scoreLog();
+		console.log(eLog);
 	};
 
 	makeDragon(iterations, callback);
@@ -1039,7 +1041,7 @@ function realitiveY(coord) {
 function createInputSpoof(timeout, callback, element) {
 	var timeoutCount = 0,
 		timeoutInc = timeout,
-		call = callback || function() {return null;},
+		// call = callback || function() {return null;},
 		element = element || "canvas";
 
 	return (function(action, x, y) {
@@ -1063,7 +1065,8 @@ function createInputSpoof(timeout, callback, element) {
 				setTimeout(function() {world.children[0].stage.fireGreenFlagEvent()}, timeoutCount);
 				break;
 			case "callback":
-				setTimeout(function() {callVal = call();}, timeoutCount);
+				if (!callback) {break;}
+				setTimeout(function() {callVal = callback();}, timeoutCount);
 				break;
 			case "time":
 				return timeoutCount;
@@ -1469,7 +1472,7 @@ function scriptContainsBlock(script, blockSpec, argArray) {
  * Otherwise returns false. If ARGARRAY is an array, then we check that all of the inputs
  * are correct in addition to the blockspec. Otherwise we will just check that the blockspec is fine.
  */
-function spriteContainsBlock(blockSpec, argArray, spriteIndex) {
+function spriteContainsBlock(blockSpec, spriteIndex, argArray) {
 	if (argArray === undefined) {
 		argArray = [];
 	}

@@ -23,14 +23,14 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser localStorage.
-        var taskID = "AG_D1_T2";
+        var taskID = "AG_D1_T2_test";
         var id = courseID + taskID;
         var agOutput;
 
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
-            
+            /* Factorial */
             // testAssert(outputLog, isScriptPresent('factorial %s',0),
             //     "The 'factorial' block is present.",
             //     "The 'factorial %num' block was not found on-screen.",
@@ -41,8 +41,40 @@
             //     [-1,-1,-1,-1,-1,-1],
             //     outputLog);
             /* KScopeTest */
+            testAssert(outputLog, 
+                spriteContainsBlock('when %keyHat key pressed', 0, ['space']) &&
+                spriteContainsBlock('when %keyHat key pressed', 1, ['space']) &&
+                spriteContainsBlock('when %keyHat key pressed', 2, ['space']) &&
+                spriteContainsBlock('when %keyHat key pressed', 3, ['space']),
+                "All sprites have the 'when [space] key pressed' hat-block.",
+                "All sprites must have a 'when [space] key pressed' hat-block.",
+                "The Kaleidoscope should begin drawing when the 'space' key is pressed.");
+            testAssert(outputLog,
+                spriteContainsBlock('forever %c', 0) &&
+                spriteContainsBlock('forever %c', 1) &&
+                spriteContainsBlock('forever %c', 2) &&
+                spriteContainsBlock('forever %c', 3),
+                "All sprites have a forever loop",
+                "All sprites must have a 'forever' loop.",
+                "The 'forever' loop is required.");
+            testAssert(outputLog,
+                spriteContainsBlock('go to x: %n y: %n', 0) &&
+                spriteContainsBlock('go to x: %n y: %n', 1) &&
+                spriteContainsBlock('go to x: %n y: %n', 2) &&
+                spriteContainsBlock('go to x: %n y: %n', 3),
+                "All sprites have a 'go to' motion-block",
+                "All sprites must have a 'go to' motion-block",
+                "The 'go to' motion-block is required.");
+            testAssert(outputLog,
+                spriteContainsBlock('pen down', 0) &&
+                spriteContainsBlock('pen down', 1) &&
+                spriteContainsBlock('pen down', 2) &&
+                spriteContainsBlock('pen down', 3),
+                "All sprites have a 'pen down' pen-block",
+                "All sprites must have a 'pen down' pen-block",
+                "The 'pen down' pen-block is required.");
             testKScope(outputLog);
-            // console.log(outputLog);
+            
             return outputLog;
         }
 
@@ -60,6 +92,7 @@
             if(!test_log.runSnapTests()) {
                 outputLog.scoreLog();
             }
+            console.log("runAGTest: FINISHED");
         }
 
         /* After loading the XML, check if the current XML is a known
@@ -172,13 +205,12 @@
 
             var outputLog;
             //If current XML is different from prev_xml
-            if (c_prev_xml && isSameSnapXML(c_prev_xml, curr_xml)) {    
-                console.log("Update thinks this is the correct XML");
+            if (c_prev_xml && isSameSnapXML(c_prev_xml, curr_xml)) {               
                 //Restore the AG status bar to a graded state
                 
                 // TODO: Write a good comment
                 // TODO: Give gradeLog ability to recover log data and xml string
-
+                console.log('AGUpdate: Thinks this is the "correct" XML.');
                 localStorage.setItem(taskID + "_test_log", c_prev_log);
                 localStorage.setItem(taskID + "_test_state", curr_xml);
 
@@ -189,14 +221,9 @@
                 outputLog.snapWorld = snapWorld;
                 AG_bar_graded(outputLog);
                 
-            }
-            //If current XML is same as prev correct
-            // console.log("DO I RESTORE TO LAST GRADED STATE?");
-            // console.log(isSameSnapXML(prev_xml, curr_xml, true));
-            // console.log(prev_xml === curr_xml);
-            if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
+            } else if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
                 //Restore the AG status bar to a graded state
-
+                console.log('AGUpdate: Thinks this is just the "last" XML.');
                 
                 //Retrieve the previous test log from localStorage
 
@@ -338,8 +365,10 @@
             }
             
             //Remove script coordinates
-            prev_xml = prev_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
-            curr_xml = curr_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
+            // prev_xml = prev_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
+            // curr_xml = curr_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
+            prev_xml = prev_xml.replace(/script x="(.*?)" y="(.*?)"/g, 'script x="0" y="0"');
+            curr_xml = curr_xml.replace(/script x="(.*?)" y="(.*?)"/g, 'script x="0" y="0"');
             //Remove data hashes hashes (to allow coherence b/w reloads).
             prev_xml = prev_xml.replace(/data:image(.*?)(?=<)/g, '');
             curr_xml = curr_xml.replace(/data:image(.*?)(?=<)/g, '');
@@ -387,7 +416,11 @@
             //TODO: Replace them properly
             prev_xml = prev_xml.replace(/(<script x)(.*)(<\/script>)/g,prev_xml_scripts);
             curr_xml = curr_xml.replace(/(<script x)(.*)(<\/script>)/g,curr_xml_scripts);
-
+            console.log('previous XML');
+            console.log(prev_xml);
+            console.log('current XML');
+            console.log(curr_xml);
+            console.log("They are the same:" + String(prev_xml === curr_xml));
             return prev_xml === curr_xml;
         }
 
