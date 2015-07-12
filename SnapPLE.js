@@ -892,7 +892,7 @@ function testKScope(outputLog, iter) {
 		// this is where we would add a callback to getGrade or whatevers
 		gLog[testID].output = gLog[testID].correct = eLog.callVal;
 		gLog[testID].graded = true;
-		gLog[testID].feedback = gLog[testID].feedback || "Test Passed.";
+		gLog[testID].feedback = gLog[testID].feedback || "Beautiful Kaleidoscope!";
 		gLog.scoreLog();
 		console.log(eLog);
 	};
@@ -1399,7 +1399,7 @@ function CBlockContains(block1, block2, script) {
  * optional arg arrays ARGARRAY1 and ARGARRAY2. Returns true if BLOCKSPEC1 is
  * inside of the block represented by BLOCKSPEC2.
  */
-function CBlockContainsInCustom(customBlockSpec, blockSpec1, blockSpec2, argArray1, argArray2, spriteIndex) {
+function CBlockContainsInCustom(customBlockSpec, spriteIndex, blockSpec1, blockSpec2, argArray1, argArray2) {
 	if (argArray1 === undefined) {
 		argArray1 = [];
 	}
