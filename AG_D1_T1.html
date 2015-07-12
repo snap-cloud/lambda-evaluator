@@ -31,16 +31,18 @@
         // var testLog;
         function AGTest(outputLog) {
             
-            testAssert(outputLog, isScriptPresent('factorial %s',0),
-                "The 'factorial' block is present.",
-                "The 'factorial %num' block was not found on-screen.",
-                "Make sure you name your custom block, 'factorial %num'.");
-            multiTestBlock('factorial %s',
-                [[0],[1],[2],[4],[5],[10]],
-                [1,1,2,24,120,3628800],
-                [-1,-1,-1,-1,-1,-1],
-                outputLog);
-            // return outputLog;
+            /* Factorial */
+            // testAssert(outputLog, isScriptPresent('factorial %s',0),
+            //     "The 'factorial' block is present.",
+            //     "The 'factorial %num' block was not found on-screen.",
+            //     "Make sure you name your custom block, 'factorial %num'.");
+            // multiTestBlock('factorial %s',
+            //     [[0],[1],[2],[4],[5],[10]],
+            //     [1,1,2,24,120,3628800],
+            //     [-1,-1,-1,-1,-1,-1],
+            //     outputLog);
+            /* KScopeTest */
+            testKScope(outputLog);
             return outputLog;
         }
 
@@ -175,6 +177,7 @@
                 
                 // TODO: Write a good comment
                 // TODO: Give gradeLog ability to recover log data and xml string
+                console.log('AGUpdate: Thinks this is the "correct" XML.');
 
                 localStorage.setItem(taskID + "_test_log", c_prev_log);
                 localStorage.setItem(taskID + "_test_state", curr_xml);
@@ -185,13 +188,8 @@
                 outputLog = JSON.parse(c_prev_log);
                 outputLog.snapWorld = snapWorld;
                 AG_bar_graded(outputLog);
-                return outputLog;
-            }
-            //If current XML is same as prev correct
-            // console.log("DO I RESTORE TO LAST GRADED STATE?");
-            // console.log(isSameSnapXML(prev_xml, curr_xml, true));
-            // console.log(prev_xml === curr_xml);
-            if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
+            } else if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
+                console.log('AGUpdate: Thinks this is just the "last" XML.');
                 //Restore the AG status bar to a graded state
 
                 
@@ -202,15 +200,15 @@
                 outputLog = JSON.parse(prev_log);
                 outputLog.snapWorld = snapWorld;
                 AG_bar_semigraded(outputLog);
-                return outputLog;
             } else {
                 //Restore the AG status bar to a graded state
                 
                 outputLog = new gradingLog(snapWorld, taskID);
                 AG_bar_ungraded(outputLog);
                 document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
-                return outputLog
             }
+            populateFeedback(outputLog);
+            return outputLog;
 
         }
 
@@ -333,8 +331,12 @@
             }
             
             //Remove script coordinates
-            prev_xml = prev_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
-            curr_xml = curr_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
+            
+            // prev_xml = prev_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
+            //curr_xml = curr_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');                   // curr_xml = curr_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
+            prev_xml = prev_xml.replace(/script x="(.*?)" y="(.*?)"/g, 'script x="0" y="0"');
+            curr_xml = curr_xml.replace(/script x="(.*?)" y="(.*?)"/g, 'script x="0" y="0"');
+
             //Remove data hashes hashes (to allow coherence b/w reloads).
             prev_xml = prev_xml.replace(/data:image(.*?)(?=<)/g, '');
             curr_xml = curr_xml.replace(/data:image(.*?)(?=<)/g, '');
@@ -382,6 +384,11 @@
             //TODO: Replace them properly
             prev_xml = prev_xml.replace(/(<script x)(.*)(<\/script>)/g,prev_xml_scripts);
             curr_xml = curr_xml.replace(/(<script x)(.*)(<\/script>)/g,curr_xml_scripts);
+            console.log('previous XML');
+            console.log(prev_xml);
+            console.log('current XML');
+            console.log(curr_xml);
+            console.log("They are the same:" + String(prev_xml === curr_xml));
 
             return prev_xml === curr_xml;
         }
