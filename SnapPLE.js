@@ -295,6 +295,11 @@ gradingLog.prototype.evaluateLog = function(testIDs) {
 	var tests_passed = 0;
 	//Set 'correct' and 'feedback' fields for all in testIDs
 	for (var id of testIDs) {
+		
+		// if (outputLog[id]["output"] instanceof List) {
+		//	console.log(outputLog[id]["output"].contents);
+		// 	outputLog[id]["output"] = outputLog[id]["output"].asArray();
+		// }
 		//TODO: Terribly ugly. This should be abstracted.
 		if (outputLog[id]['testClass'] === "a") {
 			if (outputLog[id]['correct']) {
@@ -628,14 +633,26 @@ function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
 	var testIDs = new Array(inputs.length);
 	//TODO: Handle this error in startSnapTest
 	//var scripts = getScript(blockSpec);
-
+	//checkArrayForList(expOuts);
 
 	for (var i=0;i<inputs.length; i++) {
+		//checkArrayForList(inputs[i]);
 		testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i]);
 	}
 	// testBlock(outputLog, testIDs[0]);
 	// outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
 	return outputLog;
+}
+
+//David's code for checking an array for inner arrays
+//then converting them to snap lists
+//a - the JS Array you want to check for inner Arrays
+function checkArrayForList(a) {
+	for (var i = 0; i < a.length; i++) {
+		if (a[i] instanceof Array) {
+			a[i] = new List(a[i]);
+		}
+	}
 }
 
 function setValues(block, values) {
@@ -647,6 +664,9 @@ function setValues(block, values) {
 		if (morph.constructor.name === "InputSlotMorph") {
 			morph.setContents(values[valIndex]);
 			valIndex += 1;
+		}
+		if (morph instanceof ArgMorph) {
+
 		}
 	}
 	if (valIndex + 1 !== values.length) {
@@ -768,7 +788,7 @@ SpriteEventLog.prototype.checkDup = function(index) {
 		this["" + index].pop();
 	} else if (this["" + index][len - 1]["scale"] !== this["" + index][len - 2]["scale"]) {
 		this["" + index][len - 1].ignore = true;
-	}
+	} 
 }
 
 //takes out all of the "ignored" events from the event log
@@ -801,7 +821,7 @@ SpriteEventLog.prototype.compareSprites = function(f) {
 	}
 
 	for (var i = 0; i < this["0"].length; i++) {
-		if (!f(this, i)) {
+		if (!f.call(this, i)) {
 			return false;
 		}
 	}
@@ -845,6 +865,7 @@ function testKScope(outputLog, iter) {
 		iterations = iter || 3,
 		spriteList = snapWorld.children[0].sprites.contents;
 
+	//creating this too early has caused issues with getting incorect data
 	var collect = setInterval(function() {
         for (var i = 0; i < spriteList.length; i++) {
             eLog.addEvent(spriteList[i], i);
@@ -853,11 +874,19 @@ function testKScope(outputLog, iter) {
 
 	var callback = function() {
 		clearInterval(collect);
-		eLog.callVal = eLog.spliceIgnores().compareSprites(function(log, i) {
-			if (eLog && eLog.numSprites !== 4) {
+		//this loop hacky fixes the above issue
+		for (var i = 0; i < eLog.numSprites; i++) {
+			eLog["" + i][0].ignore = true;
+		}
+		eLog.callVal = eLog.spliceIgnores().compareSprites(function(i) {
+			var log = this;
+			gLog[testID].graded = true;
+			gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Test Passed.";
+			gLog[testID].output = gLog[testID].correct = true;
+			if (log && log.numSprites !== 4) {
 				gLog[testID]["feedback"] = "You do not have the correct amount of Sprites." +
 												"Make sure you have four different sprites.";
-				// gLog[testID].output = gLog[testID].correct = false;
+				gLog[testID].output = gLog[testID].correct = false;
 				return false;
 			}
 
@@ -870,31 +899,26 @@ function testKScope(outputLog, iter) {
 				y3 = eLog["2"][i].y,
 				y4 = eLog["3"][i].y;
 
+			if (penDown1 !== penDown2 !== penDown3 !== penDown4) {
+				gLog[testID]["feedback"] = "One of your sprites did not draw to the stage. " +
+												"Make sure your sprites all call pen down before " +
+												"following the mouse.";
+				gLog[testID].output = gLog[testID].correct = false;
+				return false;
+			}
+
 			if (x1 + x2 + x3 + x4 !== 0 ||
 				y1 + y2 + y3 + y4 !== 0) {
 				gLog[testID]["feedback"] = "One or more sprite X, Y values are incorrect. " +
 												"Make sure your sprites all go to the correct " +
 												"mouse x, y values.";
-				// gLog[testID].output = gLog[testID].correct = false;
-				return false;
-			}
 
-			if (penDown1 !== penDown2 !== penDown3 !== penDown4) {
-				gLog[testID]["feedback"] = "One of your sprites did not draw to the stage. " +
-												"Make sure your sprites all call pen down before " +
-												"following the mouse.";
-				// gLog[testID].output = gLog[testID].correct = false;
+				gLog[testID].output = gLog[testID].correct = false;
 				return false;
 			}
-			
 			return true;
 		});
-		// this is where we would add a callback to getGrade or whatevers
-		gLog[testID].output = gLog[testID].correct = eLog.callVal;
-		gLog[testID].graded = true;
-		gLog[testID].feedback = gLog[testID].feedback || "Beautiful Kaleidoscope!";
 		gLog.scoreLog();
-		console.log(eLog);
 	};
 
 	makeDragon(iterations, callback);
@@ -1009,6 +1033,7 @@ function testUniformShapeInLoop(sides, angle, length, gradeLog, blockSpec) {
 				}
 			}
 			gLog.updateLog(testID, result, feedback, result);
+			//setTimeout(gLog.scoreLog, 50);
 		});
 
 	spoof("green flag");
@@ -1041,7 +1066,7 @@ function realitiveY(coord) {
 function createInputSpoof(timeout, callback, element) {
 	var timeoutCount = 0,
 		timeoutInc = timeout,
-		// call = callback || function() {return null;},
+		callB = callback || function() {return null;},
 		element = element || "canvas";
 
 	return (function(action, x, y) {
@@ -1065,8 +1090,7 @@ function createInputSpoof(timeout, callback, element) {
 				setTimeout(function() {world.children[0].stage.fireGreenFlagEvent()}, timeoutCount);
 				break;
 			case "callback":
-				if (!callback) {break;}
-				setTimeout(function() {callVal = callback();}, timeoutCount);
+				setTimeout(function() {callB();}, timeoutCount);
 				break;
 			case "time":
 				return timeoutCount;
@@ -1174,8 +1198,8 @@ function makeDragon(iterations, callback) {
 	var turns = createCurve(iterations);
 	var act = createInputSpoof(100, callback);
 	act("mousemove", 0, 0);
-	act("space");
 	act("c");
+	act("space");
 	drawDragon(turns, act);
 	act("stop all");
 	act("callback");
