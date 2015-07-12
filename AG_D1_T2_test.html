@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- THIS TASK TESTS FACTORIAL -->
 <html>
 <head>
     <title>Snap! Build Your Own Blocks. Beta</title>
@@ -26,33 +25,24 @@
         // taskID uniquely identifies the task for saving in browser localStorage.
         var taskID = "AG_D1_T2";
         var id = courseID + taskID;
+        var agOutput;
 
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
             
-        	testAssert(outputLog, isScriptPresent('factorial %s',0),
-        		"The 'factorial' block is present.",
-        		"The 'factorial %num' block was not found on-screen.",
-        		"Make sure you name your custom block, 'factorial %num'.");
-        	multiTestBlock('factorial %s',
-        		[[0],[1],[2],[4],[5],[10]],
-        		[1,1,2,24,120,3628800],
-        		[-1,-1,-1,-1,-1,-1],
-        		outputLog);
-
-            // testAssert(outputLog, isScriptPresent('move %n steps',0), 
-            //     "Move block is present", //Positive statement
-            //     "Don't forget the move block!", //Negative statement
-            //     "Make sure you have all required blocks."); //General assertion text
-            // testAssert(outputLog, isScriptPresent('turn %clockwise %n degrees',0), 
-            //     "Turn block is present", //Positive statement
-            //     "Don't forget the turn block!", //Negative statement
-            //     "Make sure you have all required blocks."); //General assertion text
-
-            // testScriptPresent('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]', ["A"], 0, outputLog);
-            // multiTestBlock("%s my plus %s",[[1,2],[2,2],[2,3],[3,4],[5,5]],[3,4,5,7,10],[-1,-1,-1,-1,-1], outputLog);
-            // return outputLog;
+            // testAssert(outputLog, isScriptPresent('factorial %s',0),
+            //     "The 'factorial' block is present.",
+            //     "The 'factorial %num' block was not found on-screen.",
+            //     "Make sure you name your custom block, 'factorial %num'.");
+            // multiTestBlock('factorial %s',
+            //     [[0],[1],[2],[4],[5],[10]],
+            //     [1,1,2,24,120,3628800],
+            //     [-1,-1,-1,-1,-1,-1],
+            //     outputLog);
+            /* KScopeTest */
+            testKScope(outputLog);
+            // console.log(outputLog);
             return outputLog;
         }
 
@@ -120,7 +110,7 @@
          *  - Should only be called from a "mouseup" event.
          */
         function AGUpdate(snapWorld, taskID) {
-
+            console.log("AGUpdate");
 
             
 
@@ -182,9 +172,10 @@
 
             var outputLog;
             //If current XML is different from prev_xml
-            if (c_prev_xml && isSameSnapXML(c_prev_xml, curr_xml)) {               
+            if (c_prev_xml && isSameSnapXML(c_prev_xml, curr_xml)) {    
+                console.log("Update thinks this is the correct XML");
                 //Restore the AG status bar to a graded state
-                AG_bar_graded(menu_button, grade_button);
+                
                 // TODO: Write a good comment
                 // TODO: Give gradeLog ability to recover log data and xml string
 
@@ -196,9 +187,13 @@
                 //Retrieve the correct test log from localStorage
                 outputLog = JSON.parse(c_prev_log);
                 outputLog.snapWorld = snapWorld;
-                return outputLog;
+                AG_bar_graded(outputLog);
+                
             }
             //If current XML is same as prev correct
+            // console.log("DO I RESTORE TO LAST GRADED STATE?");
+            // console.log(isSameSnapXML(prev_xml, curr_xml, true));
+            // console.log(prev_xml === curr_xml);
             if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
                 //Restore the AG status bar to a graded state
 
@@ -210,15 +205,17 @@
                 outputLog = JSON.parse(prev_log);
                 outputLog.snapWorld = snapWorld;
                 AG_bar_semigraded(outputLog);
-                return outputLog;
+                
             } else {
                 //Restore the AG status bar to a graded state
                 
                 outputLog = new gradingLog(snapWorld, taskID);
                 AG_bar_ungraded(outputLog);
                 document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
-                return outputLog
+                
             }
+            populateFeedback(outputLog);
+            return outputLog;
 
         }
 
@@ -247,7 +244,9 @@
                 AG_bar_semigraded(outputLog);
             }
             outputLog.saveSnapXML(outputLog.taskID + "_test_state");
-            // console.log(outputLog);
+            populateFeedback(outputLog);
+            console.log('Autograder test Results:');
+            console.log(outputLog);
         }
 
 
@@ -304,8 +303,6 @@
             $('#autograding_button .hover_darken').show();
             $('#onclick-menu').css('color', 'orange');
             var num_errors = outputLog.testCount - outputLog.numCorrect;
-            console.log('SEMIGRADED LOG');
-            console.log(outputLog);
             var plural = "";
             if (num_errors > 1) { plural = "s"};
             $('#feedback-button').html("View Feedback ("+ 
@@ -332,6 +329,7 @@
         */
         function isSameSnapXML(prev_xml, curr_xml, no_subset) {
             //replace script coordinates with generic 'x="0" y="0"'
+            // console.log('isSameSnapXML');
             if ((prev_xml === null) || (curr_xml === null)) {
                 console.log("isSameSnapXML: prev_xml or curr_xml are null");
                 console.log(prev_xml);
@@ -346,14 +344,38 @@
             prev_xml = prev_xml.replace(/data:image(.*?)(?=<)/g, '');
             curr_xml = curr_xml.replace(/data:image(.*?)(?=<)/g, '');
 
+            // console.log('previous XML');
+            // console.log(prev_xml);
+            // console.log('current XML');
+            // console.log(curr_xml);
+            // console.log("They are the same:" + String(prev_xml === curr_xml));
+            if (prev_xml === curr_xml) {
+                return true;
+            }
+
             //split between brackets
             prev_xml_scripts = prev_xml.match(/(<script x)(.*?)(<\/script>)/g);
             curr_xml_scripts = curr_xml.match(/(<script x)(.*?)(<\/script>)/g);
+
+            //split between custom blocks
+            prev_xml_blocks = prev_xml.match(/(<block-definition s)(.*?)(\/block-definition>)/g);
+            curr_xml_blocks = curr_xml.match(/(<block-definition s)(.*?)(\/block-definition>)/g);
             
             //sort script tags and convert back to strings
             //lol. weird syntax. doesn't sort if curr_xml_scripts === null.
             prev_xml_scripts && prev_xml_scripts.sort().join("");
             curr_xml_scripts && curr_xml_scripts.sort().join("");
+
+            //If the custom block definitions have changed
+            prev_xml_blocks && prev_xml_blocks.sort().join("");
+            curr_xml_blocks && curr_xml_blocks.sort().join("");
+            if(JSON.stringify(prev_xml_blocks) !== JSON.stringify(curr_xml_blocks)) {
+                console.log("THE CUSTOM BLOCKS ARE DIFFERENT!");
+                console.log(prev_xml_blocks === curr_xml_blocks);
+                console.log(JSON.stringify(prev_xml_blocks));
+                console.log(JSON.stringify(curr_xml_blocks));
+                return false;
+            }
 
             //If the previous scripts are a subset of current scripts
             if (!no_subset && isArrSubset(curr_xml_scripts, prev_xml_scripts)) {
@@ -365,8 +387,6 @@
             //TODO: Replace them properly
             prev_xml = prev_xml.replace(/(<script x)(.*)(<\/script>)/g,prev_xml_scripts);
             curr_xml = curr_xml.replace(/(<script x)(.*)(<\/script>)/g,curr_xml_scripts);
-            // console.log(prev_xml);
-            // console.log(curr_xml);
 
             return prev_xml === curr_xml;
         }
@@ -437,7 +457,8 @@
 
             var ide = snapWorld.children[0];
             ide.newProject();
-            AGStart(snapWorld, taskID);
+            var new_log = AGStart(snapWorld, taskID);
+            populateFeedback(new_log);
         }
 
         function revertToBestState(snapWorld, taskID) {
@@ -448,10 +469,11 @@
             var c_prev_log = localStorage.getItem(taskID + "_c_test_log");
             localStorage.setItem(taskID + "_test_state", c_prev_xml);
             localStorage.setItem(taskID + "_test_log", c_prev_log);
+
             var prev_log = JSON.parse(c_prev_log);
             prev_log.snapWorld = snapWorld;
             AG_bar_graded(prev_log);
-
+            populateFeedback(prev_log);
             ide.openProjectString(c_prev_xml);
         }
 
@@ -466,6 +488,7 @@
             } else {
                 AG_bar_semigraded(prev_log);
             }
+            populateFeedback(prev_log);
             ide.openProjectString(prev_xml);
         }
 
@@ -482,6 +505,7 @@
             } else {
                 AG_bar_semigraded(prev_log);
             }
+            populateFeedback(prev_log);
             ide.openProjectString(last_xml);
 
         }
@@ -522,15 +546,12 @@
             var prev_xml = localStorage.getItem(taskID + "_test_state");
             var last_log = localStorage.getItem(taskID + "_last_submitted_log");
             var prev_log = localStorage.getItem(taskID + "_test_log");
-
             var edx_caution = document.getElementById("edx-submit-different");
             var caution = document.getElementById("different-feedback");
-
             //if the feedback is not the same as it was before
 
                 var glog = outputLog;
                 var log = AG_log(glog);
-
                 //var log = JSON.parse(localStorage.getItem(taskID + "_ag_output"));
                 var feedback = log["feedback"];
                 var title = log["comment"];
@@ -542,16 +563,18 @@
                         hasReporter = true;
                     }
                 }
-
-                
-
+                if (title === "Please run the Snap Autograder before clicking the 'Submit' button.") {
+                    document.getElementById("table-data").style.display = "none";
+                } else {
+                    document.getElementById("table-data").style.display = "table-row-group";
+                }
                 if (document.getElementById("last-column") !== null) {
                     caution.innerHTML = "";
                     edx_caution.innerHTML = "";
                     document.getElementById("comment").innerHTML = "";
                     var tableTitles = document.getElementsByClassName("titles");
                     var tableResults = document.getElementById("table-data");
-                    if (tableTitles.length !== 2 && hasReporter === false) {
+                    if (tableTitles.length !== 2) { // && hasReporter === false) {
                         while (tableTitles.length > 2) {
                             document.getElementById("table-titles").removeChild(tableTitles[1]);
                         }
@@ -574,65 +597,33 @@
                     feedbackCol.setAttribute("id", "last-column");
                     document.getElementById("table-titles").appendChild(feedbackCol);
                 }
-
                 document.getElementById("comment").innerHTML = title;
-
                 if (last_log !== prev_log) {
                     edx_caution.innerHTML = "[WARNING: These results differ from your last edX submission.]"
                 }
-
-                /*var testCol = document.createElement("th");
-                var testColText = document.createTextNode("Test");
-                testCol.appendChild(testColText);
-                testCol.classList.add("titles");
-                document.getElementById("table-titles").appendChild(testCol);
-
-                var feedbackCol = document.createElement("th");
-                var feedbackColText = document.createTextNode("Feedback");
-                feedbackCol.appendChild(feedbackColText);
-                feedbackCol.classList.add("titles");
-                feedbackCol.setAttribute("id", "last-column");
-                document.getElementById("table-titles").appendChild(feedbackCol);*/
-
-
-                /*var comment = document.createElement("p");
-                var commentText = document.createTextNode(title);
-                comment.appendChild(commentText);
-                document.getElementById("ag-results").appendChild(comment);*/
-
                 var testString = "";
-
-                
-
                 if (hasReporter === true) {
                     addTableHeadings();
                 }
-
                 for (i=1; i<=feedback["testCount"]; i++) {
                     var test = String(i);
                     /*if (feedback[test]["testClass"] === "r") {
                         addTableHeadings();
                     }*/
-
                     // Is it possible to put a key in the log that will say whether or not any of the tests is a reporter test? 
-
-
-                    
-
                     var newRow = document.createElement("tr");
-
                     var testNum = document.createElement("td");
                     var testNumText = document.createTextNode(test);
                     testNum.appendChild(testNumText);
                     testNum.classList.add("tests");
                     newRow.appendChild(testNum);
                     //document.getElementById("table-data").appendChild(newRow);
-
                     if (hasReporter === true) {
-                        for (key in ["input", "output", "expOut"]) {
+                        var keys = ["input", "output", "expOut"];
+                        for (key=0; key<3; key++) {
                             var tableData = document.createElement("td");
                             if (feedback[test]["testClass"] === "r") {
-                                var tableDataText = document.createTextNode(feedback[test][key]);
+                                var tableDataText = document.createTextNode(feedback[test][keys[key]]);
                             } else {
                                 var tableDataText = document.createTextNode("N/A");
                             }
@@ -641,7 +632,6 @@
                             newRow.appendChild(tableData);
                         }
                     }
-
                     var agFeedback = document.createElement("td");
                     var agFeedbackText = document.createTextNode(feedback[test]["feedback"]);
                     agFeedback.appendChild(agFeedbackText);
@@ -652,31 +642,17 @@
                     }
                     newRow.appendChild(agFeedback);
                     document.getElementById("table-data").appendChild(newRow);
-
                     testString += test;
                     testString += feedback[test]["feedback"];
                     //testString += feedback[test]
                 }
-                /*var output = title + testString;
-                var table = document.createElement("p");
-                var agOutput = document.createTextNode(output);
-                table.appendChild(agOutput);
-                document.getElementById("ag-results").appendChild(table);*/
-
-                /*var header = document.createElement("th");
-                var text = document.createTextNode("hello");
-                var lastCol = document.getElementById("last-column");
-                var titles = document.getElementById("table-titles");
-                header.classList.add("titles");
-                header.appendChild(text);
-                titles.insertBefore(header, lastCol);*/
-            //}
         }
 
         function addTableHeadings() {
-            for (key in ["Input", "Output", "Expected"]) {
+            var extraCols = ["Input", "Output", "Expected"];
+            for (i=0; i<3; i++) {
                 var header = document.createElement("th");
-                var text = document.createTextNode(key);
+                var text = document.createTextNode(extraCols[i]);
                 var lastCol = document.getElementById("last-column");
                 var titles = document.getElementById("table-titles");
                 header.classList.add("titles");
@@ -738,10 +714,27 @@
             var grade_button = document.getElementById("autograding_button");
             grade_button.style.cursor = "pointer";
             //Call the test suite when this element is clicked.
-            grade_button.onclick = function() {
-                runAGTest(world, id);
-                populateFeedback(id);
+            var update_listener = function() {
+                AGUpdate(world, id);
+            };
+            var button_listener = function(event) {
+                event.stopPropagation();
+                console.log('PROPAGATION SHOULD STOP');
+                runAGTest(world,id);
+                // var outputLog = AGStart(world, id);
             }
+            grade_button.addEventListener('click', button_listener);
+            var world_canvas = document.getElementById('world');
+            world_canvas.addEventListener("mouseup", update_listener);
+
+            // grade_button.onclick = function(event) {
+            //     // event.stopPropagation();
+            //     runAGTest(world, id);
+            //     var outputLog = AGStart(world, id);
+            //     //console.log(outputLog);
+            //     //populateFeedback(outputLog);
+            // }
+
 
 
             var reset_button = document.getElementById("reset-button");
@@ -782,10 +775,7 @@
             /* Check if the snap xml has changed "significantly".
              * Exclude script position and edit history.
              */
-            document.addEventListener("mouseup", function() {
-                AGUpdate(world, id);
-                //populateFeedback(id);
-            });
+            
 
             
 

@@ -68,18 +68,19 @@ var AG_EDX = (function() {
         // return encodeURIComponent(JSON.stringify(AG_state));
         var last_xml = localStorage.getItem(id + "_test_state");
         if (last_xml !== null) {
-            return last_xml;
+            return encodeURIComponent(last_xml);
         } else {
             var ide = world.children[0];
             var world_string = ide.serializer.serialize(ide.stage);
-            return world_string;
+            return encodeURIComponent(world_string);
         }
     }
     //EDX: Used to save the world state into edX. FOR RELOAD 
     function setState() {
         var last_xml = arguments.length === 1 ? arguments[0] : arguments[1];
         var ide = world.children[0];
-        ide.openProjectString(last_xml);
+
+        ide.openProjectString(decodeURIComponent(last_xml));
 
 
     }

@@ -111,6 +111,9 @@ gradingLog.prototype.runSnapTests = function() {
 			this.startSnapTest(id);
 			return true;
 		}
+		if (test.testClass === 's') {
+			return true;
+		}
 	}
 	//return this gradingLog
 	return false;
@@ -356,7 +359,12 @@ gradingLog.prototype.scoreLog = function() {
 	}
 	var testIDs = [];
 	for (var i = 1; i <= this.testCount; i++) {
-	   testIDs.push(i);
+		//If any tests are incomplete, return the log and prevent updating.
+		if (!this[i].graded) { 
+			console.log("scoreLog: The log is not yet complete.");
+			return this; 
+		}
+	   	testIDs.push(i);
 	}
 	// .allCorrect is initially true, and set to false if a test has failed.
 	this.allCorrect = true;
@@ -372,6 +380,7 @@ gradingLog.prototype.scoreLog = function() {
 			this.allCorrect = false;
 		}
 	}
+
 	//Calculate the pScore
 	this.numCorrect = tests_passed;
 	this.pScore = tests_passed / this.testCount;
@@ -380,7 +389,6 @@ gradingLog.prototype.scoreLog = function() {
 
 	//flip gradingLog.graded flag to true.
 	this.graded = true;
-	console.log(this.graded);
 	//Update the Autograder Status Bar
 	AGFinish(this);
 	return this;
@@ -780,7 +788,7 @@ SpriteEventLog.prototype.checkDup = function(index) {
 		this["" + index].pop();
 	} else if (this["" + index][len - 1]["scale"] !== this["" + index][len - 2]["scale"]) {
 		this["" + index][len - 1].ignore = true;
-	}
+	} 
 }
 
 //takes out all of the "ignored" events from the event log
@@ -813,7 +821,7 @@ SpriteEventLog.prototype.compareSprites = function(f) {
 	}
 
 	for (var i = 0; i < this["0"].length; i++) {
-		if (!f(this, i)) {
+		if (!f.call(this, i)) {
 			return false;
 		}
 	}
@@ -848,13 +856,16 @@ function printEventLog(eventLog, ignore) {
 //Does not test "clear"/"penup"/"pendown"
 //Only tests for prescence of 4 sprites and
 //proper sprite movements
-function testKScope(gradingLog, iter) {
+function testKScope(outputLog, iter) {
+	var snapWorld = outputLog.snapWorld;
+	var taskID = outputLog.taskID;
+	var gLog = outputLog;
 	var eLog = new SpriteEventLog(),
-		gLog = gradingLog,
-		testID = gLog.addTest("s", null, null, true, -1),
+		testID = gLog.addTest("s", undefined, null, true, -1),
 		iterations = iter || 3,
-		spriteList = world.children[0].sprites.contents;
+		spriteList = snapWorld.children[0].sprites.contents;
 
+	//creating this too early has caused issues with getting incorect data
 	var collect = setInterval(function() {
         for (var i = 0; i < spriteList.length; i++) {
             eLog.addEvent(spriteList[i], i);
@@ -863,50 +874,53 @@ function testKScope(gradingLog, iter) {
 
 	var callback = function() {
 		clearInterval(collect);
-		eLog.callVal = eLog.spliceIgnores().compareSprites(function(log, i) {
-				if (log && log.numSprites !== 4) {
-					gLog["" + testID]["feedback"] = "You do not have the correct amount of Sprites." +
-													"Make sure you have four different sprites.";
+		//this loop hacky fixes the above issue
+		for (var i = 0; i < eLog.numSprites; i++) {
+			eLog["" + i][0].ignore = true;
+		}
+		eLog.callVal = eLog.spliceIgnores().compareSprites(function(i) {
+			var log = this;
+			gLog[testID].graded = true;
+			gLog[testID]["feedback"] = "Test Passed.";
+			gLog[testID].output = gLog[testID].correct = true;
+			if (log && log.numSprites !== 4) {
+				gLog[testID]["feedback"] = "You do not have the correct amount of Sprites." +
+												"Make sure you have four different sprites.";
+				gLog[testID].output = gLog[testID].correct = false;
+				return false;
+			}
 
-					return false;
-				}
+			var x1 = log["0"][i].x, penDown1 = log["0"][i].penDown,
+				x2 = log["1"][i].x, penDown2 = log["1"][i].penDown,
+				x3 = log["2"][i].x, penDown3 = log["2"][i].penDown,
+				x4 = log["3"][i].x, penDown4 = log["3"][i].penDown,
+				y1 = log["0"][i].y,
+				y2 = log["1"][i].y,
+				y3 = log["2"][i].y,
+				y4 = log["3"][i].y;
 
-				var x1 = log["0"][i].x, penDown1 = log["0"][i].penDown,
-					x2 = log["1"][i].x, penDown2 = log["1"][i].penDown,
-					x3 = log["2"][i].x, penDown3 = log["2"][i].penDown,
-					x4 = log["3"][i].x, penDown4 = log["3"][i].penDown,
-					y1 = log["0"][i].y,
-					y2 = log["1"][i].y,
-					y3 = log["2"][i].y,
-					y4 = log["3"][i].y;
+			if (penDown1 !== penDown2 !== penDown3 !== penDown4) {
+				gLog[testID]["feedback"] = "One of your sprites did not draw to the stage. " +
+												"Make sure your sprites all call pen down before " +
+												"following the mouse.";
+				gLog[testID].output = gLog[testID].correct = false;
+				return false;
+			}
 
-				if (x1 + x2 + x3 + x4 !== 0 ||
-					y1 + y2 + y3 + y4 !== 0) {
-					gLog["" + testID]["feedback"] = "One or more sprite X, Y values are incorrect. " +
-													"Make sure your sprites all go to the correct " +
-													"mouse x, y values.";
-					return false;
-				}
-
-				if (penDown1 !== penDown2 !== penDown3 !== penDown4) {
-					gLog["" + testID]["feedback"] = "One of your sprites did not draw to the stage. " +
-													"Make sure your sprites all call pen down before " +
-													"following the mouse.";
-					return false;
-				}
-
-				gLog["" + testID]["feedback"] = "Correct!";
-				return true;
+			if (x1 + x2 + x3 + x4 !== 0 ||
+				y1 + y2 + y3 + y4 !== 0) {
+				gLog[testID]["feedback"] = "One or more sprite X, Y values are incorrect. " +
+												"Make sure your sprites all go to the correct " +
+												"mouse x, y values.";
+				gLog[testID].output = gLog[testID].correct = false;
+				return false;
+			}
+			return true;
 		});
-		// this is where we would add a callback to getGrade or whatevers
 
-		gLog.updateLog(testID, eLog.callVal, null, eLog.callVal);
-		gLog.scoreLog();
-		console.log(eLog.callVal);
 	};
 
-	makeDragon(iterations, callback);
-
+	makeDragon(iterations, callback, gLog);
 	return gLog;
 
 }
@@ -1048,10 +1062,11 @@ function realitiveY(coord) {
 //timeout is how many milliseconds you want each action to take
 //callback is an optional paramiter for a callback function
 //element is an optional paramiter for a DOM element
-function createInputSpoof(timeout, callback, element) {
+function createInputSpoof(timeout, callback, gradeLog, element) {
 	var timeoutCount = 0,
 		timeoutInc = timeout,
-		call = callback || function() {return null;},
+		gLog = gradeLog || null;
+		callB = callback || function() {return null;},
 		element = element || "canvas";
 
 	return (function(action, x, y) {
@@ -1075,10 +1090,12 @@ function createInputSpoof(timeout, callback, element) {
 				setTimeout(function() {world.children[0].stage.fireGreenFlagEvent()}, timeoutCount);
 				break;
 			case "callback":
-				setTimeout(function() {callVal = call();}, timeoutCount);
+				setTimeout(function() {callB();}, timeoutCount);
 				break;
 			case "time":
 				return timeoutCount;
+			case "score":
+				setTimeout(function() {gLog && gLog.scoreLog();}, timeoutCount);
 			default:
 				setTimeout(function() {world.children[0].stage.fireKeyEvent(action)}, timeoutCount);
 		}
@@ -1179,15 +1196,16 @@ function drawDragon(turns, func) {
 //the function that is called to create and draw the dragon
 //iterations is the number of folds the dragon has and
 //callback is an optional callback function
-function makeDragon(iterations, callback) {
+function makeDragon(iterations, callback, gradeLog) {
 	var turns = createCurve(iterations);
-	var act = createInputSpoof(100, callback);
-	act("c");
+	var act = createInputSpoof(100, callback, gradeLog);
 	act("mousemove", 0, 0);
+	act("c");
 	act("space");
 	drawDragon(turns, act);
 	act("stop all");
 	act("callback");
+	act("score");
 	return act("time");
 }
 
