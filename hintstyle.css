@@ -8,11 +8,13 @@ span.message {
 td.correctans {
 	font-weight: bold;
 	background-color: #80E680;
+	border-bottom:1px solid #333333;
 }
 
 td.incorrectans {
 	font-weight: bold;
 	background-color: #FF9999;
+	border-bottom:1px solid #333333;
 }
 
 td.tests {

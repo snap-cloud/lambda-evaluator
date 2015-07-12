@@ -80,7 +80,7 @@ var AG_EDX = (function() {
         var last_xml = arguments.length === 1 ? arguments[0] : arguments[1];
         var ide = world.children[0];
 
-        ide.openProjectString(decodeURIComponent(last_xml));
+        // ide.openProjectString(decodeURIComponent(last_xml));
 
 
     }
