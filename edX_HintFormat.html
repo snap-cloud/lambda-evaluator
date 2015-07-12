@@ -31,6 +31,7 @@ def hint_fn(answer_ids, student_answers, new_cmap, old_cmap):
     hint = str(log)
     comment = str(ans["comment"])
     
+    output = ""
     norep_output = ""
     rep_output = ""
     if comment != "Please run the Snap Autograder before clicking the 'Submit' button.":
