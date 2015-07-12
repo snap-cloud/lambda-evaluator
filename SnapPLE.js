@@ -917,10 +917,10 @@ function testKScope(outputLog, iter) {
 			}
 			return true;
 		});
-
+		gLog.scoreLog();
 	};
 
-	makeDragon(iterations, callback, gLog);
+	makeDragon(iterations, callback);
 	return gLog;
 
 }
@@ -1062,10 +1062,9 @@ function realitiveY(coord) {
 //timeout is how many milliseconds you want each action to take
 //callback is an optional paramiter for a callback function
 //element is an optional paramiter for a DOM element
-function createInputSpoof(timeout, callback, gradeLog, element) {
+function createInputSpoof(timeout, callback, element) {
 	var timeoutCount = 0,
 		timeoutInc = timeout,
-		gLog = gradeLog || null;
 		callB = callback || function() {return null;},
 		element = element || "canvas";
 
@@ -1094,8 +1093,6 @@ function createInputSpoof(timeout, callback, gradeLog, element) {
 				break;
 			case "time":
 				return timeoutCount;
-			case "score":
-				setTimeout(function() {gLog && gLog.scoreLog();}, timeoutCount);
 			default:
 				setTimeout(function() {world.children[0].stage.fireKeyEvent(action)}, timeoutCount);
 		}
@@ -1196,16 +1193,15 @@ function drawDragon(turns, func) {
 //the function that is called to create and draw the dragon
 //iterations is the number of folds the dragon has and
 //callback is an optional callback function
-function makeDragon(iterations, callback, gradeLog) {
+function makeDragon(iterations, callback) {
 	var turns = createCurve(iterations);
-	var act = createInputSpoof(100, callback, gradeLog);
+	var act = createInputSpoof(100, callback);
 	act("mousemove", 0, 0);
 	act("c");
 	act("space");
 	drawDragon(turns, act);
 	act("stop all");
 	act("callback");
-	act("score");
 	return act("time");
 }
 
