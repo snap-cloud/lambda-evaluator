@@ -617,7 +617,6 @@
             var repTest = 1;
             for (i=1; i<=feedback["testCount"]; i++) {
                 var test = String(i);
-                console.log(test);
                 var newRow = document.createElement("tr");
 
                 if (feedback[test]["testClass"] !== "r") {
@@ -815,7 +814,7 @@
                 console.log(world);
                 var outputLog = AGStart(world,id);
                 populateFeedback(outputLog);
-                //populateFeedback(outputLog);
+                populateFeedback(outputLog);
                 //var outputLog = AGStart(world,id);
                 //populateFeedback(outputLog);
 
