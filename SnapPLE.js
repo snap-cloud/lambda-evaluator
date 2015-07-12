@@ -380,6 +380,7 @@ gradingLog.prototype.scoreLog = function() {
 
 	//flip gradingLog.graded flag to true.
 	this.graded = true;
+	console.log(this.graded);
 	//Update the Autograder Status Bar
 	AGFinish(this);
 	return this;
@@ -900,7 +901,7 @@ function testKScope(gradingLog, iter) {
 		// this is where we would add a callback to getGrade or whatevers
 
 		gLog.updateLog(testID, eLog.callVal, null, eLog.callVal);
-		
+		gLog.scoreLog();
 		console.log(eLog.callVal);
 	};
 
