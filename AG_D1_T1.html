@@ -172,7 +172,7 @@
 
             //menu bar grays out options that are not available (ex. current state is same as best attempt) and restores the button state
 
-            var last_submit = document.getElementById("last-submit");
+            /*var last_submit = document.getElementById("last-submit");
             if (last_xml === null || isSameSnapXML(last_xml, curr_xml)) {
                 last_submit.style.color = "#373737";
                 last_submit.style.pointerEvents = "none";
@@ -203,7 +203,9 @@
                 undo_button.parentNode.id = "enabled-button";
                 undo_button.style.color = "white";
                 undo_button.style.pointerEvents = "auto";
-            }
+            }*/
+
+            grayOutButtons();
 
             var outputLog;
             //If current XML is different from prev_xml
@@ -270,6 +272,7 @@
             }
             outputLog.saveSnapXML(outputLog.taskID + "_test_state");
             populateFeedback(outputLog);
+            grayOutButtons();
             console.log('Autograder test Results:');
             console.log(outputLog);
         }
@@ -465,6 +468,7 @@
             ['headstart', '<th class="titles" style="text-align: center;">'], 
             ['headend', '</th>'], 
             ['datastart', '<td class="data" style="text-align: center;">'], 
+            ['evenstart', '<td class="evens" style="text-align: center;">'],
             ['dataend', '</td>'], 
             ['correctstart', '<td class="correctans" style="text-align: center;">'],
             ['wrongstart', '<td class="incorrectans" style="text-align: center;">'],
@@ -492,6 +496,7 @@
             ide.newProject();
             var new_log = AGStart(snapWorld, taskID);
             populateFeedback(new_log);
+            grayOutButtons();
         }
 
         function revertToBestState(snapWorld, taskID) {
@@ -508,6 +513,7 @@
             AG_bar_graded(prev_log);
             populateFeedback(prev_log);
             ide.openProjectString(c_prev_xml);
+            grayOutButtons();
         }
 
         function revertToLastState(snapWorld, taskID) {
@@ -523,6 +529,7 @@
             }
             populateFeedback(prev_log);
             ide.openProjectString(prev_xml);
+            grayOutButtons();
         }
 
         function revertToLastSubmit(snapWorld, taskID) {
@@ -540,6 +547,7 @@
             }
             populateFeedback(prev_log);
             ide.openProjectString(last_xml);
+            grayOutButtons();
 
         }
 
@@ -632,11 +640,15 @@
                         addReporterHeadings();
                     }
                     addTableCell(String(repTest), "tests", newRow);
-                    repTest += 1;
                     var keys = ["input", "output", "expOut"];
                     for (key=0; key<3; key++) {
-                        addTableCell(feedback[test][keys[key]], "data", newRow);
+                        if (repTest % 2 === 0) {
+                            addTableCell(feedback[test][keys[key]], "evens", newRow);
+                        } else {
+                            addTableCell(feedback[test][keys[key]], "data", newRow);
+                        }
                     }
+                    repTest += 1;
                 }
                 if (feedback[test]["correct"] === true) {
                     addTableCell(feedback[test]["feedback"], "correctans", newRow);
@@ -683,6 +695,49 @@
             data.appendChild(text);
             data.classList.add(elemClass);
             row.appendChild(data);
+        }
+
+        function grayOutButtons() {
+            var ide = world.children[0];
+            var curr_xml = ide.serializer.serialize(ide.stage);
+            //Retrieve previously graded Snap XML strings (if in localStorage).
+            var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
+            var prev_xml = localStorage.getItem(taskID + "_test_state");
+
+            var last_xml = localStorage.getItem(taskID + "_last_submitted_state");
+
+            var last_submit = document.getElementById("last-submit");
+            if (last_xml === null || isSameSnapXML(last_xml, curr_xml)) {
+                last_submit.style.color = "#373737";
+                last_submit.style.pointerEvents = "none";
+                last_submit.parentNode.id = "disabled-button";
+            } else {
+                last_submit.parentNode.id = "enabled-button";
+                last_submit.style.color = "white";
+                last_submit.style.pointerEvents = "auto";
+            }
+
+            var revert_button = document.getElementById("revert-button");
+            if (c_prev_xml === null || isSameSnapXML(c_prev_xml, curr_xml)) {
+                revert_button.style.color = "#373737";
+                revert_button.style.pointerEvents = "none";
+                revert_button.parentNode.id = "disabled-button";
+            } else {
+                revert_button.parentNode.id = "enabled-button";
+                revert_button.style.color = "white";
+                revert_button.style.pointerEvents = "auto";
+            }
+
+            var undo_button = document.getElementById("undo-button");
+            if (prev_xml === null || isSameSnapXML(prev_xml, curr_xml)) {
+                undo_button.style.color = "#373737";
+                undo_button.style.pointerEvents = "none";
+                undo_button.parentNode.id = "disabled-button";
+            } else {
+                undo_button.parentNode.id = "enabled-button";
+                undo_button.style.color = "white";
+                undo_button.style.pointerEvents = "auto";
+            }
         }
 
 
@@ -813,8 +868,12 @@
             setTimeout(function() {
                 console.log(world);
                 var outputLog = AGStart(world,id);
+
+                //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
                 populateFeedback(outputLog);
                 populateFeedback(outputLog);
+                grayOutButtons();
+                //populateFeedback(outputLog);
                 //var outputLog = AGStart(world,id);
                 //populateFeedback(outputLog);
 

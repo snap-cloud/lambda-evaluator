@@ -7,7 +7,7 @@ span.message {
 
 td.correctans {
 	font-weight: bold;
-	background-color: #80E680;
+	background-color: #B4ECAC;
 	border-bottom:1px solid #333333;
 }
 
@@ -21,6 +21,13 @@ td.tests {
 	background-color: #e7e3e3;
     color: #4F5150;
     width: 20px;
+}
+
+td.evens {
+    color: #4F5150;
+    background-color: #e7e3e3;
+    white-space: normal;
+	padding: 3px 20px;
 }
 
 table.results {
