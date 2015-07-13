@@ -1370,58 +1370,6 @@ function getGlobalVar(varToGet, globalVars) {
 	return globalVars[varToGet].value;
 }
 
-/* Takes in two javascript objects (block1 and block2) and a script.
- * Returns true if the block represented by BLOCK1 occurs inside
- * the C-shaped block represented by BLOCK2. SCRIPT can be
- * obtained by calling:
- *
- * JSONscript(...)
- *
- * The following 7 blocks are considered C-shaped:
- *  -repeat, repeat until, warp, forever, for loop, if, if-else
- *
- */
-function CBlockContains(block1, block2, script) {
-    var morph1, type1, CblockSpecs;
-    CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
-    CblockSpecs = CblockSpecs.concat(["repeat until %b %c", "if %b %c", "if %b %c else %c"]);
-
-    if (CblockSpecs.indexOf(block2.blockSp) < 0) {
-        var rValue = "The second input should be a C-shaped block. See CBlockContains";
-        rValue += " definition for a list of the blocks designated as C-shaped blocks.";
-        return rValue;
-    }
-
-    for (var i = 0; i < script.length; i++) {
-        morph1 = script[i];
-        type1 = typeof(morph1);
-        if ((type1 === "string")) {
-            continue;
-        } else if (Object.prototype.toString.call(morph1) === '[object Array]') {
-            if (CBlockContains(block1, block2, morph1)) {
-                return true;
-            }
-        } else if (morph1.blockSp === block2.blockSp) {
-            if (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 1], block1.blockSp, block1.inputs)) {
-                return true;
-            }
-            if ((morph1.blockSp === "if %b %c else %c")
-                && (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 2], block1.blockSp, block1.inputs))) {
-                return true;
-            }
-        } else if (CblockSpecs.indexOf(morph1.blockSp) >= 0) {
-            if (CBlockContains(block1, block2, morph1.inputs[morph1.inputs.length - 1])) {
-                return true;
-            }
-            if ((morph1.blockSp === "if %b %c else %c")
-                && (CBlockContains(block1, block2, morph1.inputs[morph1.inputs.length - 2]))) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 /* Takes in string CUSTOMBLOCK, the strings BLOCKSPEC1 (any block)
  * and BLOCKSPEC2 (a conditional block), and their respective
  * optional arg arrays ARGARRAY1 and ARGARRAY2. Returns true if BLOCKSPEC1 is
@@ -1547,6 +1495,148 @@ function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex) 
 
 	return false;
 }
+
+/* Takes in two javascript objects (block1 and block2) and a script.
+ * Returns true if the block represented by BLOCK1 occurs inside 
+ * the C-shaped block represented by BLOCK2. SCRIPT can be
+ * obtained by calling:
+ *
+ * JSONscript(...)
+ *
+ * The following 8 blocks are considered C-shaped:
+ *  -repeat, repeat until, warp, forever, for loop, if, if else, for each
+ *
+ */
+function CBlockContains(block1, block2, script) {
+    var morph1, type1, CblockSpecs;
+    CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
+    CblockSpecs = CblockSpecs.concat(["repeat until %b %c", "if %b %c", "if %b %c else %c"]);
+    CblockSpecs = CblockSpecs.concat(["for each %upvar of %l %cs"]);
+    
+    if (CblockSpecs.indexOf(block2.blockSp) < 0) {
+        var rValue = "The second input should be a C-shaped block. See CBlockContains";
+        rValue += " definition for a list of the blocks designated as C-shaped blocks.";
+        return rValue;
+    }
+
+    for (var i = 0; i < script.length; i++) {
+        morph1 = script[i];
+        type1 = typeof(morph1);
+        if ((type1 === "string")) {
+            continue;
+        } else if (Object.prototype.toString.call(morph1) === '[object Array]') { 
+            if (CBlockContains(block1, block2, morph1)) {
+                return true;
+            }
+        } else if (morph1.blockSp === block2.blockSp) {
+            if (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 1], block1.blockSp, block1.inputs)) {
+                return true;
+            }
+            if ((morph1.blockSp === "if %b %c else %c")
+                && (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 2], block1.blockSp, block1.inputs))) {
+                return true;
+            }
+        } else if (CblockSpecs.indexOf(morph1.blockSp) >= 0) {
+            if (CBlockContains(block1, block2, morph1.inputs[morph1.inputs.length - 1])) {
+                return true;
+            }
+            if ((morph1.blockSp === "if %b %c else %c")
+                && (CBlockContains(block1, block2, morph1.inputs[morph1.inputs.length - 2]))) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+/* Takes in a blockSpec BLOCKSPEC1, a nickname BLOCK2NAME, a javascript object SCRIPT,
+ * and optional arguments ARGARRAY1 and ARGARRAY2.
+ * Returns true if the block represented by BLOCKSPEC1 occurs inside 
+ * the C-shaped block represented by BLOCK2NAME. Matches BLOCK2NAME to a blockspec.
+ * SCRIPT can be obtained by calling:
+ *
+ * JSONscript(...)
+ */
+function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArray2) {
+        if (argArray1 === undefined) {
+            argArray1 = [];
+        }
+        if (argArray2 === undefined) {
+            argArray2 = [];
+        }
+        var nicknameDict = {
+            "repeat" : "repeat %n %c",
+            "warp" : "warp %c",
+            "forever" : "forever %c",
+            "for" : "for %upvar = %n to %n %cs",
+            "repeat until" : "repeat until %b %c",
+            "if" : "if %b %c",
+            "if else" : "if %b %c else %c",
+            "for each" : "for each %upvar of %l %cs"
+        }
+        if (!(block2Name in nicknameDict)) {
+            throw "The given C-block nickname is invalid.";
+        }
+        var block2Spec = nicknameDict[block2Name];
+        var block2 = {blockSp: block2Spec, inputs: argArray2};
+        var block1 = {blockSp: blockSpec1, inputs: argArray1};
+        return CBlockContains(block1, block2, script);
+}
+
+
+/* Takes in two javascript objects (representating a block (block1) and a C-shaped block (block2)), a
+* SPRITEINDEX, and the current state of the OUTPUTLOG. 
+* 
+* Records to the OUTPUTLOG if the block represented by BLOCK1 occurs inside 
+* the C-shaped block represented by BLOCK2 in any script in 
+* the Scripts tab of the given sprite. See documentation of CBlockContains for 
+* details of what blocks are considered C-shaped.
+*/
+function testCBlockContains(block1, block2, spriteIndex, outputLog) {
+    //Populate optional parameters
+    if (outputLog === undefined) {
+        outputLog = new gradingLog();
+    }
+    if (spriteIndex === undefined) {
+        spriteIndex = 0;
+    }
+
+    var block1Spec = block1.blockSp;
+    var block2Spec = block2.blockSp;
+    var testID = outputLog.addTest("p", block1Spec + ", " + block2Spec, "n/a", true, -1); //needs changing?
+    var feedback;
+    try {
+        var JSONtarget;
+        var doesContain;
+        var scriptsOnScreen = getScripts(spriteIndex);
+        for (var i = 0; i < scriptsOnScreen.length; i++) {
+            JSONtarget = JSONscript(scriptsOnScreen[i]);
+            doesContain = CBlockContains(block1, block2, JSONtarget);
+            if (doesContain) {
+                break; //if any script on the scripting area has block1
+                    //occuring inside block2, then this test will pass.
+            }
+        }
+    } catch(e) {
+        doesContain = false;
+        feedback = "Error when looking to see if " + block1Spec + " is inside of";
+        feedback += " " + block2Spec + " in script.";
+        outputLog.updateLog(testID, doesContain, feedback, doesContain);
+        outputLog.evaluateLog();
+        //Return undefined so the grade state doesn't change when no script is present??
+        return outputLog;
+    }
+    if (doesContain) {
+        feedback = "The " + block1Spec + " block occurs inside of the " + block2Spec + " block.";
+    } else {
+        feedback = "The " + block1Spec + " block does not occur inside of the " + block2Spec + " block.";
+    }
+    outputLog.updateLog(testID, doesContain, feedback, doesContain);
+    outputLog.evaluateLog();
+    return outputLog;
+}
+
 
 /* Takes in two blockSpecs and boolean SEEN1, which is initialized to false.
  * Returns true if blockSpec string BLOCK1 precedes the blockSpec string BLOCK2
@@ -1674,14 +1764,14 @@ function occurancesOfBlockSpec(blockSpec, block) {
 	return result;
 }
 
-/* Takes in a BLOCKSTRING representation of the block to be counted, an EXPECTED
+/* Takes in a BLOCKSTRING representation of the block to be counted, an EXPECTED 
 * number of occurances of said block, a SPRITEINDEX, and the current state of the
-* OUTPUTLOG.
-*
-* Records to the OUTPUTLOG if the given block occurs EXPECTED times in any script in
-* the Scripts tab of the given sprite. EXPECTED should be the minimum number of
-* times the given block must occur in order for the answer to be correct (if the
-* block doesn't occur at least EXPECTED times in a script, the feedback will notify
+* OUTPUTLOG. 
+* 
+* Records to the OUTPUTLOG if the given block occurs EXPECTED times in any script in 
+* the Scripts tab of the given sprite. EXPECTED should be the minimum number of 
+* times the given block must occur in order for the answer to be correct (if the 
+* block doesn't occur at least EXPECTED times in a script, the feedback will notify 
 * the student that the block does not occur enough times for the solution to be correct.
 */
 function testOccurancesOfBlock(blockString, expected, spriteIndex, outputLog) {
