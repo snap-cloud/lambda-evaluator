@@ -253,31 +253,99 @@
          *  - Should only be called from outputLog.evaluateLog()
          */
         function AGFinish(outputLog) {
-
-            //Grab HTML divs
-            var menu_button = document.getElementById("onclick-menu");
-            var grade_button = document.getElementById("autograding_button");
             // Verify correctness
             if (outputLog.allCorrect) {
-                // Update AG_status_bar to Passing state
                 // Save the correct XML string into localStorage
                 AG_bar_graded(outputLog);
                 outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
-
             } else {
                 // Update AG_status_bar to 'graded, but incorrect state
                 AG_bar_semigraded(outputLog);
             }
+            //Save the current XML. Log is saved in gradingLog.scoreLog(...)
             outputLog.saveSnapXML(outputLog.taskID + "_test_state");
             populateFeedback(outputLog);
             console.log('Autograder test Results:');
             console.log(outputLog);
         }
+        /*
+         * Reset state removes all saved logs and XML files, and opens a new
+         * Snap! file. 
+         */
+        function resetState(snapWorld, taskID) {
+            //Delete all autograder data from localStorage.
+            localStorage.removeItem(taskID + "_test_log");
+            localStorage.removeItem(taskID + "_test_state");
+            localStorage.removeItem(taskID + "_c_test_log");
+            localStorage.removeItem(taskID + "_c_test_state");
+            //Load a new project and new gradingLog
+            var ide = snapWorld.children[0];
+            ide.newProject();
+            var new_log = AGStart(snapWorld, taskID);
+            populateFeedback(new_log);
+        }
 
+        /*
+         * Reverts the current Snap! file, log, and AG status bar to the best
+         * recorded previous state. '_c_test_state'.
+         */
+        function revertToBestState(snapWorld, taskID) {
+            // Replace current testing log, with saved 'correct' log and XML.
+            var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
+            var c_prev_log = localStorage.getItem(taskID + "_c_test_log");
+            localStorage.setItem(taskID + "_test_state", c_prev_xml);
+            localStorage.setItem(taskID + "_test_log", c_prev_log);
+            // Parse the previous log, and update feedback and button accordingly.
+            var prev_log = JSON.parse(c_prev_log);
+            prev_log.snapWorld = snapWorld;
+            AG_bar_graded(prev_log);
+            populateFeedback(prev_log);
+            // Open the saved XML solution in Snap!
+            var ide = snapWorld.children[0];
+            ide.openProjectString(c_prev_xml);
+        }
+        /*
+         * Reverts the current Snap! file, log, and AG status to what it was
+         * the last time the 'GRADE' button was pressed.
+         */
+        function revertToLastState(snapWorld, taskID) {
 
+            var ide = snapWorld.children[0];
+            var prev_xml = localStorage.getItem(taskID + "_test_state");
+            var prev_log = JSON.parse(localStorage.getItem(taskID + "_test_log"));
+            prev_log.snapWorld = snapWorld;
+            if (prev_log['allCorrect']) {
+                AG_bar_graded(prev_log);
+            } else {
+                AG_bar_semigraded(prev_log);
+            }
+            populateFeedback(prev_log);
+            ide.openProjectString(prev_xml);
+        }
+        /*
+         * Rever the current Snap! file, log, and AG status to what it was the
+         * last time the edX, 'SUBMIT' button was pressed.
+         */
+        function revertToLastSubmit(snapWorld, taskID) {
+            var last_xml = localStorage.getItem(taskID + "_last_submitted_state");
+            var last_log = localStorage.getItem(taskID + "_last_submitted_log");
+            var ide = snapWorld.children[0];
+            localStorage.setItem(taskID + "_test_state", last_xml);
+            localStorage.setItem(taskID + "_test_log", last_log);
+            var prev_log = JSON.parse(last_log);
+            if (prev_log['allCorrect']) {
+                AG_bar_graded(prev_log);
+            } else {
+                AG_bar_semigraded(prev_log);
+            }
+            populateFeedback(prev_log);
+            ide.openProjectString(last_xml);
+        }
 
+        /*
+         * Makes AG status bar reflect the ungraded state of the outputLog.
+         */
         function AG_bar_ungraded(outputLog) {
-            
             var button_text = "GRADE";
             var button_elem = $('#autograding_button span');
             var regex = new RegExp(button_text,"g");
@@ -294,6 +362,10 @@
             $('#feedback-button').html("View Previous Feedback");
         }
 
+        /*
+         * Makes AG status bar reflect the graded state of the outputLog. This
+         * only occurs when all tests on the outputLog have passed.
+         */
         function AG_bar_graded(outputLog) {
             var button_text = "TESTS PASS";
             var button_elem = $('#autograding_button span');
@@ -301,7 +373,6 @@
             if (button_elem.html().match(regex) !== null) {
                 return;
             }
-            
             button_elem.fadeOut('fast', function() {
                 button_elem.html(button_text);
                 button_elem.slideDown('fast');
@@ -310,9 +381,11 @@
             $('#autograding_button .hover_darken').hide();
             $('#onclick-menu').css('color', 'white');
             $('#feedback-button').html("Review Feedback");
-
         }
-
+        /*
+         * Makes AG status bar reflect the semi graded state of the outputLog. 
+         * This is called when any test on the outputLog fails.
+         */
         function AG_bar_semigraded(outputLog) {
             var button_text = "&#x2770&#x2770 FEEDBACK";
             var button_elem = $('#autograding_button span');
@@ -355,75 +428,52 @@
         function isSameSnapXML(prev_xml, curr_xml, no_subset) {
             //replace script coordinates with generic 'x="0" y="0"'
             // console.log('isSameSnapXML');
-            if ((prev_xml === null) || (curr_xml === null)) {
-                console.log("isSameSnapXML: prev_xml or curr_xml are null");
-                console.log(prev_xml);
-                console.log(curr_xml);
-                return false;
-            }
-            
+            if ((prev_xml === null) || (curr_xml === null)) { return false; }
             //Remove script coordinates
             // prev_xml = prev_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
             // curr_xml = curr_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
             prev_xml = prev_xml.replace(/script x="(.*?)" y="(.*?)"/g, 'script x="0" y="0"');
             curr_xml = curr_xml.replace(/script x="(.*?)" y="(.*?)"/g, 'script x="0" y="0"');
-
             //Remove data hashes hashes (to allow coherence b/w reloads).
             prev_xml = prev_xml.replace(/data:image(.*?)(?=<)/g, '');
             curr_xml = curr_xml.replace(/data:image(.*?)(?=<)/g, '');
-
-            // console.log('previous XML');
-            // console.log(prev_xml);
-            // console.log('current XML');
-            // console.log(curr_xml);
-            // console.log("They are the same:" + String(prev_xml === curr_xml));
-            if (prev_xml === curr_xml) {
-                return true;
-            }
-
+            //If XML is identical other than images and script positions, short-circuit
+            if (prev_xml === curr_xml) { return true; }
             //split between brackets
             prev_xml_scripts = prev_xml.match(/(<script x)(.*?)(<\/script>)/g);
             curr_xml_scripts = curr_xml.match(/(<script x)(.*?)(<\/script>)/g);
-
             //split between custom blocks
             prev_xml_blocks = prev_xml.match(/(<block-definition s)(.*?)(\/block-definition>)/g);
             curr_xml_blocks = curr_xml.match(/(<block-definition s)(.*?)(\/block-definition>)/g);
-            
             //sort script tags and convert back to strings
             //lol. weird syntax. doesn't sort if curr_xml_scripts === null.
             prev_xml_scripts && prev_xml_scripts.sort().join("");
             curr_xml_scripts && curr_xml_scripts.sort().join("");
-
             //If the custom block definitions have changed
             prev_xml_blocks && prev_xml_blocks.sort().join("");
             curr_xml_blocks && curr_xml_blocks.sort().join("");
             if(JSON.stringify(prev_xml_blocks) !== JSON.stringify(curr_xml_blocks)) {
-                console.log("THE CUSTOM BLOCKS ARE DIFFERENT!");
-                console.log(prev_xml_blocks === curr_xml_blocks);
-                console.log(JSON.stringify(prev_xml_blocks));
-                console.log(JSON.stringify(curr_xml_blocks));
                 return false;
             }
-
             //If the previous scripts are a subset of current scripts
             if (!no_subset && isArrSubset(curr_xml_scripts, prev_xml_scripts)) {
                 //Then the solution is still present and in-tact
                 return true;
             }
-
             //replace unsorted scripts with sorted scripts
             //TODO: Replace them properly
             prev_xml = prev_xml.replace(/(<script x)(.*)(<\/script>)/g,prev_xml_scripts);
             curr_xml = curr_xml.replace(/(<script x)(.*)(<\/script>)/g,curr_xml_scripts);
-            console.log('previous XML');
-            console.log(prev_xml);
-            console.log('current XML');
-            console.log(curr_xml);
-            console.log("They are the same:" + String(prev_xml === curr_xml));
-
             return prev_xml === curr_xml;
         }
 
+        /*
+         * Helper Function for isSameSnapXML(...). Used to check if a previous
+         * solution is a sub-set of the current Snap! scripts.
+         * @param {Array:Strings} big
+         * @param {Array:String} small
+         * @return {Boolean} If 'small' is a sub-set of 'big'
+         */
         function isArrSubset(big, small) {
             if (!big || !small) {
                 return false;
@@ -481,67 +531,7 @@
             return message;
         }
 
-        function resetState(snapWorld, taskID) {
-
-            localStorage.removeItem(taskID + "_test_log");
-            localStorage.removeItem(taskID + "_test_state");
-            localStorage.removeItem(taskID + "_c_test_log");
-            localStorage.removeItem(taskID + "_c_test_state");
-
-            var ide = snapWorld.children[0];
-            ide.newProject();
-            var new_log = AGStart(snapWorld, taskID);
-            populateFeedback(new_log);
-        }
-
-        function revertToBestState(snapWorld, taskID) {
-    
-            var ide = snapWorld.children[0];
-
-            var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
-            var c_prev_log = localStorage.getItem(taskID + "_c_test_log");
-            localStorage.setItem(taskID + "_test_state", c_prev_xml);
-            localStorage.setItem(taskID + "_test_log", c_prev_log);
-
-            var prev_log = JSON.parse(c_prev_log);
-            prev_log.snapWorld = snapWorld;
-            AG_bar_graded(prev_log);
-            populateFeedback(prev_log);
-            ide.openProjectString(c_prev_xml);
-        }
-
-        function revertToLastState(snapWorld, taskID) {
-
-            var ide = snapWorld.children[0];
-            var prev_xml = localStorage.getItem(taskID + "_test_state");
-            var prev_log = JSON.parse(localStorage.getItem(taskID + "_test_log"));
-            prev_log.snapWorld = snapWorld;
-            if (prev_log['allCorrect']) {
-                AG_bar_graded(prev_log);
-            } else {
-                AG_bar_semigraded(prev_log);
-            }
-            populateFeedback(prev_log);
-            ide.openProjectString(prev_xml);
-        }
-
-        function revertToLastSubmit(snapWorld, taskID) {
-            var last_xml = localStorage.getItem(taskID + "_last_submitted_state");
-            var last_log = localStorage.getItem(taskID + "_last_submitted_log");
-            var ide = snapWorld.children[0];
-
-            localStorage.setItem(taskID + "_test_state", last_xml);
-            localStorage.setItem(taskID + "_test_log", last_log);
-            var prev_log = JSON.parse(last_log);
-            if (prev_log['allCorrect']) {
-                AG_bar_graded(prev_log);
-            } else {
-                AG_bar_semigraded(prev_log);
-            }
-            populateFeedback(prev_log);
-            ide.openProjectString(last_xml);
-
-        }
+        
 
         function toggleMenu() {
             var menu_items = document.getElementsByClassName("bubble")[0];
