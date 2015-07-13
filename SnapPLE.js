@@ -207,7 +207,11 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 		throw "gradingLog.finishSnapTest: TestID: " + testID + ", is invalid.";
 	}
 	
-	test.output = output;
+	if (output === undefined) {
+		test.output = null;
+	} else {
+		test.output = output;
+	}
 
 	//Update feedback and 'correct' flag depending on output.
 	if (snapEquals(test.output, test.expOut)) {
