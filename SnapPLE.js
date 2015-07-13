@@ -126,7 +126,7 @@ gradingLog.prototype.startSnapTest = function(testID) {
 	} else if (test.testClass !== 'r') {
 
 	}
-
+	test.output = "INVALID";
 	//Retrieve the block from the stage TODO: Handle Errors
 	try {
 		var block = getScript(test.blockSpec);
@@ -159,6 +159,7 @@ gradingLog.prototype.startSnapTest = function(testID) {
 			} else {
 				test['feedback'] = "Test Timeout Occurred."
 			}
+			test.output = "INVALID";
 			stage.threads.stopProcess(getScript(outputLog[testID]["blockSpec"]));
 			test.correct = false;
 			//Set the graded flag to true for this test.
@@ -881,7 +882,7 @@ function testKScope(outputLog, iter) {
 		eLog.callVal = eLog.spliceIgnores().compareSprites(function(i) {
 			var log = this;
 			gLog[testID].graded = true;
-			gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Test Passed.";
+			gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Beautiful Kaleidoscope!";
 			gLog[testID].output = gLog[testID].correct = true;
 			if (log && log.numSprites !== 4) {
 				gLog[testID]["feedback"] = "You do not have the correct amount of Sprites." +
