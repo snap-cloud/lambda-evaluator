@@ -1370,58 +1370,6 @@ function getGlobalVar(varToGet, globalVars) {
 	return globalVars[varToGet].value;
 }
 
-/* Takes in two javascript objects (block1 and block2) and a script.
- * Returns true if the block represented by BLOCK1 occurs inside
- * the C-shaped block represented by BLOCK2. SCRIPT can be
- * obtained by calling:
- *
- * JSONscript(...)
- *
- * The following 7 blocks are considered C-shaped:
- *  -repeat, repeat until, warp, forever, for loop, if, if-else
- *
- */
-function CBlockContains(block1, block2, script) {
-    var morph1, type1, CblockSpecs;
-    CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
-    CblockSpecs = CblockSpecs.concat(["repeat until %b %c", "if %b %c", "if %b %c else %c"]);
-
-    if (CblockSpecs.indexOf(block2.blockSp) < 0) {
-        var rValue = "The second input should be a C-shaped block. See CBlockContains";
-        rValue += " definition for a list of the blocks designated as C-shaped blocks.";
-        return rValue;
-    }
-
-    for (var i = 0; i < script.length; i++) {
-        morph1 = script[i];
-        type1 = typeof(morph1);
-        if ((type1 === "string")) {
-            continue;
-        } else if (Object.prototype.toString.call(morph1) === '[object Array]') {
-            if (CBlockContains(block1, block2, morph1)) {
-                return true;
-            }
-        } else if (morph1.blockSp === block2.blockSp) {
-            if (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 1], block1.blockSp, block1.inputs)) {
-                return true;
-            }
-            if ((morph1.blockSp === "if %b %c else %c")
-                && (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 2], block1.blockSp, block1.inputs))) {
-                return true;
-            }
-        } else if (CblockSpecs.indexOf(morph1.blockSp) >= 0) {
-            if (CBlockContains(block1, block2, morph1.inputs[morph1.inputs.length - 1])) {
-                return true;
-            }
-            if ((morph1.blockSp === "if %b %c else %c")
-                && (CBlockContains(block1, block2, morph1.inputs[morph1.inputs.length - 2]))) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 /* Takes in string CUSTOMBLOCK, the strings BLOCKSPEC1 (any block)
  * and BLOCKSPEC2 (a conditional block), and their respective
  * optional arg arrays ARGARRAY1 and ARGARRAY2. Returns true if BLOCKSPEC1 is
@@ -1555,15 +1503,16 @@ function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex) 
  *
  * JSONscript(...)
  *
- * The following 7 blocks are considered C-shaped:
- *  -repeat, repeat until, warp, forever, for loop, if, if-else
+ * The following 8 blocks are considered C-shaped:
+ *  -repeat, repeat until, warp, forever, for loop, if, if else, for each
  *
  */
 function CBlockContains(block1, block2, script) {
     var morph1, type1, CblockSpecs;
     CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
     CblockSpecs = CblockSpecs.concat(["repeat until %b %c", "if %b %c", "if %b %c else %c"]);
-
+    CblockSpecs = CblockSpecs.concat(["for each %upvar of %l %cs"]);
+    
     if (CblockSpecs.indexOf(block2.blockSp) < 0) {
         var rValue = "The second input should be a C-shaped block. See CBlockContains";
         rValue += " definition for a list of the blocks designated as C-shaped blocks.";
@@ -1599,6 +1548,7 @@ function CBlockContains(block1, block2, script) {
     }
     return false;
 }
+
 
 /* Takes in a blockSpec BLOCKSPEC1, a nickname BLOCK2NAME, a javascript object SCRIPT,
  * and optional arguments ARGARRAY1 and ARGARRAY2.
