@@ -1580,11 +1580,11 @@ function CBlockContains(block1, block2, script) {
                 return true;
             }
         } else if (morph1.blockSp === block2.blockSp) {
-            if (scriptContains(morph1.inputs[morph1.inputs.length - 1], block1)) {
+            if (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 1], block1.blockSp, block1.inputs)) {
                 return true;
             }
             if ((morph1.blockSp === "if %b %c else %c")
-                && (scriptContains(morph1.inputs[morph1.inputs.length - 2], block1))) {
+                && (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 2], block1.blockSp, block1.inputs))) {
                 return true;
             }
         } else if (CblockSpecs.indexOf(morph1.blockSp) >= 0) {
@@ -1629,7 +1629,7 @@ function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
             throw "The given C-block nickname is invalid.";
         }
         var block2Spec = nicknameDict[block2Name];
-        var block2 = (blockSp: block2Spec, inputs: argArray2);
+        var block2 = {blockSp: block2Spec, inputs: argArray2};
         var block1 = {blockSp: blockSpec1, inputs: argArray1};
         return CBlockContains(block1, block2, script);
 }
