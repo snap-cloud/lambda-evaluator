@@ -111,6 +111,9 @@ gradingLog.prototype.runSnapTests = function() {
 			this.startSnapTest(id);
 			return true;
 		}
+		if (test.testClass === 's') {
+			return true;
+		}
 	}
 	//return this gradingLog
 	return false;
@@ -203,7 +206,11 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 		throw "gradingLog.finishSnapTest: TestID: " + testID + ", is invalid.";
 	}
 	
-	test.output = output;
+	if (output === undefined) {
+		test.output = null;
+	} else {
+		test.output = output;
+	}
 
 	//Update feedback and 'correct' flag depending on output.
 	if (snapEquals(test.output, test.expOut)) {
@@ -292,6 +299,11 @@ gradingLog.prototype.evaluateLog = function(testIDs) {
 	var tests_passed = 0;
 	//Set 'correct' and 'feedback' fields for all in testIDs
 	for (var id of testIDs) {
+		
+		// if (outputLog[id]["output"] instanceof List) {
+		//	console.log(outputLog[id]["output"].contents);
+		// 	outputLog[id]["output"] = outputLog[id]["output"].asArray();
+		// }
 		//TODO: Terribly ugly. This should be abstracted.
 		if (outputLog[id]['testClass'] === "a") {
 			if (outputLog[id]['correct']) {
@@ -351,7 +363,12 @@ gradingLog.prototype.scoreLog = function() {
 	}
 	var testIDs = [];
 	for (var i = 1; i <= this.testCount; i++) {
-	   testIDs.push(i);
+		//If any tests are incomplete, return the log and prevent updating.
+		if (!this[i].graded) { 
+			console.log("scoreLog: The log is not yet complete.");
+			return this; 
+		}
+	   	testIDs.push(i);
 	}
 	// .allCorrect is initially true, and set to false if a test has failed.
 	this.allCorrect = true;
@@ -367,6 +384,7 @@ gradingLog.prototype.scoreLog = function() {
 			this.allCorrect = false;
 		}
 	}
+
 	//Calculate the pScore
 	this.numCorrect = tests_passed;
 	this.pScore = tests_passed / this.testCount;
@@ -619,14 +637,26 @@ function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
 	var testIDs = new Array(inputs.length);
 	//TODO: Handle this error in startSnapTest
 	//var scripts = getScript(blockSpec);
-
+	//checkArrayForList(expOuts);
 
 	for (var i=0;i<inputs.length; i++) {
+		//checkArrayForList(inputs[i]);
 		testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i]);
 	}
 	// testBlock(outputLog, testIDs[0]);
 	// outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
 	return outputLog;
+}
+
+//David's code for checking an array for inner arrays
+//then converting them to snap lists
+//a - the JS Array you want to check for inner Arrays
+function checkArrayForList(a) {
+	for (var i = 0; i < a.length; i++) {
+		if (a[i] instanceof Array) {
+			a[i] = new List(a[i]);
+		}
+	}
 }
 
 function setValues(block, values) {
@@ -638,6 +668,9 @@ function setValues(block, values) {
 		if (morph.constructor.name === "InputSlotMorph") {
 			morph.setContents(values[valIndex]);
 			valIndex += 1;
+		}
+		if (morph instanceof ArgMorph) {
+
 		}
 	}
 	if (valIndex + 1 !== values.length) {
@@ -759,7 +792,7 @@ SpriteEventLog.prototype.checkDup = function(index) {
 		this["" + index].pop();
 	} else if (this["" + index][len - 1]["scale"] !== this["" + index][len - 2]["scale"]) {
 		this["" + index][len - 1].ignore = true;
-	}
+	} 
 }
 
 //takes out all of the "ignored" events from the event log
@@ -792,7 +825,7 @@ SpriteEventLog.prototype.compareSprites = function(f) {
 	}
 
 	for (var i = 0; i < this["0"].length; i++) {
-		if (!f(this, i)) {
+		if (!f.call(this, i)) {
 			return false;
 		}
 	}
@@ -827,13 +860,16 @@ function printEventLog(eventLog, ignore) {
 //Does not test "clear"/"penup"/"pendown"
 //Only tests for prescence of 4 sprites and
 //proper sprite movements
-function testKScope(snapWorld, taskID, iter) {
+function testKScope(outputLog, iter) {
+	var snapWorld = outputLog.snapWorld;
+	var taskID = outputLog.taskID;
+	var gLog = outputLog;
 	var eLog = new SpriteEventLog(),
-		gLog = new gradingLog(snapWorld, taskID),
-		testID = gLog.addTest("s", null, null, true, -1),
+		testID = gLog.addTest("s", undefined, null, true, -1),
 		iterations = iter || 3,
-		spriteList = world.children[0].sprites.contents;
+		spriteList = snapWorld.children[0].sprites.contents;
 
+	//creating this too early has caused issues with getting incorect data
 	var collect = setInterval(function() {
         for (var i = 0; i < spriteList.length; i++) {
             eLog.addEvent(spriteList[i], i);
@@ -842,50 +878,54 @@ function testKScope(snapWorld, taskID, iter) {
 
 	var callback = function() {
 		clearInterval(collect);
-		eLog.callVal = eLog.spliceIgnores().compareSprites(function(log, i) {
-				if (log && log.numSprites !== 4) {
-					gLog["" + testID]["feedback"] = "You do not have the correct amount of Sprites." +
-													"Make sure you have four different sprites.";
+		//this loop hacky fixes the above issue
+		for (var i = 0; i < eLog.numSprites; i++) {
+			eLog["" + i][0].ignore = true;
+		}
+		eLog.callVal = eLog.spliceIgnores().compareSprites(function(i) {
+			var log = this;
+			gLog[testID].graded = true;
+			gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Test Passed.";
+			gLog[testID].output = gLog[testID].correct = true;
+			if (log && log.numSprites !== 4) {
+				gLog[testID]["feedback"] = "You do not have the correct amount of Sprites." +
+												"Make sure you have four different sprites.";
+				gLog[testID].output = gLog[testID].correct = false;
+				return false;
+			}
 
-					return false;
-				}
+			var x1 = eLog["0"][i].x, penDown1 = eLog["0"][i].penDown,
+				x2 = eLog["1"][i].x, penDown2 = eLog["1"][i].penDown,
+				x3 = eLog["2"][i].x, penDown3 = eLog["2"][i].penDown,
+				x4 = eLog["3"][i].x, penDown4 = eLog["3"][i].penDown,
+				y1 = eLog["0"][i].y,
+				y2 = eLog["1"][i].y,
+				y3 = eLog["2"][i].y,
+				y4 = eLog["3"][i].y;
 
-				var x1 = log["0"][i].x, penDown1 = log["0"][i].penDown,
-					x2 = log["1"][i].x, penDown2 = log["1"][i].penDown,
-					x3 = log["2"][i].x, penDown3 = log["2"][i].penDown,
-					x4 = log["3"][i].x, penDown4 = log["3"][i].penDown,
-					y1 = log["0"][i].y,
-					y2 = log["1"][i].y,
-					y3 = log["2"][i].y,
-					y4 = log["3"][i].y;
+			if (penDown1 !== penDown2 !== penDown3 !== penDown4) {
+				gLog[testID]["feedback"] = "One of your sprites did not draw to the stage. " +
+												"Make sure your sprites all call pen down before " +
+												"following the mouse.";
+				gLog[testID].output = gLog[testID].correct = false;
+				return false;
+			}
 
-				if (x1 + x2 + x3 + x4 !== 0 ||
-					y1 + y2 + y3 + y4 !== 0) {
-					gLog["" + testID]["feedback"] = "One or more sprite X, Y values are incorrect. " +
-													"Make sure your sprites all go to the correct " +
-													"mouse x, y values.";
-					return false;
-				}
+			if (x1 + x2 + x3 + x4 !== 0 ||
+				y1 + y2 + y3 + y4 !== 0) {
+				gLog[testID]["feedback"] = "One or more sprite X, Y values are incorrect. " +
+												"Make sure your sprites all go to the correct " +
+												"mouse x, y values.";
 
-				if (penDown1 !== penDown2 !== penDown3 !== penDown4) {
-					gLog["" + testID]["feedback"] = "One of your sprites did not draw to the stage. " +
-													"Make sure your sprites all call pen down before " +
-													"following the mouse.";
-					return false;
-				}
-
-				gLog["" + testID]["feedback"] = "Correct!";
-				return true;
+				gLog[testID].output = gLog[testID].correct = false;
+				return false;
+			}
+			return true;
 		});
-		// this is where we would add a callback to getGrade or whatevers
-
-		gLog.updateLog(testID, eLog.callVal, null, eLog.callVal);
-
-		console.log(eLog.callVal);
+		gLog.scoreLog();
 	};
 
 	makeDragon(iterations, callback);
-
 	return gLog;
 
 }
@@ -997,6 +1037,7 @@ function testUniformShapeInLoop(sides, angle, length, gradeLog, blockSpec) {
 				}
 			}
 			gLog.updateLog(testID, result, feedback, result);
+			//setTimeout(gLog.scoreLog, 50);
 		});
 
 	spoof("green flag");
@@ -1029,7 +1070,7 @@ function realitiveY(coord) {
 function createInputSpoof(timeout, callback, element) {
 	var timeoutCount = 0,
 		timeoutInc = timeout,
-		call = callback || function() {return null;},
+		callB = callback || function() {return null;},
 		element = element || "canvas";
 
 	return (function(action, x, y) {
@@ -1053,7 +1094,7 @@ function createInputSpoof(timeout, callback, element) {
 				setTimeout(function() {world.children[0].stage.fireGreenFlagEvent()}, timeoutCount);
 				break;
 			case "callback":
-				setTimeout(function() {callVal = call();}, timeoutCount);
+				setTimeout(function() {callB();}, timeoutCount);
 				break;
 			case "time":
 				return timeoutCount;
@@ -1160,8 +1201,8 @@ function drawDragon(turns, func) {
 function makeDragon(iterations, callback) {
 	var turns = createCurve(iterations);
 	var act = createInputSpoof(100, callback);
-	act("c");
 	act("mousemove", 0, 0);
+	act("c");
 	act("space");
 	drawDragon(turns, act);
 	act("stop all");
@@ -1386,7 +1427,7 @@ function CBlockContains(block1, block2, script) {
  * optional arg arrays ARGARRAY1 and ARGARRAY2. Returns true if BLOCKSPEC1 is
  * inside of the block represented by BLOCKSPEC2.
  */
-function CBlockContainsInCustom(customBlockSpec, blockSpec1, blockSpec2, argArray1, argArray2, spriteIndex) {
+function CBlockContainsInCustom(customBlockSpec, spriteIndex, blockSpec1, blockSpec2, argArray1, argArray2) {
 	if (argArray1 === undefined) {
 		argArray1 = [];
 	}
@@ -1459,7 +1500,7 @@ function scriptContainsBlock(script, blockSpec, argArray) {
  * Otherwise returns false. If ARGARRAY is an array, then we check that all of the inputs
  * are correct in addition to the blockspec. Otherwise we will just check that the blockspec is fine.
  */
-function spriteContainsBlock(blockSpec, argArray, spriteIndex) {
+function spriteContainsBlock(blockSpec, spriteIndex, argArray) {
 	if (argArray === undefined) {
 		argArray = [];
 	}
