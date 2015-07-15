@@ -241,7 +241,7 @@
                 document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
 
             }
-            populateFeedback(outputLog);
+            //populateFeedback(outputLog);
             return outputLog;
 
         }
@@ -592,6 +592,7 @@
             var feedback = log["feedback"];
             var title = log["comment"];
 
+            // Checks if the grading button has been clicked
             if (title === "Please run the Snap Autograder before clicking the 'Submit' button.") {
                 document.getElementById("table-data").style.display = "none";
                 document.getElementById("reporter-table-data").style.display = "none";
@@ -600,6 +601,7 @@
                 document.getElementById("reporter-table-data").style.display = "table";
             }
 
+            // Wipes the feedback clean, including if it has been populated before. 
             caution.innerHTML = "";
             edx_caution.innerHTML = "";
             document.getElementById("comment").innerHTML = "";
@@ -613,6 +615,7 @@
                 repTableResults.removeChild(repTableResults.children[1]);
             }
 
+            // Warnings for when student's feedback differ from what's on the scripting area/what's been submitted to edX
             document.getElementById("comment").innerHTML = title;
             if (!last_log) {
                 edx_caution.innerHTML = "[WARNING: You have not submitted your results to edX yet.]"
@@ -627,6 +630,7 @@
                 var test = String(i);
                 var newRow = document.createElement("tr");
 
+                // If test is not a reporter test, only add columns for Test # and Feedback
                 if (feedback[test]["testClass"] !== "r") {
                     if (document.getElementsByClassName("non-reporter").length === 0) {
                         addBasicHeadings();
@@ -635,6 +639,7 @@
                     nonRepTest += 1;
                 }
 
+                // If test is a reporter test, add all columns, including input, output, and expected. Makes the background of every other row light gray.
                 if (feedback[test]["testClass"] === "r") {
                     if (document.getElementsByClassName("reporter").length === 0) {
                         addReporterHeadings();
@@ -643,25 +648,31 @@
                     var keys = ["input", "output", "expOut"];
                     for (key=0; key<3; key++) {
                         if (repTest % 2 === 0) {
-                            addTableCell(feedback[test][keys[key]], "evens", newRow);
+                            addTableCell(feedback[test][keys[key]], ["data", "evens"], newRow);
                         } else {
                             addTableCell(feedback[test][keys[key]], "data", newRow);
                         }
                     }
                     repTest += 1;
                 }
+
+                // If test is correct, make the feedback appropriately colored. 
                 if (feedback[test]["correct"] === true) {
                     addTableCell(feedback[test]["feedback"], "correctans", newRow);
+                    addTableCell("Regrade", ["data", "hidden"], newRow);
                 } else {
                     addTableCell(feedback[test]["feedback"], "incorrectans", newRow);
+                    addTableCell("Regrade", ["data", "regrade", test], newRow);
                 }
 
                 if (feedback[test]["testClass"] === "r") {
                     document.getElementById("reporter-table-data").appendChild(newRow);
                 } else {
                     document.getElementById("table-data").appendChild(newRow);
-                }
+                }  
             }
+            console.log(outputLog);
+            regradeOnClick(outputLog);
         }
 
         function addBasicHeadings() {
@@ -693,7 +704,11 @@
             var data = document.createElement("td");
             var text = document.createTextNode(text);
             data.appendChild(text);
-            data.classList.add(elemClass);
+            if (Array.isArray(elemClass)) {
+                DOMTokenList.prototype.add.apply(data.classList, elemClass);
+            } else {
+                data.classList.add(elemClass);
+            }
             row.appendChild(data);
         }
 
@@ -740,6 +755,22 @@
             }
         }
 
+        function regradeOnClick(outputLog) {
+            $(".regrade").click(function() {
+                var testId = this.classList[2];
+                var test = outputLog[testId];
+                outputLog[testId].graded = false;
+                outputLog[testId].correct = false;
+                //alert(typeof outputLog.startSnapTest);
+                console.log(outputLog);
+                console.log("before");
+                //outputLog.startSnapTest(2);
+                //outputLog.startSnapTest(1);
+                outputLog.startSnapTest(parseInt(testId, 10));
+                console.log(outputLog);
+                //this.classList[2]); 
+            });
+        }
 
         var world;
         window.onload = function () {
@@ -783,7 +814,7 @@
                     ide.openProjectString(localStorage.getItem(preReqID));
                 }
             }
-            setInterval(loop, 1);
+            
 
             //AUTOGRADER ADDITION - 
             //Forced to use setTimeout() to let the world load before... Maybe not.
@@ -822,17 +853,33 @@
             var revert_button = document.getElementById("revert-button");
             var undo_button = document.getElementById("undo-button");
             var last_submit = document.getElementById("last-submit");
+            //var menu_button = document.getElementById("hamburger-menu");
             var menu_button = document.getElementsByClassName("onclick-menu")[0];
             //var help_menu = document.getElementById("circle");
             var help_overlay = document.getElementById('overlay');
             var feedback_button = document.getElementById("feedback-button");
             var results_overlay = document.getElementById("ag-output");
+            var snapWorld = document.getElementById("world");
+            var regrade_buttons = document.getElementsByClassName("regrade");
 
             reset_button.onclick = function() { resetState(world, id); };
             revert_button.onclick = function() { revertToBestState(world, id); };
             last_submit.onclick = function() { revertToLastSubmit(world, id); };
             undo_button.onclick = function() { revertToLastState(world, id); };
             menu_button.onclick = function() { toggleMenu(id); };
+
+
+            /*regrade_buttons[0].onclick = function() {
+                alert("hello");
+            }*/
+
+            /*document.getElementsByClassName("1")[0].onclick = function() {
+                alert("hello");
+            }*/
+
+            $(".bubble").click(function(event){
+                event.stopPropagation();  
+            });
 
             feedback_button.onclick = function() {
                 openResults();
@@ -844,11 +891,18 @@
                 }
             }
 
-            results_overlay.onclick = function(e) {
+            /*results_overlay.onclick = function(e) {
                 if (!(document.getElementById('ag-results').contains(e.target))) {
                     closeResults();
                 }
+            }*/
+
+            snapWorld.onclick = function(e) {
+                if (!(document.getElementById('dropdown-open').contains(e.target))) {
+                    toggleMenu();
+                }
             }
+
 
             /*help_menu.onclick = function() {
                 openModal();
@@ -856,9 +910,6 @@
             /* Check if the snap xml has changed "significantly".
              * Exclude script position and edit history.
              */
-            
-
-            
 
 
             /*document.addEventListener("click", function() {
@@ -868,11 +919,29 @@
             setTimeout(function() {
                 console.log(world);
                 var outputLog = AGStart(world,id);
+                //runAGTest(world, id);
+                //runAGTest(world, id);
 
                 //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
-                populateFeedback(outputLog);
-                populateFeedback(outputLog);
+                //populateFeedback(outputLog);
+                //populateFeedback(outputLog);
                 grayOutButtons();
+
+                /*$(".regrade").click(function() {
+                    var testId = this.classList[2];
+                    var test = outputLog[testId];
+                    test.graded = false;
+                    test.correct = false;
+                    outputLog.scoreLog;
+                    console.log(outputLog);
+                    var mylog = outputLog;
+                    //this.classList[2]); 
+                });*/
+
+                
+                /*for (i=0; i<regrade_buttons.length; i++) {
+                    regrade_buttons[i].setAttribute('onclick', 'alert("hello")');
+                }*/
                 //populateFeedback(outputLog);
                 //var outputLog = AGStart(world,id);
                 //populateFeedback(outputLog);
@@ -886,7 +955,7 @@
             //runAGTest(world,id);
             //AGUpdate(world, id);
 
-            
+            setInterval(loop, 1);
             
         };
 
@@ -895,6 +964,7 @@
         }
 
     </script>
+    <script type="text/javascript" src="SnapPLE.js"></script>
     <script type="text/javascript" src="AG_EDX.js"></script>
 </head>
 <body style="margin: 0;">
@@ -998,5 +1068,6 @@
 
     </div>
     <script type="text/javascript" src="AG_status_bar.js" />
+    <script type="text/javascript" src="SnapPLE.js"></script>
 </body>
 </html>

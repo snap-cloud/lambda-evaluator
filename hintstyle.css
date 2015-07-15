@@ -55,6 +55,20 @@ table.results {
 	padding: 3px 20px;
   }
 
+  td.hidden {
+    white-space: normal;
+	padding: 3px 20px;
+	visibility: hidden;
+	width: 20px;
+  }
+
+  td.regrade {
+    color: red;
+    white-space: normal;
+	padding: 3px 20px;
+	width: 20px;
+  }
+
 
 .correctans, .incorrectans, .tests {
 	white-space: normal;
