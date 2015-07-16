@@ -48,9 +48,12 @@ def hint_fn(answer_ids, student_answers, new_cmap, old_cmap):
             current_test = log[test]
             if str(current_test["testClass"]) == "r":
                 test_string += "teststart" + str(reptests) + "dataend"
-                reptests += 1
                 for key in ["input", "output", "expOut"]:
-                    test_string += "datastart" + str(current_test[key]) + "dataend"
+                    if reptests % 2 == 0:
+                        test_string += "evenstart" + str(current_test[key]) + "dataend"
+                    else:
+                        test_string += "datastart" + str(current_test[key]) + "dataend"
+                reptests += 1
             if str(current_test["testClass"]) != "r":
                 test_string += "teststart" + str(noreptests) + "dataend"
                 noreptests += 1
