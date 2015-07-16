@@ -17,6 +17,13 @@ function gradingLog(snapWorld, taskID) {
 	this.snapWorld = snapWorld || null;
 	this.graded = false;
 	this.numCorrect = 0;
+	var prev_log = localStorage.getItem(taskID + "_test_log");
+	if (prev_log !== null) {
+		this.numAttempts = prev_log.numAttempts;
+	} else {
+		this.numAttempts = 0;
+	}
+	//this.numAttempts 
 }
 
 /* Save the gradingLog in localStorage.
@@ -94,8 +101,22 @@ gradingLog.prototype.addAssert = function(testClass, statement, feedback, text) 
 							'correct': statement,
 							'feedback': feedback,
 							'graded': true};
+							//'assertion': statement};
 	return this.testCount;
 
+}
+
+gradingLog.prototype.updateAssert = function(testID, feedback, correct, text) {
+	var test = this[testID];
+	try {
+		test.graded = true;
+		test.feedback = feedback || test.feedback;
+		test.correct = correct || test.correct;
+		//test.text = text;
+
+	} catch(e) {
+		throw "gradingLog.finishTest: TestID is invalid.";
+	}
 }
 
 /*
@@ -201,7 +222,7 @@ gradingLog.prototype.startSnapTest = function(testID) {
 gradingLog.prototype.finishSnapTest = function(testID, output) {
 
 	//Populate Grade Log //May be DEPRICATED.
-	var test = this[testID]
+	var test = this[testID];
 	if (test === undefined) {
 		throw "gradingLog.finishSnapTest: TestID: " + testID + ", is invalid.";
 	}
@@ -215,10 +236,12 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	//Update feedback and 'correct' flag depending on output.
 	if (snapEquals(test.output, test.expOut)) {
 		test.correct = true;
-		test.feedback = test.feedback || "Test Passed.";
+		//test.feedback = test.feedback || "Test Passed.";
+		test.feedback = "Test Passed." || test.feedback;
 	} else {
 		test.correct = false;
-		test.feedback = test.feedback || "Unexpected Output: " + String(output);
+		//test.feedback = test.feedback || "Unexpected Output: " + String(output);
+		test.feedback = "Unexpected Output: " + String(output) || test.feedback;
 	}
 	//Set test graded flag to true, for gradingLog.gradeLog()
 

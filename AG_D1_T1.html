@@ -25,16 +25,30 @@
         // taskID uniquely identifies the task for saving in browser localStorage.
         var taskID = "AG_D1_T1";
         var id = courseID + taskID;
-        var agOutput;
+        var assert;
+        var pos_fb = "The 'factorial' block is present.";
+        var neg_fb = "The 'factorial %num' block was not found on-screen.";
 
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
             /* Factorial */
-            testAssert(outputLog, isScriptPresent('factorial %s',0),
+
+            /*var assert1 = function assert1() {
+                isScriptPresent('factorial %s',0);
+            }*/
+
+            assert = function assert() {
+                testAssert(outputLog, isScriptPresent('factorial %s',0),
                 "The 'factorial' block is present.",
                 "The 'factorial %num' block was not found on-screen.",
                 "Make sure you name your custom block, 'factorial %num'.");
+            }
+            assert();
+            /*testAssert(outputLog, assert1,//isScriptPresent('factorial %s',0),
+                "The 'factorial' block is present.",
+                "The 'factorial %num' block was not found on-screen.",
+                "Make sure you name your custom block, 'factorial %num'.");*/
             // testAssert(outputLog, CBlockContainsInCustom('factorial %s', 0,
             //     'if %c else %c', 'report %s'),
             //     "The factorial block;
@@ -43,6 +57,10 @@
                 [1,1,2,24,120,3628800],
                 [-1,-1,-1,-1,-1,-1],
                 outputLog);
+
+            /*var assert1 = function assert1() {
+                isScriptPresent('factorial %s',0);
+            }*/
             // /* KScopeTest */
             // testAssert(outputLog, 
             //     spriteContainsBlock('when %keyHat key pressed', 0, ['space']) &&
@@ -766,7 +784,19 @@
                 console.log("before");
                 //outputLog.startSnapTest(2);
                 //outputLog.startSnapTest(1);
-                outputLog.startSnapTest(parseInt(testId, 10));
+                if (test.testClass === "r") {
+                    outputLog.startSnapTest(parseInt(testId, 10));
+                } else {
+                    if (isScriptPresent('factorial %s',0)) {
+                        outputLog.updateAssert(testId, pos_fb, true);
+                    } else {
+                        outputLog.updateAssert(testId, neg_fb, false);
+                    }
+                    populateFeedback(outputLog);
+                    //outputLog.updateAssert(testId, )
+                    //outputLog.startSnapTest(parseInt(testId, 10));
+                }
+                //outputLog.startSnapTest(parseInt(testId, 10));
                 console.log(outputLog);
                 //this.classList[2]); 
             });
@@ -774,6 +804,8 @@
 
         var world;
         window.onload = function () {
+
+            //check if attempt num for problem exists in local storage:
 
             //AUTOGRADER ADDITION - FEEDBACK FORMATTING
             // Checks if problem has been checked and modifies the autograded output if it has been checked
@@ -919,8 +951,8 @@
             setTimeout(function() {
                 console.log(world);
                 var outputLog = AGStart(world,id);
-                //runAGTest(world, id);
-                //runAGTest(world, id);
+                runAGTest(world, id);
+                runAGTest(world, id);
 
                 //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
                 //populateFeedback(outputLog);
