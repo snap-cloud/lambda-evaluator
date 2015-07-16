@@ -1657,6 +1657,9 @@ function testCBlockContains(block1, block2, spriteIndex, outputLog) {
  * JSONscript(...)
  */
 function ifElseContains(script, clause, block1Spec, argArray1) {
+	if (argArray1 === undefined) {
+        argArray1 = [];
+    }
     if (!scriptContainsBlock(script, "if %b %c else %c")) {
         return false;
     }
@@ -1729,6 +1732,12 @@ function blockPrecedes(block1, block2, script, seen1) {
 			}
 			if (blockPrecedes(block1, block2, morph1.inputs, seen1)) {
 				return true;
+			}
+			if (morph1.blockSp ===  "if %b %c else %c") {
+				if (ifElseContains(script, "if", block1)
+					|| ifElseContains(script, "else", block1)) {
+					seen1 = true;
+				}
 			}
 		}
 	}
