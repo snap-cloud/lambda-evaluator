@@ -1,15 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Snap! Build Your Own Blocks. Beta</title>
-    <link rel="shortcut icon" href="http://snap.berkeley.edu/fav3.gif" type="image/gif">
+    <link rel="shortcut icon" href="favicon.ico">
     <script src="jschannel.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script type="text/javascript" src="underscore-min.js"></script>
     <script type="text/javascript" src="SnapPLE.js"></script>
     <!-- Moved down to the bottom to have var id. -->
     
-    <script type="text/javascript" src="snap.js"></script>
+    <!-- <script type="text/javascript" src="snap.js"></script> -->
+    <script type="text/javascript" src="morphic.js"></script>
+    <script type="text/javascript" src="widgets.js"></script>
+    <script type="text/javascript" src="blocks.js"></script>
+    <script type="text/javascript" src="threads.js"></script>
+    <script type="text/javascript" src="objects.js"></script>
+    <script type="text/javascript" src="gui.js"></script>
+    <script type="text/javascript" src="paint.js"></script>
+    <script type="text/javascript" src="lists.js"></script>
+    <script type="text/javascript" src="byob.js"></script>
+    <script type="text/javascript" src="xml.js"></script>
+    <script type="text/javascript" src="store.js"></script>
+    <script type="text/javascript" src="locale.js"></script>
+    <script type="text/javascript" src="cloud.js"></script>
+    <script type="text/javascript" src="sha512.js"></script>
 
     <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
     <link rel="stylesheet" type="text/css" href="hintstyle.css" />
@@ -170,7 +185,8 @@
             }
 
 
-            //menu bar grays out options that are not available (ex. current state is same as best attempt) and restores the button state
+            //menu bar grays out options that are not available 
+            //(ex. current state is same as best attempt) and restores the button state
 
             var last_submit = document.getElementById("last-submit");
             if (last_xml === null || isSameSnapXML(last_xml, curr_xml)) {
@@ -221,7 +237,6 @@
                 outputLog = JSON.parse(c_prev_log);
                 outputLog.snapWorld = snapWorld;
                 AG_bar_graded(outputLog);
- 
             } else if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
                 //Restore the AG status bar to a graded state
                 console.log('AGUpdate: Thinks this is just the "last" XML.');
@@ -231,15 +246,16 @@
                 outputLog = JSON.parse(prev_log);
                 outputLog.snapWorld = snapWorld;
                 AG_bar_semigraded(outputLog);
-
             } else {
                 //Restore the AG status bar to a graded state
-                outputLog = new gradingLog(snapWorld, taskID);
+                if (prev_log) {
+                    outputLog = JSON.parse(prev_log);
+                } else {
+                    outputLog = new gradingLog(snapWorld, taskID);
+                }
                 AG_bar_ungraded(outputLog);
                 document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
-
             }
-            populateFeedback(outputLog);
             return outputLog;
 
         }
@@ -359,7 +375,11 @@
             });          
             $('#autograding_button .hover_darken').show();
             $('#onclick-menu').css('color', 'white');
-            $('#feedback-button').html("View Previous Feedback");
+            if (localStorage.getItem(outputLog.taskID + "_test_log")) {
+                $('#feedback-button').html("View Previous Feedback");
+            } else {
+                $('#feedback-button').html("No Feedback Available");
+            }
         }
 
         /*
@@ -582,7 +602,7 @@
                 document.getElementById("reporter-table-data").style.display = "table";
             }
 
-            caution.innerHTML = "";
+            // caution.innerHTML = "";
             edx_caution.innerHTML = "";
             document.getElementById("comment").innerHTML = "";
             var tableTitles = document.getElementsByClassName("titles");
@@ -731,7 +751,8 @@
             grade_button.style.cursor = "pointer";
             //Call the test suite when this element is clicked.
             var update_listener = function() {
-                AGUpdate(world, id);
+                var outputLog = AGUpdate(world, id);
+                populateFeedback(outputLog);
             };
             var button_listener = function(event) {
                 event.stopPropagation();

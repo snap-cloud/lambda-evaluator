@@ -561,7 +561,7 @@ function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog
 		var isPresent = false;
 		var feedback = "Script Missing: The target script was not found in the scripts tab"
 		outputLog.updateLog(testID, isPresent, feedback, isPresent);
-		outputLog.evaluateLog();
+		// outputLog.evaluateLog();
 		// return outputLog
 		//Return undefined so the grade state doesn't change when no script is present.
 		return outputLog;
