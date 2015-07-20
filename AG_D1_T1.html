@@ -35,15 +35,15 @@
                 "The 'factorial' block is present.",
                 "The 'factorial %num' block was not found on-screen.",
                 "Make sure you name your custom block, 'factorial %num'.");
-            testAssert(outputLog, customBlockContains('factorial %s', 'factorial %s'),
-                "The 'factorial' block has a recursive call to itself.",
-                "There is no recursive call to 'factorial.",
-                "Make sure you have a recursive call inside of 'factorial.");
-            console.log(blockPrecedes('factorial %s', '%n − %n', getCustomBody('factorial %s', 0)));
-            testAssert(outputLog, blockPrecedes('factorial %s', '%n − %n', getCustomBody('factorial %s', 0)),
-                "The recursive call to'factorial' block contains a minus block",
-                "There is no minus block in the recursive call to 'factorial'.",
-                "Make sure you have a minus block inside of the recursive call.");
+            // testAssert(outputLog, customBlockContains('factorial %s', 'factorial %s'),
+            //     "The 'factorial' block has a recursive call to itself.",
+            //     "There is no recursive call to 'factorial.",
+            //     "Make sure you have a recursive call inside of 'factorial.");
+            // //console.log(blockPrecedes('factorial %s', "%n − %n", getCustomBody('factorial %s', 0)));
+            // testAssert(outputLog, blockPrecedes('factorial %s', "%n − %n", getCustomBody('factorial %s', 0)),
+            //     "The recursive call to'factorial' block contains a minus block",
+            //     "There is no minus block in the recursive call to 'factorial'.",
+            //     "Make sure you have a minus block inside of the recursive call.");
             multiTestBlock('factorial %s', 
                 [[0],[1],[2],[4],[5],[10]],
                 [1,1,2,24,120,3628800],

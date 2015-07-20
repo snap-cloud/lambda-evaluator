@@ -516,9 +516,12 @@ function getAllScripts(blockSpec, spriteIndex) {
 	//Try to return the first block matching 'blockSpec'.
 	//Throw exception if none exist/
 	var validScripts = scripts.filter(function (morph) {
+		// if (morph.selector) {
+		// 	//TODO: consider adding selector type check (morph.selector === "evaluateCustomBlock")
+		// 	return (morph.blockSpec === blockSpec);
+		// }
 		if (morph.selector) {
-			//TODO: consider adding selector type check (morph.selector === "evaluateCustomBlock")
-			return (morph.blockSpec === blockSpec);
+			return blockSpecMatch(morph.blockSpec, blockSpec);
 		}
 	});
 
@@ -528,6 +531,50 @@ function getAllScripts(blockSpec, spriteIndex) {
 			") is not in script window.";
 	}
 	return validScripts;
+}
+
+/* Takes in two strings TARGETBLOCKSPEC and TEMPLATEBLOCKSPEC. The only difference is that
+ * TARGETBLOCKSPEC will be a more specific version. For example, if TEMPLATEBLOCKSPEC is
+ * "factorial %", then TARGETBLOCKSPEC could be something like "factorial %n", where the
+ * only difference is the "n" character following the "%" character.
+ */
+function blockSpecMatch(targetBlockSpec, templateBlockSpec) {
+	var targetSplit = targetBlockSpec.split(" ");
+	var templateSplit = templateBlockSpec.split(" ");
+	var symbols = ["%s", "%n", "%c", "%p", "%txt", "%l", "%(ringified)"];
+	if (targetSplit.length !== templateSplit.length) {
+		return false;
+	}
+	for (var i = 0; i < templateSplit.length; i++) {
+		var templateStr = templateSplit[i];
+		var targetStr = targetSplit[i];
+		if (templateStr !== targetStr) {
+			if (templateStr.length > 1) {
+				return false;
+			}
+			if (templateStr[0] !== targetStr[0]) {
+				return false;
+			}
+			if (symbols.indexOf(targetStr) === -1) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+/* Gets all of the indices of a certain character TARGET in a word WORD in an array.
+ * I got this from StackOverflow at http://stackoverflow.com/questions/5034442/
+ * indexes-of-all-occurrences-of-character-in-a-string
+ */
+function getCharIndices(target, word) {
+	var result = [];
+	var index = word.indexOf(target);
+	while (index >= 0) {
+		result.push(index);
+		index = word.indexOf(target, index + 1);
+	}
+	return result;
 }
 
 function testScriptPresent(scriptString, scriptVariables, spriteIndex, outputLog) {
