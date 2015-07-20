@@ -205,6 +205,7 @@
                 outputLog = JSON.parse(c_prev_log);
                 outputLog.snapWorld = snapWorld;
                 AG_bar_graded(outputLog);
+                parent.document.getElementById('overlay-button').style.display = "none";
  
             } else if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
                 //Restore the AG status bar to a graded state
@@ -215,12 +216,14 @@
                 outputLog = JSON.parse(prev_log);
                 outputLog.snapWorld = snapWorld;
                 AG_bar_semigraded(outputLog);
+                parent.document.getElementById('overlay-button').style.display = "none";
 
             } else {
                 //Restore the AG status bar to a graded state
                 outputLog = new gradingLog(snapWorld, taskID);
                 AG_bar_ungraded(outputLog);
                 document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
+                parent.document.getElementById('overlay-button').style.display = "block";
 
             }
             //populateFeedback(outputLog);
@@ -668,7 +671,7 @@
                 }  
             }
             console.log(outputLog);
-            outputLog.saveLog();
+            //outputLog.saveLog();
 
             // makes recently created regrade buttons clickable 
             var regrade_buttons = document.getElementsByClassName("regrade");
@@ -894,6 +897,7 @@
             var results_overlay = document.getElementById("ag-output");
             var snapWorld = document.getElementById("world");
             var regrade_buttons = document.getElementsByClassName("regrade");
+            
             //var outside_menu = document.getElementById("outside-menu");
 
             reset_button.onclick = function() { resetState(world, id); toggleMenu(id); };
@@ -901,6 +905,8 @@
             last_submit.onclick = function() { revertToLastSubmit(world, id); toggleMenu(id); };
             undo_button.onclick = function() { revertToLastState(world, id); toggleMenu(id); };
             menu_button.onclick = function() { toggleMenu(id); };
+            //var overlay_button = parent.document.getElementById('overlay-button');
+            //overlay_button.onclick = function() { grade_button.click(); }
 
 
             $(".bubble").click(function(event){
@@ -929,6 +935,7 @@
                 }
             }
 
+
             /*outside_menu.onclick = function(e) {
                 if (document.getElementById('dropdown-open') !== null && !(document.getElementById('onclick-menu').contains(e.target))) {
                     toggleMenu();
@@ -943,8 +950,23 @@
             document.addEventListener("click", function() {
                 grayOutButtons(world, id);
             });
+
             //TODO: Fix this timeout.
             setTimeout(function() {
+                var overlay_button = parent.document.createElement('button');
+                var overlay_button_text = parent.document.createTextNode('Grade');
+                overlay_button.appendChild(overlay_button_text);
+                overlay_button.id = 'overlay-button';
+                var button =  parent.document.getElementsByName('problem_id')[0];
+                button.parentNode.insertBefore(overlay_button, button.nextSibling);
+
+                var overlay_button = parent.document.getElementById('overlay-button');
+                //overlay_button.style.display = "block";
+                overlay_button.onclick = function() { 
+                    overlay_button.style.display = "none";
+                    grade_button.click(); 
+                }
+
                 console.log(world);
                 var outputLog = AGStart(world,id);
                 //runAGTest(world, id);
@@ -978,7 +1000,16 @@
                 //runAGTest(world,id);
                 //runAGTest(world,id);
                 //AGUpdate(world, id);
+
+                
             },600);
+
+            /*var overlay_button = document.createElement('button');
+            var overlay_button_text = document.createTextNode('Grade');
+            overlay_button.appendChild(overlay_button_text);
+            overlay_button.id = 'overlay-button';
+            alert(parent.document.getElementsByName('action').length);
+            parent.document.getElementsByName('action')[0].appendChild(overlay_button);*/
 
             //runAGTest(world,id);
             //AGUpdate(world, id);

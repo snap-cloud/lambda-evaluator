@@ -18,12 +18,12 @@ function gradingLog(snapWorld, taskID) {
 	this.graded = false;
 	this.numCorrect = 0;
 	var prev_log = localStorage.getItem(taskID + "_test_log");
-	if (prev_log !== null) {
-		this.numAttempts = prev_log.numAttempts;
+	if (prev_log !== null && JSON.parse(prev_log).numAttempts !== undefined) {
+		this.numAttempts = JSON.parse(prev_log).numAttempts;
 	} else {
 		this.numAttempts = 0;
 	}
-	//this.numAttempts 
+	this.timeStamp = new Date().toUTCString();
 }
 
 /* Save the gradingLog in localStorage.
@@ -94,30 +94,20 @@ gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, tim
 	return this.testCount;
 };
 
-gradingLog.prototype.addAssert = function(testClass, statement, feedback, text) {
+gradingLog.prototype.addAssert = function(testClass, statement, feedback, text, pos_fb, neg_fb) {
 	this.testCount += 1;
 	this[this.testCount] = {'testClass': "a",
 							'text': text,
-							'correct': statement,
+							'correct': statement(),
 							'feedback': feedback,
-							'graded': true};
-							//'assertion': statement};
+							'graded': true,
+							'pos_fb': pos_fb,
+							'neg_fb': neg_fb,
+							'assertion': statement};
 	return this.testCount;
 
 }
 
-gradingLog.prototype.updateAssert = function(testID, feedback, correct, text) {
-	var test = this[testID];
-	try {
-		test.graded = true;
-		test.feedback = feedback || test.feedback;
-		test.correct = correct || test.correct;
-		//test.text = text;
-
-	} catch(e) {
-		throw "gradingLog.finishTest: TestID is invalid.";
-	}
-}
 
 /*
  * Initiates Reporter tests if they exist, and returns true in such a case,
@@ -411,6 +401,7 @@ gradingLog.prototype.scoreLog = function() {
 	//Calculate the pScore
 	this.numCorrect = tests_passed;
 	this.pScore = tests_passed / this.testCount;
+	//this.numAttempts += 1;
 	//Save the log in localStorage
 	this.saveLog();
 
@@ -496,10 +487,10 @@ function AG_log(outputLog, snapXMLString) {
  * WARNING: DOES NOT EVALUATE LOG
  */
 function testAssert(outputLog, assertion, pos_fb, neg_fb, ass_text) {
-	if (assertion) {
-		outputLog.addAssert("a", assertion, pos_fb, ass_text);
+	if (assertion()) {
+		outputLog.addAssert("a", assertion, pos_fb, ass_text, pos_fb, neg_fb);
 	} else {
-		outputLog.addAssert("a", assertion, neg_fb, ass_text);
+		outputLog.addAssert("a", assertion, neg_fb, ass_text, pos_fb, neg_fb);
 	}
 	return outputLog;
 }
@@ -1660,6 +1651,45 @@ function testCBlockContains(block1, block2, spriteIndex, outputLog) {
     return outputLog;
 }
 
+/* Takes in a script SCRIPT, a string that is either "if" or "else" named CLAUSE, a blockspec
+ * such as "move %n steps" BLOCK1SPEC, and an optional argument array ARGARRAY1 belonging to block1.
+ * Returns true if the block represented by BLOCK1SPEC occurs inside the clause represented 
+ * by CLAUSE in an if-else block in the SCRIPT, which can be obtained by calling:
+ *
+ * JSONscript(...)
+ */
+function ifElseContains(script, clause, block1Spec, argArray1) {
+    if (!scriptContainsBlock(script, "if %b %c else %c")) {
+        return false;
+    }
+    if (!(clause === "if" || clause === "else")) {
+        return false; //return false or return a string!??!?!
+    }
+
+    var morph1, type1;
+    for (var i = 0; i < script.length; i++) {
+        morph1 = script[i];
+        type1 = typeof(morph1);
+        if ((type1 === "string")) {
+            continue;
+        } else if (Object.prototype.toString.call(morph1) === '[object Array]') { 
+            if (ifElseContains(morph1, clause, block1Spec, argArray1)) {
+                return true;
+            }
+        } else if (morph1.blockSp === "if %b %c else %c") {
+            if (clause === "if") {
+                if (scriptContainsBlock(morph1.inputs[0], block1Spec, argArray1)) {
+                    return true;
+                }
+            } else if (clause === "else") {
+                if (scriptContainsBlock(morph1.inputs[1], block1Spec, argArray1)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
 
 /* Takes in two blockSpecs and boolean SEEN1, which is initialized to false.
  * Returns true if blockSpec string BLOCK1 precedes the blockSpec string BLOCK2
