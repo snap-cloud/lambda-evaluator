@@ -1315,6 +1315,18 @@ function JSONcustomBlock(block) {
 		    variables: JSONinputs};
 }
 
+/* Takes in a string BLOCKSPEC and returns the JSONified version of
+ * the custom block's body.
+ */
+function getCustomBody(blockSpec, spriteIndex) {
+	if (spriteIndex === undefined) {
+		spriteIndex = 0;
+	}
+	var customBlock = getScript(blockSpec, spriteIndex);
+	return JSONcustomBlock(customBlock).body;
+
+}
+
 /* Takes in all scripts for a single Sprite in chronological order
  * and converts it into JSON format. You would need to run something like
  * var script = world.children[0].sprites.contents[0].scripts.children[0];
@@ -1645,6 +1657,9 @@ function testCBlockContains(block1, block2, spriteIndex, outputLog) {
  * JSONscript(...)
  */
 function ifElseContains(script, clause, block1Spec, argArray1) {
+	if (argArray1 === undefined) {
+        argArray1 = [];
+    }
     if (!scriptContainsBlock(script, "if %b %c else %c")) {
         return false;
     }
@@ -1691,6 +1706,9 @@ function ifElseContains(script, clause, block1Spec, argArray1) {
  * would count the (%n + %n) block as coming before the (%n - %n) block.
  */
 function blockPrecedes(block1, block2, script, seen1) {
+	if (seen1 === undefined) {
+		seen1 = false;
+	}
 	var morph1, type1;
 	for (var i = 0; i < script.length; i++) {
 		morph1 = script[i];
@@ -1714,6 +1732,12 @@ function blockPrecedes(block1, block2, script, seen1) {
 			}
 			if (blockPrecedes(block1, block2, morph1.inputs, seen1)) {
 				return true;
+			}
+			if (morph1.blockSp ===  "if %b %c else %c") {
+				if (ifElseContains(script, "if", block1)
+					|| ifElseContains(script, "else", block1)) {
+					seen1 = true;
+				}
 			}
 		}
 	}
