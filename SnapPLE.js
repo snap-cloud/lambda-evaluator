@@ -1722,35 +1722,27 @@ function blockPrecedes(block1, block2, script, seen1) {
 }
 
 
-/* Takes in two BLOCKSTRINGs representating the two blocks to be searched for, a
-* SPRITEINDEX, and the current state of the OUTPUTLOG.
+/* Takes in two BLOCKSPECs representating the two blocks to be searched for and a
+* SPRITEINDEX.
 *
-* Records to the OUTPUTLOG if block1 precedes block2 in any script in
+* Returns true if block1 precedes block2 in any script in
 * the Scripts tab of the given sprite. See documentation of blockPrecedes for
 * details of what "precedes" means.
 */
-function testBlockPrecedes(block1String, block2String, spriteIndex, outputLog) {
+function blockPrecedesInSprite(block1Sp, block2Sp, spriteIndex) {
 	//Populate optional parameters
-	if (outputLog === undefined) {
-		outputLog = new gradingLog();
-	}
 	if (spriteIndex === undefined) {
 		spriteIndex = 0;
 	}
-
-	var block1Spec = stringToJSON(block1String)[0].blockSp;
-	var block2Spec = stringToJSON(block2String)[0].blockSp;
-	var testID = outputLog.addTest("p", block1Spec + ", " + block2Spec, "n/a", true, -1); //needs changing?
-	var feedback;
 	try {
 		var JSONtarget;
 		var doesPrecede;
 		var scriptsOnScreen = getScripts(spriteIndex);
 		for (var i = 0; i < scriptsOnScreen.length; i++) {
 			JSONtarget = JSONscript(scriptsOnScreen[i]);
-			doesPrecede = blockPrecedes(block1Spec, block2Spec, JSONtarget, false);
+			doesPrecede = blockPrecedes(block1Sp, block2Sp, JSONtarget, false);
 			if (doesPrecede) {
-				break; //if any script on the scripting area has block1
+				return true; //if any script on the scripting area has block1
 					//occuring before block2, then this test will pass.
 			}
 		}
@@ -1758,19 +1750,11 @@ function testBlockPrecedes(block1String, block2String, spriteIndex, outputLog) {
 		doesPrecede = false;
 		feedback = "Error when looking to see if " + block1Spec + " precedes";
 		feedback += " " + block2Spec + " in script.";
-		outputLog.updateLog(testID, doesPrecede, feedback, doesPrecede);
-		outputLog.evaluateLog();
 		//Return undefined so the grade state doesn't change when no script is present??
-		return outputLog;
+		console.log(feedback);
+		return false;
 	}
-	if (doesPrecede) {
-		feedback = "The " + block1Spec + " block precedes the " + block2Spec + " block.";
-	} else {
-		feedback = "The " + block1Spec + " block does not precede the " + block2Spec + " block.";
-	}
-	outputLog.updateLog(testID, doesPrecede, feedback, doesPrecede);
-	outputLog.evaluateLog();
-	return outputLog;
+	return false;
 }
 
 
