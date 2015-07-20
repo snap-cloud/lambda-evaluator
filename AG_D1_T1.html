@@ -100,7 +100,8 @@
          */
         function runAGTest(snapWorld, taskID, outputLog) {
             // Create a new gradingLog if none is specified.
-            outputLog = outputLog || new gradingLog(snapWorld, taskID);
+            var numAttempts = setNumAttempts(taskID);
+            outputLog = outputLog || new gradingLog(snapWorld, taskID, numAttempts);
             // Populate, run, and evaluate the tests specified in AGTest()
             // These tests specified by the Course Designer. 
 
@@ -147,7 +148,8 @@
             } else {
                 //Restore the AG status bar to a graded state
                 //If no previous state is recognized, return new {gradingLog}.
-                outputLog = new gradingLog(snapWorld, taskID); 
+                var numAttempts = setNumAttempts(taskID);
+                outputLog = new gradingLog(snapWorld, taskID, numAttempts); 
                 AG_bar_ungraded(outputLog);
                 return outputLog;
             }   
@@ -220,7 +222,8 @@
 
             } else {
                 //Restore the AG status bar to a graded state
-                outputLog = new gradingLog(snapWorld, taskID);
+                var numAttempts = setNumAttempts(taskID);
+                outputLog = new gradingLog(snapWorld, taskID, numAttempts);
                 AG_bar_ungraded(outputLog);
                 document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
                 parent.document.getElementById('overlay-button').style.display = "block";
@@ -261,7 +264,7 @@
             grayOutButtons(outputLog.snapWorld, outputLog.taskID);
             console.log('Autograder test Results:');
             console.log(outputLog);
-            parent.document.getElementsByClassName('check-label')[0].click();
+            //parent.document.getElementsByClassName('check-label')[0].click();
         }
 
 
@@ -487,7 +490,7 @@
             new_log.numAttempts = numAttempts;
             //localStorage.setItem(taskID + "_test_log", new_log);
             localStorage.setItem(taskID + "_test_state", ide.serializer.serialize(ide.stage));
-            populateFeedback(new_log);
+            new_log.saveLog();
             //localStorage.setItem(taskID + "_test_log", new_log);
             grayOutButtons(snapWorld, taskID);
         }
@@ -804,6 +807,15 @@
             console.log(outputLog);
         }
 
+        function setNumAttempts(taskID) {
+            var prev_log = localStorage.getItem(taskID + "_test_log");
+            if (prev_log !== null && JSON.parse(prev_log).numAttempts !== undefined) {
+                return JSON.parse(prev_log).numAttempts;
+            } else {
+                return 0;
+            }
+        }
+
         var world;
         window.onload = function () {
 
@@ -866,9 +878,11 @@
             var button_listener = function(event) {
                 event.stopPropagation();
                 console.log('PROPAGATION SHOULD STOP');
-                outputLog = new gradingLog(world, id);
+                var numAttempts = setNumAttempts(id);
+                outputLog = new gradingLog(world, id, numAttempts);
                 outputLog.numAttempts += 1;
                 runAGTest(world, id, outputLog);
+                parent.document.getElementsByClassName('check-label')[0].click();
                 // var outputLog = AGStart(world, id);
             }
             grade_button.addEventListener('click', button_listener);
@@ -969,11 +983,11 @@
 
                 console.log(world);
                 var outputLog = AGStart(world,id);
-                //runAGTest(world, id);
+                runAGTest(world, id);
                 //runAGTest(world, id);
 
                 //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
-                populateFeedback(outputLog);
+                //populateFeedback(outputLog);
                 //populateFeedback(outputLog);
                 grayOutButtons(world, id);
 

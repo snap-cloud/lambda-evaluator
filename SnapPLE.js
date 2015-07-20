@@ -8,7 +8,7 @@
 	updated when the Snap! process finishes. Finishing
 	the last test causes the grading log to be evaluated.
 */
-function gradingLog(snapWorld, taskID) {
+function gradingLog(snapWorld, taskID, numAttempts) {
 	this.testCount = 0;
 	this.allCorrect = false;
 	this.currentTimeout = null;
@@ -17,12 +17,13 @@ function gradingLog(snapWorld, taskID) {
 	this.snapWorld = snapWorld || null;
 	this.graded = false;
 	this.numCorrect = 0;
-	var prev_log = localStorage.getItem(taskID + "_test_log");
+	/*var prev_log = localStorage.getItem(taskID + "_test_log");
 	if (prev_log !== null && JSON.parse(prev_log).numAttempts !== undefined) {
 		this.numAttempts = JSON.parse(prev_log).numAttempts;
 	} else {
 		this.numAttempts = 0;
-	}
+	}*/
+	this.numAttempts = numAttempts;
 	this.timeStamp = new Date().toUTCString();
 }
 
@@ -99,11 +100,12 @@ gradingLog.prototype.addAssert = function(testClass, statement, feedback, text, 
 	this[this.testCount] = {'testClass': "a",
 							'text': text,
 							'correct': statement(),
+							'assertion': statement,
 							'feedback': feedback,
 							'graded': true,
 							'pos_fb': pos_fb,
-							'neg_fb': neg_fb,
-							'assertion': statement};
+							'neg_fb': neg_fb};
+							//'assertion': statement};
 	return this.testCount;
 
 }
