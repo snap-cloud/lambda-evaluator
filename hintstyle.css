@@ -134,6 +134,18 @@ table.results {
 span {
   text-transform: initial;
 }
+
+#overlay-button {
+	position: absolute;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	height: 40px;
+	vertical-align: middle;
+	/*text-transform: uppercase;*/
+	font-weight: 600;
+	width: 71px;
+	display: none;
+}
 		
 
 

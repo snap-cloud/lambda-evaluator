@@ -8,7 +8,7 @@
 	updated when the Snap! process finishes. Finishing
 	the last test causes the grading log to be evaluated.
 */
-function gradingLog(snapWorld, taskID) {
+function gradingLog(snapWorld, taskID, numAttempts) {
 	this.testCount = 0;
 	this.allCorrect = false;
 	this.currentTimeout = null;
@@ -17,6 +17,14 @@ function gradingLog(snapWorld, taskID) {
 	this.snapWorld = snapWorld || null;
 	this.graded = false;
 	this.numCorrect = 0;
+	/*var prev_log = localStorage.getItem(taskID + "_test_log");
+	if (prev_log !== null && JSON.parse(prev_log).numAttempts !== undefined) {
+		this.numAttempts = JSON.parse(prev_log).numAttempts;
+	} else {
+		this.numAttempts = 0;
+	}*/
+	this.numAttempts = numAttempts;
+	this.timeStamp = new Date().toUTCString();
 }
 
 /* Save the gradingLog in localStorage.
@@ -87,16 +95,21 @@ gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, tim
 	return this.testCount;
 };
 
-gradingLog.prototype.addAssert = function(testClass, statement, feedback, text) {
+gradingLog.prototype.addAssert = function(testClass, statement, feedback, text, pos_fb, neg_fb) {
 	this.testCount += 1;
 	this[this.testCount] = {'testClass': "a",
 							'text': text,
-							'correct': statement,
+							'correct': statement(),
+							'assertion': statement,
 							'feedback': feedback,
-							'graded': true};
+							'graded': true,
+							'pos_fb': pos_fb,
+							'neg_fb': neg_fb};
+							//'assertion': statement};
 	return this.testCount;
 
 }
+
 
 /*
  * Initiates Reporter tests if they exist, and returns true in such a case,
@@ -126,7 +139,7 @@ gradingLog.prototype.startSnapTest = function(testID) {
 	} else if (test.testClass !== 'r') {
 
 	}
-
+	test.output = "INVALID";
 	//Retrieve the block from the stage TODO: Handle Errors
 	try {
 		var block = getScript(test.blockSpec);
@@ -159,6 +172,7 @@ gradingLog.prototype.startSnapTest = function(testID) {
 			} else {
 				test['feedback'] = "Test Timeout Occurred."
 			}
+			test.output = "INVALID";
 			stage.threads.stopProcess(getScript(outputLog[testID]["blockSpec"]));
 			test.correct = false;
 			//Set the graded flag to true for this test.
@@ -201,7 +215,7 @@ gradingLog.prototype.startSnapTest = function(testID) {
 gradingLog.prototype.finishSnapTest = function(testID, output) {
 
 	//Populate Grade Log //May be DEPRICATED.
-	var test = this[testID]
+	var test = this[testID];
 	if (test === undefined) {
 		throw "gradingLog.finishSnapTest: TestID: " + testID + ", is invalid.";
 	}
@@ -215,10 +229,12 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	//Update feedback and 'correct' flag depending on output.
 	if (snapEquals(test.output, test.expOut)) {
 		test.correct = true;
-		test.feedback = test.feedback || "Test Passed.";
+		//test.feedback = test.feedback || "Test Passed.";
+		test.feedback = "Test Passed." || test.feedback;
 	} else {
 		test.correct = false;
-		test.feedback = test.feedback || "Unexpected Output: " + String(output);
+		//test.feedback = test.feedback || "Unexpected Output: " + String(output);
+		test.feedback = "Unexpected Output: " + String(output) || test.feedback;
 	}
 	//Set test graded flag to true, for gradingLog.gradeLog()
 
@@ -388,6 +404,7 @@ gradingLog.prototype.scoreLog = function() {
 	//Calculate the pScore
 	this.numCorrect = tests_passed;
 	this.pScore = tests_passed / this.testCount;
+	//this.numAttempts += 1;
 	//Save the log in localStorage
 	this.saveLog();
 
@@ -473,10 +490,10 @@ function AG_log(outputLog, snapXMLString) {
  * WARNING: DOES NOT EVALUATE LOG
  */
 function testAssert(outputLog, assertion, pos_fb, neg_fb, ass_text) {
-	if (assertion) {
-		outputLog.addAssert("a", assertion, pos_fb, ass_text);
+	if (assertion()) {
+		outputLog.addAssert("a", assertion, pos_fb, ass_text, pos_fb, neg_fb);
 	} else {
-		outputLog.addAssert("a", assertion, neg_fb, ass_text);
+		outputLog.addAssert("a", assertion, neg_fb, ass_text, pos_fb, neg_fb);
 	}
 	return outputLog;
 }
@@ -881,7 +898,7 @@ function testKScope(outputLog, iter) {
 		eLog.callVal = eLog.spliceIgnores().compareSprites(function(i) {
 			var log = this;
 			gLog[testID].graded = true;
-			gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Test Passed.";
+			gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Beautiful Kaleidoscope!";
 			gLog[testID].output = gLog[testID].correct = true;
 			if (log && log.numSprites !== 4) {
 				gLog[testID]["feedback"] = "You do not have the correct amount of Sprites." +
