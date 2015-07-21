@@ -5,7 +5,7 @@
     <link rel="shortcut icon" href="http://snap.berkeley.edu/fav3.gif" type="image/gif">
     <script src="jschannel.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script type="text/javascript" src="underscore-min.js"></script>
+    <script src="http://underscorejs.org/underscore-min.js"></script>
     <script type="text/javascript" src="SnapPLE.js"></script>
     <!-- Moved down to the bottom to have var id. -->
     
@@ -30,57 +30,60 @@
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
-            /* Factorial */
-            // testAssert(outputLog, isScriptPresent('factorial %s',0),
-            //     "The 'factorial' block is present.",
-            //     "The 'factorial %num' block was not found on-screen.",
-            //     "Make sure you name your custom block, 'factorial %num'.");
-            // // testAssert(outputLog, CBlockContainsInCustom('factorial %s', 0,
-            // //     'if %c else %c', 'report %s'),
-            // //     "The factorial block;
-            // multiTestBlock('factorial %s', 
-            //     [[0],[1],[2],[4],[5],[10]],
-            //     [1,1,2,24,120,3628800],
-            //     [-1,-1,-1,-1,-1,-1],
-            //     outputLog);
-            // /* KScopeTest */
 
-            testAssert(outputLog, 
-                spriteContainsBlock('when %keyHat key pressed', 0, ['space']) &&
-                spriteContainsBlock('when %keyHat key pressed', 1, ['space']) &&
-                spriteContainsBlock('when %keyHat key pressed', 2, ['space']) &&
-                spriteContainsBlock('when %keyHat key pressed', 3, ['space']),
-                "All sprites have the 'when [space] key pressed' hat-block.",
-                "All sprites must have a 'when [space] key pressed' hat-block.",
-                "The Kaleidoscope should begin drawing when the 'space' key is pressed.");
-            console.log("FAIL AFTER THE FIRST TEST?.");
-            testAssert(outputLog,
-                spriteContainsBlock('forever %c', 0) &&
-                spriteContainsBlock('forever %c', 1) &&
-                spriteContainsBlock('forever %c', 2) &&
-                spriteContainsBlock('forever %c', 3),
-                "All sprites have a forever loop",
-                "All sprites must have a 'forever' loop.",
-                "The 'forever' loop is required.");
-            testAssert(outputLog,
-                spriteContainsBlock('go to x: %n y: %n', 0) &&
-                spriteContainsBlock('go to x: %n y: %n', 1) &&
-                spriteContainsBlock('go to x: %n y: %n', 2) &&
-                spriteContainsBlock('go to x: %n y: %n', 3),
-                "All sprites have a 'go to' motion-block",
-                "All sprites must have a 'go to' motion-block",
-                "The 'go to' motion-block is required.");
-            testAssert(outputLog,
-                spriteContainsBlock('pen down', 0) &&
-                spriteContainsBlock('pen down', 1) &&
-                spriteContainsBlock('pen down', 2) &&
-                spriteContainsBlock('pen down', 3),
-                "All sprites have a 'pen down' pen-block",
-                "All sprites must have a 'pen down' pen-block",
-                "The 'pen down' pen-block is required.");
+    /*Lab 1: Introduction*/
 
-            testKScope(outputLog);
+        /*Creating a Script*/
+
+            // /*Modify given script to make the sprite follow a square path if clicked enough times.*/
+            // testAssert(outputLog, spriteContainsBlock('move %n steps', 0),
+            //     "The 'move' block is present.",
+            //     "The 'move' block was not found on-screen.",
+            //     "Make sure to make your sprite move on the stage.");
+            // testAssert(outputLog, spriteContainsBlock('turn %clockwise %n degrees', 0) || spriteContainsBlock('turn %counterclockwise %n degrees',0),
+            //     "The 'turn' block is present.",
+            //     "The 'turn' block was not found on-screen.",
+            //     "Make sure you make your sprite turn on the stage.");
+            // testAssert(outputLog, blockPrecedesInSprite('turn %clockwise %n degrees', 'move %n steps') || blockPrecedesInSprite('move %n steps', 'turn %clockwise %n degrees'),
+            //     "The 'move' and 'turn' blocks are in a script together.",
+            //     "The 'move' and 'turn' blocks are not in a script together.",
+            //     "Make sure you make your sprite move and turn with just one click.");
+            // testAssert(outputLog, spriteContainsBlock('turn %clockwise %n degrees', 0, ["90"]) || spriteContainsBlock('turn %counterclockwise %n degrees',0, ["90"]),
+            //     "The sprite turns 90 degrees.",
+            //     "The sprite does not turn 90 degrees.",
+            //     "Make sure your sprite turns an appropriate amount."); //need to make sure the turn 90 is
+            //                                                             // the turn attached to the move.
             
+            // /*Modify the previous script to make the sprite follow a triangular path if clicked enough times.*/
+            // testAssert(outputLog, spriteContainsBlock('move %n steps', 0),
+            //     "The 'move' block is present.",
+            //     "The 'move' block was not found on-screen.",
+            //     "Make sure to make your sprite move on the stage.");
+            // testAssert(outputLog, spriteContainsBlock('turn %clockwise %n degrees', 0) || spriteContainsBlock('turn %counterclockwise %n degrees',0),
+            //     "The 'turn' block is present.",
+            //     "The 'turn' block was not found on-screen.",
+            //     "Make sure you make your sprite turn on the stage.");
+            // testAssert(outputLog, blockPrecedesInSprite('turn %clockwise %n degrees', 'move %n steps') || blockPrecedesInSprite('move %n steps', 'turn %clockwise %n degrees'),
+            //     "The 'move' and 'turn' blocks are in a script together.",
+            //     "The 'move' and 'turn' blocks are not in a script together.",
+            //     "Make sure you make your sprite move and turn with just one click.");
+            // testAssert(outputLog, spriteContainsBlock('turn %clockwise %n degrees', 0, ["60"]) || spriteContainsBlock('turn %counterclockwise %n degrees',0, ["60"]),
+            //     "The sprite turns 60 degrees.",
+            //     "The sprite does not turn 60 degrees.",
+            //     "Make sure your sprite turns an appropriate amount."); //need to make sure the turn 60 is
+            //                                                             // the turn attached to the move.
+
+    /*Lab 3: Repeat Commands*/
+
+        /*The Repeat Block*/
+
+            /*Input an argument value into the given script to create the given picture*/
+            testAssert(outputLog, spriteContainsBlock("repeat %n %c", 0, ["9"]), //fix argArray
+                "The input to the repeat loop is 9.",
+                "The input to the repeat loop is incorrect.",
+                "Try checking how many sides the given shape has!");
+            //isScriptPresent with a template??
+
             return outputLog;
         }
 
@@ -148,7 +151,6 @@
          *  - Should only be called from a "mouseup" event.
          */
         function AGUpdate(snapWorld, taskID) {
-            console.log("AGUpdate");
 
             
 
@@ -215,7 +217,6 @@
                 
                 // TODO: Write a good comment
                 // TODO: Give gradeLog ability to recover log data and xml string
-                console.log('AGUpdate: Thinks this is the "correct" XML.');
                 localStorage.setItem(taskID + "_test_log", c_prev_log);
                 localStorage.setItem(taskID + "_test_state", curr_xml);
                 document.getElementById("different-feedback").innerHTML = "";
@@ -227,7 +228,6 @@
  
             } else if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
                 //Restore the AG status bar to a graded state
-                console.log('AGUpdate: Thinks this is just the "last" XML.');
                 //Retrieve the previous test log from localStorage
                 document.getElementById("different-feedback").innerHTML = "";
 
@@ -401,10 +401,6 @@
             prev_xml_blocks && prev_xml_blocks.sort().join("");
             curr_xml_blocks && curr_xml_blocks.sort().join("");
             if(JSON.stringify(prev_xml_blocks) !== JSON.stringify(curr_xml_blocks)) {
-                console.log("THE CUSTOM BLOCKS ARE DIFFERENT!");
-                console.log(prev_xml_blocks === curr_xml_blocks);
-                console.log(JSON.stringify(prev_xml_blocks));
-                console.log(JSON.stringify(curr_xml_blocks));
                 return false;
             }
 
@@ -418,11 +414,6 @@
             //TODO: Replace them properly
             prev_xml = prev_xml.replace(/(<script x)(.*)(<\/script>)/g,prev_xml_scripts);
             curr_xml = curr_xml.replace(/(<script x)(.*)(<\/script>)/g,curr_xml_scripts);
-            console.log('previous XML');
-            console.log(prev_xml);
-            console.log('current XML');
-            console.log(curr_xml);
-            console.log("They are the same:" + String(prev_xml === curr_xml));
 
             return prev_xml === curr_xml;
         }
@@ -620,7 +611,6 @@
             var repTest = 1;
             for (i=1; i<=feedback["testCount"]; i++) {
                 var test = String(i);
-                console.log(test);
                 var newRow = document.createElement("tr");
 
                 if (feedback[test]["testClass"] !== "r") {
@@ -818,7 +808,7 @@
                 console.log(world);
                 var outputLog = AGStart(world,id);
                 populateFeedback(outputLog);
-                //populateFeedback(outputLog);
+                populateFeedback(outputLog);
                 //var outputLog = AGStart(world,id);
                 //populateFeedback(outputLog);
 
