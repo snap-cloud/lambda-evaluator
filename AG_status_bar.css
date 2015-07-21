@@ -2,6 +2,12 @@ div {
   font-family:helvetica;
 }
 
+#outside-menu {
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+}
+
 #autograding_bar {
   position:absolute;
   height: 1em;
@@ -218,7 +224,7 @@ div {
     width: 0;
     z-index: -1;
     top: -10px;
-    left: 161px;
+    left: 155px;
 }
 
 .bubble:before {
@@ -231,7 +237,7 @@ div {
     width: 0;
     z-index: -2;
     top: -12px;
-    left: 160px;
+    left: 154px;
 }
 
 #disabled-button {
@@ -296,6 +302,7 @@ div {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.6);
+  overflow: auto;
 
 }
 
@@ -349,4 +356,15 @@ div {
 
 #different-feedback, #edx-submit-different {
   color: red;
+}
+
+.regrade-button {
+  border: 2px black solid;
+  border-radius: 10px;
+  background-color: rgb(255, 153, 153);
+  color: black;
+  padding: 2px;
+  box-shadow: 2px 2px 5px #888888;
+  margin: 0px;
+  cursor: pointer;
 }

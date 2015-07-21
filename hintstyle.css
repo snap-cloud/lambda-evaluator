@@ -7,7 +7,7 @@ span.message {
 
 td.correctans {
 	font-weight: bold;
-	background-color: #80E680;
+	background-color: #B4ECAC;
 	border-bottom:1px solid #333333;
 }
 
@@ -21,6 +21,13 @@ td.tests {
 	background-color: #e7e3e3;
     color: #4F5150;
     width: 20px;
+}
+
+td.evens {
+    color: #4F5150;
+    background-color: #e7e3e3;
+    white-space: normal;
+	padding: 3px 20px;
 }
 
 table.results {
@@ -46,6 +53,20 @@ table.results {
     color: #4F5150;
     white-space: normal;
 	padding: 3px 20px;
+  }
+
+  td.hidden {
+    white-space: normal;
+	padding: 3px 20px;
+	visibility: hidden;
+	width: 20px;
+  }
+
+  td.regrade {
+    color: red;
+    white-space: normal;
+	padding: 3px 20px;
+	width: 20px;
   }
 
 
@@ -112,6 +133,18 @@ table.results {
 
 span {
   text-transform: initial;
+}
+
+#overlay-button {
+	position: absolute;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	height: 40px;
+	vertical-align: middle;
+	/*text-transform: uppercase;*/
+	font-weight: 600;
+	width: 71px;
+	display: none;
 }
 		
 
