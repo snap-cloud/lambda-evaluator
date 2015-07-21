@@ -1888,7 +1888,7 @@ function occurancesOfBlockSpec(blockSpec, block) {
 	return result;
 }
 
-/* Takes in a BLOCKSPEC representation of the block to be counted, an EXPECTED 
+/* Takes in a BLOCKSPEC of the block to be counted, an EXPECTED 
 * number of occurances of said block, and a SPRITEINDEX.
 * 
 * Returns true if the given block occurs EXPECTED times in any script in 
