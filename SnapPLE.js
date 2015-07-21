@@ -594,7 +594,13 @@ function getCharIndices(target, word) {
 	return result;
 }
 
-
+/* Takes in a SCRIPT (JSONified object), which can be a general template 
+* or an exact script, a spriteIndex, and optional SCRIPTVARIABLES (an array) 
+* (which along with SCRIPT can be obtained when calling fastTemplate()).
+*
+* Returns true if the given SCRIPT is found in any script in the Scripts 
+* tab of the given sprite. See documentation of checkTemplate for more details.
+*/
 function scriptPresentInSprite(script, spriteIndex, scriptVariables) {
 	//Populate optional parameters
 	if (spriteIndex === undefined) {
@@ -603,7 +609,7 @@ function scriptPresentInSprite(script, spriteIndex, scriptVariables) {
 	if (scriptVariables === undefined) {
 		scriptVariables = [];
 	}
-	
+
 	var JSONtemplate = script;
 	var blockSpec = JSONtemplate[0].blockSp;
 	//Handle case when no scripts present on stage.
