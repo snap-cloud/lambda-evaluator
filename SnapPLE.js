@@ -595,11 +595,15 @@ function getCharIndices(target, word) {
 }
 
 
-function scriptPresentInSprite(script, scriptVariables, spriteIndex) {
+function scriptPresentInSprite(script, spriteIndex, scriptVariables) {
 	//Populate optional parameters
 	if (spriteIndex === undefined) {
 		spriteIndex = 0;
 	}
+	if (scriptVariables === undefined) {
+		scriptVariables = [];
+	}
+	
 	var JSONtemplate = script;
 	var blockSpec = JSONtemplate[0].blockSp;
 	//Handle case when no scripts present on stage.
