@@ -644,7 +644,7 @@ function scriptPresentInSprite(script, spriteIndex, scriptVariables) {
 		scriptVariables = [];
 	}
 
-	var JSONtemplate = script;
+	var JSONtemplate = JSON.parse(script); //Added this parsing step to convert a string
 	var blockSpec = JSONtemplate[0].blockSp;
 	//Handle case when no scripts present on stage.
 	try {
@@ -682,7 +682,7 @@ function testBlock(outputLog, testID) {
 	return testID;
 }
 
-function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog, isolated) {
+function multiTestBlock(outputLog, blockSpec, inputs, expOuts, timeOuts, isolated) {
 
 	if (outputLog === undefined) {
 		outputLog = new gradingLog(world);
@@ -2206,7 +2206,7 @@ function fastTemplate() {
 	var scripts = getScripts(0);
 	var script1 = JSONscript(scripts[0]);
 	var script2 = JSONscript(scripts[1]);
-	return getTemplate(script1, script2);
+	return JSON.stringify(getTemplate(script1, script2));
 }
 
 /* Takes in a TEMPLATE and a student's SCRIPT and grades it by checking the pattern
