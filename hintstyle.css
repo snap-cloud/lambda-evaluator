@@ -146,6 +146,15 @@ span {
 	width: 71px;
 	display: none;
 }
+
+#full-screen {
+	display:inline-block;
+	float: right;
+	z-index: 100;
+	position: absolute;
+  	right: 31px;
+  	bottom: 225px;
+}
 		
 
 

@@ -821,6 +821,42 @@
             }
         }
 
+        function makeOverlayButton() {
+            var overlay_button = parent.document.createElement('button');
+            var overlay_button_text = parent.document.createTextNode('Grade');
+            overlay_button.appendChild(overlay_button_text);
+            overlay_button.id = 'overlay-button';
+            var button =  parent.document.getElementsByName('problem_id')[0];
+            button.parentNode.insertBefore(overlay_button, button.nextSibling);
+        }
+
+        function toggleSnapWindow(button) {
+            var iframe = parent.document.getElementsByTagName('iframe')[0];
+            if (button.className === "off") {
+                iframe.style.position = 'fixed';
+                iframe.style.top = '0';
+                iframe.style.right = '0';
+                iframe.style.width = '100%';
+                iframe.style.height = '100vh';
+                iframe.style.zIndex = '99';
+                button.className = "on";
+                button.style.position = 'fixed';
+                button.style.right = '0';
+                button.style.bottom = '0';
+            } else {
+                iframe.style.position = 'initial';
+                iframe.style.top = 'initial';
+                iframe.style.right = 'initial';
+                //iframe.style.width = 'initial';
+                iframe.style.height = '500px';
+                iframe.style.zIndex = 'initial';
+                button.className = "off";
+                button.style.position = 'absolute';
+                button.style.right = '31px';
+                button.style.bottom = '225px';
+            }
+        }
+
         var world;
         window.onload = function () {
 
@@ -973,23 +1009,22 @@
                 grayOutButtons(world, id);
             });
 
+            if (isEDX) {
+                makeOverlayButton();
+                var overlay_button = parent.document.getElementById('overlay-button');
+                //overlay_button.style.display = "block";
+                overlay_button.onclick = function() { 
+                    overlay_button.style.display = "none";
+                    grade_button.click(); 
+                }
+                var full_screen = parent.document.getElementById('full-screen');
+                full_screen.onclick = function() {
+                    toggleSnapWindow(full_screen);   
+                }
+            }
+
             //TODO: Fix this timeout.
             setTimeout(function() {
-                if (isEDX) {
-                    var overlay_button = parent.document.createElement('button');
-                    var overlay_button_text = parent.document.createTextNode('Grade');
-                    overlay_button.appendChild(overlay_button_text);
-                    overlay_button.id = 'overlay-button';
-                    var button =  parent.document.getElementsByName('problem_id')[0];
-                    button.parentNode.insertBefore(overlay_button, button.nextSibling);
-
-                    var overlay_button = parent.document.getElementById('overlay-button');
-                    //overlay_button.style.display = "block";
-                    overlay_button.onclick = function() { 
-                        overlay_button.style.display = "none";
-                        grade_button.click(); 
-                    }
-                }
 
                 console.log(world);
                 var outputLog = AGStart(world,id);
