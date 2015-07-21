@@ -40,15 +40,22 @@
             //     "The 'move' block is present.",
             //     "The 'move' block was not found on-screen.",
             //     "Make sure to make your sprite move on the stage.");
-            // testAssert(outputLog, spriteContainsBlock('turn %clockwise %n degrees', 0) || spriteContainsBlock('turn %counterclockwise %n degrees',0),
+            // testAssert(outputLog, spriteContainsBlock('turn %clockwise %n degrees', 0), //counterclockwise 
+            //                                                                             //is incorrect
             //     "The 'turn' block is present.",
             //     "The 'turn' block was not found on-screen.",
             //     "Make sure you make your sprite turn on the stage.");
+
+            // // var template = stringToJSON('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]');
+            // // var vars = stringToJSON('["A"]');
+
+            // // checkTemplate(template, script, vars)
+            
             // testAssert(outputLog, blockPrecedesInSprite('turn %clockwise %n degrees', 'move %n steps') || blockPrecedesInSprite('move %n steps', 'turn %clockwise %n degrees'),
             //     "The 'move' and 'turn' blocks are in a script together.",
             //     "The 'move' and 'turn' blocks are not in a script together.",
             //     "Make sure you make your sprite move and turn with just one click.");
-            // testAssert(outputLog, spriteContainsBlock('turn %clockwise %n degrees', 0, ["90"]) || spriteContainsBlock('turn %counterclockwise %n degrees',0, ["90"]),
+            // testAssert(outputLog, spriteContainsBlock('turn %clockwise %n degrees', 0, ["90"]),
             //     "The sprite turns 90 degrees.",
             //     "The sprite does not turn 90 degrees.",
             //     "Make sure your sprite turns an appropriate amount."); //need to make sure the turn 90 is
@@ -78,11 +85,36 @@
         /*The Repeat Block*/
 
             /*Input an argument value into the given script to create the given picture*/
-            testAssert(outputLog, spriteContainsBlock("repeat %n %c", 0, ["9"]), //fix argArray
-                "The input to the repeat loop is 9.",
-                "The input to the repeat loop is incorrect.",
-                "Try checking how many sides the given shape has!");
-            //isScriptPresent with a template??
+            //"[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["A",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]"
+            //"["A"]"
+            // testAssert(outputLog, spriteContainsBlock("repeat %n %c", 0, ["9", "A"]),
+            //     "The input to the repeat loop is 9.",
+            //     "The input to the repeat loop is incorrect.",
+            //     "Try checking how many sides the given shape has!");
+            // //isScriptPresent with a template??
+
+    /*Lab 4: Making Your Own Blocks*/
+
+        /*Adding an Input*/
+
+            /*Add an input to the draw square block.*/
+            // testAssert(outputLog, spriteContainsBlock("draw square %s", 0) || spriteContainsBlock("draw square %n", 0) || spriteContainsBlock("draw square %exp", 0),
+            //     "There is a 'draw square' block with a parameter.",
+            //     "There is no 'draw square' block with a parameter.",
+            //     "Make sure to give your 'draw square' block a parameter.");
+            // getCustomBody("draw square ----")
+
+            // /*Add an input to the draw triangle block.*/
+            // testAssert(outputLog, spriteContainsBlock("draw triangle %s", 0) || spriteContainsBlock("draw triangle %n", 0) || spriteContainsBlock("draw triangle %exp", 0),
+            //     "There is a 'draw triangle' block with a parameter.",
+            //     "There is no 'draw triangle' block with a parameter.",
+            //     "Make sure to give your 'draw triangle' block a parameter.");
+
+            // /*Add an input to the draw house block.*/
+            // testAssert(outputLog, spriteContainsBlock("draw house %s", 0) || spriteContainsBlock("draw house %n", 0) || spriteContainsBlock("draw house %exp", 0),
+            //     "There is a 'draw house' block with a parameter.",
+            //     "There is no 'draw house' block with a parameter.",
+            //     "Make sure to give your 'draw house' block a parameter.");
 
             return outputLog;
         }
@@ -739,7 +771,6 @@
             };
             var button_listener = function(event) {
                 event.stopPropagation();
-                console.log('PROPAGATION SHOULD STOP');
                 runAGTest(world,id);
                 // var outputLog = AGStart(world, id);
             }
