@@ -40,6 +40,7 @@
         // taskID uniquely identifies the task for saving in browser localStorage.
         var taskID = "AG_D1_T1";
         var id = courseID + taskID;
+        var isEDX = isEDXurl();
 
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
@@ -210,7 +211,9 @@
                 outputLog.snapWorld = snapWorld;
                 AG_bar_graded(outputLog);
 
-                parent.document.getElementById('overlay-button').style.display = "none";
+                if (isEDX) {
+                    parent.document.getElementById('overlay-button').style.display = "none";
+                }
 
             } else if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
                 //Restore the AG status bar to a graded state
@@ -221,7 +224,9 @@
                 outputLog = JSON.parse(prev_log);
                 outputLog.snapWorld = snapWorld;
                 AG_bar_semigraded(outputLog);
-                parent.document.getElementById('overlay-button').style.display = "none";
+                if (isEDX) {
+                    parent.document.getElementById('overlay-button').style.display = "none";
+                }
 
             } else {
                 //Restore the AG status bar to a graded state
@@ -229,7 +234,9 @@
                 outputLog = new gradingLog(snapWorld, taskID, numAttempts);
                 AG_bar_ungraded(outputLog);
                 document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
-                parent.document.getElementById('overlay-button').style.display = "block";
+                if (isEDX) {
+                    parent.document.getElementById('overlay-button').style.display = "block";
+                }
 
             }
             //populateFeedback(outputLog);
@@ -368,6 +375,7 @@
             } else {
                 $('#feedback-button').html("No Feedback Available");
             }
+            document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
         }
 
         /*
@@ -804,6 +812,15 @@
             }
         }
 
+        function isEDXurl() {
+            var url = window.location.href;
+            if (url.indexOf("edx") !== -1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         var world;
         window.onload = function () {
 
@@ -871,7 +888,9 @@
                 outputLog = new gradingLog(world, id, numAttempts);
                 outputLog.numAttempts += 1;
                 runAGTest(world, id, outputLog);
-                parent.document.getElementsByClassName('check-label')[0].click();
+                if (isEDX) {
+                    parent.document.getElementsByClassName('check-label')[0].click();
+                } 
                 // var outputLog = AGStart(world, id);
             }
             grade_button.addEventListener('click', button_listener);
@@ -956,18 +975,20 @@
 
             //TODO: Fix this timeout.
             setTimeout(function() {
-                var overlay_button = parent.document.createElement('button');
-                var overlay_button_text = parent.document.createTextNode('Grade');
-                overlay_button.appendChild(overlay_button_text);
-                overlay_button.id = 'overlay-button';
-                var button =  parent.document.getElementsByName('problem_id')[0];
-                button.parentNode.insertBefore(overlay_button, button.nextSibling);
+                if (isEDX) {
+                    var overlay_button = parent.document.createElement('button');
+                    var overlay_button_text = parent.document.createTextNode('Grade');
+                    overlay_button.appendChild(overlay_button_text);
+                    overlay_button.id = 'overlay-button';
+                    var button =  parent.document.getElementsByName('problem_id')[0];
+                    button.parentNode.insertBefore(overlay_button, button.nextSibling);
 
-                var overlay_button = parent.document.getElementById('overlay-button');
-                //overlay_button.style.display = "block";
-                overlay_button.onclick = function() { 
-                    overlay_button.style.display = "none";
-                    grade_button.click(); 
+                    var overlay_button = parent.document.getElementById('overlay-button');
+                    //overlay_button.style.display = "block";
+                    overlay_button.onclick = function() { 
+                        overlay_button.style.display = "none";
+                        grade_button.click(); 
+                    }
                 }
 
                 console.log(world);
