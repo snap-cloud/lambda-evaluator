@@ -1805,38 +1805,6 @@ function blockPrecedesInSprite(block1Sp, block2Sp, spriteIndex) {
 	return false;
 }
 
-/* Takes in a TEMPLATE (JSONified object) and its VARS (an array) (both of which 
-* can be obtained when calling fastTemplate()) and a SPRITEINDEX.
-*
-* Returns true if the given TEMPLATE is found in any script in the Scripts 
-* tab of the given sprite. See documentation of checkTemplate for more details.
-*/
-function checkTemplateInSprite(template, vars, spriteIndex) {
-	//Populate optional parameters
-	if (spriteIndex === undefined) {
-		spriteIndex = 0;
-	}
-	var firstBlockSpec = template[0].blockSp;
-	var scripts = getAllScripts(firstBlockSpec, spriteIndex);
-
-	try {
-		var JSONtarget;
-		var foundMatch;
-		for (var i = 0; i < scripts.length; i++) {
-			JSONtarget = JSONscript(scripts[i]);
-			foundMatch = checkTemplate(template, JSONtarget, vars);
-			if (foundMatch) {
-				return true; //if any script on the scripting area has a match
-					//for this template, then this test will pass.
-			}
-		}
-	} catch(e) {
-		return false;
-	}
-	return false;
-}
-
-
 /* Takes in a block BLOCK and returns the number of occurances
  * of the string BLOCKSPEC.
  *
