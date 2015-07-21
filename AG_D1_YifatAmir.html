@@ -30,36 +30,46 @@
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
+            /*HOW TO LAMBDAIZE:*/
+            // var assert1 = function assert1() {
+            //     return isScriptPresent('factorial %s',0);
+            // }
 
     /*Lab 1: Introduction*/
 
         /*Creating a Script*/
 
-            // /*Modify given script to make the sprite follow a square path if clicked enough times.*/
-            // testAssert(outputLog, spriteContainsBlock('move %n steps', 0),
-            //     "The 'move' block is present.",
-            //     "The 'move' block was not found on-screen.",
-            //     "Make sure to make your sprite move on the stage.");
-            // testAssert(outputLog, spriteContainsBlock('turn %clockwise %n degrees', 0), //counterclockwise 
-            //                                                                             //is incorrect
-            //     "The 'turn' block is present.",
-            //     "The 'turn' block was not found on-screen.",
-            //     "Make sure you make your sprite turn on the stage.");
-
-            // // var template = stringToJSON('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]');
-            // // var vars = stringToJSON('["A"]');
-
-            // // checkTemplate(template, script, vars)
-            
-            // testAssert(outputLog, blockPrecedesInSprite('turn %clockwise %n degrees', 'move %n steps') || blockPrecedesInSprite('move %n steps', 'turn %clockwise %n degrees'),
-            //     "The 'move' and 'turn' blocks are in a script together.",
-            //     "The 'move' and 'turn' blocks are not in a script together.",
-            //     "Make sure you make your sprite move and turn with just one click.");
-            // testAssert(outputLog, spriteContainsBlock('turn %clockwise %n degrees', 0, ["90"]),
-            //     "The sprite turns 90 degrees.",
-            //     "The sprite does not turn 90 degrees.",
-            //     "Make sure your sprite turns an appropriate amount."); //need to make sure the turn 90 is
-            //                                                             // the turn attached to the move.
+            /*Modify given script to make the sprite follow a square path if clicked enough times.*/
+            var moveExists = function moveExists() {
+                return spriteContainsBlock('move %n steps', 0);
+            }
+            testAssert(outputLog, moveExists,
+                "The 'move' block is present.",
+                "The 'move' block was not found on-screen.",
+                "Make sure to make your sprite move on the stage.");
+            var turnExists = function turnExists() { //counterclockwise is incorrect
+                return spriteContainsBlock('turn %clockwise %n degrees', 0);
+            }
+            testAssert(outputLog, turnExists,
+                "The 'turn clockwise' block is present.",
+                "The 'turn clockwise' block was not found on-screen.",
+                "Make sure you make your sprite turns clockwise on the stage.");
+            var turn90 = function turn90() {
+                return spriteContainsBlock('turn %clockwise %n degrees', 0, ["90"]);
+            }
+            testAssert(outputLog, turn90,
+                "The turn block has an input of 90 degrees.",
+                "The turn block does not have the correct input.",
+                "Make sure your sprite turns an appropriate amount.");
+            var moveThenTurn = function moveThenTurn() {
+                var template = stringToJSON('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]');
+                var vars = stringToJSON('["A"]');
+                return scriptPresentInSprite(template, 0, vars);
+            }
+            testAssert(outputLog, moveThenTurn,
+                "'Turn 90' follows the 'move' block in a script.",
+                "The 'move' block is not followed by a turn with correct inputs.",
+                "Make sure your sprite moves and then turns with just one click.");
             
             // /*Modify the previous script to make the sprite follow a triangular path if clicked enough times.*/
             // testAssert(outputLog, spriteContainsBlock('move %n steps', 0),
@@ -91,7 +101,7 @@
             //     "The input to the repeat loop is 9.",
             //     "The input to the repeat loop is incorrect.",
             //     "Try checking how many sides the given shape has!");
-            // //isScriptPresent with a template??
+            // //scriptPresentInSprite with a template??
 
     /*Lab 4: Making Your Own Blocks*/
 
