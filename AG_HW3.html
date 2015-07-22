@@ -45,26 +45,34 @@
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
-            /* Factorial */
-            var assert1 = function assert1() {
-                return scriptPresentInSprite('[{"blockSp":"factorial %s","inputs":["A"]}]',0,["A"]);
-            }
-            // testAssert(outputLog, assert1,//isScriptPresent('factorial %s',0),
-            //     "The 'factorial' block is present.", 
-            //     "The 'factorial %num' block was not found on-screen.", 
-            //     "Make sure you name your custom block, 'factorial %num'.");
-            // multiTestBlock(outputLog, 'factorial %s',
-            //     [[0],[1],[2],[4],[5],[10]],
-            //     [1,1,2,24,120,3628800],
-            //     [-1,-1,-1,-1,-1,-1],
-            //     [false,false,false,false,false,false]) //These indicate
 
+            /*Rotate Clockwise*/
             multiTestBlock(outputLog, 'rotate %s clockwise',
-                [[[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]]],
-                [[0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,2,0,0,0,3,0,0,0,4]],
-                [-1,-1],
-                [true,true]) //Each test has a boolean 
+                [[[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0]],[[1,4,8,5,9,6,9,4,2,5,8,9,6,5,9,0]]],
+                [[0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,2,0,0,0,3,0,0,0,4],[5,5,5,1,0,0,0,0,5,5,5,5,0,0,0,0],[6,2,9,1,5,5,6,4,9,8,9,8,0,9,4,5]],
+                [-1,-1, -1, -1],
+                [true,true, true, true])
 
+            /*Merge Tile at _, _ on _ up*/
+            multiTestBlock(outputLog, "merge tile at %s , %s on %s up",
+                [[4, 2, [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[2, 2, [1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]],[2, 2, [1,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0]],[2, 2, [1,4,8,5,9,6,9,4,2,5,8,9,6,5,9,0]]],
+                [true,false,true,false],
+                [-1,-1, -1, -1],
+                [true,true, true, true]) 
+
+            /*Merge Up _*/
+            multiTestBlock(outputLog, 'merge up %s',
+                [[[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0]],[[1,4,8,5,9,6,9,4,2,5,8,9,6,5,9,0]]],
+                [[1,,,,,,,,,,,,,,,],[1,2,3,4,,,,,,,,,,,,],[1,,10,,10,,10,,5,,,,,,,],[1,4,8,5,9,6,9,4,2,10,8,9,6,,9,]],
+                [-1,-1, -1, -1],
+                [true,true, true, true])
+
+            /*No Moves Left For _*/
+            multiTestBlock(outputLog, "no moves left for %s",
+                [[[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0]],[[1,4,8,5,9,6,9,4,2,5,8,9,6,5,9,0]]],
+                [true,true,false,false],
+                [-1,-1, -1, -1],
+                [true,true, true, true])
 
             return outputLog;
         }

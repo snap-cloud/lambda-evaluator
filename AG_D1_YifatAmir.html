@@ -47,29 +47,29 @@
                 "The 'move' block is present.",
                 "The 'move' block was not found on-screen.",
                 "Make sure to make your sprite move on the stage.");
-            var turnExists = function turnExists() { //counterclockwise is incorrect
-                return spriteContainsBlock('turn %clockwise %n degrees', 0);
-            }
-            testAssert(outputLog, turnExists,
-                "The 'turn clockwise' block is present.",
-                "The 'turn clockwise' block was not found on-screen.",
-                "Make sure you make your sprite turns clockwise on the stage.");
-            var turn90 = function turn90() {
-                return spriteContainsBlock('turn %clockwise %n degrees', 0, ["90"]);
-            }
-            testAssert(outputLog, turn90,
-                "The turn block has an input of 90 degrees.",
-                "The turn block does not have the correct input.",
-                "Make sure your sprite turns an appropriate amount.");
-            var moveThenTurn = function moveThenTurn() {
-                var template = stringToJSON('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]');
-                var vars = stringToJSON('["A"]');
-                return scriptPresentInSprite(template, 0, vars);
-            }
-            testAssert(outputLog, moveThenTurn,
-                "'Turn 90' follows the 'move' block in a script.",
-                "The 'move' block is not followed by a turn with correct inputs.",
-                "Make sure your sprite moves and then turns with just one click.");
+            // var turnExists = function turnExists() { //counterclockwise is incorrect
+            //     return spriteContainsBlock('turn %clockwise %n degrees', 0);
+            // }
+            // testAssert(outputLog, turnExists,
+            //     "The 'turn clockwise' block is present.",
+            //     "The 'turn clockwise' block was not found on-screen.",
+            //     "Make sure you make your sprite turns clockwise on the stage.");
+            // var turn90 = function turn90() {
+            //     return spriteContainsBlock('turn %clockwise %n degrees', 0, ["90"]);
+            // }
+            // testAssert(outputLog, turn90,
+            //     "The turn block has an input of 90 degrees.",
+            //     "The turn block does not have the correct input.",
+            //     "Make sure your sprite turns an appropriate amount.");
+            // var moveThenTurn = function moveThenTurn() { //alter to check for subset script?!?!
+            //     var template = stringToJSON('[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]');
+            //     var vars = stringToJSON('["A"]');
+            //     return scriptPresentInSprite(template, 0, vars);
+            // }
+            // testAssert(outputLog, moveThenTurn,
+            //     "'Turn 90' follows the 'move' block in a script.",
+            //     "The 'move' block is not followed by a turn with correct inputs.",
+            //     "Make sure your sprite moves and then turns with just one click.");
             
             // /*Modify the previous script to make the sprite follow a triangular path if clicked enough times.*/
             // testAssert(outputLog, spriteContainsBlock('move %n steps', 0),
