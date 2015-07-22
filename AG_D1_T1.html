@@ -830,6 +830,16 @@
             button.parentNode.insertBefore(overlay_button, button.nextSibling);
         }
 
+        function makeFullScreenButton() {
+            var autograding_bar = document.getElementById('autograding_bar');
+            var full_screen_button = document.createElement('button');
+            var full_screen_button_text = document.createTextNode("Full-Screen");
+            full_screen_button.appendChild(full_screen_button_text);
+            full_screen_button.id = "full-screen";
+            full_screen_button.className = "off";
+            autograding_bar.parentNode.insertBefore(full_screen_button, autograding_bar.nextSibling);
+        }
+
         function toggleSnapWindow(button) {
             var iframe = parent.document.getElementsByTagName('iframe')[0];
             if (button.className === "off") {
@@ -840,9 +850,9 @@
                 iframe.style.height = '100vh';
                 iframe.style.zIndex = '99';
                 button.className = "on";
-                button.style.position = 'fixed';
+                /*button.style.position = 'fixed';
                 button.style.right = '0';
-                button.style.bottom = '0';
+                button.style.bottom = '0';*/
             } else {
                 iframe.style.position = 'initial';
                 iframe.style.top = 'initial';
@@ -851,9 +861,9 @@
                 iframe.style.height = '500px';
                 iframe.style.zIndex = 'initial';
                 button.className = "off";
-                button.style.position = 'absolute';
+                /*button.style.position = 'absolute';
                 button.style.right = '31px';
-                button.style.bottom = '225px';
+                button.style.bottom = '225px';*/
             }
         }
 
@@ -1017,10 +1027,13 @@
                     overlay_button.style.display = "none";
                     grade_button.click(); 
                 }
-                var full_screen = parent.document.getElementById('full-screen');
+
+                makeFullScreenButton();
+                var full_screen = document.getElementById('full-screen');
                 full_screen.onclick = function() {
                     toggleSnapWindow(full_screen);   
                 }
+
             }
 
             //TODO: Fix this timeout.
@@ -1030,6 +1043,13 @@
                 var outputLog = AGStart(world,id);
                 runAGTest(world, id);
                 //runAGTest(world, id);
+
+                /*if (isEDX) {
+                    var full_screen = parent.document.getElementById('full-screen');
+                    full_screen.onclick = function() {
+                        toggleSnapWindow(full_screen);   
+                    }
+                }*/
 
                 //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
                 //populateFeedback(outputLog);
@@ -1061,7 +1081,7 @@
                 //AGUpdate(world, id);
 
                 
-            },600);
+            },1000);
 
             /*var overlay_button = document.createElement('button');
             var overlay_button_text = document.createTextNode('Grade');

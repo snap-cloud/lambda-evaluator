@@ -95,6 +95,7 @@ table.results {
 	cursor: pointer;
 	display: block;
 	font-weight: bold;
+	width: 75px;
 }
 
 .toggle-box + label + div {
@@ -148,12 +149,16 @@ span {
 }
 
 #full-screen {
-	display:inline-block;
-	float: right;
-	z-index: 100;
-	position: absolute;
-  	right: 31px;
-  	bottom: 225px;
+  z-index: 100;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  box-shadow: 3px 3px 10px #000000;
+  color: white;
+  background-color: rgb(71, 71, 71);
+  outline: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
 		
 
