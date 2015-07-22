@@ -727,9 +727,13 @@ function setValues(block, values) {
 
 	for (var morph of morphList) {
 		if (morph.constructor.name === "InputSlotMorph") {
-			morph.setContents(values[valIndex]);
+			if (values[valIndex] instanceof Array) {
+				setNewListToArg(values[valIndex], block, morphIndex);
+			} else {
+				morph.setContents(values[valIndex]);
+			}
 			valIndex += 1;
-		} else if (values[valIndex] instanceof Array) {
+		} else if (morph instanceof ArgMorph && morph.type === "list") {
 			setNewListToArg(values[valIndex], block, morphIndex);
 			valIndex += 1;
 		}
@@ -1345,13 +1349,25 @@ function setNewListToArg(values, block, i) {
 	var newList = cloneListReporter();
 
 	populateList(newList, values);
-	if (block.children[i] instanceof ArgMorph &&
-			block.children[i].type === "list") {
-			block.children[i] = newList;
-			block.children[i].parent = block;
-			block.fixLayout();
-			block.changed();
-		} 
+	block.children[i] = newList;
+	block.children[i].parent = block;
+	block.fixLayout();
+	block.changed();
+	console.log("added list param");
+
+}
+
+function simplifySpec(blockSpec) {
+	var spec = blockSpec.split(" ");
+	var newSpec = "";
+	for (var i = 0; i < spec.length; i++) {
+		if (spec[i] === "%l") {
+			spec[i] = "%s";
+		}
+		newSpec += spec[i] + " ";
+	}
+	newSpec = newSpec.slice(0, -1);
+	return newSpec;
 }
 
 function findBlockInPalette(blockSpec, workingWorld) {
@@ -1365,7 +1381,7 @@ function findBlockInPalette(blockSpec, workingWorld) {
 		i = 0;
 
 		while (i < palette.length) {
-			if (palette[i].blockSpec && palette[i].blockSpec === blockSpec) {
+			if (palette[i].blockSpec && simplifySpec(palette[i].blockSpec) === simplifySpec(blockSpec)) {
 				return palette[i].fullCopy();
 			}
 			i++;
@@ -1388,12 +1404,11 @@ function createTestSprite(log, testID) {
 }
 
 function setUpIsolatedTest(blockSpec, log, testID) {
-	console.log(log);
-	var sprite = createTestSprite(log, testID);
 	var block = findBlockInPalette(blockSpec, log.snapWorld);
-	if (!block) {
+	if (!block) { 
 		throw blockSpec + " not found in Palette!";
 	}
+	var sprite = createTestSprite(log, testID);
 	addBlockToSprite(sprite, block, log.snapWorld);
 	return block;
 }
