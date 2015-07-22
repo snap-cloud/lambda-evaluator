@@ -57,13 +57,13 @@
             //     [[0],[1],[2],[4],[5],[10]],
             //     [1,1,2,24,120,3628800],
             //     [-1,-1,-1,-1,-1,-1],
-            //     [false,false,false,false,false,false])
+            //     [false,false,false,false,false,false]) //These indicate
 
-            multiTestBlock(outputLog, 'rotate %l clockwise',
-                [[[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]],
-                [[0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]],
-                [-1],
-                [true])
+            multiTestBlock(outputLog, 'rotate %s clockwise',
+                [[[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]]],
+                [[0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,2,0,0,0,3,0,0,0,4]],
+                [-1,-1],
+                [true,true]) //Each test has a boolean 
 
 
             return outputLog;
@@ -965,7 +965,7 @@
 
                 console.log(world);
                 var outputLog = AGStart(world,id);
-                runAGTest(world, id);
+                // runAGTest(world, id);
                 //runAGTest(world, id);
 
                 //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
