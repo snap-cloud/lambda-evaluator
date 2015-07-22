@@ -80,7 +80,7 @@ gradingLog.prototype.stringifySnapXML = function() {
 *		"r" - reporter test
 *		"s" - stage event test
 */
-gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, timeOut) {
+gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, timeOut, isolate) {
 	this.testCount += 1;
 	this["" + this.testCount] = {"testClass": testClass,
 								 "blockSpec": blockSpec,
@@ -91,7 +91,11 @@ gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, tim
 								 "feedback": null,
 								 "timeOut": timeOut,
 								 "proc": null,
-								 'graded': false};
+								 'graded': false,
+								 "isolated": isolate || false,
+								 "sprite": 0};
+	//if thie expected output is an array, convert it to  snap list so snapEquals works
+
 	return this.testCount;
 };
 
@@ -142,7 +146,12 @@ gradingLog.prototype.startSnapTest = function(testID) {
 	test.output = "INVALID";
 	//Retrieve the block from the stage TODO: Handle Errors
 	try {
-		var block = getScript(test.blockSpec);
+		var block = null;
+		if (test.isolated) {
+			block = setUpIsolatedTest(test.blockSpec, this, testID);
+		} else {
+			block = getScript(test.blockSpec);
+		}
 	//Set the selected block's inputs for the test
 		setValues(block, test['input']);
 	//Initiate the Snap Process with a callback to .finishSnapTest
@@ -164,6 +173,7 @@ gradingLog.prototype.startSnapTest = function(testID) {
 		if (timeout < 0) {
 			timeout = 1000;
 		}
+		var myself = this;
 		//Launch timeout to handle Snap errors and infinitely looping scripts
 		var timeout_id = setTimeout(function() {
 			var stage = outputLog.snapWorld.children[0].stage;
@@ -173,11 +183,14 @@ gradingLog.prototype.startSnapTest = function(testID) {
 				test['feedback'] = "Test Timeout Occurred."
 			}
 			test.output = "INVALID";
-			stage.threads.stopProcess(getScript(outputLog[testID]["blockSpec"]));
+			stage.threads.stopProcess(getScript(outputLog[testID]["blockSpec"], test.sprite));
 			test.correct = false;
 			//Set the graded flag to true for this test.
 			console.log(timeout);
 			test.graded = true;
+			// if (test.isolated) {
+			// 	myself.snapWorld.children[0].sprites.contents[test.sprite].remove();
+			// }
 		},timeout);
 		//Save timeout id, to stop error handling timeout if test succeeds.
 		this.currentTimeout = timeout_id;
@@ -216,9 +229,13 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 
 	//Populate Grade Log //May be DEPRICATED.
 	var test = this[testID];
+
 	if (test === undefined) {
 		throw "gradingLog.finishSnapTest: TestID: " + testID + ", is invalid.";
 	}
+
+	//Added a variable "expOut" to check for snap Lists correctly
+	var expOut = test.expOut;
 	
 	if (output === undefined) {
 		test.output = null;
@@ -226,8 +243,12 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 		test.output = output;
 	}
 
+	if (expOut instanceof Array) {
+		expOut = new List(expOut);
+	}
+
 	//Update feedback and 'correct' flag depending on output.
-	if (snapEquals(test.output, test.expOut)) {
+	if (snapEquals(test.output, expOut)) {
 		test.correct = true;
 		//test.feedback = test.feedback || "Test Passed.";
 		test.feedback = "Test Passed." || test.feedback;
@@ -246,8 +267,15 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	this[testID] = test;
 	//Clear the input values.
 	try {
-		var block = getScript(test.blockSpec);
-		setValues(block, Array(test['input'].length).join('a').split('a'));
+		if (test.isolated) {
+			console.log("removing sprite");
+			this.snapWorld.children[0].sprites.contents[test.sprite].remove();
+		} else {
+			var block = getScript(test.blockSpec);
+			setValues(block, Array(test['input'].length).join('a').split('a'));
+		}
+		// var block = getScript(test.blockSpec);
+		// setValues(block, Array(test['input'].length).join('a').split('a'));
 	} catch(e) {
 		throw "gradingLog.finishSnapTest: Trying to clear values of block that does not exist.";
 	}
@@ -399,6 +427,12 @@ gradingLog.prototype.scoreLog = function() {
 		} else {	//One failed test flips the allCorrect flag.
 			this.allCorrect = false;
 		}
+		// if (test.isolate) {
+		// 	console.log("removing sprite");
+		// 	var temp = test.sprite;
+		// 	test.sprite = null;
+		// 	this.snapWorld.children[0].removeSprite(temp);
+		// }
 	}
 
 	//Calculate the pScore
@@ -610,7 +644,7 @@ function scriptPresentInSprite(script, spriteIndex, scriptVariables) {
 		scriptVariables = [];
 	}
 
-	var JSONtemplate = script;
+	var JSONtemplate = JSON.parse(script); //Added this parsing step to convert a string
 	var blockSpec = JSONtemplate[0].blockSp;
 	//Handle case when no scripts present on stage.
 	try {
@@ -648,7 +682,7 @@ function testBlock(outputLog, testID) {
 	return testID;
 }
 
-function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
+function multiTestBlock(outputLog, blockSpec, inputs, expOuts, timeOuts, isolated) {
 
 	if (outputLog === undefined) {
 		outputLog = new gradingLog(world);
@@ -664,7 +698,7 @@ function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
 
 	for (var i=0;i<inputs.length; i++) {
 		//checkArrayForList(inputs[i]);
-		testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i]);
+		testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i], isolated[i]);
 	}
 	// testBlock(outputLog, testIDs[0]);
 	// outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
@@ -674,6 +708,7 @@ function multiTestBlock(blockSpec, inputs, expOuts, timeOuts, outputLog) {
 //David's code for checking an array for inner arrays
 //then converting them to snap lists
 //a - the JS Array you want to check for inner Arrays
+// PROBABLY USELES AT THE MOMENT
 function checkArrayForList(a) {
 	for (var i = 0; i < a.length; i++) {
 		if (a[i] instanceof Array) {
@@ -682,19 +717,27 @@ function checkArrayForList(a) {
 	}
 }
 
+//David added in a way to populate a list in the
+//set values. Does not yet work for variables!
 function setValues(block, values) {
-	var valIndex = 0;
+	var valIndex = 0,
+		morphIndex = 0;
 
 	var morphList = block.children;
 
 	for (var morph of morphList) {
 		if (morph.constructor.name === "InputSlotMorph") {
-			morph.setContents(values[valIndex]);
+			if (values[valIndex] instanceof Array) {
+				setNewListToArg(values[valIndex], block, morphIndex);
+			} else {
+				morph.setContents(values[valIndex]);
+			}
+			valIndex += 1;
+		} else if (morph instanceof ArgMorph && morph.type === "list") {
+			setNewListToArg(values[valIndex], block, morphIndex);
 			valIndex += 1;
 		}
-		if (morph instanceof ArgMorph) {
-
-		}
+		morphIndex++;
 	}
 	if (valIndex + 1 !== values.length) {
 		//TODO: THROW ERROR FOR INVALID BLOCK DEFINITION
@@ -1231,6 +1274,143 @@ function makeDragon(iterations, callback) {
 	act("stop all");
 	act("callback");
 	return act("time");
+}
+
+//takes a block spec and attempts to get the input list for it
+//used for testing and demo purposes mostly
+function getListBlock(blockSpec, spriteIndex) {
+	var block = null,
+		listArgs = [];
+	if (isScriptPresent(blockSpec, spriteIndex)) {
+		block = getScript(blockSpec);
+	} else {
+		return listArgs;
+	}
+	if (block && blockSpec === "list %exp") {
+		listArgs.push(block);
+	}
+	for (var i = 0; i < block.children.length; i++) {
+		if (block.children[i].blockSpec && block.children[i].blockSpec === "list %exp") {
+			listArgs.push(block.children[i]);
+		} else if (block.children[i].blockSpec && block.children[i].category === "variables") {
+			var name = block.children[i].blockSpec,
+				vars = world.children[0].globalVariables,
+				variable = vars.silentFind(name),
+				val = null;
+
+			if (variable && (val = vars.getVar(name)) instanceof List) {
+				listArgs.push(val);
+			}
+			//Find out how to handle variables!
+		}
+	}
+	return listArgs;
+}
+
+function getPaletteScripts(pal) {
+	return world.children[0].sprites.contents[0].palette(pal).children[0].children;
+}
+
+function cloneListReporter() {
+	var palette = getPaletteScripts("variables");
+	var block = null;
+	var i = 0;
+	while (i < palette.length) {
+		if (palette[i].blockSpec && palette[i].blockSpec === "list %exp") {
+			block = palette[i].fullCopy();
+			i = palette.length;
+		}
+		i++;
+	}
+	return block;
+}
+
+//  list.setContents([1,2,3])
+// MultiArgMorph.addInput('5')
+// getScript('list %exp') -> returns the snap list object reference
+// world.children[0].sprites.contents[0].scripts.children[0].children[1] -> gets the MultiArgMorph
+
+//populates a list reporter block with the given arguments
+function populateList(list, args) {
+	var multiArg = list.children[list.children.length - 1];
+
+	while (multiArg.children.length > 2) {
+		multiArg.removeInput();
+		console.log(list.children.length);
+	}
+	for (var i = 0; i < args.length; i++) {
+		multiArg.addInput(args[i]);
+	}
+}
+
+//sets (in a very hacky way) a list to an ArgMorph of list type
+//sets the first one it sees then exits!!!
+function setNewListToArg(values, block, i) {
+	var newList = cloneListReporter();
+
+	populateList(newList, values);
+	block.children[i] = newList;
+	block.children[i].parent = block;
+	block.fixLayout();
+	block.changed();
+	console.log("added list param");
+
+}
+
+function simplifySpec(blockSpec) {
+	var spec = blockSpec.split(" ");
+	var newSpec = "";
+	for (var i = 0; i < spec.length; i++) {
+		if (spec[i] === "%l") {
+			spec[i] = "%s";
+		}
+		newSpec += spec[i] + " ";
+	}
+	newSpec = newSpec.slice(0, -1);
+	return newSpec;
+}
+
+function findBlockInPalette(blockSpec, workingWorld) {
+	var thisWorld = workingWorld || world,
+		palette = null,
+		i = 0,
+		pList = ["motion", "variables", "looks", "sound", "pen", "control", "sensing", "operators"];
+
+	for (var item of pList) {
+		palette = getPaletteScripts(item);
+		i = 0;
+
+		while (i < palette.length) {
+			if (palette[i].blockSpec && simplifySpec(palette[i].blockSpec) === simplifySpec(blockSpec)) {
+				return palette[i].fullCopy();
+			}
+			i++;
+		}
+	}		
+	console.log("Block " + blockSpec + " not found in palette!");
+	return null;	
+}
+
+function addBlockToSprite(sprite, block) {
+	sprite.scripts.add(block);
+	sprite.scripts.cleanUp();
+}
+
+function createTestSprite(log, testID) {
+	log.snapWorld.children[0].addNewSprite();
+	var sprites = log.snapWorld.children[0].sprites.contents;
+	log[testID].sprite = sprites.length - 1;
+	return sprites[sprites.length - 1];
+}
+
+function setUpIsolatedTest(blockSpec, log, testID) {
+	var block = findBlockInPalette(blockSpec, log.snapWorld);
+	if (!block) { 
+		throw blockSpec + " not found in Palette!";
+	}
+	var sprite = createTestSprite(log, testID);
+	addBlockToSprite(sprite, block, log.snapWorld);
+	return block;
 }
 
 /* ------ END DAVID'S MESS ------ */
@@ -2041,7 +2221,7 @@ function fastTemplate() {
 	var scripts = getScripts(0);
 	var script1 = JSONscript(scripts[0]);
 	var script2 = JSONscript(scripts[1]);
-	return getTemplate(script1, script2);
+	return JSON.stringify(getTemplate(script1, script2));
 }
 
 /* Takes in a TEMPLATE and a student's SCRIPT and grades it by checking the pattern
