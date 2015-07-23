@@ -976,7 +976,6 @@
             //var overlay_button = parent.document.getElementById('overlay-button');
             //overlay_button.onclick = function() { grade_button.click(); }
 
-
             $(".bubble").click(function(event){
                 event.stopPropagation();  
             });
@@ -1034,6 +1033,15 @@
                     toggleSnapWindow(full_screen);   
                 }
 
+            }
+
+            IDE_Morph.prototype.originalOpenProject = IDE_Morph.prototype.openProject;
+            IDE_Morph.prototype.openProject = function (name) {
+                this.originalOpenProject(name);
+                setTimeout(function() {
+                    runAGTest(world, id);
+                }, 500);
+                //runAGTest(world, id);
             }
 
             //TODO: Fix this timeout.
