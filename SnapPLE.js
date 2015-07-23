@@ -628,9 +628,10 @@ function getCharIndices(target, word) {
 	return result;
 }
 
-/* Takes in a SCRIPT (JSONified object), which can be a general template 
-* or an exact script, a spriteIndex, and optional SCRIPTVARIABLES (an array) 
-* (which along with SCRIPT can be obtained when calling fastTemplate()).
+/* Takes in a string version of a JSONified SCRIPT (JSONtoString), which can be 
+* a general template or an exact script, a spriteIndex, and optional 
+* SCRIPTVARIABLES (an array) (which along with SCRIPT can be obtained when 
+* calling fastTemplate()).
 *
 * Returns true if the given SCRIPT is found in any script in the Scripts 
 * tab of the given sprite. See documentation of checkTemplate for more details.
@@ -644,7 +645,7 @@ function scriptPresentInSprite(script, spriteIndex, scriptVariables) {
 		scriptVariables = [];
 	}
 
-	var JSONtemplate = JSON.parse(script); //Added this parsing step to convert a string
+	var JSONtemplate = stringToJSON(script);
 	var blockSpec = JSONtemplate[0].blockSp;
 	//Handle case when no scripts present on stage.
 	try {
@@ -1585,7 +1586,7 @@ function getGlobalVar(varToGet, globalVars) {
 	return globalVars[varToGet].value;
 }
 
-/* Takes in string CUSTOMBLOCK, the strings BLOCKSPEC1 (any block)
+/* Takes in string CUSTOMBLOCKSPEC, the strings BLOCKSPEC1 (any block)
  * and BLOCKSPEC2 (a conditional block), and their respective
  * optional arg arrays ARGARRAY1 and ARGARRAY2. Returns true if BLOCKSPEC1 is
  * inside of the block represented by BLOCKSPEC2.
@@ -1800,22 +1801,22 @@ function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
 }
 
 
-/* Takes in two javascript objects (representating a block (block1) and a C-shaped block (block2)) and a
-* SPRITEINDEX. 
+/* Takes in two strings (representating a block (block1String) and a C-shaped block 
+* (block2String)) and a SPRITEINDEX. 
 * 
-* Returns true if the block represented by BLOCK1 occurs inside 
-* the C-shaped block represented by BLOCK2 in any script in 
+* Returns true if the block represented by BLOCK1STRING occurs inside 
+* the C-shaped block represented by BLOCK2STRING in any script in 
 * the Scripts tab of the given sprite. See documentation of CBlockContains for 
 * details of what blocks are considered C-shaped.
 */
-function CBlockContainsInSprite(block1, block2, spriteIndex) {
+function CBlockContainsInSprite(block1String, block2String, spriteIndex) {
     //Populate optional parameters
     if (spriteIndex === undefined) {
         spriteIndex = 0;
     }
-    var block1Spec = block1.blockSp;
-    var block2Spec = block2.blockSp;
     try {
+    	var block1 = stringToJSON(block1String)[0];
+	    var block2 = stringToJSON(block2String)[0];
         var JSONtarget;
         var doesContain;
         var scriptsOnScreen = getScripts(spriteIndex);
