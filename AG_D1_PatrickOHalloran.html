@@ -98,18 +98,73 @@
                 //     "The third forever script was not found on the screen. Check your inputs.",
                 //     "Make sure you have all of the correct inputs and the blocks are in order for the third forever script script.");
 
-        /* Lab 2: Repeat Commands. */
+
+        /* Lab 3: Repeat Commands. */
 
             /* The For Block */
 
                 /* Recreate exact squirrel script */
-                var squirrelTest = function squirrelTest() {
-                    return scriptPresentInSprite('[{"blockSp":"pen down","inputs":[]},{"blockSp":"for %upvar = %n to %n %cs","inputs":["1","100",[{"blockSp":"move %n steps","inputs":[{"blockSp":"%n × %n","inputs":["2",{"blockSp":"length","inputs":[]}]}]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]]}]');
+                // var squirrelTest = function squirrelTest() {
+                //     return scriptPresentInSprite('[{"blockSp":"pen down","inputs":[]},{"blockSp":"for %upvar = %n to %n %cs","inputs":["1","100",[{"blockSp":"move %n steps","inputs":[{"blockSp":"%n × %n","inputs":["2",{"blockSp":"length","inputs":[]}]}]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]]}]');
+                // }
+                // testAssert(outputLog, squirrelTest,
+                //     "The squirrel script was found on the screen.",
+                //     "The squirrel script was not found on the screen. Try checking your inputs and variable names",
+                //     "Try making sure all of the correct blocks and inputs are in order.");
+
+
+        /* Lab 4: Making your own blocks. */
+
+            /* Making a custom block */
+
+                /* Create 'draw square' command motion */
+                // var squarePresentTest = function squarePresentTest() {
+                //     return scriptPresentInSprite('[{"blockSp":"draw square","inputs":[]}]');
+                // }
+                // testAssert(outputLog, squarePresentTest,
+                //     "The 'draw square' block is found.",
+                //     "The 'draw square' block is not on the screen.",
+                //     "Follow the directions to make a 'draw square' block");
+                // var squareBodyTest = function squareBodyTest() {
+                //     var expected = '[{"blockSp":"repeat %n %c","inputs":["4",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]]}]';
+                //     var actual = JSONtoString(getCustomBody("draw square"));
+                //     return expected === actual;
+                // }
+                // testAssert(outputLog, squareBodyTest,
+                //     "The body of the 'draw square' block is correct.",
+                //     "The body of the 'draw square' block is incorrect. Try checking the block order and inputs.",
+                //     "Try making sure all of the correct blocks and inputs are in order.");
+
+                /* Create 'draw triangle' command block */
+                var realTriangleBody = JSONtoString(getCustomBody("draw triangle"));
+                var trianglePresentTest = function trianglePresentTest() {
+                    return scriptPresentInSprite('[{"blockSp":"draw triangle","inputs":[]}]');
                 }
-                testAssert(outputLog, squirrelTest,
-                    "The squirrel script was found on the screen.",
-                    "The squirrel script was not found on the screen. Try checking your inputs and variable names",
-                    "Try making sure all of the correct blocks and inputs are in order.");
+                testAssert(outputLog, trianglePresentTest,
+                    "The 'draw triangle' block is found.",
+                    "The 'draw triangle' block cannot be found.",
+                    "Follow directions to make the 'draw triangle' block".);
+                var triangleContainsMoveTest = function triangleContainsMoveTest() {
+                    return simpleCBlockContains(realTriangleBody, "move % steps", "repeat", [], ["3"]);
+                }
+                var triangleContainsTurnTest = function triangleContainsTurnTest() {
+                    return simpleCBlockContains(realTriangleBody, "turn %counterclockwise % degrees", ["120"], ["3"]);
+                }
+
+                /* Create 'draw house' command block */
+                var realHouseBody = JSONtoString(getCustomBody("draw house"));
+                var housePresentTest = function housePresentTest() {
+                    return scriptPresentInSprite('[{"blockSp":"draw house","inputs":[]}]');
+                }
+                testAssert(outputLog, housePresentTest,
+                    "The 'draw house' block is found.",
+                    "The 'draw house' block cannot be found.",
+                    "Follow directions to make the 'draw house' block".);
+                var expectedDrawSquare, expectedDrawTriangle = 1;
+                var houseBodyTest = function houseBodyTest() {
+                    return 
+                }
+
 
 
             return outputLog;
