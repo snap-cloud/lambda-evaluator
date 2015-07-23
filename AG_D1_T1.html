@@ -232,6 +232,8 @@
                 //Restore the AG status bar to a graded state
                 var numAttempts = setNumAttempts(taskID);
                 outputLog = new gradingLog(snapWorld, taskID, numAttempts);
+                //outputLog = JSON.parse(prev_log);
+                //outputLog.snapWorld = snapWorld;
                 AG_bar_ungraded(outputLog);
                 document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
                 if (isEDX) {
@@ -269,6 +271,8 @@
             grayOutButtons(outputLog.snapWorld, outputLog.taskID);
             console.log('Autograder test Results:');
             console.log(outputLog);
+            //populateFeedback(outputLog);
+
             //parent.document.getElementsByClassName('check-label')[0].click();
         }
         /*
@@ -406,6 +410,11 @@
             var button_text = "&#x2770&#x2770 FEEDBACK";
             var button_elem = $('#autograding_button span');
             var regex = new RegExp("FEEDBACK","g");
+            var num_errors = outputLog.testCount - outputLog.numCorrect;
+            var plural = "";
+            if (num_errors > 1) { plural = "s"};
+            $('#feedback-button').html("View Feedback ("+ 
+                num_errors +" Error" + plural + ")");
             if (button_elem.html().match(regex) !== null) {
                 return;
             }
@@ -416,11 +425,6 @@
             });
             $('#autograding_button .hover_darken').show();
             $('#onclick-menu').css('color', 'orange');
-            var num_errors = outputLog.testCount - outputLog.numCorrect;
-            var plural = "";
-            if (num_errors > 1) { plural = "s"};
-            $('#feedback-button').html("View Feedback ("+ 
-                num_errors +" Error" + plural + ")");
         }
 
         /* Checks if two Snap! XML strings have approximately the same state.
@@ -848,7 +852,7 @@
                 iframe.style.right = '0';
                 iframe.style.width = '100%';
                 iframe.style.height = '100vh';
-                iframe.style.zIndex = '99';
+                iframe.style.zIndex = '16777270';
                 button.className = "on";
                 /*button.style.position = 'fixed';
                 button.style.right = '0';
@@ -925,7 +929,8 @@
             //Call the test suite when this element is clicked.
             var update_listener = function() {
                 var outputLog = AGUpdate(world, id);
-                populateFeedback(outputLog);
+                //populateFeedback(outputLog);
+                //runAGTest(world, id);
             };
             var button_listener = function(event) {
                 event.stopPropagation();
