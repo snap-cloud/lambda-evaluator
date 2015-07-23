@@ -1586,7 +1586,8 @@ function getGlobalVar(varToGet, globalVars) {
 	return globalVars[varToGet].value;
 }
 
-/* Takes in string CUSTOMBLOCKSPEC, the strings BLOCKSPEC1 (any block)
+/* Takes in string CUSTOMBLOCKSPEC (can be general, such as "factorial %", 
+ * since this calls blockSpecMatch), the strings BLOCKSPEC1 (any block)
  * and BLOCKSPEC2 (a conditional block), and their respective
  * optional arg arrays ARGARRAY1 and ARGARRAY2. Returns true if BLOCKSPEC1 is
  * inside of the block represented by BLOCKSPEC2.
@@ -1622,6 +1623,7 @@ function CBlockContainsInCustom(customBlockSpec, spriteIndex, blockSpec1, blockS
  * the block we are looking for. ARGARRAY only matters if it is populated (not an empty array)
  * Returns true if BLOCKSPEC/ARGARRAY (if looking for them) are found, otherwise returns false.
  *
+ * BLOCKSPEC can be a general blockspec, such as "factorial %".
  * The SCRIPT can be obtained by running the command, which gives you the
  * first block and access to all the blocks connected to that block:
  *
@@ -1644,7 +1646,7 @@ function scriptContainsBlock(script, blockSpec, argArray) {
 				return true;
 			}
 		} else {
-			if (morph1.blockSp === blockSpec) {
+			if (blockSpecMatch(morph1.blockSp, blockSpec)) {
 				if (argArray.length == 0) {
 					return true;
 				}
@@ -1660,7 +1662,8 @@ function scriptContainsBlock(script, blockSpec, argArray) {
 	return false;
 }
 
-/* Wrapper function that returns true if the given block with string BLOCKSPEC is anywhere on the screen.
+/* Wrapper function that returns true if the given block with string BLOCKSPEC (can be general, 
+ * such as "factorial %", since this calls blockSpecMatch) is anywhere on the screen.
  * Otherwise returns false. If ARGARRAY is an array, then we check that all of the inputs
  * are correct in addition to the blockspec. Otherwise we will just check that the blockspec is fine.
  */
@@ -1686,7 +1689,9 @@ function spriteContainsBlock(blockSpec, spriteIndex, argArray) {
 	return false;
 }
 
-/* Takes in a JavaScript CUSTOMBLOCK which is JSONified and a string BLOCKSPEC. */
+/* Takes in a CUSTOMBLOCKSPEC and a string BLOCKSPEC, both of which can be general 
+* blockSpec such as "factorial %" since this calls blockSpecMatch. 
+*/
 function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex) {
 	if (argArray === undefined) {
 		argArray = [];
@@ -1700,7 +1705,7 @@ function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex) 
 	var scriptsOnScreen = getScripts(spriteIndex);
 	for (var i = 0; i < scriptsOnScreen.length; i++) {
 		JSONtarget = JSONscript(scriptsOnScreen[i]);
-		if (JSONtarget[0].blockSp === customBlockSpec) {
+		if (blockSpecMatch(JSONtarget[0].blockSp, customBlockSpec)) {
 			customJSON = JSONcustomBlock(scriptsOnScreen[i]);
 			hasFound = scriptContainsBlock(customJSON.body, blockSpec, argArray);
 		}
@@ -1834,7 +1839,8 @@ function CBlockContainsInSprite(block1String, block2String, spriteIndex) {
 }
 
 /* Takes in a script SCRIPT, a string that is either "if" or "else" named CLAUSE, a blockspec
- * such as "move %n steps" BLOCK1SPEC, and an optional argument array ARGARRAY1 belonging to block1.
+ * such as "move %n steps" BLOCK1SPEC (can be general, such as "factorial %", 
+ * since this calls blockSpecMatch), and an optional argument array ARGARRAY1 belonging to block1.
  * Returns true if the block represented by BLOCK1SPEC occurs inside the clause represented 
  * by CLAUSE in an if-else block in the SCRIPT, which can be obtained by calling:
  *
@@ -1877,7 +1883,9 @@ function ifElseContains(script, clause, block1Spec, argArray1) {
 }
 
 /* Takes in a string that is either "if" or "else" named CLAUSE, a blockspec
- * such as "move %n steps" BLOCK1SPEC, and an optional argument array ARGARRAY1 belonging to block1.
+ * such as "move %n steps" BLOCK1SPEC (can be general, such as "factorial %", 
+ * since this calls blockSpecMatch), and an optional argument array ARGARRAY1 belonging 
+ * to block1.
  * Returns true if the block represented by BLOCK1SPEC occurs inside the clause represented 
  * by CLAUSE in an if-else block in any script in the given sprite's scripts tab.
  */
@@ -1903,7 +1911,8 @@ function ifElseContainsInSprite(clause, block1Spec, argArray1, spriteIndex) {
     return false;
 }
 
-/* Takes in two blockSpecs and boolean SEEN1, which is initialized to false.
+/* Takes in two blockSpecs and boolean SEEN1, which is initialized to false. The
+ * two blockSpecs can be general, such as "factorial %", since this calls blockSpecMatch.
  * Returns true if blockSpec string BLOCK1 precedes the blockSpec string BLOCK2
  * in terms of the order that they appear in the script SCRIPT which can be
  * obtained by calling:
@@ -1932,13 +1941,13 @@ function blockPrecedes(block1, block2, script, seen1) {
 				return true;
 			}
 		} else {
-			if (morph1.blockSp === block2) {
+			if (blockSpecMatch(morph1.blockSp, block2)) {
 				if (!seen1) {
 					return false;
 				}
 				return true;
 			}
-			if ((morph1.blockSp === block1)) {
+			if (blockSpecMatch(morph1.blockSp, block1)) {
 				seen1 = true;
 			}
 			if (blockPrecedes(block1, block2, morph1.inputs, seen1)) {
@@ -1958,7 +1967,7 @@ function blockPrecedes(block1, block2, script, seen1) {
 
 
 /* Takes in two BLOCKSPECs representating the two blocks to be searched for and a
-* SPRITEINDEX.
+* SPRITEINDEX. Both can be general, such as "factorial %", since this calls blockSpecMatch.
 *
 * Returns true if block1 precedes block2 in any script in
 * the Scripts tab of the given sprite. See documentation of blockPrecedes for
@@ -1993,7 +2002,8 @@ function blockPrecedesInSprite(block1Sp, block2Sp, spriteIndex) {
 }
 
 /* Takes in a block BLOCK and returns the number of occurances
- * of the string BLOCKSPEC.
+ * of the string BLOCKSPEC (which can be general, such as "factorial %", since 
+ * this calls blockSpecMatch).
  *
  * Get the block by calling:
  *
@@ -2011,7 +2021,7 @@ function occurancesOfBlockSpec(blockSpec, block) {
 		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
 			result += occurancesOfBlockSpec(blockSpec, morph1);
 		} else {
-			if (morph1.blockSp === blockSpec) {
+			if (blockSpecMatch(morph1.blockSp, blockSpec)) {
 				result += 1;
 			}
 			result += occurancesOfBlockSpec(blockSpec, morph1.inputs);
@@ -2021,7 +2031,8 @@ function occurancesOfBlockSpec(blockSpec, block) {
 	return result;
 }
 
-/* Takes in a BLOCKSPEC representation of the block to be counted, an EXPECTED 
+/* Takes in a BLOCKSPEC representation of the block to be counted (can be general, 
+* such as "factorial %", since this calls blockSpecMatch), an EXPECTED 
 * number of occurances of said block, and a SPRITEINDEX.
 * 
 * Returns true if the given block occurs EXPECTED times in any script in 
