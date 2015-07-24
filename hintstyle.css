@@ -154,8 +154,8 @@ span {
   right: 0;
   bottom: 0;
   box-shadow: 3px 3px 10px #000000;
-  color: white;
-  background-color: rgb(71, 71, 71);
+  color: black;
+  background-color: white;
   outline: none;
   border-radius: 8px;
   cursor: pointer;

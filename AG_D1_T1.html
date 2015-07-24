@@ -1049,6 +1049,24 @@
                 //runAGTest(world, id);
             }
 
+            IDE_Morph.prototype.originalToggleStageSize = IDE_Morph.prototype.toggleStageSize;
+            IDE_Morph.prototype.toggleStageSize = function (isSmall) {
+                this.originalToggleStageSize(isSmall);
+                setTimeout(function() {
+                    moveAutogradingBar()
+                }, 50);
+            }
+
+            function moveAutogradingBar() {
+                var autograding_bar = document.getElementById('autograding_bar');
+                var ide = world.children[0];
+                if (ide.stageRatio === 1) {
+                    autograding_bar.style.right = '9em';
+                } else {
+                    autograding_bar.style.right = '16em';
+                }
+            }
+
             //TODO: Fix this timeout.
             setTimeout(function() {
 
@@ -1164,7 +1182,7 @@
             <p>
                 Please remember to click the 'Submit' button below the Snap! window to obtain credit for this problem!
             </p>
-            <div class="example-ag-buttons" id="ex-ungraded" style="display:inline-block;">
+            <!--<div class="example-ag-buttons" id="ex-ungraded" style="display:inline-block;">
                 &#9744;
             </div>
             <p style="display:inline-block;">
@@ -1185,7 +1203,7 @@
             <p style="display:inline-block;">
                 The Snap! autograder has been run, and all the tests have passed!
             </p>
-            </br>
+            </br>-->
     </div>
 </div>
 
