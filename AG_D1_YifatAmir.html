@@ -88,21 +88,21 @@
             //     "The 'turn clockwise' block is present.",
             //     "The 'turn clockwise' block was not found on-screen.",
             //     "Make sure you make your sprite turns clockwise on the stage.");
-            // var turn60 = function turn60() {
-            //     return spriteContainsBlock('turn %clockwise %n degrees', 0, ["60"]);
+            // var turn120 = function turn120() {
+            //     return spriteContainsBlock('turn %clockwise %n degrees', 0, ["120"]);
             // }
-            // testAssert(outputLog, turn60,
-            //     "The turn block has an input of 60 degrees.",
+            // testAssert(outputLog, turn120,
+            //     "The turn block has an input of 120 degrees.",
             //     "The turn block does not have the correct input.",
             //     "Make sure your sprite turns an appropriate amount.");
             // var moveThenTurn = function moveThenTurn() {
-            //     var template1 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["60"]}]';
-            //     var template2 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["60"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["60"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["60"]}]';
+            //     var template1 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["120"]}]';
+            //     var template2 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["120"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["120"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["120"]}]';
             //     var vars = ["A"];
             //     return scriptPresentInSprite(template1, 0, vars) || scriptPresentInSprite(template2, 0, vars);
             // }
             // testAssert(outputLog, moveThenTurn,
-            //     "'Turn 60' follows the 'move' block in a script.",
+            //     "'Turn 120' follows the 'move' block in a script.",
             //     "The 'move' block is not followed by a turn with correct inputs, or the triangle's sidelengths/angles are inconsistent.",
             //     "Make sure your sprite moves and then turns with just one click.");
 
@@ -190,31 +190,37 @@
             var loopExists = function loopExists() {
                 return spriteContainsBlock("forever %c", 0) || spriteContainsBlock("repeat %n %c", 0);
             }
-            testAssert(outputLog, penDownExists,
+            testAssert(outputLog, loopExists,
                 "There is a 'repeat' or a 'forever' block.",
                 "There is no 'repeat' or 'forever' block.",
                 "Make sure your sprite will move continuously!");
             
-            // //fix
+            // //FIX
             // var moveInLoop = function moveInLoop() {
-            //     var move = 
-            //     return CBlockContainsInSprite() || ;
+            //     var move = '[{"blockSp":"move %n steps","inputs":[""]}]'; //???
+            //     var repeat = '[{"blockSp":"repeat %n %c","inputs":["10",[]]}]'; //???
+            //     var forever = '[{"blockSp":"forever %c","inputs":[[]]}]'; //???
+            //     return CBlockContainsInSprite(move, repeat, 0) || CBlockContainsInSprite(move, forever, 0);
             // }
-            // testAssert(outputLog, penDownExists,
-            //     "There is a 'repeat' or a 'forever' block.",
-            //     "There is no 'repeat' or 'forever' block.",
-            //     "Make sure your sprite will move continuously!");
+            // testAssert(outputLog, moveInLoop,
+            //     ".",
+            //     ".",
+            //     "");
 
-            // templates including pen down???
+            // var turnInLoop = function turnInLoop() {
+
+            // }
+            // testAssert(outputLog, turnInLoop,
+            //     ".",
+            //     ".",
+            //     "");
             // order of move and turn? (precedes) etc..
-            // //stay on stage??
-
+            // stay on stage??
+            // check that the blocks are all in a script together?
 
             /*Recreate given script and change its arguments.*/
 
             /*Draw a field of flowers using repeat block and randomness block and others.*/
-
-
 
             return outputLog;
         }
