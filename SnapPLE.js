@@ -808,6 +808,8 @@ SpriteEvent.prototype.init = function(_sprite, index) {
 	this.sprite = index;
 	this.x = _sprite.xPosition();
 	this.y = _sprite.yPosition();
+	this.mouseX = _sprite.reportMouseX(),
+	this.mouseY = _sprite.reportMouseY(),
 	this.direction = _sprite.direction();
 	this.penDown = _sprite.isDown;
 	this.scale = _sprite.parent.scale;
@@ -922,6 +924,96 @@ function printEventLog(eventLog, ignore) {
 	}
 }
 
+function testSayTo30(outputLog) {
+	var block = getScript("for %upvar = %n to %n %cs"),
+		gLog = outputLog,
+		eLog = new SpriteEventLog(),
+		testID = gLog.addTest("s", undefined, null, true, -1),
+		spriteList = gLog.snapWorld.children[0].sprites.contents,
+		collect = setInterval(function() {
+       		eLog.addEvent(spriteList[0], 0);
+		}, 5);
+
+	var stage = gLog.snapWorld.children[0].stage;
+	stage.threads.startProcess(block,
+		stage.isThreadSafe,
+		false,
+		function() {
+			clearInterval(collect);
+			//this loop hacky fixes the above issue
+			eLog["0"][0].ignore = true;
+			eLog.spliceIgnores();
+			gLog[testID].graded = true;
+			gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Beautiful!";
+			gLog[testID].output = gLog[testID].correct = true;
+			var num = 0;
+			for (var i = 0; i < eLog["0"].length; i++) {
+				if (eLog.bubbleData === "nothing...") {
+					continue;
+				}
+				if (num.toString() !== eLog["0"].bubbleData) {
+					gLog[testID]["feedback"] = "You did not 'say' every even number from 0 to 30.";
+					gLog[testID].output = gLog[testID].correct = false;
+					//set false values and return
+					break;
+				}
+				num += 2;
+			}
+			gLog.scoreLog();
+		});
+
+	return gLog;
+}
+
+//Super similar to testKScope! 
+//Does not check for PenDown however
+function testMouseMove(outputLog, iter) {
+	var snapWorld = outputLog.snapWorld;
+	var taskID = outputLog.taskID;
+	var gLog = outputLog;
+	var eLog = new SpriteEventLog(),
+		iterations = iter || 3,
+		testID = gLog.addTest("s", undefined, null, true, -1),
+		spriteList = snapWorld.children[0].sprites.contents;
+
+	//creating this too early has caused issues with getting incorect data
+	var collect = setInterval(function() {
+        for (var i = 0; i < spriteList.length; i++) {
+            eLog.addEvent(spriteList[i], i);
+        }
+	}, 5);
+
+	var callback = function() {
+		clearInterval(collect);
+		//this loop hacky fixes the above issue
+		eLog["0"][0].ignore = true;
+		
+		eLog.spliceIgnores();
+		
+		gLog[testID].graded = true;
+		gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Beautiful!";
+		gLog[testID].output = gLog[testID].correct = true;
+
+		for (var j = 0; j < eLog["0"].length; j++) {
+			var spriteX = eLog["0"][i].x, mouseX = eLog["0"][i].mouseX,
+				spriteY = eLog["0"][i].y, mouseY = eLog["0"][i].mouseY;
+
+			if (spriteX !== -mouseX || spriteY !== mouseY) {
+				gLog[testID]["feedback"] = "One or more sprite X, Y values are incorrect. " +
+												"Make sure your sprites all go to the correct " +
+												"mouse x, y values.";
+
+				gLog[testID].output = gLog[testID].correct = false;
+			}
+		}
+
+		gLog.scoreLog();
+	};
+
+	makeDragon(iterations, callback);
+	return gLog;
+
+}
 
 //Very specific test for kalidiscope
 //Does not test "clear"/"penup"/"pendown"
@@ -1398,9 +1490,11 @@ function addBlockToSprite(sprite, block) {
 }
 
 function createTestSprite(log, testID) {
-	log.snapWorld.children[0].addNewSprite();
-	var sprites = log.snapWorld.children[0].sprites.contents;
+	var ide = log.snapWorld.children[0];
+	ide.addNewSprite();
+	var sprites = ide.sprites.contents;
 	log[testID].sprite = sprites.length - 1;
+	ide.selectSprite(sprites[0]);
 	return sprites[sprites.length - 1];
 }
 
