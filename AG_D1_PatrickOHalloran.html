@@ -144,7 +144,7 @@
                     return scriptContainsBlock(realTriangleBody, "repeat % %");
                 }
                 var containsCorrectRepeat = function containsCorrectRepeat() {
-                    return scriptContainsBlock(realTriangleBody, "repeat % %", ["3", ""]);
+                    return scriptContainsBlock(realTriangleBody, "repeat % %", ["3", []], true);
                 }
                 var containsMove = function containsMove() {
                     return simpleCBlockContains(realTriangleBody, "move % steps", "repeat");
