@@ -160,6 +160,62 @@
             //     "There is no 'draw house' block with a parameter.",
             //     "Make sure to give your 'draw house' block a parameter.");
 
+
+    /*Lab 6: Using Randomness*/
+
+        /*The Random Block*/
+
+            /*Make the sprite move around randomly.*/
+            var randomInTurn = function randomInTurn() {
+                return blockPrecedesInSprite("turn %clockwise %n degrees", "pick random %n to %n", 0);
+            }
+            testAssert(outputLog, randomInTurn,
+                "There is a 'pick random' block within a 'turn clockwise' block.",
+                "There is no 'pick random' block within a 'turn clockwise' block.",
+                "Make sure the sprite turns randomly.");
+            var randomInMove = function randomInMove() {
+                return blockPrecedesInSprite("move %n steps", "pick random %n to %n", 0);
+            }
+            testAssert(outputLog, randomInMove,
+                "There is a 'pick random' block within a 'move' block.",
+                "There is no 'pick random' block within a 'move' block.",
+                "Make sure the sprite moves randomly.");
+            var penDownExists = function penDownExists() {
+                return spriteContainsBlock("pen down", 0);
+            }
+            testAssert(outputLog, penDownExists,
+                "There is a 'pen down' block.",
+                "There is no 'pen down' block.",
+                "Make sure the pen is down.");
+            var loopExists = function loopExists() {
+                return spriteContainsBlock("forever %c", 0) || spriteContainsBlock("repeat %n %c", 0);
+            }
+            testAssert(outputLog, penDownExists,
+                "There is a 'repeat' or a 'forever' block.",
+                "There is no 'repeat' or 'forever' block.",
+                "Make sure your sprite will move continuously!");
+            
+            // //fix
+            // var moveInLoop = function moveInLoop() {
+            //     var move = 
+            //     return CBlockContainsInSprite() || ;
+            // }
+            // testAssert(outputLog, penDownExists,
+            //     "There is a 'repeat' or a 'forever' block.",
+            //     "There is no 'repeat' or 'forever' block.",
+            //     "Make sure your sprite will move continuously!");
+
+            // templates including pen down???
+            // order of move and turn? (precedes) etc..
+            // //stay on stage??
+
+
+            /*Recreate given script and change its arguments.*/
+
+            /*Draw a field of flowers using repeat block and randomness block and others.*/
+
+
+
             return outputLog;
         }
 

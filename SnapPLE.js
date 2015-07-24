@@ -1910,7 +1910,7 @@ function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
 }
 
 
-/* Takes in two strings (representating a block (block1String) and a C-shaped block 
+/* Takes in two strings (representing a block (block1String) and a C-shaped block 
 * (block2String)) and a SPRITEINDEX. 
 * 
 * Returns true if the block represented by BLOCK1STRING occurs inside 
