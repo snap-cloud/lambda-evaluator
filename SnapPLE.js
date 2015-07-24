@@ -1374,7 +1374,7 @@ function makeDragon(iterations, callback) {
 function getListBlock(blockSpec, spriteIndex) {
 	var block = null,
 		listArgs = [];
-	if (isScriptPresent(blockSpec, spriteIndex)) {
+	if (isScriptPresent(blockSpec, spriteIndex)) { //isScriptPresent() does not exist. Use scriptPresentInSprite() instead.
 		block = getScript(blockSpec);
 	} else {
 		return listArgs;
@@ -1620,9 +1620,13 @@ function getCustomBody(blockSpec, spriteIndex) {
 	if (spriteIndex === undefined) {
 		spriteIndex = 0;
 	}
-	var customBlock = getScript(blockSpec, spriteIndex);
-	return JSONcustomBlock(customBlock).body;
-
+	try {
+		var customBlock = getScript(blockSpec, spriteIndex);
+		return JSONcustomBlock(customBlock).body;
+	}
+	catch(e) {
+		return undefined;
+	}
 }
 
 /* Takes in all scripts for a single Sprite in chronological order
@@ -1724,6 +1728,9 @@ function CBlockContainsInCustom(customBlockSpec, spriteIndex, blockSpec1, blockS
  * JSONscript(...)
  */
 function scriptContainsBlock(script, blockSpec, argArray) {
+	if (Object.prototype.toString.call(script) !== '[object Array]') {
+		return false;
+	}
 	if (argArray === undefined) {
 		argArray = [];
 	}
@@ -1741,7 +1748,7 @@ function scriptContainsBlock(script, blockSpec, argArray) {
 			}
 		} else {
 			if (blockSpecMatch(morph1.blockSp, blockSpec)) {
-				if (argArray.length == 0) {
+				if (argArray.length == 0 || ((argArray.length == 1 ) && (argArray[0] === ""))) {
 					return true;
 				}
 				else if ((argArray.length > 0) && _.isEqual(morph1.inputs, argArray)) {
@@ -1823,6 +1830,9 @@ function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex) 
  *
  */
 function CBlockContains(block1, block2, script) {
+	if (Object.prototype.toString.call(script) !== '[object Array]') {
+		return false;
+	}
     var morph1, type1, CblockSpecs;
     CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
     CblockSpecs = CblockSpecs.concat(["repeat until %b %c", "if %b %c", "if %b %c else %c"]);
@@ -1941,6 +1951,9 @@ function CBlockContainsInSprite(block1String, block2String, spriteIndex) {
  * JSONscript(...)
  */
 function ifElseContains(script, clause, block1Spec, argArray1) {
+	if (Object.prototype.toString.call(script) !== '[object Array]') {
+		return false;
+	}
 	if (argArray1 === undefined) {
         argArray1 = [];
     }
@@ -2020,6 +2033,9 @@ function ifElseContainsInSprite(clause, block1Spec, argArray1, spriteIndex) {
  * would count the (%n + %n) block as coming before the (%n - %n) block.
  */
 function blockPrecedes(block1, block2, script, seen1) {
+	if (Object.prototype.toString.call(script) !== '[object Array]') {
+		return false;
+	}
 	if (seen1 === undefined) {
 		seen1 = false;
 	}
@@ -2104,6 +2120,9 @@ function blockPrecedesInSprite(block1Sp, block2Sp, spriteIndex) {
  * JSONscript(...)
  */
 function occurancesOfBlockSpec(blockSpec, block) {
+	if (Object.prototype.toString.call(block) !== '[object Array]') {
+		return 0;
+	}
 	var morph1, type1;
 	var result = 0;
 	for (var i = 0; i < block.length; i++) {
@@ -2170,6 +2189,12 @@ function occurancesOfBlockInSprite(blockSpec, expected, spriteIndex) {
  *
  */
 function scriptsMatch(template, script, softMatch, vars, templateVariables) {
+	if (Object.prototype.toString.call(script) !== '[object Array]') {
+		return false;
+	}
+	if (Object.prototype.toString.call(template) !== '[object Array]') {
+		return false;
+	}
 	var morph1, morph2, type1, type2, templateIsArray, scriptIsArray;
 	templateIsArray = (Object.prototype.toString.call(template) === '[object Array]');
 	scriptIsArray = (Object.prototype.toString.call(script) === '[object Array]');
@@ -2311,6 +2336,10 @@ function genPattern(script1, script2, result, newMap, currChar, templateVariable
  * modify either of the original student's scripts.
  */
 function getTemplate(script1, script2) {
+	if ((Object.prototype.toString.call(script1) !== '[object Array]')
+		|| (Object.prototype.toString.call(script2) !== '[object Array]')) {
+		return [[], []];
+	}
 	var result = jQuery.extend(true, [], script1);
 	var newMap = {};
 	var chars = {val: "A"};
@@ -2338,6 +2367,12 @@ function fastTemplate() {
  * the values in the student's SCRIPT.
  */
 function checkTemplate(template, script, templateVariables) {
+	if (Object.prototype.toString.call(script) !== '[object Array]') {
+		return false;
+	}
+	if (Object.prototype.toString.call(template) !== '[object Array]') {
+		return false;
+	}
 	var vars = {};
 	var softMatch = true;
 	return scriptsMatch(template, script, softMatch, vars, templateVariables);

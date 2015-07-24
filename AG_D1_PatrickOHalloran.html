@@ -42,68 +42,188 @@
         // taskID uniquely identifies the task for saving in browser localStorage.
         var taskID = "AG_D1_T1";
         var id = courseID + taskID;
-        var isEDX = isEDXurl();
 
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
-            /* Factorial */
-            var assert1 = function assert1() {
-                return scriptPresentInSprite('[{"blockSp":"factorial %s","inputs":["A"]}]',0,["A"]);
-            }
-            testAssert(outputLog, assert1,//isScriptPresent('factorial %s',0),
-                "The 'factorial' block is present.", 
-                "The 'factorial %num' block was not found on-screen.", 
-                "Make sure you name your custom block, 'factorial %num'.");
-            testAssert(outputLog, customBlockContains('factorial %s', 'factorial %s'),
-                "The 'factorial' block has a recursive call to itself.",
-                "There is no recursive call to 'factorial.",
-                "Make sure you have a recursive call inside of 'factorial.");
-            testAssert(outputLog, blockPrecedes('factorial %s', "%n − %n", getCustomBody('factorial %s', 0)),
-                "The recursive call to'factorial' block contains a minus block",
-                "There is no minus block in the recursive call to 'factorial'.",
-                "Make sure you have a minus block inside of the recursive call.");
-            multiTestBlock('factorial %s', 
-                [[0],[1],[2],[4],[5],[10]],
-                [1,1,2,24,120,3628800],
-                [-1,-1,-1,-1,-1,-1],
-                [false,false,false,false,false,false])
-            
-            // /* KScopeTest */
-            // testAssert(outputLog, 
-            //     spriteContainsBlock('when %keyHat key pressed', 0, ['space']) &&
-            //     spriteContainsBlock('when %keyHat key pressed', 1, ['space']) &&
-            //     spriteContainsBlock('when %keyHat key pressed', 2, ['space']) &&
-            //     spriteContainsBlock('when %keyHat key pressed', 3, ['space']),
-            //     "All sprites have the 'when [space] key pressed' hat-block.",
-            //     "All sprites must have a 'when [space] key pressed' hat-block.",
-            //     "The Kaleidoscope should begin drawing when the 'space' key is pressed.");
-            // testAssert(outputLog,
-            //     spriteContainsBlock('forever %c', 0) &&
-            //     spriteContainsBlock('forever %c', 1) &&
-            //     spriteContainsBlock('forever %c', 2) &&
-            //     spriteContainsBlock('forever %c', 3),
-            //     "All sprites have a forever loop",
-            //     "All sprites must have a 'forever' loop.",
-            //     "The 'forever' loop is required.");
-            // testAssert(outputLog,
-            //     spriteContainsBlock('go to x: %n y: %n', 0) &&
-            //     spriteContainsBlock('go to x: %n y: %n', 1) &&
-            //     spriteContainsBlock('go to x: %n y: %n', 2) &&
-            //     spriteContainsBlock('go to x: %n y: %n', 3),
-            //     "All sprites have a 'go to' motion-block",
-            //     "All sprites must have a 'go to' motion-block",
-            //     "The 'go to' motion-block is required.");
-            // testAssert(outputLog,
-            //     spriteContainsBlock('pen down', 0) &&
-            //     spriteContainsBlock('pen down', 1) &&
-            //     spriteContainsBlock('pen down', 2) &&
-            //     spriteContainsBlock('pen down', 3),
-            //     "All sprites have a 'pen down' pen-block",
-            //     "All sprites must have a 'pen down' pen-block",
-            //     "The 'pen down' pen-block is required.");
-            // testKScope(outputLog);
-            /**/
+        /* Lab 1: Introduction */
+
+            /* Getting to Know the Snap! Interface */
+
+                /* Recreate the move/say/move/say script */
+                // var largeScriptExists = function largeScriptExists() {
+                //     return scriptPresentInSprite('[{"blockSp":"move %n steps","inputs":["20"]},{"blockSp":"say %s for %n secs","inputs":["Hello!","2"]},{"blockSp":"move %n steps","inputs":["20"]},{"blockSp":"say %s for %n secs","inputs":["You\'ve just made a script!","2"]}]');
+                // }
+                // testAssert(outputLog, largeScriptExists,
+                //     "The move/say/move/say script was found on the screen.",
+                //     "The move/say/move/say script was not found on the screen. Check your inputs.",
+                //     "Make sure you have all of the correct inputs and the blocks are in order for the move/say/move/say script.");
+
+
+                // /* Recreate the move/turn script */
+                // var smallScriptExists = function smallScriptExists() {
+                //     return scriptPresentInSprite('[{"blockSp":"move %n steps","inputs":["10"]},{"blockSp":"turn %clockwise %n degrees","inputs":["15"]}]');
+                // }
+                // testAssert(outputLog, smallScriptExists,
+                //     "The move/turn was found on the screen.",
+                //     "The move/turn was not found on the screen. Check your inputs.",
+                //     "Make sure you have all of the correct inputs and the blocks are in order for the move/turn script.");
+
+        /* Lab 2: Control Commands. */
+
+            /* The Forever Block */
+
+                /* Recreate provided forever script */
+                // var foreverBlock1 = function foreverBlock1() {
+                //     return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
+                // }
+                // testAssert(outputLog, foreverBlock1,
+                //     "The first forever script was found on the screen.",
+                //     "The first forever script was not found on the screen. Check your inputs.",
+                //     "Make sure you have all of the correct inputs and the blocks are in order for the first forever script script.");
+
+                // var foreverBlock2 = function foreverBlock2() {
+                //     return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":[{"blockSp":"mouse x","inputs":[]},{"blockSp":"mouse y","inputs":[]}]}]]}]');
+                // }
+                // testAssert(outputLog, foreverBlock2,
+                //     "The second forever script was found on the screen.",
+                //     "The second forever script was not found on the screen. Check your inputs.",
+                //     "Make sure you have all of the correct inputs and the blocks are in order for the second forever script script.");
+
+                // var foreverBlock3 = function foreverBlock3() {
+                //     return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":[{"blockSp":"x position","inputs":[]},{"blockSp":"%n + %n","inputs":[{"blockSp":"y position","inputs":[]},"30"]}]}]]}]');
+                // }
+                // testAssert(outputLog, foreverBlock3,
+                //     "The third forever script was found on the screen.",
+                //     "The third forever script was not found on the screen. Check your inputs.",
+                //     "Make sure you have all of the correct inputs and the blocks are in order for the third forever script script.");
+
+
+        /* Lab 3: Repeat Commands. */
+
+            /* The For Block */
+
+                /* Recreate exact squirrel script */
+                // var squirrelTest = function squirrelTest() {
+                //     return scriptPresentInSprite('[{"blockSp":"pen down","inputs":[]},{"blockSp":"for %upvar = %n to %n %cs","inputs":["1","100",[{"blockSp":"move %n steps","inputs":[{"blockSp":"%n × %n","inputs":["2",{"blockSp":"length","inputs":[]}]}]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]]}]');
+                // }
+                // testAssert(outputLog, squirrelTest,
+                //     "The squirrel script was found on the screen.",
+                //     "The squirrel script was not found on the screen. Try checking your inputs and variable names",
+                //     "Try making sure all of the correct blocks and inputs are in order.");
+
+
+        /* Lab 4: Making your own blocks. */
+
+            /* Making a custom block */
+
+                // /* Create 'draw square' command motion */
+                // var squarePresentTest = function squarePresentTest() {
+                //     return scriptPresentInSprite('[{"blockSp":"draw square","inputs":[]}]');
+                // }
+                // testAssert(outputLog, squarePresentTest,
+                //     "The 'draw square' block is found.",
+                //     "The 'draw square' block is not on the screen.",
+                //     "Follow the directions to make a 'draw square' block");
+                // var squareBodyTest = function squareBodyTest() {
+                //     var expected = '[{"blockSp":"repeat %n %c","inputs":["4",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]]}]';
+                //     var actual = JSONtoString(getCustomBody("draw square"));
+                //     return expected === actual;
+                // }
+                // testAssert(outputLog, squareBodyTest,
+                //     "The body of the 'draw square' block is correct.",
+                //     "The body of the 'draw square' block is incorrect. Try checking the block order and inputs.",
+                //     "Try making sure all of the correct blocks and inputs are in order.");
+
+                /* Create 'draw triangle' command block */
+                var realTriangleBody = getCustomBody("draw triangle");
+                var trianglePresent = function trianglePresent() {
+                    return scriptPresentInSprite('[{"blockSp":"draw triangle","inputs":[]}]');
+                }
+                var containsRepeat = function containsRepeat() {
+                    return scriptContainsBlock(realTriangleBody, "repeat % %");
+                }
+                var containsCorrectRepeat = function containsCorrectRepeat() {
+                    return scriptContainsBlock(realTriangleBody, "repeat % %", ["3", ""]);
+                }
+                var containsMove = function containsMove() {
+                    return simpleCBlockContains(realTriangleBody, "move % steps", "repeat");
+                }
+                var containsCorrectMove = function containsCorrectMove() {
+                    return simpleCBlockContains(realTriangleBody, "move % steps", "repeat", ["100"]);
+                }
+                var containsTurn = function containsTurn() {
+                    return simpleCBlockContains(realTriangleBody, "turn %counterclockwise % degrees", "repeat")
+                        || simpleCBlockContains(realTriangleBody, "turn %clockwise % degrees", "repeat");
+                }
+                var containsCorrectTurn = function containsCorrectTurn() {
+                    return simpleCBlockContains(realTriangleBody, "turn %counterclockwise % degrees", "repeat", ["120"])
+                        || simpleCBlockContains(realTriangleBody, "turn %clockwise % degrees", "repeat", ["120"]);
+                }
+
+                testAssert(outputLog, trianglePresent,
+                    "The 'draw triangle' block is found.",
+                    "The 'draw triangle' block cannot be found.",
+                    "Make sure you name the block 'draw triangle'");
+
+                testAssert(outputLog, containsRepeat,
+                    "The 'repeat' block is found inside 'draw triangle'.",
+                    "The 'repeat' block is not found inside 'draw triangle'.",
+                    "Make sure you use a repeat inside of 'draw triangle'");
+
+                testAssert(outputLog, containsCorrectRepeat,
+                    "The 'repeat' block has a counter of 3.",
+                    "The 'repeat' block does not have the correct counter.",
+                    "How many times should we repeat to draw a triangle?");
+
+                testAssert(outputLog, containsMove,
+                    "The 'draw triangle' block contains move inside of the repeat loop.",
+                    "The 'draw triangle' block is missing a move block.",
+                    "What blocks helps move the sprite?");
+
+                testAssert(outputLog, containsCorrectMove,
+                    "The 'draw triangle' block contains move 100 inside of the repeat loop.",
+                    "The 'draw triangle' block is missing a correct move block.",
+                    "How far is the move supposed to be?");
+
+                testAssert(outputLog, containsTurn,
+                    "The 'draw triangle' block contains a turn block.",
+                    "The 'draw triangle' block is missing a turn block",
+                    "Try turn clockwise or counterclockwise block");
+
+                testAssert(outputLog, containsCorrectTurn,
+                    "The 'draw triangle' block contains turn block with 120 degrees.",
+                    "The 'draw triangle' block needs a turn block with correct inputs.",
+                    "Try using a turn block, how many degrees should we turn?");
+
+                /* Create 'draw house' command block */
+                // try {
+                //     var realHouseBody = getCustomBody("draw house");
+                //     var housePresentTest = function housePresentTest() {
+                //         return scriptPresentInSprite('[{"blockSp":"draw house","inputs":[]}]');
+                //     }
+                // } catch(e) {
+                //     var housePresentTest = function housePresentTest() {
+                //         return false;
+                //     }
+                // }
+
+                // testAssert(outputLog, housePresentTest,
+                //     "The 'draw house' block is found.",
+                //     "The 'draw house' block cannot be found.",
+                //     "Follow directions to make the 'draw house' block");
+                // var houseBodyTest = function houseBodyTest() {
+                //     var numTriangles = occurancesOfBlockSpec("draw triangle", realHouseBody);
+                //     var numSquares = occurancesOfBlockSpec("draw square", realHouseBody);
+                //     return  (numTriangles === 1) && (numSquares === 1);
+                // }
+                // testAssert(outputLog, houseBodyTest,
+                //     "The 'draw house' block block contains the 'draw triangle' and 'draw square' blocks.",
+                //     "The 'draw house' block does not contain the correct blocks. Try using 'draw square' and 'draw triangle'.",
+                //     "Make sure you use previously made blocks inside the body of 'draw house");
+
+
+
             return outputLog;
         }
 
@@ -221,9 +341,7 @@
                 outputLog.snapWorld = snapWorld;
                 AG_bar_graded(outputLog);
 
-                if (isEDX) {
-                    parent.document.getElementById('overlay-button').style.display = "none";
-                }
+                parent.document.getElementById('overlay-button').style.display = "none";
 
             } else if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
                 //Restore the AG status bar to a graded state
@@ -234,9 +352,7 @@
                 outputLog = JSON.parse(prev_log);
                 outputLog.snapWorld = snapWorld;
                 AG_bar_semigraded(outputLog);
-                if (isEDX) {
-                    parent.document.getElementById('overlay-button').style.display = "none";
-                }
+                parent.document.getElementById('overlay-button').style.display = "none";
 
             } else {
                 //Restore the AG status bar to a graded state
@@ -244,9 +360,7 @@
                 outputLog = new gradingLog(snapWorld, taskID, numAttempts);
                 AG_bar_ungraded(outputLog);
                 document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
-                if (isEDX) {
-                    parent.document.getElementById('overlay-button').style.display = "block";
-                }
+                parent.document.getElementById('overlay-button').style.display = "block";
 
             }
             //populateFeedback(outputLog);
@@ -385,7 +499,6 @@
             } else {
                 $('#feedback-button').html("No Feedback Available");
             }
-            document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
         }
 
         /*
@@ -822,61 +935,6 @@
             }
         }
 
-        function isEDXurl() {
-            var url = window.location.href;
-            if (url.indexOf("edx") !== -1) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        function makeOverlayButton() {
-            var overlay_button = parent.document.createElement('button');
-            var overlay_button_text = parent.document.createTextNode('Grade');
-            overlay_button.appendChild(overlay_button_text);
-            overlay_button.id = 'overlay-button';
-            var button =  parent.document.getElementsByName('problem_id')[0];
-            button.parentNode.insertBefore(overlay_button, button.nextSibling);
-        }
-
-        function makeFullScreenButton() {
-            var autograding_bar = document.getElementById('autograding_bar');
-            var full_screen_button = document.createElement('button');
-            var full_screen_button_text = document.createTextNode("Full-Screen");
-            full_screen_button.appendChild(full_screen_button_text);
-            full_screen_button.id = "full-screen";
-            full_screen_button.className = "off";
-            autograding_bar.parentNode.insertBefore(full_screen_button, autograding_bar.nextSibling);
-        }
-
-        function toggleSnapWindow(button) {
-            var iframe = parent.document.getElementsByTagName('iframe')[0];
-            if (button.className === "off") {
-                iframe.style.position = 'fixed';
-                iframe.style.top = '0';
-                iframe.style.right = '0';
-                iframe.style.width = '100%';
-                iframe.style.height = '100vh';
-                iframe.style.zIndex = '99';
-                button.className = "on";
-                /*button.style.position = 'fixed';
-                button.style.right = '0';
-                button.style.bottom = '0';*/
-            } else {
-                iframe.style.position = 'initial';
-                iframe.style.top = 'initial';
-                iframe.style.right = 'initial';
-                //iframe.style.width = 'initial';
-                iframe.style.height = '500px';
-                iframe.style.zIndex = 'initial';
-                button.className = "off";
-                /*button.style.position = 'absolute';
-                button.style.right = '31px';
-                button.style.bottom = '225px';*/
-            }
-        }
-
         var world;
         window.onload = function () {
 
@@ -944,9 +1002,7 @@
                 outputLog = new gradingLog(world, id, numAttempts);
                 outputLog.numAttempts += 1;
                 runAGTest(world, id, outputLog);
-                if (isEDX) {
-                    parent.document.getElementsByClassName('check-label')[0].click();
-                } 
+                parent.document.getElementsByClassName('check-label')[0].click();
                 // var outputLog = AGStart(world, id);
             }
             grade_button.addEventListener('click', button_listener);
@@ -985,6 +1041,7 @@
             menu_button.onclick = function() { toggleMenu(id); };
             //var overlay_button = parent.document.getElementById('overlay-button');
             //overlay_button.onclick = function() { grade_button.click(); }
+
 
             $(".bubble").click(function(event){
                 event.stopPropagation();  
@@ -1028,8 +1085,15 @@
                 grayOutButtons(world, id);
             });
 
-            if (isEDX) {
-                makeOverlayButton();
+            //TODO: Fix this timeout.
+            setTimeout(function() {
+                var overlay_button = parent.document.createElement('button');
+                var overlay_button_text = parent.document.createTextNode('Grade');
+                overlay_button.appendChild(overlay_button_text);
+                overlay_button.id = 'overlay-button';
+                var button =  parent.document.getElementsByName('problem_id')[0];
+                button.parentNode.insertBefore(overlay_button, button.nextSibling);
+
                 var overlay_button = parent.document.getElementById('overlay-button');
                 //overlay_button.style.display = "block";
                 overlay_button.onclick = function() { 
@@ -1037,37 +1101,10 @@
                     grade_button.click(); 
                 }
 
-                makeFullScreenButton();
-                var full_screen = document.getElementById('full-screen');
-                full_screen.onclick = function() {
-                    toggleSnapWindow(full_screen);   
-                }
-
-            }
-
-            IDE_Morph.prototype.originalOpenProject = IDE_Morph.prototype.openProject;
-            IDE_Morph.prototype.openProject = function (name) {
-                this.originalOpenProject(name);
-                setTimeout(function() {
-                    runAGTest(world, id);
-                }, 500);
-                //runAGTest(world, id);
-            }
-
-            //TODO: Fix this timeout.
-            setTimeout(function() {
-
                 console.log(world);
                 var outputLog = AGStart(world,id);
                 runAGTest(world, id);
                 //runAGTest(world, id);
-
-                /*if (isEDX) {
-                    var full_screen = parent.document.getElementById('full-screen');
-                    full_screen.onclick = function() {
-                        toggleSnapWindow(full_screen);   
-                    }
-                }*/
 
                 //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
                 //populateFeedback(outputLog);
@@ -1099,7 +1136,7 @@
                 //AGUpdate(world, id);
 
                 
-            },1000);
+            },600);
 
             /*var overlay_button = document.createElement('button');
             var overlay_button_text = document.createTextNode('Grade');
