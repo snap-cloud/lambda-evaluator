@@ -1,15 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Snap! Build Your Own Blocks. Beta</title>
-    <link rel="shortcut icon" href="http://snap.berkeley.edu/fav3.gif" type="image/gif">
+    <link rel="shortcut icon" href="favicon.ico">
     <script src="jschannel.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="http://underscorejs.org/underscore-min.js"></script>
+    <script type="text/javascript" src="underscore-min.js"></script>
     <script type="text/javascript" src="SnapPLE.js"></script>
     <!-- Moved down to the bottom to have var id. -->
     
-    <script type="text/javascript" src="snap.js"></script>
+    <!-- <script type="text/javascript" src="snap.js"></script> -->
+    <script type="text/javascript" src="morphic.js"></script>
+    <script type="text/javascript" src="widgets.js"></script>
+    <script type="text/javascript" src="blocks.js"></script>
+    <script type="text/javascript" src="threads.js"></script>
+    <script type="text/javascript" src="objects.js"></script>
+    <script type="text/javascript" src="gui.js"></script>
+    <script type="text/javascript" src="paint.js"></script>
+    <script type="text/javascript" src="lists.js"></script>
+    <script type="text/javascript" src="byob.js"></script>
+    <script type="text/javascript" src="xml.js"></script>
+    <script type="text/javascript" src="store.js"></script>
+    <script type="text/javascript" src="locale.js"></script>
+    <script type="text/javascript" src="cloud.js"></script>
+    <script type="text/javascript" src="sha512.js"></script>
 
     <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
     <link rel="stylesheet" type="text/css" href="hintstyle.css" />
@@ -25,196 +40,39 @@
         // taskID uniquely identifies the task for saving in browser localStorage.
         var taskID = "AG_D1_T1";
         var id = courseID + taskID;
-        var agOutput;
+        var isEDX = isEDXurl();
 
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
-            /*HOW TO LAMBDAIZE:*/
-            // var assert1 = function assert1() {
-            //     return isScriptPresent('factorial %s',0);
-            // }
 
-    /*Lab 1: Introduction*/
+            /*Rotate Clockwise*/
+            multiTestBlock(outputLog, 'rotate %s clockwise',
+                [[[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0]],[[1,4,8,5,9,6,9,4,2,5,8,9,6,5,9,0]]],
+                [[0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,2,0,0,0,3,0,0,0,4],[5,5,5,1,0,0,0,0,5,5,5,5,0,0,0,0],[6,2,9,1,5,5,6,4,9,8,9,8,0,9,4,5]],
+                [-1,-1, -1, -1],
+                [true,true, true, true])
 
-        /*Creating a Script*/
+            /*Merge Tile at _, _ on _ up*/
+            multiTestBlock(outputLog, "merge tile at %s , %s on %s up",
+                [[4, 2, [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[2, 2, [1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]],[2, 2, [1,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0]],[2, 2, [1,4,8,5,9,6,9,4,2,5,8,9,6,5,9,0]]],
+                [true,false,true,false],
+                [-1,-1, -1, -1],
+                [true,true, true, true]) 
 
-            // /*Modify given script to make the sprite follow a square path if clicked enough times.*/
-            // var moveExists = function moveExists() {
-            //     return spriteContainsBlock('move %n steps', 0);
-            // }
-            // testAssert(outputLog, moveExists,
-            //     "The 'move' block is present.",
-            //     "The 'move' block was not found on-screen.",
-            //     "Make sure to make your sprite move on the stage.");
-            // var turnExists = function turnExists() { //counterclockwise is incorrect
-            //     return spriteContainsBlock('turn %clockwise %n degrees', 0);
-            // }
-            // testAssert(outputLog, turnExists,
-            //     "The 'turn clockwise' block is present.",
-            //     "The 'turn clockwise' block was not found on-screen.",
-            //     "Make sure you make your sprite turns clockwise on the stage.");
-            // var turn90 = function turn90() {
-            //     return spriteContainsBlock('turn %clockwise %n degrees', 0, ["90"]);
-            // }
-            // testAssert(outputLog, turn90,
-            //     "The turn block has an input of 90 degrees.",
-            //     "The turn block does not have the correct input.",
-            //     "Make sure your sprite turns an appropriate amount.");
-            // var moveThenTurn = function moveThenTurn() {
-            //     var template1 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]';
-            //     var template2 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]';
-            //     var template3 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]';
-            //     var vars = ["A"];
-            //     return scriptPresentInSprite(template1, 0, vars) || scriptPresentInSprite(template2, 0, vars) || scriptPresentInSprite(template3, 0, vars);
-            // }
-            // testAssert(outputLog, moveThenTurn,
-            //     "'Turn 90' follows the 'move' block in a script.",
-            //     "The 'move' block is not followed by a turn with correct inputs, or the square's sidelengths/angles are inconsistent.",
-            //     "Make sure your sprite moves and then turns with just one click.");
-            
-            // /*Modify the previous script to make the sprite follow a triangular path if clicked enough times.*/
-            // var moveExists = function moveExists() {
-            //     return spriteContainsBlock('move %n steps', 0);
-            // }
-            // testAssert(outputLog, moveExists,
-            //     "The 'move' block is present.",
-            //     "The 'move' block was not found on-screen.",
-            //     "Make sure to make your sprite move on the stage.");
-            // var turnExists = function turnExists() { //counterclockwise is incorrect
-            //     return spriteContainsBlock('turn %clockwise %n degrees', 0);
-            // }
-            // testAssert(outputLog, turnExists,
-            //     "The 'turn clockwise' block is present.",
-            //     "The 'turn clockwise' block was not found on-screen.",
-            //     "Make sure you make your sprite turns clockwise on the stage.");
-            // var turn60 = function turn60() {
-            //     return spriteContainsBlock('turn %clockwise %n degrees', 0, ["60"]);
-            // }
-            // testAssert(outputLog, turn60,
-            //     "The turn block has an input of 60 degrees.",
-            //     "The turn block does not have the correct input.",
-            //     "Make sure your sprite turns an appropriate amount.");
-            // var moveThenTurn = function moveThenTurn() {
-            //     var template1 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["60"]}]';
-            //     var template2 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["60"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["60"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["60"]}]';
-            //     var vars = ["A"];
-            //     return scriptPresentInSprite(template1, 0, vars) || scriptPresentInSprite(template2, 0, vars);
-            // }
-            // testAssert(outputLog, moveThenTurn,
-            //     "'Turn 60' follows the 'move' block in a script.",
-            //     "The 'move' block is not followed by a turn with correct inputs, or the triangle's sidelengths/angles are inconsistent.",
-            //     "Make sure your sprite moves and then turns with just one click.");
+            /*Merge Up _*/
+            multiTestBlock(outputLog, 'merge up %s',
+                [[[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0]],[[1,4,8,5,9,6,9,4,2,5,8,9,6,5,9,0]]],
+                [[1,,,,,,,,,,,,,,,],[1,2,3,4,,,,,,,,,,,,],[1,,10,,10,,10,,5,,,,,,,],[1,4,8,5,9,6,9,4,2,10,8,9,6,,9,]],
+                [-1,-1, -1, -1],
+                [true,true, true, true])
 
-    /*Lab 3: Repeat Commands*/
-
-        /*The Repeat Block*/
-
-            // /*Input an argument value into the given script to create the given picture*/
-            // var scriptExists = function scriptExists() {
-            //     var template = '[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["A",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]';
-            //     var vars = ["A"];
-            //     return scriptPresentInSprite(template, 0, vars);
-            // }
-            // testAssert(outputLog, scriptExists,
-            //     "The given script has been recreated exactly.",
-            //     "The given script has not been recreated exactly.",
-            //     "Make sure to recreate the given script!");
-            // var repeat9 = function repeat9() {
-            //     var script = '[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["9",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]';
-            //     return scriptPresentInSprite(script, 0);
-            // }
-            // testAssert(outputLog, repeat9,
-            //     "The input to the repeat loop is 9.",
-            //     "The input to the repeat loop is incorrect.",
-            //     "Try checking how many sides the given shape has!");
-
-    /*Lab 4: Making Your Own Blocks*/
-
-        /*Adding an Input*/
-
-            // /*Add an input to the draw square block.*/
-            // var drawSquareHasInput = function drawSquareHasInput() {
-            //     return spriteContainsBlock("draw square %", 0);
-            // }
-            // testAssert(outputLog,  drawSquareHasInput,
-            //     "There is a 'draw square' block with a parameter.",
-            //     "There is no 'draw square' block with a parameter.",
-            //     "Make sure to give your 'draw square' block a parameter.");
-
-            // /*Add an input to the draw triangle block.*/
-            // var drawTriangleHasInput = function drawTriangleHasInput() {
-            //     return spriteContainsBlock("draw triangle %", 0);
-            // }
-            // testAssert(outputLog,  drawTriangleHasInput,
-            //     "There is a 'draw triangle' block with a parameter.",
-            //     "There is no 'draw triangle' block with a parameter.",
-            //     "Make sure to give your 'draw triangle' block a parameter.");
-
-            // /*Add an input to the draw house block.*/
-            // var drawHouseHasInput = function drawHouseHasInput() {
-            //     return spriteContainsBlock("draw house %", 0);
-            // }
-            // testAssert(outputLog,  drawHouseHasInput,
-            //     "There is a 'draw house' block with a parameter.",
-            //     "There is no 'draw house' block with a parameter.",
-            //     "Make sure to give your 'draw house' block a parameter.");
-
-
-    /*Lab 6: Using Randomness*/
-
-        /*The Random Block*/
-
-            /*Make the sprite move around randomly.*/
-            var randomInTurn = function randomInTurn() {
-                return blockPrecedesInSprite("turn %clockwise %n degrees", "pick random %n to %n", 0);
-            }
-            testAssert(outputLog, randomInTurn,
-                "There is a 'pick random' block within a 'turn clockwise' block.",
-                "There is no 'pick random' block within a 'turn clockwise' block.",
-                "Make sure the sprite turns randomly.");
-            var randomInMove = function randomInMove() {
-                return blockPrecedesInSprite("move %n steps", "pick random %n to %n", 0);
-            }
-            testAssert(outputLog, randomInMove,
-                "There is a 'pick random' block within a 'move' block.",
-                "There is no 'pick random' block within a 'move' block.",
-                "Make sure the sprite moves randomly.");
-            var penDownExists = function penDownExists() {
-                return spriteContainsBlock("pen down", 0);
-            }
-            testAssert(outputLog, penDownExists,
-                "There is a 'pen down' block.",
-                "There is no 'pen down' block.",
-                "Make sure the pen is down.");
-            var loopExists = function loopExists() {
-                return spriteContainsBlock("forever %c", 0) || spriteContainsBlock("repeat %n %c", 0);
-            }
-            testAssert(outputLog, penDownExists,
-                "There is a 'repeat' or a 'forever' block.",
-                "There is no 'repeat' or 'forever' block.",
-                "Make sure your sprite will move continuously!");
-            
-            // //fix
-            // var moveInLoop = function moveInLoop() {
-            //     var move = 
-            //     return CBlockContainsInSprite() || ;
-            // }
-            // testAssert(outputLog, penDownExists,
-            //     "There is a 'repeat' or a 'forever' block.",
-            //     "There is no 'repeat' or 'forever' block.",
-            //     "Make sure your sprite will move continuously!");
-
-            // templates including pen down???
-            // order of move and turn? (precedes) etc..
-            // //stay on stage??
-
-
-            /*Recreate given script and change its arguments.*/
-
-            /*Draw a field of flowers using repeat block and randomness block and others.*/
-
-
+            /*No Moves Left For _*/
+            multiTestBlock(outputLog, "no moves left for %s",
+                [[[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0]],[[1,4,8,5,9,6,9,4,2,5,8,9,6,5,9,0]]],
+                [true,true,false,false],
+                [-1,-1, -1, -1],
+                [true,true, true, true])
 
             return outputLog;
         }
@@ -225,9 +83,12 @@
          */
         function runAGTest(snapWorld, taskID, outputLog) {
             // Create a new gradingLog if none is specified.
-            outputLog = outputLog || new gradingLog(snapWorld, taskID);
+            var numAttempts = setNumAttempts(taskID);
+            outputLog = outputLog || new gradingLog(snapWorld, taskID, numAttempts);
             // Populate, run, and evaluate the tests specified in AGTest()
             // These tests specified by the Course Designer. 
+
+            //outputLog.numAttempts += 1;
 
             var test_log = AGTest(outputLog);
             if(!test_log.runSnapTests()) {
@@ -270,7 +131,8 @@
             } else {
                 //Restore the AG status bar to a graded state
                 //If no previous state is recognized, return new {gradingLog}.
-                outputLog = new gradingLog(snapWorld, taskID); 
+                var numAttempts = setNumAttempts(taskID);
+                outputLog = new gradingLog(snapWorld, taskID, numAttempts); 
                 AG_bar_ungraded(outputLog);
                 return outputLog;
             }   
@@ -307,40 +169,10 @@
             }
 
 
-            //menu bar grays out options that are not available (ex. current state is same as best attempt) and restores the button state
+            //menu bar grays out options that are not available 
+            //(ex. current state is same as best attempt) and restores the button state
 
-            var last_submit = document.getElementById("last-submit");
-            if (last_xml === null || isSameSnapXML(last_xml, curr_xml)) {
-                last_submit.style.color = "#373737";
-                last_submit.style.pointerEvents = "none";
-                last_submit.parentNode.id = "disabled-button";
-            } else {
-                last_submit.parentNode.id = "enabled-button";
-                last_submit.style.color = "white";
-                last_submit.style.pointerEvents = "auto";
-            }
-
-            var revert_button = document.getElementById("revert-button");
-            if (c_prev_xml === null || isSameSnapXML(c_prev_xml, curr_xml)) {
-                revert_button.style.color = "#373737";
-                revert_button.style.pointerEvents = "none";
-                revert_button.parentNode.id = "disabled-button";
-            } else {
-                revert_button.parentNode.id = "enabled-button";
-                revert_button.style.color = "white";
-                revert_button.style.pointerEvents = "auto";
-            }
-
-            var undo_button = document.getElementById("undo-button");
-            if (prev_xml === null || isSameSnapXML(prev_xml, curr_xml)) {
-                undo_button.style.color = "#373737";
-                undo_button.style.pointerEvents = "none";
-                undo_button.parentNode.id = "disabled-button";
-            } else {
-                undo_button.parentNode.id = "enabled-button";
-                undo_button.style.color = "white";
-                undo_button.style.pointerEvents = "auto";
-            }
+            grayOutButtons(snapWorld, taskID);
 
             var outputLog;
             //If current XML is different from prev_xml
@@ -349,6 +181,7 @@
                 
                 // TODO: Write a good comment
                 // TODO: Give gradeLog ability to recover log data and xml string
+                console.log('AGUpdate: Thinks this is the "correct" XML.');
                 localStorage.setItem(taskID + "_test_log", c_prev_log);
                 localStorage.setItem(taskID + "_test_state", curr_xml);
                 document.getElementById("different-feedback").innerHTML = "";
@@ -357,24 +190,36 @@
                 outputLog = JSON.parse(c_prev_log);
                 outputLog.snapWorld = snapWorld;
                 AG_bar_graded(outputLog);
- 
+
+                if (isEDX) {
+                    parent.document.getElementById('overlay-button').style.display = "none";
+                }
+
             } else if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
                 //Restore the AG status bar to a graded state
+                console.log('AGUpdate: Thinks this is just the "last" XML.');
                 //Retrieve the previous test log from localStorage
                 document.getElementById("different-feedback").innerHTML = "";
 
                 outputLog = JSON.parse(prev_log);
                 outputLog.snapWorld = snapWorld;
                 AG_bar_semigraded(outputLog);
+                if (isEDX) {
+                    parent.document.getElementById('overlay-button').style.display = "none";
+                }
 
             } else {
                 //Restore the AG status bar to a graded state
-                outputLog = new gradingLog(snapWorld, taskID);
+                var numAttempts = setNumAttempts(taskID);
+                outputLog = new gradingLog(snapWorld, taskID, numAttempts);
                 AG_bar_ungraded(outputLog);
                 document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
+                if (isEDX) {
+                    parent.document.getElementById('overlay-button').style.display = "block";
+                }
 
             }
-            populateFeedback(outputLog);
+            //populateFeedback(outputLog);
             return outputLog;
 
         }
@@ -388,31 +233,110 @@
          *  - Should only be called from outputLog.evaluateLog()
          */
         function AGFinish(outputLog) {
-
-            //Grab HTML divs
-            var menu_button = document.getElementById("onclick-menu");
-            var grade_button = document.getElementById("autograding_button");
             // Verify correctness
             if (outputLog.allCorrect) {
-                // Update AG_status_bar to Passing state
                 // Save the correct XML string into localStorage
                 AG_bar_graded(outputLog);
                 outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
-
             } else {
                 // Update AG_status_bar to 'graded, but incorrect state
                 AG_bar_semigraded(outputLog);
             }
+            //Save the current XML. Log is saved in gradingLog.scoreLog(...)
             outputLog.saveSnapXML(outputLog.taskID + "_test_state");
+            //outputLog.numAttempts += 1;
             populateFeedback(outputLog);
+            grayOutButtons(outputLog.snapWorld, outputLog.taskID);
             console.log('Autograder test Results:');
             console.log(outputLog);
+            //parent.document.getElementsByClassName('check-label')[0].click();
+        }
+        /*
+         * Reset state removes all saved logs and XML files, and opens a new
+         * Snap! file. 
+         */
+        function resetState(snapWorld, taskID) {
+
+            var numAttempts = JSON.parse(localStorage.getItem(taskID + "_test_log")).numAttempts;
+
+            localStorage.removeItem(taskID + "_test_log");
+            localStorage.removeItem(taskID + "_test_state");
+            localStorage.removeItem(taskID + "_c_test_log");
+            localStorage.removeItem(taskID + "_c_test_state");
+
+            var ide = snapWorld.children[0];
+            ide.newProject();
+            var new_log = AGStart(snapWorld, taskID);
+            new_log.numAttempts = numAttempts;
+            //localStorage.setItem(taskID + "_test_log", new_log);
+            localStorage.setItem(taskID + "_test_state", ide.serializer.serialize(ide.stage));
+            new_log.saveLog();
+            //localStorage.setItem(taskID + "_test_log", new_log);
+            grayOutButtons(snapWorld, taskID);
         }
 
+        function revertToBestState(snapWorld, taskID) {
+    
+            var ide = snapWorld.children[0];
 
+            var numAttempts = JSON.parse(localStorage.getItem(taskID + "_test_log")).numAttempts;
 
+            var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
+            var c_prev_log = localStorage.getItem(taskID + "_c_test_log");
+            localStorage.setItem(taskID + "_test_state", c_prev_xml);
+            localStorage.setItem(taskID + "_test_log", c_prev_log);
+
+            var prev_log = JSON.parse(localStorage.getItem(taskID + "_test_log"));
+            prev_log.snapWorld = snapWorld;
+            AG_bar_graded(prev_log);
+            populateFeedback(prev_log);
+            prev_log.numAttempts = numAttempts;
+            ide.openProjectString(c_prev_xml);
+            grayOutButtons(snapWorld, taskID);
+        }
+
+        function revertToLastState(snapWorld, taskID) {
+
+            var ide = snapWorld.children[0];
+            var prev_xml = localStorage.getItem(taskID + "_test_state");
+            var prev_log = JSON.parse(localStorage.getItem(taskID + "_test_log"));
+            prev_log.snapWorld = snapWorld;
+            if (prev_log['allCorrect']) {
+                AG_bar_graded(prev_log);
+            } else {
+                AG_bar_semigraded(prev_log);
+            }
+            populateFeedback(prev_log);
+            ide.openProjectString(prev_xml);
+            grayOutButtons(snapWorld, taskID);
+        }
+
+        function revertToLastSubmit(snapWorld, taskID) {
+            var numAttempts = JSON.parse(localStorage.getItem(taskID + "_test_log")).numAttempts;
+
+            var last_xml = localStorage.getItem(taskID + "_last_submitted_state");
+            var last_log = localStorage.getItem(taskID + "_last_submitted_log");
+            var ide = snapWorld.children[0];
+
+            localStorage.setItem(taskID + "_test_state", last_xml);
+            localStorage.setItem(taskID + "_test_log", last_log);
+            var prev_log = JSON.parse(localStorage.getItem(taskID + "_test_log"));
+            if (prev_log['allCorrect']) {
+                AG_bar_graded(prev_log);
+            } else {
+                AG_bar_semigraded(prev_log);
+            }
+            populateFeedback(prev_log);
+            prev_log.numAttempts = numAttempts;
+            ide.openProjectString(last_xml);
+            grayOutButtons(snapWorld, taskID);
+
+        }
+
+        /*
+         * Makes AG status bar reflect the ungraded state of the outputLog.
+         */
         function AG_bar_ungraded(outputLog) {
-            
             var button_text = "GRADE";
             var button_elem = $('#autograding_button span');
             var regex = new RegExp(button_text,"g");
@@ -426,9 +350,18 @@
             });          
             $('#autograding_button .hover_darken').show();
             $('#onclick-menu').css('color', 'white');
-            $('#feedback-button').html("View Previous Feedback");
+            if (localStorage.getItem(outputLog.taskID + "_test_log")) {
+                $('#feedback-button').html("View Previous Feedback");
+            } else {
+                $('#feedback-button').html("No Feedback Available");
+            }
+            document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
         }
 
+        /*
+         * Makes AG status bar reflect the graded state of the outputLog. This
+         * only occurs when all tests on the outputLog have passed.
+         */
         function AG_bar_graded(outputLog) {
             var button_text = "TESTS PASS";
             var button_elem = $('#autograding_button span');
@@ -436,7 +369,6 @@
             if (button_elem.html().match(regex) !== null) {
                 return;
             }
-            
             button_elem.fadeOut('fast', function() {
                 button_elem.html(button_text);
                 button_elem.slideDown('fast');
@@ -445,9 +377,11 @@
             $('#autograding_button .hover_darken').hide();
             $('#onclick-menu').css('color', 'white');
             $('#feedback-button').html("Review Feedback");
-
         }
-
+        /*
+         * Makes AG status bar reflect the semi graded state of the outputLog. 
+         * This is called when any test on the outputLog fails.
+         */
         function AG_bar_semigraded(outputLog) {
             var button_text = "&#x2770&#x2770 FEEDBACK";
             var button_elem = $('#autograding_button span');
@@ -490,66 +424,52 @@
         function isSameSnapXML(prev_xml, curr_xml, no_subset) {
             //replace script coordinates with generic 'x="0" y="0"'
             // console.log('isSameSnapXML');
-            if ((prev_xml === null) || (curr_xml === null)) {
-                console.log("isSameSnapXML: prev_xml or curr_xml are null");
-                console.log(prev_xml);
-                console.log(curr_xml);
-                return false;
-            }
-            
+            if ((prev_xml === null) || (curr_xml === null)) { return false; }
             //Remove script coordinates
             // prev_xml = prev_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
             // curr_xml = curr_xml.replace(/script x="[\d]*" y="[\d]*"/g, 'script x="0" y="0"');
             prev_xml = prev_xml.replace(/script x="(.*?)" y="(.*?)"/g, 'script x="0" y="0"');
             curr_xml = curr_xml.replace(/script x="(.*?)" y="(.*?)"/g, 'script x="0" y="0"');
-
             //Remove data hashes hashes (to allow coherence b/w reloads).
             prev_xml = prev_xml.replace(/data:image(.*?)(?=<)/g, '');
             curr_xml = curr_xml.replace(/data:image(.*?)(?=<)/g, '');
-
-            // console.log('previous XML');
-            // console.log(prev_xml);
-            // console.log('current XML');
-            // console.log(curr_xml);
-            // console.log("They are the same:" + String(prev_xml === curr_xml));
-            if (prev_xml === curr_xml) {
-                return true;
-            }
-
+            //If XML is identical other than images and script positions, short-circuit
+            if (prev_xml === curr_xml) { return true; }
             //split between brackets
             prev_xml_scripts = prev_xml.match(/(<script x)(.*?)(<\/script>)/g);
             curr_xml_scripts = curr_xml.match(/(<script x)(.*?)(<\/script>)/g);
-
             //split between custom blocks
             prev_xml_blocks = prev_xml.match(/(<block-definition s)(.*?)(\/block-definition>)/g);
             curr_xml_blocks = curr_xml.match(/(<block-definition s)(.*?)(\/block-definition>)/g);
-            
             //sort script tags and convert back to strings
             //lol. weird syntax. doesn't sort if curr_xml_scripts === null.
             prev_xml_scripts && prev_xml_scripts.sort().join("");
             curr_xml_scripts && curr_xml_scripts.sort().join("");
-
             //If the custom block definitions have changed
             prev_xml_blocks && prev_xml_blocks.sort().join("");
             curr_xml_blocks && curr_xml_blocks.sort().join("");
             if(JSON.stringify(prev_xml_blocks) !== JSON.stringify(curr_xml_blocks)) {
                 return false;
             }
-
             //If the previous scripts are a subset of current scripts
             if (!no_subset && isArrSubset(curr_xml_scripts, prev_xml_scripts)) {
                 //Then the solution is still present and in-tact
                 return true;
             }
-
             //replace unsorted scripts with sorted scripts
             //TODO: Replace them properly
             prev_xml = prev_xml.replace(/(<script x)(.*)(<\/script>)/g,prev_xml_scripts);
             curr_xml = curr_xml.replace(/(<script x)(.*)(<\/script>)/g,curr_xml_scripts);
-
             return prev_xml === curr_xml;
         }
 
+        /*
+         * Helper Function for isSameSnapXML(...). Used to check if a previous
+         * solution is a sub-set of the current Snap! scripts.
+         * @param {Array:Strings} big
+         * @param {Array:String} small
+         * @return {Boolean} If 'small' is a sub-set of 'big'
+         */
         function isArrSubset(big, small) {
             if (!big || !small) {
                 return false;
@@ -591,6 +511,7 @@
             ['headstart', '<th class="titles" style="text-align: center;">'], 
             ['headend', '</th>'], 
             ['datastart', '<td class="data" style="text-align: center;">'], 
+            ['evenstart', '<td class="evens" style="text-align: center;">'],
             ['dataend', '</td>'], 
             ['correctstart', '<td class="correctans" style="text-align: center;">'],
             ['wrongstart', '<td class="incorrectans" style="text-align: center;">'],
@@ -607,67 +528,6 @@
             return message;
         }
 
-        function resetState(snapWorld, taskID) {
-
-            localStorage.removeItem(taskID + "_test_log");
-            localStorage.removeItem(taskID + "_test_state");
-            localStorage.removeItem(taskID + "_c_test_log");
-            localStorage.removeItem(taskID + "_c_test_state");
-
-            var ide = snapWorld.children[0];
-            ide.newProject();
-            var new_log = AGStart(snapWorld, taskID);
-            populateFeedback(new_log);
-        }
-
-        function revertToBestState(snapWorld, taskID) {
-    
-            var ide = snapWorld.children[0];
-
-            var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
-            var c_prev_log = localStorage.getItem(taskID + "_c_test_log");
-            localStorage.setItem(taskID + "_test_state", c_prev_xml);
-            localStorage.setItem(taskID + "_test_log", c_prev_log);
-
-            var prev_log = JSON.parse(c_prev_log);
-            prev_log.snapWorld = snapWorld;
-            AG_bar_graded(prev_log);
-            populateFeedback(prev_log);
-            ide.openProjectString(c_prev_xml);
-        }
-
-        function revertToLastState(snapWorld, taskID) {
-
-            var ide = snapWorld.children[0];
-            var prev_xml = localStorage.getItem(taskID + "_test_state");
-            var prev_log = JSON.parse(localStorage.getItem(taskID + "_test_log"));
-            prev_log.snapWorld = snapWorld;
-            if (prev_log['allCorrect']) {
-                AG_bar_graded(prev_log);
-            } else {
-                AG_bar_semigraded(prev_log);
-            }
-            populateFeedback(prev_log);
-            ide.openProjectString(prev_xml);
-        }
-
-        function revertToLastSubmit(snapWorld, taskID) {
-            var last_xml = localStorage.getItem(taskID + "_last_submitted_state");
-            var last_log = localStorage.getItem(taskID + "_last_submitted_log");
-            var ide = snapWorld.children[0];
-
-            localStorage.setItem(taskID + "_test_state", last_xml);
-            localStorage.setItem(taskID + "_test_log", last_log);
-            var prev_log = JSON.parse(last_log);
-            if (prev_log['allCorrect']) {
-                AG_bar_graded(prev_log);
-            } else {
-                AG_bar_semigraded(prev_log);
-            }
-            populateFeedback(prev_log);
-            ide.openProjectString(last_xml);
-
-        }
 
         function toggleMenu() {
             var menu_items = document.getElementsByClassName("bubble")[0];
@@ -710,6 +570,7 @@
             var feedback = log["feedback"];
             var title = log["comment"];
 
+            // Checks if the grading button has been clicked
             if (title === "Please run the Snap Autograder before clicking the 'Submit' button.") {
                 document.getElementById("table-data").style.display = "none";
                 document.getElementById("reporter-table-data").style.display = "none";
@@ -718,6 +579,7 @@
                 document.getElementById("reporter-table-data").style.display = "table";
             }
 
+            // Wipes the feedback clean, including if it has been populated before. 
             caution.innerHTML = "";
             edx_caution.innerHTML = "";
             document.getElementById("comment").innerHTML = "";
@@ -731,6 +593,7 @@
                 repTableResults.removeChild(repTableResults.children[1]);
             }
 
+            // Warnings for when student's feedback differ from what's on the scripting area/what's been submitted to edX
             document.getElementById("comment").innerHTML = title;
             if (!last_log) {
                 edx_caution.innerHTML = "[WARNING: You have not submitted your results to edX yet.]"
@@ -745,6 +608,7 @@
                 var test = String(i);
                 var newRow = document.createElement("tr");
 
+                // If test is not a reporter test, only add columns for Test # and Feedback
                 if (feedback[test]["testClass"] !== "r") {
                     if (document.getElementsByClassName("non-reporter").length === 0) {
                         addBasicHeadings();
@@ -753,27 +617,47 @@
                     nonRepTest += 1;
                 }
 
+                // If test is a reporter test, add all columns, including input, output, and expected. Makes the background of every other row light gray.
                 if (feedback[test]["testClass"] === "r") {
                     if (document.getElementsByClassName("reporter").length === 0) {
                         addReporterHeadings();
                     }
                     addTableCell(String(repTest), "tests", newRow);
-                    repTest += 1;
                     var keys = ["input", "output", "expOut"];
                     for (key=0; key<3; key++) {
-                        addTableCell(feedback[test][keys[key]], "data", newRow);
+                        if (repTest % 2 === 0) {
+                            addTableCell(feedback[test][keys[key]], ["data", "evens"], newRow);
+                        } else {
+                            addTableCell(feedback[test][keys[key]], "data", newRow);
+                        }
                     }
+                    repTest += 1;
                 }
+
+                // If test is correct, make the feedback appropriately colored. 
                 if (feedback[test]["correct"] === true) {
                     addTableCell(feedback[test]["feedback"], "correctans", newRow);
+                    addRegradeButton("Regrade", ["data", "hidden"], newRow);
                 } else {
                     addTableCell(feedback[test]["feedback"], "incorrectans", newRow);
+                    addRegradeButton("Regrade", ["data", "regrade", test], newRow);
                 }
 
                 if (feedback[test]["testClass"] === "r") {
                     document.getElementById("reporter-table-data").appendChild(newRow);
                 } else {
                     document.getElementById("table-data").appendChild(newRow);
+                }  
+            }
+            console.log(outputLog);
+            //outputLog.saveLog();
+
+            // makes recently created regrade buttons clickable 
+            var regrade_buttons = document.getElementsByClassName("regrade");
+            for(var i=0; i<regrade_buttons.length; i++) {
+                regrade_buttons[i].onclick = function() {
+                    var testId = this.classList[2];
+                    regradeOnClick(outputLog, testId);
                 }
             }
         }
@@ -807,13 +691,120 @@
             var data = document.createElement("td");
             var text = document.createTextNode(text);
             data.appendChild(text);
-            data.classList.add(elemClass);
+            if (Array.isArray(elemClass)) {
+                DOMTokenList.prototype.add.apply(data.classList, elemClass);
+            } else {
+                data.classList.add(elemClass);
+            }
             row.appendChild(data);
         }
 
+        function addRegradeButton(text, elemClass, row) {
+            var data = document.createElement("td");
+            var button = document.createElement("p");
+            var text = document.createTextNode(text);
+            button.classList.add("regrade-button");
+            button.appendChild(text);
+            data.appendChild(button);
+            if (Array.isArray(elemClass)) {
+                DOMTokenList.prototype.add.apply(data.classList, elemClass);
+            } else {
+                data.classList.add(elemClass);
+            }
+            row.appendChild(data);
+        }
+
+        function grayOutButtons(snapWorld, taskID) {
+            var ide = snapWorld.children[0];
+            var curr_xml = ide.serializer.serialize(ide.stage);
+            //Retrieve previously graded Snap XML strings (if in localStorage).
+            var c_prev_xml = localStorage.getItem(taskID + "_c_test_state");
+            var prev_xml = localStorage.getItem(taskID + "_test_state");
+
+            var last_xml = localStorage.getItem(taskID + "_last_submitted_state");
+
+            var last_submit = document.getElementById("last-submit");
+            if (last_xml === null || isSameSnapXML(last_xml, curr_xml)) {
+                last_submit.style.color = "#373737";
+                last_submit.style.pointerEvents = "none";
+                last_submit.parentNode.id = "disabled-button";
+            } else {
+                last_submit.parentNode.id = "enabled-button";
+                last_submit.style.color = "white";
+                last_submit.style.pointerEvents = "auto";
+            }
+
+            var revert_button = document.getElementById("revert-button");
+            if (c_prev_xml === null || isSameSnapXML(c_prev_xml, curr_xml)) {
+                revert_button.style.color = "#373737";
+                revert_button.style.pointerEvents = "none";
+                revert_button.parentNode.id = "disabled-button";
+            } else {
+                revert_button.parentNode.id = "enabled-button";
+                revert_button.style.color = "white";
+                revert_button.style.pointerEvents = "auto";
+            }
+
+            var undo_button = document.getElementById("undo-button");
+            if (prev_xml === null || isSameSnapXML(prev_xml, curr_xml)) {
+                undo_button.style.color = "#373737";
+                undo_button.style.pointerEvents = "none";
+                undo_button.parentNode.id = "disabled-button";
+            } else {
+                undo_button.parentNode.id = "enabled-button";
+                undo_button.style.color = "white";
+                undo_button.style.pointerEvents = "auto";
+            }
+        }
+
+        function regradeOnClick(outputLog, testId) {
+            var test = outputLog[testId];
+            test.graded = false;
+            test.correct = false;
+            outputLog.numAttempts += 1;
+            if (test.testClass === "r") {
+                outputLog.startSnapTest(parseInt(testId, 10));
+
+            // for assertion tests, change feedback accordingly to whether assertion is true or false
+            } else if (test.testClass === "a") {
+                if (test.assertion()) {
+                    test.feedback = test.pos_fb;
+                    test.correct = true;
+                } else {
+                    test.feedback = test.neg_fb;
+                    test.correct = false;
+                }
+                test.graded = true;
+            }
+
+            //What about other types of tests?
+
+            outputLog.scoreLog();
+            console.log(outputLog);
+        }
+
+        function setNumAttempts(taskID) {
+            var prev_log = localStorage.getItem(taskID + "_test_log");
+            if (prev_log !== null && JSON.parse(prev_log).numAttempts !== undefined) {
+                return JSON.parse(prev_log).numAttempts;
+            } else {
+                return 0;
+            }
+        }
+
+        function isEDXurl() {
+            var url = window.location.href;
+            if (url.indexOf("edx") !== -1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
         var world;
         window.onload = function () {
+
+            //check if attempt num for problem exists in local storage:
 
             //AUTOGRADER ADDITION - FEEDBACK FORMATTING
             // Checks if problem has been checked and modifies the autograded output if it has been checked
@@ -854,7 +845,7 @@
                     ide.openProjectString(localStorage.getItem(preReqID));
                 }
             }
-            setInterval(loop, 1);
+            
 
             //AUTOGRADER ADDITION - 
             //Forced to use setTimeout() to let the world load before... Maybe not.
@@ -867,11 +858,19 @@
             grade_button.style.cursor = "pointer";
             //Call the test suite when this element is clicked.
             var update_listener = function() {
-                AGUpdate(world, id);
+                var outputLog = AGUpdate(world, id);
+                populateFeedback(outputLog);
             };
             var button_listener = function(event) {
                 event.stopPropagation();
-                runAGTest(world,id);
+                console.log('PROPAGATION SHOULD STOP');
+                var numAttempts = setNumAttempts(id);
+                outputLog = new gradingLog(world, id, numAttempts);
+                outputLog.numAttempts += 1;
+                runAGTest(world, id, outputLog);
+                if (isEDX) {
+                    parent.document.getElementsByClassName('check-label')[0].click();
+                } 
                 // var outputLog = AGStart(world, id);
             }
             grade_button.addEventListener('click', button_listener);
@@ -892,17 +891,29 @@
             var revert_button = document.getElementById("revert-button");
             var undo_button = document.getElementById("undo-button");
             var last_submit = document.getElementById("last-submit");
+            //var menu_button = document.getElementById("hamburger-menu");
             var menu_button = document.getElementsByClassName("onclick-menu")[0];
             //var help_menu = document.getElementById("circle");
             var help_overlay = document.getElementById('overlay');
             var feedback_button = document.getElementById("feedback-button");
             var results_overlay = document.getElementById("ag-output");
+            var snapWorld = document.getElementById("world");
+            var regrade_buttons = document.getElementsByClassName("regrade");
+            
+            //var outside_menu = document.getElementById("outside-menu");
 
-            reset_button.onclick = function() { resetState(world, id); };
-            revert_button.onclick = function() { revertToBestState(world, id); };
-            last_submit.onclick = function() { revertToLastSubmit(world, id); };
-            undo_button.onclick = function() { revertToLastState(world, id); };
+            reset_button.onclick = function() { resetState(world, id); toggleMenu(id); };
+            revert_button.onclick = function() { revertToBestState(world, id); toggleMenu(id); };
+            last_submit.onclick = function() { revertToLastSubmit(world, id); toggleMenu(id); };
+            undo_button.onclick = function() { revertToLastState(world, id); toggleMenu(id); };
             menu_button.onclick = function() { toggleMenu(id); };
+            //var overlay_button = parent.document.getElementById('overlay-button');
+            //overlay_button.onclick = function() { grade_button.click(); }
+
+
+            $(".bubble").click(function(event){
+                event.stopPropagation();  
+            });
 
             feedback_button.onclick = function() {
                 openResults();
@@ -915,31 +926,77 @@
             }
 
             results_overlay.onclick = function(e) {
-                if (!(document.getElementById('ag-results').contains(e.target))) {
+                if (!(document.getElementById('ag-results').contains(e.target)) && e.target.className.indexOf("regrade") === -1) {
                     closeResults();
                 }
             }
 
-            /*help_menu.onclick = function() {
-                openModal();
+            snapWorld.onclick = function(e) {
+                if (document.getElementById('dropdown-open') !== null && !(document.getElementById('onclick-menu').contains(e.target))) {
+                    toggleMenu();
+                }
+            }
+
+
+            /*outside_menu.onclick = function(e) {
+                if (document.getElementById('dropdown-open') !== null && !(document.getElementById('onclick-menu').contains(e.target))) {
+                    toggleMenu();
+                }
             }*/
+
             /* Check if the snap xml has changed "significantly".
              * Exclude script position and edit history.
              */
-            
-
-            
 
 
-            /*document.addEventListener("click", function() {
-                AGUpdate(world, id);
-            });*/
+            document.addEventListener("click", function() {
+                grayOutButtons(world, id);
+            });
+
             //TODO: Fix this timeout.
             setTimeout(function() {
+                if (isEDX) {
+                    var overlay_button = parent.document.createElement('button');
+                    var overlay_button_text = parent.document.createTextNode('Grade');
+                    overlay_button.appendChild(overlay_button_text);
+                    overlay_button.id = 'overlay-button';
+                    var button =  parent.document.getElementsByName('problem_id')[0];
+                    button.parentNode.insertBefore(overlay_button, button.nextSibling);
+
+                    var overlay_button = parent.document.getElementById('overlay-button');
+                    //overlay_button.style.display = "block";
+                    overlay_button.onclick = function() { 
+                        overlay_button.style.display = "none";
+                        grade_button.click(); 
+                    }
+                }
+
                 console.log(world);
                 var outputLog = AGStart(world,id);
-                populateFeedback(outputLog);
-                populateFeedback(outputLog);
+                // runAGTest(world, id);
+                //runAGTest(world, id);
+
+                //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
+                //populateFeedback(outputLog);
+                //populateFeedback(outputLog);
+                grayOutButtons(world, id);
+
+                /*$(".regrade").click(function() {
+                    var testId = this.classList[2];
+                    var test = outputLog[testId];
+                    test.graded = false;
+                    test.correct = false;
+                    outputLog.scoreLog;
+                    console.log(outputLog);
+                    var mylog = outputLog;
+                    //this.classList[2]); 
+                });*/
+
+                
+                /*for (i=0; i<regrade_buttons.length; i++) {
+                    regrade_buttons[i].setAttribute('onclick', 'alert("hello")');
+                }*/
+                //populateFeedback(outputLog);
                 //var outputLog = AGStart(world,id);
                 //populateFeedback(outputLog);
 
@@ -947,12 +1004,21 @@
                 //runAGTest(world,id);
                 //runAGTest(world,id);
                 //AGUpdate(world, id);
-            },300);
+
+                
+            },600);
+
+            /*var overlay_button = document.createElement('button');
+            var overlay_button_text = document.createTextNode('Grade');
+            overlay_button.appendChild(overlay_button_text);
+            overlay_button.id = 'overlay-button';
+            alert(parent.document.getElementsByName('action').length);
+            parent.document.getElementsByName('action')[0].appendChild(overlay_button);*/
 
             //runAGTest(world,id);
             //AGUpdate(world, id);
 
-            
+            setInterval(loop, 1);
             
         };
 
@@ -969,6 +1035,7 @@
 
 
 <!-- Snap Autograding Button -->
+<!--<div id="outside-menu">-->
 <div id="autograding_bar">
     <div tabindex="0" class="onclick-menu" id='onclick-menu' style="display:inline-block">
         <span title="Menu">&#9776;</span>
@@ -998,6 +1065,7 @@
 <!-- Snap Autograding Menu -->
 
 </div>
+<!--</div>-->
 
 <!-- Autograding Menu Help Button -->
 <!-- <div style="display:inline-block" class="AG-help-button" id="circle" onclick="openPopup();">?

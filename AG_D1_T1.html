@@ -8,6 +8,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script type="text/javascript" src="underscore-min.js"></script>
     <script type="text/javascript" src="SnapPLE.js"></script>
+    <meta charset="utf-8">  <!-- This line is needed in order to pass strings into test functions that contain characters
+    like "-" and what not. -->
     <!-- Moved down to the bottom to have var id. -->
     
     <!-- <script type="text/javascript" src="snap.js"></script> -->
@@ -47,18 +49,26 @@
         function AGTest(outputLog) {
             /* Factorial */
             var assert1 = function assert1() {
-                return isScriptPresent('factorial %s',0);
+                return scriptPresentInSprite('[{"blockSp":"factorial %s","inputs":["A"]}]',0,["A"]);
             }
             testAssert(outputLog, assert1,//isScriptPresent('factorial %s',0),
                 "The 'factorial' block is present.", 
                 "The 'factorial %num' block was not found on-screen.", 
                 "Make sure you name your custom block, 'factorial %num'.");
+            testAssert(outputLog, customBlockContains('factorial %s', 'factorial %s'),
+                "The 'factorial' block has a recursive call to itself.",
+                "There is no recursive call to 'factorial.",
+                "Make sure you have a recursive call inside of 'factorial.");
+            testAssert(outputLog, blockPrecedes('factorial %s', "%n − %n", getCustomBody('factorial %s', 0)),
+                "The recursive call to'factorial' block contains a minus block",
+                "There is no minus block in the recursive call to 'factorial'.",
+                "Make sure you have a minus block inside of the recursive call.");
             multiTestBlock('factorial %s', 
                 [[0],[1],[2],[4],[5],[10]],
                 [1,1,2,24,120,3628800],
                 [-1,-1,-1,-1,-1,-1],
-                outputLog);
-
+                [false,false,false,false,false,false])
+            
             // /* KScopeTest */
             // testAssert(outputLog, 
             //     spriteContainsBlock('when %keyHat key pressed', 0, ['space']) &&
