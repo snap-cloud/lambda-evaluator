@@ -166,26 +166,12 @@
         /*The Random Block*/
 
             /*Make the sprite move around randomly.*/
-            var randomInTurn = function randomInTurn() {
-                return blockPrecedesInSprite("turn %clockwise %n degrees", "pick random %n to %n", 0);
-            }
-            testAssert(outputLog, randomInTurn,
-                "There is a 'pick random' block within a 'turn clockwise' block.",
-                "There is no 'pick random' block within a 'turn clockwise' block.",
-                "Make sure the sprite turns randomly.");
-            var randomInMove = function randomInMove() {
-                return blockPrecedesInSprite("move %n steps", "pick random %n to %n", 0);
-            }
-            testAssert(outputLog, randomInMove,
-                "There is a 'pick random' block within a 'move' block.",
-                "There is no 'pick random' block within a 'move' block.",
-                "Make sure the sprite moves randomly.");
             var penDownExists = function penDownExists() {
                 return spriteContainsBlock("pen down", 0);
             }
             testAssert(outputLog, penDownExists,
                 "There is a 'pen down' block.",
-                "There is no 'pen down' block.",
+                "There is no 'pen down' block in the scripting area.",
                 "Make sure the pen is down.");
             var loopExists = function loopExists() {
                 return spriteContainsBlock("forever %c", 0) || spriteContainsBlock("repeat %n %c", 0);
@@ -193,34 +179,37 @@
             testAssert(outputLog, loopExists,
                 "There is a 'repeat' or a 'forever' block.",
                 "There is no 'repeat' or 'forever' block.",
-                "Make sure your sprite will move continuously!");
-            
-            // //FIX
-            // var moveInLoop = function moveInLoop() {
-            //     var move = '[{"blockSp":"move %n steps","inputs":[""]}]'; //???
-            //     var repeat = '[{"blockSp":"repeat %n %c","inputs":["10",[]]}]'; //???
-            //     var forever = '[{"blockSp":"forever %c","inputs":[[]]}]'; //???
-            //     return CBlockContainsInSprite(move, repeat, 0) || CBlockContainsInSprite(move, forever, 0);
-            // }
-            // testAssert(outputLog, moveInLoop,
-            //     ".",
-            //     ".",
-            //     "");
+                "Make sure your sprite will change location continuously!");
+            var moveInLoop = function moveInLoop() {
+                var move = '[{"blockSp":"move %n steps","inputs":[{"blockSp":"pick random %n to %n","inputs":["",""]}]}]';
+                var repeat = '[{"blockSp":"repeat %n %c","inputs":["10",[]]}]';
+                var forever = '[{"blockSp":"forever %c","inputs":[[]]}]';
+                return CBlockContainsInSprite(move, repeat, 0) || CBlockContainsInSprite(move, forever, 0);
+            }
+            testAssert(outputLog, moveInLoop,
+                "The 'move' block is within a loop and the 'pick random' block is within the 'move' block.",
+                "The 'move' block is not within a loop or the 'pick random' block is not within the 'move' block.",
+                "Make sure your sprite will move continuously and randomly!");
+            var turnInLoop = function turnInLoop() {
+                var turn = '[{"blockSp":"turn %clockwise %n degrees","inputs":[{"blockSp":"pick random %n to %n","inputs":["",""]}]}]';
+                var repeat = '[{"blockSp":"repeat %n %c","inputs":["10",[]]}]';
+                var forever = '[{"blockSp":"forever %c","inputs":[[]]}]';
+                return CBlockContainsInSprite(turn, repeat, 0) || CBlockContainsInSprite(turn, forever, 0);
+            }
+            testAssert(outputLog, turnInLoop,
+                "The 'turn' block is within a loop and the 'pick random' block is within the 'turn' block.",
+                "The 'turn' block is not within a loop or the 'pick random' block is not within the 'turn' block.",
+                "Make sure your sprite will turn continuously!");
+            var moveTurnSameScript = function moveTurnSameScript() {
+                return (blockPrecedesInSprite("turn %clockwise %n degrees", "move %n steps", 0) || blockPrecedesInSprite("move %n steps", "turn %clockwise %n degrees", 0));
+            }
+            testAssert(outputLog, moveTurnSameScript,
+                "The 'move' and 'turn' blocks are in a script together.",
+                "The 'move' and 'turn' blocks are not in a script together.",
+                "Make sure your sprite will both move and turn!");
 
-            // var turnInLoop = function turnInLoop() {
 
-            // }
-            // testAssert(outputLog, turnInLoop,
-            //     ".",
-            //     ".",
-            //     "");
-            // order of move and turn? (precedes) etc..
-            // stay on stage??
-            // check that the blocks are all in a script together?
 
-            /*Recreate given script and change its arguments.*/
-
-            /*Draw a field of flowers using repeat block and randomness block and others.*/
 
             return outputLog;
         }
