@@ -53,6 +53,7 @@ table.results {
     color: #4F5150;
     white-space: normal;
 	padding: 3px 20px;
+	font-size:0.7em;
   }
 
   td.hidden {
