@@ -88,21 +88,21 @@
             //     "The 'turn clockwise' block is present.",
             //     "The 'turn clockwise' block was not found on-screen.",
             //     "Make sure you make your sprite turns clockwise on the stage.");
-            // var turn60 = function turn60() {
-            //     return spriteContainsBlock('turn %clockwise %n degrees', 0, ["60"]);
+            // var turn120 = function turn120() {
+            //     return spriteContainsBlock('turn %clockwise %n degrees', 0, ["120"]);
             // }
-            // testAssert(outputLog, turn60,
-            //     "The turn block has an input of 60 degrees.",
+            // testAssert(outputLog, turn120,
+            //     "The turn block has an input of 120 degrees.",
             //     "The turn block does not have the correct input.",
             //     "Make sure your sprite turns an appropriate amount.");
             // var moveThenTurn = function moveThenTurn() {
-            //     var template1 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["60"]}]';
-            //     var template2 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["60"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["60"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["60"]}]';
+            //     var template1 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["120"]}]';
+            //     var template2 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["120"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["120"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["120"]}]';
             //     var vars = ["A"];
             //     return scriptPresentInSprite(template1, 0, vars) || scriptPresentInSprite(template2, 0, vars);
             // }
             // testAssert(outputLog, moveThenTurn,
-            //     "'Turn 60' follows the 'move' block in a script.",
+            //     "'Turn 120' follows the 'move' block in a script.",
             //     "The 'move' block is not followed by a turn with correct inputs, or the triangle's sidelengths/angles are inconsistent.",
             //     "Make sure your sprite moves and then turns with just one click.");
 
@@ -159,6 +159,57 @@
             //     "There is a 'draw house' block with a parameter.",
             //     "There is no 'draw house' block with a parameter.",
             //     "Make sure to give your 'draw house' block a parameter.");
+
+
+    /*Lab 6: Using Randomness*/
+
+        /*The Random Block*/
+
+            /*Make the sprite move around randomly.*/
+            var penDownExists = function penDownExists() {
+                return spriteContainsBlock("pen down", 0);
+            }
+            testAssert(outputLog, penDownExists,
+                "There is a 'pen down' block.",
+                "There is no 'pen down' block in the scripting area.",
+                "Make sure the pen is down.");
+            var loopExists = function loopExists() {
+                return spriteContainsBlock("forever %c", 0) || spriteContainsBlock("repeat %n %c", 0);
+            }
+            testAssert(outputLog, loopExists,
+                "There is a 'repeat' or a 'forever' block.",
+                "There is no 'repeat' or 'forever' block.",
+                "Make sure your sprite will change location continuously!");
+            var moveInLoop = function moveInLoop() {
+                var move = '[{"blockSp":"move %n steps","inputs":[{"blockSp":"pick random %n to %n","inputs":["",""]}]}]';
+                var repeat = '[{"blockSp":"repeat %n %c","inputs":["10",[]]}]';
+                var forever = '[{"blockSp":"forever %c","inputs":[[]]}]';
+                return CBlockContainsInSprite(move, repeat, 0) || CBlockContainsInSprite(move, forever, 0);
+            }
+            testAssert(outputLog, moveInLoop,
+                "The 'move' block is within a loop and the 'pick random' block is within the 'move' block.",
+                "The 'move' block is not within a loop or the 'pick random' block is not within the 'move' block.",
+                "Make sure your sprite will move continuously and randomly!");
+            var turnInLoop = function turnInLoop() {
+                var turn = '[{"blockSp":"turn %clockwise %n degrees","inputs":[{"blockSp":"pick random %n to %n","inputs":["",""]}]}]';
+                var repeat = '[{"blockSp":"repeat %n %c","inputs":["10",[]]}]';
+                var forever = '[{"blockSp":"forever %c","inputs":[[]]}]';
+                return CBlockContainsInSprite(turn, repeat, 0) || CBlockContainsInSprite(turn, forever, 0);
+            }
+            testAssert(outputLog, turnInLoop,
+                "The 'turn' block is within a loop and the 'pick random' block is within the 'turn' block.",
+                "The 'turn' block is not within a loop or the 'pick random' block is not within the 'turn' block.",
+                "Make sure your sprite will turn continuously!");
+            var moveTurnSameScript = function moveTurnSameScript() {
+                return (blockPrecedesInSprite("turn %clockwise %n degrees", "move %n steps", 0) || blockPrecedesInSprite("move %n steps", "turn %clockwise %n degrees", 0));
+            }
+            testAssert(outputLog, moveTurnSameScript,
+                "The 'move' and 'turn' blocks are in a script together.",
+                "The 'move' and 'turn' blocks are not in a script together.",
+                "Make sure your sprite will both move and turn!");
+
+
+
 
             return outputLog;
         }
