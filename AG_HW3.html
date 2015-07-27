@@ -47,30 +47,36 @@
         function AGTest(outputLog) {
 
             /*Rotate Clockwise*/
-            multiTestBlock(outputLog, 'rotate %s clockwise',
-                [[[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0]],[[1,4,8,5,9,6,9,4,2,5,8,9,6,5,9,0]]],
-                [[0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,2,0,0,0,3,0,0,0,4],[5,5,5,1,0,0,0,0,5,5,5,5,0,0,0,0],[6,2,9,1,5,5,6,4,9,8,9,8,0,9,4,5]],
-                [-1,-1, -1, -1],
-                [true,true, true, true])
+            multiTestBlock(outputLog, 'rotate %l clockwise',
+                [[[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]], //Input
+                [[1,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0]],[[1,4,8,5,9,6,9,4,2,5,8,9,6,5,9,0]]],
+                [[0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,2,0,0,0,3,0,0,0,4],   //Output
+                [5,5,5,1,0,0,0,0,5,5,5,5,0,0,0,0],[6,2,9,1,5,5,6,4,9,8,9,8,0,9,4,5]],
+                [-1,-1, -1, -1], //Timeouts
+                [true,true, true, true]) //Boolean to control if the sprite is tested in a new 'test' Sprite
 
             /*Merge Tile at _, _ on _ up*/
-            multiTestBlock(outputLog, "merge tile at %s , %s on %s up",
-                [[4, 2, [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[2, 2, [1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]],[2, 2, [1,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0]],[2, 2, [1,4,8,5,9,6,9,4,2,5,8,9,6,5,9,0]]],
+            multiTestBlock(outputLog, "merge tile at %n , %n of %l up",
+                [[3, 1, [2,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0]],[2, 1, [2,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0]],
+                [3, 2, [0,2,0,0,0,0,0,0,0,2,0,0,0,0,0,0]],[3, 2, [0,4,0,0,0,4,0,0,0,2,0,0,0,0,0,0]]],
                 [true,false,true,false],
                 [-1,-1, -1, -1],
                 [true,true, true, true]) 
 
             /*Merge Up _*/
-            multiTestBlock(outputLog, 'merge up %s',
-                [[[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0]],[[1,4,8,5,9,6,9,4,2,5,8,9,6,5,9,0]]],
-                [[1,,,,,,,,,,,,,,,],[1,2,3,4,,,,,,,,,,,,],[1,,10,,10,,10,,5,,,,,,,],[1,4,8,5,9,6,9,4,2,10,8,9,6,,9,]],
+            multiTestBlock(outputLog, 'merge up %l',
+                [[[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]],
+                [[1,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0]],[[1,4,8,5,9,6,9,4,2,5,8,9,6,5,9,0]]],
+                [[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0],
+                [1,0,10,0,10,0,10,0,5,0,0,0,0,0,0,0],[1,4,8,5,9,6,9,4,2,10,8,9,6,0,9,0]],
                 [-1,-1, -1, -1],
                 [true,true, true, true])
 
             /*No Moves Left For _*/
-            multiTestBlock(outputLog, "no moves left for %s",
-                [[[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0]],[[1,4,8,5,9,6,9,4,2,5,8,9,6,5,9,0]]],
-                [true,true,false,false],
+            multiTestBlock(outputLog, "no moves left for %l ?",
+                [[[2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]],
+                [[2,4,2,4,4,2,4,2,2,4,2,4,4,2,4,2]],[[2,4,2,4,4,2,4,2,8,4,2,4,8,2,4,2]]],
+                [false,false,true,false],
                 [-1,-1, -1, -1],
                 [true,true, true, true])
 
@@ -623,8 +629,8 @@
                         addReporterHeadings();
                     }
                     addTableCell(String(repTest), "tests", newRow);
-                    var keys = ["input", "output", "expOut"];
-                    for (key=0; key<3; key++) {
+                    var keys = ['blockSpec',"input", "output", "expOut"];
+                    for (key=0; key<keys.length; key++) {
                         if (repTest % 2 === 0) {
                             addTableCell(feedback[test][keys[key]], ["data", "evens"], newRow);
                         } else {
@@ -637,10 +643,10 @@
                 // If test is correct, make the feedback appropriately colored. 
                 if (feedback[test]["correct"] === true) {
                     addTableCell(feedback[test]["feedback"], "correctans", newRow);
-                    addRegradeButton("Regrade", ["data", "hidden"], newRow);
+                    // addRegradeButton("Regrade", ["data", "hidden"], newRow);
                 } else {
                     addTableCell(feedback[test]["feedback"], "incorrectans", newRow);
-                    addRegradeButton("Regrade", ["data", "regrade", test], newRow);
+                    // addRegradeButton("Regrade", ["data", "regrade", test], newRow);
                 }
 
                 if (feedback[test]["testClass"] === "r") {
@@ -676,8 +682,8 @@
         }
 
         function addReporterHeadings() {
-            var columns = ["Test", "Input", "Output", "Expected", "Feedback"];
-            for (i=0; i<5; i++) {
+            var columns = ["Test", "Block", "Input", "Output", "Expected", "Feedback"];
+            for (i=0; i<columns.length; i++) {
                 var header = document.createElement("th");
                 var text = document.createTextNode(columns[i]);
                 var repTitles = document.getElementById("reporter-table-titles");
@@ -689,7 +695,7 @@
 
         function addTableCell(text, elemClass, row) {
             var data = document.createElement("td");
-            var text = document.createTextNode(text);
+            var text = document.createTextNode(stringify_list(text));
             data.appendChild(text);
             if (Array.isArray(elemClass)) {
                 DOMTokenList.prototype.add.apply(data.classList, elemClass);
@@ -697,6 +703,29 @@
                 data.classList.add(elemClass);
             }
             row.appendChild(data);
+        }
+
+
+        function stringify_list(lst) {
+            if (lst instanceof List) {
+                lst = lst.contents;
+            }
+            if (!(lst instanceof Array)) {
+                if (lst == null) {return ' '};
+                return String(lst)
+            } else {
+                output = '[';
+                for (elem of lst) {
+                    if (elem instanceof Array) {
+                        output += stringify_list(elem);
+                    } else {
+                        if (elem == null) {elem = ' '}
+                        output += String(elem);
+                    }
+                    output += ',';
+                }
+                return output.slice(0,-1) + ']'
+            }
         }
 
         function addRegradeButton(text, elemClass, row) {

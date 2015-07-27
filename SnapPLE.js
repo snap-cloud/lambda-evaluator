@@ -240,15 +240,21 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	if (output === undefined) {
 		test.output = null;
 	} else {
-		test.output = output;
+		if (output instanceof List) {
+			test.output = output.asArray();
+		} else {
+			test.output = output;
+		}
 	}
+	console.log('TEST OUTPUT')
+	console.log(test.output)
 
 	if (expOut instanceof Array) {
 		expOut = new List(expOut);
 	}
 
 	//Update feedback and 'correct' flag depending on output.
-	if (snapEquals(test.output, expOut)) {
+	if (snapEquals(output, expOut)) {
 		test.correct = true;
 		//test.feedback = test.feedback || "Test Passed.";
 		test.feedback = "Test Passed." || test.feedback;
@@ -461,10 +467,15 @@ function dictLog(outputLog) {
 		testDict["id"] = i;
 		testDict["testClass"] = outputLog[i]["testClass"];
 		if (outputLog[i]["blockSpec"] !== undefined) {
-			testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+			testDict["blockSpec"] = "(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")";
 		}
 		testDict["input"] = outputLog[i]["input"];
 		testDict["expOut"] = outputLog[i]["expOut"];
+		if (outputLog[i]["output"] instanceof List) {
+			testDict["output"] = outputLog[i]["output"].contents
+		} else {
+			testDict["output"] = outputLog[i]["output"];
+		}
 		testDict["output"] = outputLog[i]["output"];
 		testDict["correct"] = outputLog[i]["correct"];
 		testDict["feedback"] = outputLog[i]["feedback"];

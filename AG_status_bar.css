@@ -308,7 +308,7 @@ div {
 
 .popup-content {
   padding: 20px 30px;
-  width: 600px;
+  width: 80%;
   position: relative;
   /*min-height: 300px;*/
   margin: 5% auto 0;
