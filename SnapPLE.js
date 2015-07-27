@@ -267,11 +267,13 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	this[testID] = test;
 	//Clear the input values.
 	try {
+		//if its an isolated test remove the sprite and set the focus to the first sprite
 		if (test.isolated) {
-			console.log("removing sprite");
-			//var curSprite = this.snapWorld.children[0].currentSprite;
-			this.snapWorld.children[0].sprites.contents[test.sprite].remove();
-			//this.snapWorld.children.selectSprite(curSprite);
+			console.log("removing sprite");	
+			test.sprite.remove();
+			test.sprite = null;
+			var focus = this.snapWorld.children[0].sprites.contents[0];
+			this.snapWorld.children[0].selectSprite(focus);
 		} else {
 			var block = getScript(test.blockSpec);
 			setValues(block, Array(test['input'].length).join('a').split('a'));
@@ -725,6 +727,11 @@ function checkArrayForList(a) {
 function setValues(block, values) {
 	var valIndex = 0,
 		morphIndex = 0;
+
+	if (block.blockSpec == "list %exp") {
+		setNewListToArg(values[valIndex], block, morphIndex);
+		return;
+	}
 
 	var morphList = block.children;
 
@@ -1553,6 +1560,7 @@ function setNewListToArg(values, block, i) {
 
 //Simplifies an %l param in a block spec to the %s param
 //could use regex to make code neater, but I hate using regex
+//This function has been degregated!!
 //@param blockSpec - the block spec string to simplify
 function simplifySpec(blockSpec) {
 	var spec = blockSpec.split(" ");
@@ -1584,7 +1592,7 @@ function findBlockInPalette(blockSpec, workingWorld) {
 		i = 0;
 
 		while (i < palette.length) {
-			if (palette[i].blockSpec && simplifySpec(palette[i].blockSpec) === simplifySpec(blockSpec)) {
+			if (palette[i].blockSpec && blockSpecMatch(palette[i].blockSpec, blockSpec)) {
 				return palette[i].fullCopy();
 			}
 			i++;
@@ -1610,12 +1618,31 @@ function addBlockToSprite(sprite, block) {
 //@param testID - the id of the test that will be run from the grading log
 function createTestSprite(log, testID) {
 	var ide = log.snapWorld.children[0];
-	var curSprite = ide.currentSprite;
-	ide.addNewSprite();
-	var sprites = ide.sprites.contents;
-	log[testID].sprite = sprites.length - 1;
-	ide.selectSprite(curSprite);
-	return sprites[sprites.length - 1];
+	var sprite = addInvisibleSprite(ide);
+	log[testID].sprite = sprite;
+	return sprite;
+}
+
+//Creates a semi invisable sprite for testing purposes
+//Adds the sprite to the stage but no where else!
+//returns the new sprite
+//@param ide - the working snap IDE
+function addInvisibleSprite(ide) {
+	var sprite = new SpriteMorph(ide.globalVariables),
+        rnd = Process.prototype.reportRandom;
+
+    sprite.name = ide.newSpriteName(sprite.name);
+
+    sprite.setCenter(ide.stage.center());
+   	ide.stage.add(sprite);
+    // randomize sprite properties
+    sprite.setHue(rnd.call(ide, 0, 100));
+    sprite.setBrightness(rnd.call(ide, 50, 100));
+    sprite.turn(rnd.call(ide, 1, 360));
+    sprite.setXPosition(rnd.call(ide, -220, 220));
+    sprite.setYPosition(rnd.call(ide, -160, 160));
+
+    return sprite;
 }
 
 //Sets up an isolated test on a new sprite in snap
@@ -1630,7 +1657,7 @@ function setUpIsolatedTest(blockSpec, log, testID) {
 		throw blockSpec + " not found in Palette!";
 	}
 	var sprite = createTestSprite(log, testID);
-	addBlockToSprite(sprite, block, log.snapWorld);
+	addBlockToSprite(sprite, block);
 	return block;
 }
 
