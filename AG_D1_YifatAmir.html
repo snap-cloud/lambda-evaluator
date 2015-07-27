@@ -110,35 +110,52 @@
 
         /*The Repeat Block*/
 
-            /*Input an argument value into the given script to create the given picture*/
-            //FIX
-            // "[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["A",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]"
-            // "["A"]"
-            // testAssert(outputLog, spriteContainsBlock("repeat %n %c", 0, ["9", "A"]),
+            // /*Input an argument value into the given script to create the given picture*/
+            // var scriptExists = function scriptExists() {
+            //     var template = '[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["A",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]';
+            //     var vars = ["A"];
+            //     return scriptPresentInSprite(template, 0, vars);
+            // }
+            // testAssert(outputLog, scriptExists,
+            //     "The given script has been recreated exactly.",
+            //     "The given script has not been recreated exactly.",
+            //     "Make sure to recreate the given script!");
+            // var repeat9 = function repeat9() {
+            //     var script = '[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["9",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]';
+            //     return scriptPresentInSprite(script, 0);
+            // }
+            // testAssert(outputLog, repeat9,
             //     "The input to the repeat loop is 9.",
             //     "The input to the repeat loop is incorrect.",
             //     "Try checking how many sides the given shape has!");
-            //scriptPresentInSprite with a template??
 
     /*Lab 4: Making Your Own Blocks*/
 
         /*Adding an Input*/
 
-            /*Add an input to the draw square block.*/
-            // testAssert(outputLog, spriteContainsBlock("draw square %s", 0) || spriteContainsBlock("draw square %n", 0) || spriteContainsBlock("draw square %exp", 0),
+            // /*Add an input to the draw square block.*/
+            // var drawSquareHasInput = function drawSquareHasInput() {
+            //     return spriteContainsBlock("draw square %", 0);
+            // }
+            // testAssert(outputLog,  drawSquareHasInput,
             //     "There is a 'draw square' block with a parameter.",
             //     "There is no 'draw square' block with a parameter.",
             //     "Make sure to give your 'draw square' block a parameter.");
-            // getCustomBody("draw square ----")
 
             // /*Add an input to the draw triangle block.*/
-            // testAssert(outputLog, spriteContainsBlock("draw triangle %s", 0) || spriteContainsBlock("draw triangle %n", 0) || spriteContainsBlock("draw triangle %exp", 0),
+            // var drawTriangleHasInput = function drawTriangleHasInput() {
+            //     return spriteContainsBlock("draw triangle %", 0);
+            // }
+            // testAssert(outputLog,  drawTriangleHasInput,
             //     "There is a 'draw triangle' block with a parameter.",
             //     "There is no 'draw triangle' block with a parameter.",
             //     "Make sure to give your 'draw triangle' block a parameter.");
 
             // /*Add an input to the draw house block.*/
-            // testAssert(outputLog, spriteContainsBlock("draw house %s", 0) || spriteContainsBlock("draw house %n", 0) || spriteContainsBlock("draw house %exp", 0),
+            // var drawHouseHasInput = function drawHouseHasInput() {
+            //     return spriteContainsBlock("draw house %", 0);
+            // }
+            // testAssert(outputLog,  drawHouseHasInput,
             //     "There is a 'draw house' block with a parameter.",
             //     "There is no 'draw house' block with a parameter.",
             //     "Make sure to give your 'draw house' block a parameter.");
