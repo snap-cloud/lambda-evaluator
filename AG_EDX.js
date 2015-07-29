@@ -53,8 +53,8 @@ var AG_EDX = (function() {
                 localStorage.setItem(id + "_ag_output", JSON.stringify(edx_log));
             }
             console.log("GET GRADE SUCCEEDING");
+            console.log(encodeURIComponent(JSON.stringify(edx_log)));
 
-            /*return encodeURIComponent(JSON.stringify(edx_log));*/
             return encodeURIComponent(JSON.stringify(edx_log));
         } else {
             return JSON.stringify(AG_state);
@@ -66,21 +66,29 @@ var AG_EDX = (function() {
 
     function getState() {
         // return encodeURIComponent(JSON.stringify(AG_state));
-        var last_xml = localStorage.getItem(id + "_test_state");
+        /*var last_xml = localStorage.getItem(id + "_test_state");
         if (last_xml !== null) {
             return encodeURIComponent(last_xml);
         } else {
             var ide = world.children[0];
             var world_string = ide.serializer.serialize(ide.stage);
             return encodeURIComponent(world_string);
-        }
+        }*/
+
+        var ide = world.children[0];
+        var world_string = ide.serializer.serialize(ide.stage);
+        //console.log("get state working");
+        //console.log(JSON.stringify(world_string));
+        //return encodeURIComponent(JSON.stringify(world_string));
+        return encodeURI(encodeURIComponent(world_string));
     }
     //EDX: Used to save the world state into edX. FOR RELOAD 
     function setState() {
         var last_xml = arguments.length === 1 ? arguments[0] : arguments[1];
+        //var last_xml = arguments.length === 1 ? arguments[0] : arguments[1];
+        //state = JSON.parse(stateStr);
         var ide = world.children[0];
-
-        // ide.openProjectString(decodeURIComponent(last_xml));
+        ide.openProjectString(decodeURIComponent(last_xml));
 
 
     }

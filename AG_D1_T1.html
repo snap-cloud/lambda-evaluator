@@ -6,6 +6,13 @@
     <link rel="shortcut icon" href="favicon.ico">
     <script src="jschannel.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript">
+        var pageLocation = JSON.parse(sessionStorage.getItem("pageLocation"));
+        if (pageLocation) {
+            parent.window.scrollTo(pageLocation[0], pageLocation[1]);
+            sessionStorage.removeItem("pageLocation");
+        }
+    </script>
     <script type="text/javascript" src="underscore-min.js"></script>
     <script type="text/javascript" src="SnapPLE.js"></script>
     <meta charset="utf-8">  <!-- This line is needed in order to pass strings into test functions that contain characters
@@ -51,19 +58,27 @@
             var assert1 = function assert1() {
                 return scriptPresentInSprite('[{"blockSp":"factorial %s","inputs":["A"]}]',0,["A"]);
             }
+
+            var assert2 = function assert2() {
+                return customBlockContains('factorial %s', 'factorial %s');
+            }
+
+            var assert3 = function assert3() {
+                return blockPrecedes('factorial %s', "%n − %n", getCustomBody('factorial %s', 0));
+            }
             testAssert(outputLog, assert1,//isScriptPresent('factorial %s',0),
                 "The 'factorial' block is present.", 
                 "The 'factorial %num' block was not found on-screen.", 
                 "Make sure you name your custom block, 'factorial %num'.");
-            testAssert(outputLog, customBlockContains('factorial %s', 'factorial %s'),
+            testAssert(outputLog, assert2,//customBlockContains('factorial %s', 'factorial %s'),
                 "The 'factorial' block has a recursive call to itself.",
                 "There is no recursive call to 'factorial.",
                 "Make sure you have a recursive call inside of 'factorial.");
-            testAssert(outputLog, blockPrecedes('factorial %s', "%n − %n", getCustomBody('factorial %s', 0)),
+            testAssert(outputLog, assert3,//blockPrecedes('factorial %s', "%n − %n", getCustomBody('factorial %s', 0)),
                 "The recursive call to'factorial' block contains a minus block",
                 "There is no minus block in the recursive call to 'factorial'.",
                 "Make sure you have a minus block inside of the recursive call.");
-            multiTestBlock('factorial %s', 
+            multiTestBlock(outputLog, 'factorial %s', 
                 [[0],[1],[2],[4],[5],[10]],
                 [1,1,2,24,120,3628800],
                 [-1,-1,-1,-1,-1,-1],
@@ -864,9 +879,11 @@
                 iframe.style.height = '100vh';
                 iframe.style.zIndex = '16777270';
                 button.className = "on";
+                button.innerHTML = "Windowed";
                 /*button.style.position = 'fixed';
                 button.style.right = '0';
                 button.style.bottom = '0';*/
+                sessionStorage.setItem("full-screen-on", JSON.stringify(true));
             } else {
                 iframe.style.position = 'initial';
                 iframe.style.top = 'initial';
@@ -875,14 +892,38 @@
                 iframe.style.height = '500px';
                 iframe.style.zIndex = 'initial';
                 button.className = "off";
+                button.innerHTML = "Full-Screen";
+                sessionStorage.removeItem("full-screen-on");
                 /*button.style.position = 'absolute';
                 button.style.right = '31px';
                 button.style.bottom = '225px';*/
             }
         }
 
+        /*var pageLocation = JSON.parse(sessionStorage.getItem("pageLocation"));
+
+        if (pageLocation) {
+            parent.window.scrollTo(pageLocation[0], pageLocation[1]);
+            sessionStorage.removeItem("pageLocation");
+        }*/
+
+        /*$( parent.document ).ready(function() {
+            var pageLocation = JSON.parse(sessionStorage.getItem("pageLocation"));
+
+            if (pageLocation) {
+                parent.window.scrollTo(pageLocation[0], pageLocation[1]);
+                sessionStorage.removeItem("pageLocation");
+            }
+        });*/
+
         var world;
         window.onload = function () {
+
+            /*var pageLocation = sessionStorage.getItem("pageLocation");
+
+            if (pageLocation) {
+                parent.window.scrollTo(pageLocation[0], pageLocation[1]);
+            }*/
 
             //check if attempt num for problem exists in local storage:
 
@@ -917,12 +958,18 @@
 
             //If page has already been loaded, restore previously tested XML
             //TODO: Separate this into its own function.
-            var prev_xml = localStorage.getItem(id + "_test_state");
+            /*var prev_xml = localStorage.getItem(id + "_test_state");
             if (prev_xml !== null) {
                 ide.openProjectString(prev_xml);
             } else if (preReqTaskID !== null) {
                 if (preReqLog !== null && preReqLog.allCorrect) {
                     ide.openProjectString(localStorage.getItem(preReqID));
+                }
+            }*/
+
+            if (isEDX) {
+                parent.document.getElementsByClassName('check-label')[0].onclick = function () {
+                    sessionStorage.setItem("pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
                 }
             }
             
@@ -949,6 +996,7 @@
                 outputLog = new gradingLog(world, id, numAttempts);
                 outputLog.numAttempts += 1;
                 runAGTest(world, id, outputLog);
+                //sessionStorage.setItem("pageLocation", [parent.window.scrollY, parent.window.scrollX]);
                 if (isEDX) {
                     parent.document.getElementsByClassName('check-label')[0].click();
                 } 
@@ -957,6 +1005,7 @@
             grade_button.addEventListener('click', button_listener);
             var world_canvas = document.getElementById('world');
             world_canvas.addEventListener("mouseup", update_listener);
+            
 
             // grade_button.onclick = function(event) {
             //     // event.stopPropagation();
@@ -1048,6 +1097,21 @@
                     toggleSnapWindow(full_screen);   
                 }
 
+                var full_screen_on = JSON.parse(sessionStorage.getItem("full-screen-on"));
+                if (full_screen_on) {
+                    var iframe = parent.document.getElementsByTagName('iframe')[0];
+                    iframe.style.position = 'fixed';
+                    iframe.style.top = '0';
+                    iframe.style.right = '0';
+                    iframe.style.width = '100%';
+                    iframe.style.height = '100vh';
+                    iframe.style.zIndex = '16777270';
+                    full_screen.className = "on";
+                    full_screen.innerHTML = "Windowed";
+                    //toggleSnapWindow(full_screen); 
+                    //sessionStorage.removeItem("full-screen-on");
+                    sessionStorage.setItem("full-screen-on", JSON.stringify(true));
+                }
             }
 
             IDE_Morph.prototype.originalOpenProject = IDE_Morph.prototype.openProject;
@@ -1064,7 +1128,7 @@
                 this.originalToggleStageSize(isSmall);
                 setTimeout(function() {
                     moveAutogradingBar()
-                }, 50);
+                }, 100);
             }
 
             function moveAutogradingBar() {
@@ -1076,6 +1140,16 @@
                     autograding_bar.style.right = '16em';
                 }
             }
+
+            /*setTimeout(function() {
+                var pageLocation = JSON.parse(sessionStorage.getItem("pageLocation"));
+
+                if (pageLocation) {
+                    parent.window.scrollTo(parseInt(pageLocation[0]), parseInt(pageLocation[1]));
+                    sessionStorage.removeItem("pageLocation");
+                }
+            }, 3000);*/
+
 
             //TODO: Fix this timeout.
             setTimeout(function() {
