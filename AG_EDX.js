@@ -50,11 +50,11 @@ var AG_EDX = (function() {
                 //saves correct student answer, as well as state, in case student returns to question
                 localStorage.setItem(id + "_last_submitted_log", localStorage.getItem(id + "_test_log"));
                 localStorage.setItem(id + "_last_submitted_state", snapXML);
-                localStorage.setItem(id + "_ag_output", JSON.stringify(edx_log));
+                //localStorage.setItem(id + "_ag_output", JSON.stringify(edx_log));
             }
             console.log("GET GRADE SUCCEEDING");
+            //console.log(encodeURIComponent(JSON.stringify(edx_log)));
 
-            /*return encodeURIComponent(JSON.stringify(edx_log));*/
             return encodeURIComponent(JSON.stringify(edx_log));
         } else {
             return JSON.stringify(AG_state);
@@ -66,21 +66,38 @@ var AG_EDX = (function() {
 
     function getState() {
         // return encodeURIComponent(JSON.stringify(AG_state));
-        var last_xml = localStorage.getItem(id + "_test_state");
+        /*var last_xml = localStorage.getItem(id + "_test_state");
         if (last_xml !== null) {
-            return encodeURIComponent(last_xml);
+            return encodeURI(encodeURIComponent(last_xml));
         } else {
             var ide = world.children[0];
             var world_string = ide.serializer.serialize(ide.stage);
-            return encodeURIComponent(world_string);
-        }
+            return encodeURI(encodeURIComponent(world_string);
+        }*/
+
+        var ide = world.children[0];
+        var world_string = ide.serializer.serialize(ide.stage);
+        //return encodeURI(encodeURIComponent(world_string));
+        return encodeURI(world_string);
     }
+
     //EDX: Used to save the world state into edX. FOR RELOAD 
     function setState() {
         var last_xml = arguments.length === 1 ? arguments[0] : arguments[1];
         var ide = world.children[0];
-
-        // ide.openProjectString(decodeURIComponent(last_xml));
+        if (last_xml === "starter file") {
+            var starter_xml = $.get(starter_path, function(data) {
+                console.log(data);
+                ide.openProjectString(data)}, "text");
+            return
+        }
+        console.log(last_xml);
+        //var last_xml = arguments.length === 1 ? arguments[0] : arguments[1];
+        //state = JSON.parse(stateStr);
+        
+        //ide.openProjectString(decodeURIComponent(last_xml));
+        ide.openProjectString(last_xml);
+        
 
 
     }
