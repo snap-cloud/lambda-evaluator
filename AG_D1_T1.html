@@ -40,6 +40,9 @@
     <script type="text/javascript" src="AG_hint_format.js"></script>
 
     <script type="text/javascript">
+
+        var starter_path = "starter.xml";
+
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
         var courseID = "";  // e.g. "BJCx"
@@ -672,12 +675,23 @@
                         addReporterHeadings();
                     }
                     addTableCell(String(repTest), "tests", newRow);
-                    var keys = ["input", "output", "expOut"];
-                    for (key=0; key<3; key++) {
-                        if (repTest % 2 === 0) {
-                            addTableCell(feedback[test][keys[key]], ["data", "evens"], newRow);
+                    var keys = ["blockSpec", "input", "output", "expOut"];
+                    for (key=0; key<keys.length; key++) {
+                        if (keys[key] === "blockSpec") {
+                            var blockSpec = feedback[test][keys[key]];
+                            var blockSpecSliced = blockSpec.slice(2, blockSpec.length - 2);
+                            console.log(blockSpecSliced);
+                            if (repTest % 2 === 0) {
+                                addTableCell(blockSpecSliced, ["data", "evens"], newRow);
+                            } else {
+                                addTableCell(blockSpecSliced, "data", newRow);
+                            }
                         } else {
-                            addTableCell(feedback[test][keys[key]], "data", newRow);
+                            if (repTest % 2 === 0) {
+                                addTableCell(feedback[test][keys[key]], ["data", "evens"], newRow);
+                            } else {
+                                addTableCell(feedback[test][keys[key]], "data", newRow);
+                            }
                         }
                     }
                     repTest += 1;
@@ -725,8 +739,8 @@
         }
 
         function addReporterHeadings() {
-            var columns = ["Test", "Input", "Output", "Expected", "Feedback"];
-            for (i=0; i<5; i++) {
+            var columns = ["Test", "Block", "Input", "Output", "Expected", "Feedback"];
+            for (i=0; i<columns.length; i++) {
                 var header = document.createElement("th");
                 var text = document.createTextNode(columns[i]);
                 var repTitles = document.getElementById("reporter-table-titles");
@@ -940,9 +954,13 @@
             //INITIALIZE UP SNAP
             world = new WorldMorph(document.getElementById('world'));
             new IDE_Morph().openIn(world);
+            
 
 
             var ide = world.children[0];
+            //console.log(starterXML);
+            //ide.openProjectString(starterXML);
+
             //Reduce Stage Size on initialization
             ide.toggleStageSize(true);
 
@@ -1114,11 +1132,20 @@
                 }
             }
 
-            IDE_Morph.prototype.originalOpenProject = IDE_Morph.prototype.openProject;
-            IDE_Morph.prototype.openProject = function (name) {
+            IDE_Morph.prototype.originalOpenProject = IDE_Morph.prototype.openProjectString;
+            IDE_Morph.prototype.openProjectString = function (name) {
                 this.originalOpenProject(name);
                 setTimeout(function() {
-                    runAGTest(world, id);
+                    AGUpdate(world, id);
+                }, 500);
+                //runAGTest(world, id);
+            }
+
+            IDE_Morph.prototype.originalCloudOpenProject = IDE_Morph.prototype.openCloudDataString;
+            IDE_Morph.prototype.openCloudDataString = function (name) {
+                this.originalCloudOpenProject(name);
+                setTimeout(function() {
+                    AGUpdate(world, id);
                 }, 500);
                 //runAGTest(world, id);
             }
@@ -1156,7 +1183,8 @@
 
                 console.log(world);
                 var outputLog = AGStart(world,id);
-                runAGTest(world, id);
+                populateFeedback(outputLog);
+                //runAGTest(world, id);
                 //runAGTest(world, id);
 
                 /*if (isEDX) {
