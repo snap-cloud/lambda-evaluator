@@ -215,13 +215,9 @@
                 console.log(prev_xml);
                 console.log(curr_xml);
             }
-
-
             //menu bar grays out options that are not available 
             //(ex. current state is same as best attempt) and restores the button state
-
             grayOutButtons(snapWorld, taskID);
-
             var outputLog;
             //If current XML is different from prev_xml
             if (c_prev_xml && isSameSnapXML(c_prev_xml, curr_xml)) {               
@@ -300,7 +296,9 @@
             console.log('Autograder test Results:');
             console.log(outputLog);
             //populateFeedback(outputLog);
-
+            if (isEDX) {
+                parent.document.getElementsByClassName('check-label')[0].click();
+            } 
             //parent.document.getElementsByClassName('check-label')[0].click();
         }
         /*
@@ -679,12 +677,12 @@
                     for (key=0; key<keys.length; key++) {
                         if (keys[key] === "blockSpec") {
                             var blockSpec = feedback[test][keys[key]];
-                            var blockSpecSliced = blockSpec.slice(2, blockSpec.length - 2);
-                            console.log(blockSpecSliced);
+                            // var blockSpecSliced = blockSpec.slice(2, blockSpec.length - 2);
+                            // console.log(blockSpecSliced);
                             if (repTest % 2 === 0) {
-                                addTableCell(blockSpecSliced, ["data", "evens"], newRow);
+                                addTableCell(blockSpec, ["data", "evens"], newRow);
                             } else {
-                                addTableCell(blockSpecSliced, "data", newRow);
+                                addTableCell(blockSpec, "data", newRow);
                             }
                         } else {
                             if (repTest % 2 === 0) {
@@ -976,14 +974,14 @@
 
             //If page has already been loaded, restore previously tested XML
             //TODO: Separate this into its own function.
-            /*var prev_xml = localStorage.getItem(id + "_test_state");
+            var prev_xml = localStorage.getItem(id + "_test_state");
             if (prev_xml !== null) {
                 ide.openProjectString(prev_xml);
             } else if (preReqTaskID !== null) {
                 if (preReqLog !== null && preReqLog.allCorrect) {
                     ide.openProjectString(localStorage.getItem(preReqID));
                 }
-            }*/
+            }
 
             if (isEDX) {
                 parent.document.getElementsByClassName('check-label')[0].onclick = function () {
@@ -1015,9 +1013,6 @@
                 outputLog.numAttempts += 1;
                 runAGTest(world, id, outputLog);
                 //sessionStorage.setItem("pageLocation", [parent.window.scrollY, parent.window.scrollX]);
-                if (isEDX) {
-                    parent.document.getElementsByClassName('check-label')[0].click();
-                } 
                 // var outputLog = AGStart(world, id);
             }
             grade_button.addEventListener('click', button_listener);

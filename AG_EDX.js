@@ -66,37 +66,75 @@ var AG_EDX = (function() {
 
     function getState() {
         // return encodeURIComponent(JSON.stringify(AG_state));
-        /*var last_xml = localStorage.getItem(id + "_test_state");
-        if (last_xml !== null) {
-            return encodeURI(encodeURIComponent(last_xml));
-        } else {
-            var ide = world.children[0];
-            var world_string = ide.serializer.serialize(ide.stage);
-            return encodeURI(encodeURIComponent(world_string);
-        }*/
 
-        var ide = world.children[0];
-        var world_string = ide.serializer.serialize(ide.stage);
-        //return encodeURI(encodeURIComponent(world_string));
-        return encodeURI(world_string);
+        // if _test_state and _test_log exist
+            // encode world and state
+        // else
+            // return 'never graded'
+
+        var graded_xml = localStorage.getItem(id + "_test_state");
+        var graded_log = localStorage.getItem(id + "_test_log");
+        if (!graded_xml || !graded_log) {
+            return 'never graded';
+        }
+        var output = encodeURI(JSON.stringify({out_log:graded_log,state:encodeURIComponent(graded_xml)}));
+        console.log(output);
+        return output;
+
+        // var last_xml = localStorage.getItem(id + "_test_state");
+        // if (last_xml !== null) {
+        //     return encodeURI(encodeURIComponent(last_xml));
+        // } else {
+        //     var ide = world.children[0];
+        //     var world_string = ide.serializer.serialize(ide.stage);
+        //     return encodeURI(encodeURIComponent(world_string);
+        // }
+
+        // var ide = world.children[0];
+        // var world_string = ide.serializer.serialize(ide.stage);
+        // //return encodeURI(encodeURIComponent(world_string));
+        // return encodeURI(world_string);
     }
 
     //EDX: Used to save the world state into edX. FOR RELOAD 
     function setState() {
-        var last_xml = arguments.length === 1 ? arguments[0] : arguments[1];
+        console.log('SET STATE IS CALLED');
+        var last_state_string = arguments.length === 1 ? arguments[0] : arguments[1];
         var ide = world.children[0];
-        if (last_xml === "starter file") {
+        if (last_state_string === 'starter file') {
             var starter_xml = $.get(starter_path, function(data) {
                 console.log(data);
-                ide.openProjectString(data)}, "text");
-            return
+                ide.openProjectString(data)}, "text"); //TODO: Loading here still unsafe
+            return;
+        } else if (last_state_string === 'never graded') {
+            return;
+        } else {
+            var last_state = JSON.parse(last_state_string);
+            console.log(last_state);
+            last_state.state = decodeURIComponent(last_state.state);
+            localStorage.setItem(id + '_test_state', last_state.state);
+            localStorage.setItem(id + '_test_log', last_state.out_log);
         }
-        console.log(last_xml);
-        //var last_xml = arguments.length === 1 ? arguments[0] : arguments[1];
-        //state = JSON.parse(stateStr);
+
+
+
+
+
+        // var last_xml = arguments.length === 1 ? arguments[0] : arguments[1];
         
-        //ide.openProjectString(decodeURIComponent(last_xml));
-        ide.openProjectString(last_xml);
+        // var ide = world.children[0];
+        // if (last_xml === "starter file") {
+        //     var starter_xml = $.get(starter_path, function(data) {
+        //         console.log(data);
+        //         ide.openProjectString(data)}, "text");
+        //     return
+        // }
+        // console.log(last_xml);
+        // //var last_xml = arguments.length === 1 ? arguments[0] : arguments[1];
+        // //state = JSON.parse(stateStr);
+        
+        // //ide.openProjectString(decodeURIComponent(last_xml));
+        // ide.openProjectString(last_xml);
         
 
 
