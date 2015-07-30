@@ -273,13 +273,9 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	this[testID] = test;
 	//Clear the input values.
 	try {
-		//if its an isolated test remove the sprite and set the focus to the first sprite
 		if (test.isolated) {
-			console.log("removing sprite");	
-			test.sprite.remove();
-			test.sprite = null;
-			var focus = this.snapWorld.children[0].sprites.contents[0];
-			this.snapWorld.children[0].selectSprite(focus);
+			console.log("removing sprite");
+			this.snapWorld.children[0].sprites.contents[test.sprite].remove();
 		} else {
 			var block = getScript(test.blockSpec);
 			setValues(block, Array(test['input'].length).join('a').split('a'));
@@ -739,11 +735,6 @@ function setValues(block, values) {
 	var valIndex = 0,
 		morphIndex = 0;
 
-	if (block.blockSpec == "list %exp") {
-		setNewListToArg(values[valIndex], block, morphIndex);
-		return;
-	}
-
 	var morphList = block.children;
 
 	for (var morph of morphList) {
@@ -815,11 +806,7 @@ function infLoopCheck(outputLog, testID) {
 
 /* ------ START DAVID'S MESS ------ */
 
-/* ---- This is a Sprite Event ---- */
-//It logs data from a snap sprite
-//Please note that the sprite data only gets updated in Snap
-//after every atomic action (for Snap that means loops and reporters,
-//NOT every individual block)
+//SpriteEvent.prototype = new SpriteEvent();
 SpriteEvent.prototype.constructor = SpriteEvent;
 
 //SpriteEvent constructor
@@ -832,8 +819,6 @@ SpriteEvent.prototype.init = function(_sprite, index) {
 	this.sprite = index;
 	this.x = _sprite.xPosition();
 	this.y = _sprite.yPosition();
-	this.mouseX = _sprite.reportMouseX(),
-	this.mouseY = _sprite.reportMouseY(),
 	this.direction = _sprite.direction();
 	this.penDown = _sprite.isDown;
 	this.scale = _sprite.parent.scale;
@@ -843,7 +828,6 @@ SpriteEvent.prototype.init = function(_sprite, index) {
 }
 
 //compares another SpriteEvent to this one for "equality"
-//@param sEvent - the other Sprite Event you want to compare this to
 SpriteEvent.prototype.equals = function(sEvent) {
 	if (this.sprite === sEvent.sprite &&
 		this.x === sEvent.x &&
@@ -856,11 +840,6 @@ SpriteEvent.prototype.equals = function(sEvent) {
 	return false;
 }
 
-/* --- This is a Sprite Event Log --- */
-//basically what you expect, a place to hold
-//all of the Sprite Events indexed by the Sprite that
-//created them
-
 //SpriteEventLog constructor
 function SpriteEventLog() {
 	this.numSprites = 0;
@@ -868,10 +847,9 @@ function SpriteEventLog() {
 }
 
 //adds events to the event log
+//_sprite is the sprite object and index is its index in the world array
 //creates an array for each _sprite using its index as an identifier
-//this method should get called abaout every snap cycle
-//@param _sprite - the sprite object
-//@param index   - the index of _sprite in the world array
+//this method gets called every snap cycle
 SpriteEventLog.prototype.addEvent = function(_sprite, index) {
 	if (this["" + index] === undefined) {
 		this["" + index] = [];
@@ -883,7 +861,6 @@ SpriteEventLog.prototype.addEvent = function(_sprite, index) {
 
 //Checks for a changed event state
 //if the event is unchanged then remove it from the log
-//@param index - the index of a sprite in the world array
 SpriteEventLog.prototype.checkDup = function(index) {
 	var len = this["" + index].length;
 	if (len < 2) {
@@ -920,7 +897,6 @@ SpriteEventLog.prototype.spliceIgnores = function() {
 //Caompares one or more sprites according to an input function
 //the input function must take care of all event errors and
 //base cases (ex: must be 4 sprites)
-//@param f - the function used to compare the sprite data (must return bool)
 SpriteEventLog.prototype.compareSprites = function(f) {
 	if (this["" + 0] === undefined) {
 		return false;
@@ -935,10 +911,9 @@ SpriteEventLog.prototype.compareSprites = function(f) {
 	return true;
 }
 
-//Prints out a SpriteEventLog event log
-//@param ignore   - an optional parameter that defaults to true 
-//				    used to ignore/not ignore those events with the ignore flag of true
-//@param eventLog - The SpriteEventLog to print
+//Prints out the event log
+//ignore is an optional parameter that defaults to true
+//ignore is used to ignore/not ignore those events with the ignore flag of true
 function printEventLog(eventLog, ignore) {
 	ignore = ignore || true;
 	for (var j = 0; j < eventLog.numSprites; j++) {
@@ -958,173 +933,11 @@ function printEventLog(eventLog, ignore) {
 	}
 }
 
-//THIS! is a way around making snap call a callback for EVERY process
-//I basically took the ThreadManager.prototype.removeTerminatedProcesses
-//and added a few lines
-//I temporarily replace ThreadManager.prototype.removeTerminatedProcesses
-//with this function for testing callbacks
-function tempRemoveTP() {
-	// and un-highlight their scripts
-    var remaining = [];
-    this.processes.forEach(function (proc) {
-        if ((!proc.isRunning() && !proc.errorFlag) || proc.isDead) {
-            if (proc.topBlock instanceof BlockMorph) {
-                proc.topBlock.removeHighlight();
-            }
-            if (proc.prompter) {
-                proc.prompter.destroy();
-                if (proc.homeContext.receiver.stopTalking) {
-                    proc.homeContext.receiver.stopTalking();
-                }
-            }
 
-            if (proc.topBlock instanceof ReporterBlockMorph) {
-                if (proc.onComplete instanceof Function) {
-                    proc.onComplete(proc.homeContext.inputs[0]);
-                } else {
-                    if (proc.homeContext.inputs[0] instanceof List) {
-                        proc.topBlock.showBubble(
-                            new ListWatcherMorph(
-                                proc.homeContext.inputs[0]
-                            ),
-                            proc.exportResult
-                        );
-                    } else {
-                        proc.topBlock.showBubble(
-                            proc.homeContext.inputs[0],
-                            proc.exportResult
-                        );
-                    }
-                }
-            //This else block is the newly added code, it simply runs the callback
-            } else {
-            	if (proc.onComplete instanceof Function) {
-            		proc.onComplete();
-            	}
-            }
-        } else {
-            remaining.push(proc);
-        }
-    });
-    this.processes = remaining;
-}
-
-//Specific test function for snap autograder
-//Tests if a FOR block "says" 0 through 30 by even numbers
-//This test temporarily modifies Snap itself by using tempRemoveTP
-//@param outputLog - the required test output Log 
-function testSayTo30(outputLog) {
-	var backupOrigFunc = ThreadManager.prototype.removeTerminatedProcesses;
-	ThreadManager.prototype.removeTerminatedProcesses = tempRemoveTP;
-
-	var block = getScript("for %upvar = %n to %n %cs"),
-		gLog = outputLog,
-		eLog = new SpriteEventLog(),
-		testID = gLog.addTest("s", undefined, null, true, -1),
-		spriteList = gLog.snapWorld.children[0].sprites.contents,
-		collect = setInterval(function() {
-       		eLog.addEvent(spriteList[0], 0);
-		}, 5);
-
-	var stage = gLog.snapWorld.children[0].stage;
-	stage.threads.startProcess(block,
-		stage.isThreadSafe,
-		false,
-		function() {
-			clearInterval(collect);
-			//this loop hacky fixes the above issue
-			eLog.spliceIgnores();
-			gLog[testID].graded = true;
-			gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Beautiful!";
-			gLog[testID].output = gLog[testID].correct = true;
-			var num = 2;
-			console.log(eLog["0"]);
-			for (var i = 0; i < eLog["0"].length; i++) {
-				console.log(eLog["0"][i]);
-				if (eLog["0"][i].bubbleData === "nothing...") {
-					continue;
-				} else if (num !== eLog["0"][i].bubbleData) {
-					break;
-				} else {
-					num += 2;
-				}
-			}
-
-			if (num !== 32) {
-				gLog[testID]["feedback"] = "You did not 'say' every even number from 0 to 30.";
-				gLog[testID].output = gLog[testID].correct = false;
-			}
-
-			ThreadManager.prototype.removeTerminatedProcesses = backupOrigFunc;
-			gLog.scoreLog();
-		});
-
-	return gLog;
-}
-
-//Specific test function for snap autograder
-//Checks for a sprite following the Y and -X of the user mouse input
-//Super similar to testKScope! 
-//Does not check for PenDown however
-//@param outputLog - the required test output Log 
-//@param iter      - the number of iterations used in the drawing pattern
-//                   optional and defaults to 3
-function testMouseMove(outputLog, iter) {
-	var snapWorld = outputLog.snapWorld;
-	var taskID = outputLog.taskID;
-	var gLog = outputLog;
-	var eLog = new SpriteEventLog(),
-		iterations = iter || 3,
-		testID = gLog.addTest("s", undefined, null, true, -1),
-		spriteList = snapWorld.children[0].sprites.contents;
-
-	//creating this too early has caused issues with getting incorect data
-	var collect = setInterval(function() {
-        for (var i = 0; i < spriteList.length; i++) {
-            eLog.addEvent(spriteList[i], i);
-        }
-	}, 5);
-
-	var callback = function() {
-		clearInterval(collect);
-		//this loop hacky fixes the above issue
-		eLog["0"][0].ignore = true;
-		
-		eLog.spliceIgnores();
-		
-		gLog[testID].graded = true;
-		gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Beautiful!";
-		gLog[testID].output = gLog[testID].correct = true;
-
-		for (var j = 0; j < eLog["0"].length; j++) {
-			var spriteX = eLog["0"][i].x, mouseX = eLog["0"][i].mouseX,
-				spriteY = eLog["0"][i].y, mouseY = eLog["0"][i].mouseY;
-
-			if (spriteX !== -mouseX || spriteY !== mouseY) {
-				gLog[testID]["feedback"] = "One or more sprite X, Y values are incorrect. " +
-												"Make sure your sprites all go to the correct " +
-												"mouse x, y values.";
-
-				gLog[testID].output = gLog[testID].correct = false;
-			}
-		}
-
-		gLog.scoreLog();
-	};
-
-	makeDragon(iterations, callback);
-	return gLog;
-
-}
-
-//Specific test function for snap autograder 
-//Very specific test for the kalidiscope question
-//Does not test "clear"/"penup"
-//Only tests for prescence of 4 sprites, that the pen is down, and
+//Very specific test for kalidiscope
+//Does not test "clear"/"penup"/"pendown"
+//Only tests for prescence of 4 sprites and
 //proper sprite movements
-//@param outputLog - the required test output Log 
-//@param iter      - the number of iterations used in the drawing pattern
-//                   optional and defaults to 3
 function testKScope(outputLog, iter) {
 	var snapWorld = outputLog.snapWorld;
 	var taskID = outputLog.taskID;
@@ -1196,22 +1009,22 @@ function testKScope(outputLog, iter) {
 }
 
 //Get the distance between two points
-//@param x1, y1 - from point coordinates
-//@param x2, y2 - to point coordinates
+//x1, y1 - from point coordinates
+//x2, y2 - to point coordinates
 function distance(x1, x2, y1, y2) {
 	return Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
 }
 
-//check to see if a number is within a +/- tolerance 
-//@param actual    - the actual value you want to check
-//@param projected - the value that you want to check actual against
-//@param tolerance - the tolerance you are willing to accept
+//check to see if a number is within a tolerance +/-
+//actual - the actual value you want to check
+//projected - the value that you want to check actual against
+//tolerance - the tolerance you are willing to accept
 function inTolerance(actual, projected, tolerance) {
 	return projected - tolerance < actual && projected + tolerance > actual;
 }
 
 //Get the smallest measured angle between two directions in degrees
-//@param a, b - the directions in degrees to measure
+//a, b - the directions in degrees to measure
 function getAngle(a, b) {
 	var result = Math.min(Math.abs(a - b), Math.abs(b - a));
 
@@ -1221,13 +1034,13 @@ function getAngle(a, b) {
 	return result;
 }
 
-//Specific test function for snap autograder
+//find out if we can force the user to use the green flag top block
 //test a script for drawing a simple uniform shape
-//@param sides     - the number of sides of the shape
-//@param angle     - the inner angle of the shape (the smaller angle)
-//@param length    - the length the sides should be
-//@param blockSpec - not required at this time
-//@param gradeLog  - the grading log this test will be added to
+//sides - the number of sides of the shape
+//angle - the inner angle of the shape
+//length - the length the sides should be
+//blockSpec - not required at this time
+//gradeLog - the grading log this test will be added to
 function testUniformShapeInLoop(sides, angle, length, gradeLog, blockSpec) {
 	var gLog = gradeLog || new gradingLog(),
 		testID = gLog.addTest("s", blockSpec, null, true, -1),
@@ -1314,7 +1127,6 @@ function testUniformShapeInLoop(sides, angle, length, gradeLog, blockSpec) {
 
 //turn an x coordinate into an x coordinate realitive to the
 //drawing area in snap
-//@param coord - the x coordinate
 function realitiveX(coord) {
 	var centerStage = world.children[0].stage;
 	var stageSize = centerStage.scale;
@@ -1323,7 +1135,6 @@ function realitiveX(coord) {
 
 //turn an y coordinate into a y coordinate realitive to the
 //drawing area in snap
-//@param coord - the y coordinate
 function realitiveY(coord) {
 	var centerStage = world.children[0].stage;
 	var stageSize = centerStage.scale;
@@ -1331,9 +1142,9 @@ function realitiveY(coord) {
 }
 
 //Creates a protected function used to spoof user input
-//@param timeout  - how many milliseconds you want each action to take
-//@param callback - an optional paramiter for a callback function
-//@param element  - an optional paramiter for a DOM element
+//timeout is how many milliseconds you want each action to take
+//callback is an optional paramiter for a callback function
+//element is an optional paramiter for a DOM element
 function createInputSpoof(timeout, callback, element) {
 	var timeoutCount = 0,
 		timeoutInc = timeout,
@@ -1372,7 +1183,7 @@ function createInputSpoof(timeout, callback, element) {
 	});
 }
 
-//DEMO for *GreenFlag Hat -> pen down -> forever(go to mouse x, y)*
+//Demo for *GreenFlag Hat -> pen down -> forever(go to mouse x, y)*
 function doTheThing() {
 	var act = createInputSpoof(50);
 	act("mousemove", 0, 0);
@@ -1384,7 +1195,7 @@ function doTheThing() {
 	act("stop all");
 }
 
-//DEMO for *When space pressed Hat -> pen down -> forever(go to mouse x, y)*
+//Demo for *When space pressed Hat -> pen down -> forever(go to mouse x, y)*
 function doTheOtherThing() {
 var act = createInputSpoof(50);
 	act("mousemove", 0, 0);
@@ -1400,8 +1211,7 @@ var act = createInputSpoof(50);
 //using spoofed mouse movements and the correct
 //Snap! code
 
-//Creates an array of turns for a dragon curve
-//@param iterations - the number of folds in the fractal
+//Creates the dragon curve
 function createCurve(iterations) {
 	var ret = [],
 		temp = [];
@@ -1422,10 +1232,8 @@ function createCurve(iterations) {
 	return ret;
 }
 
-//Moves the mouse in the shape of a dragon curve using spoofed mouse movements
+//Draws the dragon curve with spoofed mouse movemnets
 //takes in the array of turns and the spoof function
-//@param turns - the array of turns made with createCurve
-//@param func  - the spoof function created with createInputSpoof
 function drawDragon(turns, func) {
 	var lastMove = "up",
 		lastX = 0,
@@ -1466,9 +1274,8 @@ function drawDragon(turns, func) {
 }
 
 //the function that is called to create and draw the dragon
-//Creates a spoof and draws a dragon fractal with mouse movements
-//@param iterations - the number of folds the dragon has
-//@param callback   - an optional callback function
+//iterations is the number of folds the dragon has and
+//callback is an optional callback function
 function makeDragon(iterations, callback) {
 	var turns = createCurve(iterations);
 	var act = createInputSpoof(100, callback);
@@ -1481,16 +1288,12 @@ function makeDragon(iterations, callback) {
 	return act("time");
 }
 
-/* ----- LIST RELATED FUNCTIONS! ------ */
-
-//DEMO takes a block spec and attempts to get the input list for it
-//uses a depreciated function isScriptPresent
-//@param blockSpec   - the block spec to look for a list in
-//@param spriteIndex - the index of the sprite in the world array
+//takes a block spec and attempts to get the input list for it
+//used for testing and demo purposes mostly
 function getListBlock(blockSpec, spriteIndex) {
 	var block = null,
 		listArgs = [];
-	if (isScriptPresent(blockSpec, spriteIndex)) { //isScriptPresent() does not exist. Use scriptPresentInSprite() instead.
+	if (isScriptPresent(blockSpec, spriteIndex)) {
 		block = getScript(blockSpec);
 	} else {
 		return listArgs;
@@ -1516,13 +1319,10 @@ function getListBlock(blockSpec, spriteIndex) {
 	return listArgs;
 }
 
-//returns the list of blocks in a given palette
-//@param pal - the name of the palette to grab the blocks from
 function getPaletteScripts(pal) {
 	return world.children[0].sprites.contents[0].palette(pal).children[0].children;
 }
 
-//Clones and returns a copy of the list reporter in the variables palette
 function cloneListReporter() {
 	var palette = getPaletteScripts("variables");
 	var block = null;
@@ -1537,9 +1337,12 @@ function cloneListReporter() {
 	return block;
 }
 
+//  list.setContents([1,2,3])
+// MultiArgMorph.addInput('5')
+// getScript('list %exp') -> returns the snap list object reference
+// world.children[0].sprites.contents[0].scripts.children[0].children[1] -> gets the MultiArgMorph
+
 //populates a list reporter block with the given arguments
-//@param list - the list reporter block
-//@param args - the arguments to populate the list with
 function populateList(list, args) {
 	var multiArg = list.children[list.children.length - 1];
 
@@ -1552,11 +1355,8 @@ function populateList(list, args) {
 	}
 }
 
-//sets (in a very hacky way) a list reporter to an ArgMorph
-//Be VERY CAREFUL with this as it will blindly set a child of index i to the new list
-//@param values - the values to populate the list with
-//@param block  - the parent block
-//@param i      - the index of the ArgMorph in the parents block children
+//sets (in a very hacky way) a list to an ArgMorph of list type
+//sets the first one it sees then exits!!!
 function setNewListToArg(values, block, i) {
 	var newList = cloneListReporter();
 
@@ -1569,10 +1369,6 @@ function setNewListToArg(values, block, i) {
 
 }
 
-//Simplifies an %l param in a block spec to the %s param
-//could use regex to make code neater, but I hate using regex
-//This function has been degregated!!
-//@param blockSpec - the block spec string to simplify
 function simplifySpec(blockSpec) {
 	var spec = blockSpec.split(" ");
 	var newSpec = "";
@@ -1586,12 +1382,6 @@ function simplifySpec(blockSpec) {
 	return newSpec;
 }
 
-/* ---- ISOLATED TEST RELATED FUNCTIONS! ---- */
-
-//Finds a specific block in a specific palette in snap
-//returns that block if it is found or returns null
-//@param blockSpec - the block spec of the block to find
-//@param workingWorld - the snap world
 function findBlockInPalette(blockSpec, workingWorld) {
 	var thisWorld = workingWorld || world,
 		palette = null,
@@ -1603,7 +1393,7 @@ function findBlockInPalette(blockSpec, workingWorld) {
 		i = 0;
 
 		while (i < palette.length) {
-			if (palette[i].blockSpec && blockSpecMatch(palette[i].blockSpec, blockSpec)) {
+			if (palette[i].blockSpec && simplifySpec(palette[i].blockSpec) === simplifySpec(blockSpec)) {
 				return palette[i].fullCopy();
 			}
 			i++;
@@ -1613,62 +1403,25 @@ function findBlockInPalette(blockSpec, workingWorld) {
 	return null;	
 }
 
-//Adds a block on to a specified sprite
-//will clean up the sprite as well so be prepared for that
-//@param sprite - the sprite the block will be added to
-//@param block  - the block to add on to the sprite
 function addBlockToSprite(sprite, block) {
 	sprite.scripts.add(block);
 	sprite.scripts.cleanUp();
 }
 
-//Creates a totally new sprite and adds it to the working snap
-//this should be used for test that you dont want to show the user
-//or just to run test in the background 
-//@param log    - the grading log
-//@param testID - the id of the test that will be run from the grading log
 function createTestSprite(log, testID) {
-	var ide = log.snapWorld.children[0];
-	var sprite = addInvisibleSprite(ide);
-	log[testID].sprite = sprite;
-	return sprite;
+	log.snapWorld.children[0].addNewSprite();
+	var sprites = log.snapWorld.children[0].sprites.contents;
+	log[testID].sprite = sprites.length - 1;
+	return sprites[sprites.length - 1];
 }
 
-//Creates a semi invisable sprite for testing purposes
-//Adds the sprite to the stage but no where else!
-//returns the new sprite
-//@param ide - the working snap IDE
-function addInvisibleSprite(ide) {
-	var sprite = new SpriteMorph(ide.globalVariables),
-        rnd = Process.prototype.reportRandom;
-
-    sprite.name = ide.newSpriteName(sprite.name);
-
-    sprite.setCenter(ide.stage.center());
-   	ide.stage.add(sprite);
-    // randomize sprite properties
-    sprite.setHue(rnd.call(ide, 0, 100));
-    sprite.setBrightness(rnd.call(ide, 50, 100));
-    sprite.turn(rnd.call(ide, 1, 360));
-    sprite.setXPosition(rnd.call(ide, -220, 220));
-    sprite.setYPosition(rnd.call(ide, -160, 160));
-
-    return sprite;
-}
-
-//Sets up an isolated test on a new sprite in snap
-//It will find a block from the palette, add it to a new sprite
-//and return the new block that was just added
-//@param blockSpec - the block spec of the block to find and add
-//@param log       - the grading log
-//@param testID    - the id of the test that will be run from the grading log
 function setUpIsolatedTest(blockSpec, log, testID) {
 	var block = findBlockInPalette(blockSpec, log.snapWorld);
 	if (!block) { 
 		throw blockSpec + " not found in Palette!";
 	}
 	var sprite = createTestSprite(log, testID);
-	addBlockToSprite(sprite, block);
+	addBlockToSprite(sprite, block, log.snapWorld);
 	return block;
 }
 
@@ -1784,13 +1537,9 @@ function getCustomBody(blockSpec, spriteIndex) {
 	if (spriteIndex === undefined) {
 		spriteIndex = 0;
 	}
-	try {
-		var customBlock = getScript(blockSpec, spriteIndex);
-		return JSONcustomBlock(customBlock).body;
-	}
-	catch(e) {
-		return undefined;
-	}
+	var customBlock = getScript(blockSpec, spriteIndex);
+	return JSONcustomBlock(customBlock).body;
+
 }
 
 /* Takes in all scripts for a single Sprite in chronological order
@@ -1848,8 +1597,7 @@ function getGlobalVar(varToGet, globalVars) {
 	return globalVars[varToGet].value;
 }
 
-/* Takes in string CUSTOMBLOCKSPEC (can be general, such as "factorial %", 
- * since this calls blockSpecMatch), the strings BLOCKSPEC1 (any block)
+/* Takes in string CUSTOMBLOCKSPEC, the strings BLOCKSPEC1 (any block)
  * and BLOCKSPEC2 (a conditional block), and their respective
  * optional arg arrays ARGARRAY1 and ARGARRAY2. Returns true if BLOCKSPEC1 is
  * inside of the block represented by BLOCKSPEC2.
@@ -1884,23 +1632,15 @@ function CBlockContainsInCustom(customBlockSpec, spriteIndex, blockSpec1, blockS
  * the string BLOCKSPEC that we are looking for. Returns true only if it finds
  * the block we are looking for. ARGARRAY only matters if it is populated (not an empty array)
  * Returns true if BLOCKSPEC/ARGARRAY (if looking for them) are found, otherwise returns false.
- * SOFTMATCH is true if we want to match the inputs using checkArgArrays.
  *
- * BLOCKSPEC can be a general blockspec, such as "factorial %".
  * The SCRIPT can be obtained by running the command, which gives you the
  * first block and access to all the blocks connected to that block:
  *
  * JSONscript(...)
  */
-function scriptContainsBlock(script, blockSpec, argArray, softMatch) {
-	if (Object.prototype.toString.call(script) !== '[object Array]') {
-		return false;
-	}
+function scriptContainsBlock(script, blockSpec, argArray) {
 	if (argArray === undefined) {
 		argArray = [];
-	}
-	if (softMatch === undefined) {
-		softMatch = false;
 	}
 
 	var morph1, type1;
@@ -1915,13 +1655,12 @@ function scriptContainsBlock(script, blockSpec, argArray, softMatch) {
 				return true;
 			}
 		} else {
-			if (blockSpecMatch(morph1.blockSp, blockSpec)) {
-				if (argArray.length == 0 || ((argArray.length == 1 ) && (argArray[0] === ""))) {
+			if (morph1.blockSp === blockSpec) {
+				if (argArray.length == 0) {
 					return true;
-				} else if ((argArray.length > 0) && _.isEqual(morph1.inputs, argArray)) {
+				}
+				else if ((argArray.length > 0) && _.isEqual(morph1.inputs, argArray)) {
 					return true;
-				} else if (softMatch) {
-					return checkArgArrays(argArray, morph1.inputs);
 				}
 			}
 			if (scriptContainsBlock(morph1.inputs, blockSpec, argArray)) {
@@ -1932,33 +1671,7 @@ function scriptContainsBlock(script, blockSpec, argArray, softMatch) {
 	return false;
 }
 
-/* Takes in arrays TEMPLATE and ACTUAL, and returns false if TEMPLATE[i] !== ACTUAL[i] and
- * TEMPLATE[i] !== "" and TEMPLATE[i] !== [].
- */
-function checkArgArrays(template, actual) {
-	if (Object.prototype.toString.call(template) !== '[object Array]') {
-		return false;
-	}
-	if (Object.prototype.toString.call(actual) !== '[object Array]') {
-		return false;
-	}
-	if (template.length !== actual.length) {
-		return false;
-	}
-	for (var i = 0; i < template.length; i++) {
-		var currArg = template[i];
-		if ((currArg === "")
-			|| (Object.prototype.toString.call(currArg) === '[object Array]' && currArg.length === 0)) {
-			continue;
-		} else if (!_.isEqual(currArg, actual[i])) {
-			return false;
-		}
-	}
-	return true;
-}
-
-/* Wrapper function that returns true if the given block with string BLOCKSPEC (can be general, 
- * such as "factorial %", since this calls blockSpecMatch) is anywhere on the screen.
+/* Wrapper function that returns true if the given block with string BLOCKSPEC is anywhere on the screen.
  * Otherwise returns false. If ARGARRAY is an array, then we check that all of the inputs
  * are correct in addition to the blockspec. Otherwise we will just check that the blockspec is fine.
  */
@@ -1984,9 +1697,7 @@ function spriteContainsBlock(blockSpec, spriteIndex, argArray) {
 	return false;
 }
 
-/* Takes in a CUSTOMBLOCKSPEC and a string BLOCKSPEC, both of which can be general 
-* blockSpec such as "factorial %" since this calls blockSpecMatch. 
-*/
+/* Takes in a JavaScript CUSTOMBLOCK which is JSONified and a string BLOCKSPEC. */
 function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex) {
 	if (argArray === undefined) {
 		argArray = [];
@@ -2000,7 +1711,7 @@ function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex) 
 	var scriptsOnScreen = getScripts(spriteIndex);
 	for (var i = 0; i < scriptsOnScreen.length; i++) {
 		JSONtarget = JSONscript(scriptsOnScreen[i]);
-		if (blockSpecMatch(JSONtarget[0].blockSp, customBlockSpec)) {
+		if (JSONtarget[0].blockSp === customBlockSpec) {
 			customJSON = JSONcustomBlock(scriptsOnScreen[i]);
 			hasFound = scriptContainsBlock(customJSON.body, blockSpec, argArray);
 		}
@@ -2024,9 +1735,6 @@ function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex) 
  *
  */
 function CBlockContains(block1, block2, script) {
-	if (Object.prototype.toString.call(script) !== '[object Array]') {
-		return false;
-	}
     var morph1, type1, CblockSpecs;
     CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
     CblockSpecs = CblockSpecs.concat(["repeat until %b %c", "if %b %c", "if %b %c else %c"]);
@@ -2104,7 +1812,7 @@ function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
 }
 
 
-/* Takes in two strings (representing a block (block1String) and a C-shaped block 
+/* Takes in two strings (representating a block (block1String) and a C-shaped block 
 * (block2String)) and a SPRITEINDEX. 
 * 
 * Returns true if the block represented by BLOCK1STRING occurs inside 
@@ -2137,17 +1845,13 @@ function CBlockContainsInSprite(block1String, block2String, spriteIndex) {
 }
 
 /* Takes in a script SCRIPT, a string that is either "if" or "else" named CLAUSE, a blockspec
- * such as "move %n steps" BLOCK1SPEC (can be general, such as "factorial %", 
- * since this calls blockSpecMatch), and an optional argument array ARGARRAY1 belonging to block1.
+ * such as "move %n steps" BLOCK1SPEC, and an optional argument array ARGARRAY1 belonging to block1.
  * Returns true if the block represented by BLOCK1SPEC occurs inside the clause represented 
  * by CLAUSE in an if-else block in the SCRIPT, which can be obtained by calling:
  *
  * JSONscript(...)
  */
 function ifElseContains(script, clause, block1Spec, argArray1) {
-	if (Object.prototype.toString.call(script) !== '[object Array]') {
-		return false;
-	}
 	if (argArray1 === undefined) {
         argArray1 = [];
     }
@@ -2184,9 +1888,7 @@ function ifElseContains(script, clause, block1Spec, argArray1) {
 }
 
 /* Takes in a string that is either "if" or "else" named CLAUSE, a blockspec
- * such as "move %n steps" BLOCK1SPEC (can be general, such as "factorial %", 
- * since this calls blockSpecMatch), and an optional argument array ARGARRAY1 belonging 
- * to block1.
+ * such as "move %n steps" BLOCK1SPEC, and an optional argument array ARGARRAY1 belonging to block1.
  * Returns true if the block represented by BLOCK1SPEC occurs inside the clause represented 
  * by CLAUSE in an if-else block in any script in the given sprite's scripts tab.
  */
@@ -2212,8 +1914,7 @@ function ifElseContainsInSprite(clause, block1Spec, argArray1, spriteIndex) {
     return false;
 }
 
-/* Takes in two blockSpecs and boolean SEEN1, which is initialized to false. The
- * two blockSpecs can be general, such as "factorial %", since this calls blockSpecMatch.
+/* Takes in two blockSpecs and boolean SEEN1, which is initialized to false.
  * Returns true if blockSpec string BLOCK1 precedes the blockSpec string BLOCK2
  * in terms of the order that they appear in the script SCRIPT which can be
  * obtained by calling:
@@ -2227,9 +1928,6 @@ function ifElseContainsInSprite(clause, block1Spec, argArray1, spriteIndex) {
  * would count the (%n + %n) block as coming before the (%n - %n) block.
  */
 function blockPrecedes(block1, block2, script, seen1) {
-	if (Object.prototype.toString.call(script) !== '[object Array]') {
-		return false;
-	}
 	if (seen1 === undefined) {
 		seen1 = false;
 	}
@@ -2245,13 +1943,13 @@ function blockPrecedes(block1, block2, script, seen1) {
 				return true;
 			}
 		} else {
-			if (blockSpecMatch(morph1.blockSp, block2)) {
+			if (morph1.blockSp === block2) {
 				if (!seen1) {
 					return false;
 				}
 				return true;
 			}
-			if (blockSpecMatch(morph1.blockSp, block1)) {
+			if ((morph1.blockSp === block1)) {
 				seen1 = true;
 			}
 			if (blockPrecedes(block1, block2, morph1.inputs, seen1)) {
@@ -2271,7 +1969,7 @@ function blockPrecedes(block1, block2, script, seen1) {
 
 
 /* Takes in two BLOCKSPECs representating the two blocks to be searched for and a
-* SPRITEINDEX. Both can be general, such as "factorial %", since this calls blockSpecMatch.
+* SPRITEINDEX.
 *
 * Returns true if block1 precedes block2 in any script in
 * the Scripts tab of the given sprite. See documentation of blockPrecedes for
@@ -2306,17 +2004,13 @@ function blockPrecedesInSprite(block1Sp, block2Sp, spriteIndex) {
 }
 
 /* Takes in a block BLOCK and returns the number of occurances
- * of the string BLOCKSPEC (which can be general, such as "factorial %", since 
- * this calls blockSpecMatch).
+ * of the string BLOCKSPEC.
  *
  * Get the block by calling:
  *
  * JSONscript(...)
  */
 function occurancesOfBlockSpec(blockSpec, block) {
-	if (Object.prototype.toString.call(block) !== '[object Array]') {
-		return 0;
-	}
 	var morph1, type1;
 	var result = 0;
 	for (var i = 0; i < block.length; i++) {
@@ -2328,7 +2022,7 @@ function occurancesOfBlockSpec(blockSpec, block) {
 		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
 			result += occurancesOfBlockSpec(blockSpec, morph1);
 		} else {
-			if (blockSpecMatch(morph1.blockSp, blockSpec)) {
+			if (morph1.blockSp === blockSpec) {
 				result += 1;
 			}
 			result += occurancesOfBlockSpec(blockSpec, morph1.inputs);
@@ -2338,8 +2032,7 @@ function occurancesOfBlockSpec(blockSpec, block) {
 	return result;
 }
 
-/* Takes in a BLOCKSPEC representation of the block to be counted (can be general, 
-* such as "factorial %", since this calls blockSpecMatch), an EXPECTED 
+/* Takes in a BLOCKSPEC representation of the block to be counted, an EXPECTED 
 * number of occurances of said block, and a SPRITEINDEX.
 * 
 * Returns true if the given block occurs EXPECTED times in any script in 
@@ -2383,12 +2076,6 @@ function occurancesOfBlockInSprite(blockSpec, expected, spriteIndex) {
  *
  */
 function scriptsMatch(template, script, softMatch, vars, templateVariables) {
-	if (Object.prototype.toString.call(script) !== '[object Array]') {
-		return false;
-	}
-	if (Object.prototype.toString.call(template) !== '[object Array]') {
-		return false;
-	}
 	var morph1, morph2, type1, type2, templateIsArray, scriptIsArray;
 	templateIsArray = (Object.prototype.toString.call(template) === '[object Array]');
 	scriptIsArray = (Object.prototype.toString.call(script) === '[object Array]');
@@ -2530,10 +2217,6 @@ function genPattern(script1, script2, result, newMap, currChar, templateVariable
  * modify either of the original student's scripts.
  */
 function getTemplate(script1, script2) {
-	if ((Object.prototype.toString.call(script1) !== '[object Array]')
-		|| (Object.prototype.toString.call(script2) !== '[object Array]')) {
-		return [[], []];
-	}
 	var result = jQuery.extend(true, [], script1);
 	var newMap = {};
 	var chars = {val: "A"};
@@ -2561,12 +2244,6 @@ function fastTemplate() {
  * the values in the student's SCRIPT.
  */
 function checkTemplate(template, script, templateVariables) {
-	if (Object.prototype.toString.call(script) !== '[object Array]') {
-		return false;
-	}
-	if (Object.prototype.toString.call(template) !== '[object Array]') {
-		return false;
-	}
 	var vars = {};
 	var softMatch = true;
 	return scriptsMatch(template, script, softMatch, vars, templateVariables);
