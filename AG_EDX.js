@@ -103,8 +103,10 @@ var AG_EDX = (function() {
         var ide = world.children[0];
         if (last_state_string === 'starter file') {
             var starter_xml = $.get(starter_path, function(data) {
-                console.log(data);
-                ide.openProjectString(data)}, "text"); //TODO: Loading here still unsafe
+                sessionStorage.setItem("starter_file", data)},
+                //console.log(data);
+                //ide.openProjectString(data)}, 
+                "text"); //TODO: Loading here still unsafe
             return;
         } else if (last_state_string === 'never graded') {
             return;

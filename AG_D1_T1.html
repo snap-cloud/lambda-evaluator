@@ -983,6 +983,13 @@
                 }
             }
 
+            /*var starter_xml = sessionStorage.getItem("starter_file");
+            if (starter_xml) {
+                ide.openProjectString(starter_xml);
+                //sessionStorage.removeItem("starter_file");
+            }*/
+
+
             if (isEDX) {
                 parent.document.getElementsByClassName('check-label')[0].onclick = function () {
                     sessionStorage.setItem("pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
@@ -1179,6 +1186,14 @@
                 console.log(world);
                 var outputLog = AGStart(world,id);
                 populateFeedback(outputLog);
+
+
+                var starter_xml = sessionStorage.getItem("starter_file");
+                if (starter_xml) {
+                    ide.openProjectString(starter_xml);
+                    sessionStorage.removeItem("starter_file");
+                }
+
                 //runAGTest(world, id);
                 //runAGTest(world, id);
 
@@ -1219,7 +1234,7 @@
                 //AGUpdate(world, id);
 
                 
-            },1000);
+            },500);
 
             /*var overlay_button = document.createElement('button');
             var overlay_button_text = document.createTextNode('Grade');
