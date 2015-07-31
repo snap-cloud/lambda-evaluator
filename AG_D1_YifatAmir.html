@@ -165,52 +165,87 @@
 
         /*The Random Block*/
 
-            /*Make the sprite move around randomly.*/
-            var penDownExists = function penDownExists() {
-                return spriteContainsBlock("pen down", 0);
-            }
-            testAssert(outputLog, penDownExists,
-                "There is a 'pen down' block.",
-                "There is no 'pen down' block in the scripting area.",
-                "Make sure the pen is down.");
-            var loopExists = function loopExists() {
-                return spriteContainsBlock("forever %c", 0) || spriteContainsBlock("repeat %n %c", 0);
-            }
-            testAssert(outputLog, loopExists,
-                "There is a 'repeat' or a 'forever' block.",
-                "There is no 'repeat' or 'forever' block.",
-                "Make sure your sprite will change location continuously!");
-            var moveInLoop = function moveInLoop() {
-                var move = '[{"blockSp":"move %n steps","inputs":[{"blockSp":"pick random %n to %n","inputs":["",""]}]}]';
-                var repeat = '[{"blockSp":"repeat %n %c","inputs":["10",[]]}]';
-                var forever = '[{"blockSp":"forever %c","inputs":[[]]}]';
-                return CBlockContainsInSprite(move, repeat, 0) || CBlockContainsInSprite(move, forever, 0);
-            }
-            testAssert(outputLog, moveInLoop,
-                "The 'move' block is within a loop and the 'pick random' block is within the 'move' block.",
-                "The 'move' block is not within a loop or the 'pick random' block is not within the 'move' block.",
-                "Make sure your sprite will move continuously and randomly!");
-            var turnInLoop = function turnInLoop() {
-                var turn = '[{"blockSp":"turn %clockwise %n degrees","inputs":[{"blockSp":"pick random %n to %n","inputs":["",""]}]}]';
-                var repeat = '[{"blockSp":"repeat %n %c","inputs":["10",[]]}]';
-                var forever = '[{"blockSp":"forever %c","inputs":[[]]}]';
-                return CBlockContainsInSprite(turn, repeat, 0) || CBlockContainsInSprite(turn, forever, 0);
-            }
-            testAssert(outputLog, turnInLoop,
-                "The 'turn' block is within a loop and the 'pick random' block is within the 'turn' block.",
-                "The 'turn' block is not within a loop or the 'pick random' block is not within the 'turn' block.",
-                "Make sure your sprite will turn continuously!");
-            var moveTurnSameScript = function moveTurnSameScript() {
-                return (blockPrecedesInSprite("turn %clockwise %n degrees", "move %n steps", 0) || blockPrecedesInSprite("move %n steps", "turn %clockwise %n degrees", 0));
-            }
-            testAssert(outputLog, moveTurnSameScript,
-                "The 'move' and 'turn' blocks are in a script together.",
-                "The 'move' and 'turn' blocks are not in a script together.",
-                "Make sure your sprite will both move and turn!");
+            // /*Make the sprite move around randomly.*/
+            // var penDownExists = function penDownExists() {
+            //     return spriteContainsBlock("pen down", 0);
+            // }
+            // testAssert(outputLog, penDownExists,
+            //     "There is a 'pen down' block.",
+            //     "There is no 'pen down' block in the scripting area.",
+            //     "Make sure the pen is down.");
+            // var loopExists = function loopExists() {
+            //     return spriteContainsBlock("forever %c", 0) || spriteContainsBlock("repeat %n %c", 0);
+            // }
+            // testAssert(outputLog, loopExists,
+            //     "There is a 'repeat' or a 'forever' block.",
+            //     "There is no 'repeat' or 'forever' block.",
+            //     "Make sure your sprite will change location continuously!");
+            // var moveInLoop = function moveInLoop() {
+            //     var moveSpec = "move %n steps";
+            //     var moveInputs = [{"blockSp":"pick random %n to %n","inputs":["",""]}];
+            //     var repeatSpec = "repeat %n %c";
+            //     var repeatInputs = ["",[]];
+            //     var foreverSpec = "forever %c";
+            //     var foreverInputs = [[]];
+            //     return CBlockContainsInSprite(moveSpec, repeatSpec, 0, moveInputs, repeatInputs) || CBlockContainsInSprite(moveSpec, foreverSpec, 0, moveInputs, foreverInputs);
+            // }
+            // testAssert(outputLog, moveInLoop,
+            //     "The 'move' block is within a loop and the 'pick random' block is within the 'move' block.",
+            //     "The 'move' block is not within a loop or the 'pick random' block is not within the 'move' block.",
+            //     "Make sure your sprite will move continuously and randomly!");
+            // var turnInLoop = function turnInLoop() {
+            //     var turnSpec = "turn %clockwise %n degrees";
+            //     var turnInputs = [{"blockSp":"pick random %n to %n","inputs":["",""]}];
+            //     var repeatSpec = "repeat %n %c";
+            //     var repeatInputs = ["",[]];
+            //     var foreverSpec = "forever %c";
+            //     var foreverInputs = [[]];
+            //     return CBlockContainsInSprite(turnSpec, repeatSpec, 0, turnInputs, repeatInputs) || CBlockContainsInSprite(turnSpec, foreverSpec, 0, turnInputs, foreverInputs);
+            // }
+            // testAssert(outputLog, turnInLoop,
+            //     "The 'turn' block is within a loop and the 'pick random' block is within the 'turn' block.",
+            //     "The 'turn' block is not within a loop or the 'pick random' block is not within the 'turn' block.",
+            //     "Make sure your sprite will turn continuously!");
+            // var moveTurnSameScript = function moveTurnSameScript() {
+            //     return (blockPrecedesInSprite("turn %clockwise %n degrees", "move %n steps", 0) || blockPrecedesInSprite("move %n steps", "turn %clockwise %n degrees", 0));
+            // }
+            // testAssert(outputLog, moveTurnSameScript,
+            //     "The 'move' and 'turn' blocks are in a script together.",
+            //     "The 'move' and 'turn' blocks are not in a script together.",
+            //     "Make sure your sprite will both move and turn!");
 
-
-
-
+        /*Draw a field of flowers*/
+            /*Draw a field of flowers using repeat block and randomness block and others..*/
+            // var repeatExists = function repeatExists() {
+            //     return spriteContainsBlock("repeat %n %c", 0);
+            // }
+            // testAssert(outputLog, repeatExists,
+            //     "There is a 'repeat' block.",
+            //     "There is no 'repeat' block in the scripting area.",
+            //     "Make sure to use a 'repeat' block!");
+            // var randomExists = function randomExists() {
+            //     return spriteContainsBlock("pick random %n to %n", 0);
+            // }
+            // testAssert(outputLog, randomExists,
+            //     "There is a 'pick random' block.",
+            //     "There is no 'pick random' block in the scripting area.",
+            //     "Make sure to draw different flowers using a 'pick random' block!");
+            // var drawFlowerExists = function drawFlowerExists() {
+            //     return spriteContainsBlock("draw square-petal flower with % petals of size %", 0);
+            // }
+            // testAssert(outputLog, drawFlowerExists,
+            //     "There is a 'draw square-petal flower' block.",
+            //     "There is no 'draw square-petal flower' block in the scripting area.",
+            //     "Make sure to draw flowers using your 'draw square-petal flower' block!");
+            // var drawInRepeat = function drawInRepeat() {
+            //     var drawFlowerSpec = "draw square-petal flower with %s petals of size %s";
+            //     var repeatSpec = "repeat %n %c";
+            //     return CBlockContainsInSprite(drawFlowerSpec, repeatSpec, 0);
+            // }
+            // testAssert(outputLog, drawInRepeat,
+            //     "There is a 'draw square-petal flower' in a repeat loop.",
+            //     "There is no 'draw square-petal flower' in a repeat loop.",
+            //     "Make sure to draw lots of flowers using a repeat loop!");
             return outputLog;
         }
 

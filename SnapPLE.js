@@ -240,7 +240,17 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	if (output === undefined) {
 		test.output = null;
 	} else {
-		test.output = output;
+		if (output instanceof List) {
+			test.output = output.asArray();
+		} else {
+			test.output = output;
+		}
+	}
+	console.log('TEST OUTPUT')
+	console.log(test.output)
+
+	if (expOut instanceof Array) {
+		expOut = new List(expOut);
 	}
 
 	if (expOut instanceof Array) {
@@ -248,7 +258,7 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	}
 
 	//Update feedback and 'correct' flag depending on output.
-	if (snapEquals(test.output, expOut)) {
+	if (snapEquals(output, expOut)) {
 		test.correct = true;
 		//test.feedback = test.feedback || "Test Passed.";
 		test.feedback = "Test Passed." || test.feedback;
@@ -461,10 +471,15 @@ function dictLog(outputLog) {
 		testDict["id"] = i;
 		testDict["testClass"] = outputLog[i]["testClass"];
 		if (outputLog[i]["blockSpec"] !== undefined) {
-			testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+			testDict["blockSpec"] = "(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")";
 		}
 		testDict["input"] = outputLog[i]["input"];
 		testDict["expOut"] = outputLog[i]["expOut"];
+		if (outputLog[i]["output"] instanceof List) {
+			testDict["output"] = outputLog[i]["output"].contents
+		} else {
+			testDict["output"] = outputLog[i]["output"];
+		}
 		testDict["output"] = outputLog[i]["output"];
 		testDict["correct"] = outputLog[i]["correct"];
 		testDict["feedback"] = outputLog[i]["feedback"];
@@ -1374,7 +1389,7 @@ function makeDragon(iterations, callback) {
 function getListBlock(blockSpec, spriteIndex) {
 	var block = null,
 		listArgs = [];
-	if (isScriptPresent(blockSpec, spriteIndex)) { //isScriptPresent() does not exist. Use scriptPresentInSprite() instead.
+	if (isScriptPresent(blockSpec, spriteIndex)) { // This block is DEPRICATED, use ScriptPresentInSprite
 		block = getScript(blockSpec);
 	} else {
 		return listArgs;
@@ -1496,11 +1511,9 @@ function addBlockToSprite(sprite, block) {
 }
 
 function createTestSprite(log, testID) {
-	var ide = log.snapWorld.children[0];
-	ide.addNewSprite();
-	var sprites = ide.sprites.contents;
+	log.snapWorld.children[0].addNewSprite();
+	var sprites = log.snapWorld.children[0].sprites.contents;
 	log[testID].sprite = sprites.length - 1;
-	ide.selectSprite(sprites[0]);
 	return sprites[sprites.length - 1];
 }
 
@@ -1691,35 +1704,25 @@ function getGlobalVar(varToGet, globalVars) {
 	return globalVars[varToGet].value;
 }
 
-/* Takes in string CUSTOMBLOCKSPEC (can be general, such as "factorial %", 
- * since this calls blockSpecMatch), the strings BLOCKSPEC1 (any block)
+/* Takes in string CUSTOMBLOCKSPEC, the strings BLOCKSPEC1 (any block)
  * and BLOCKSPEC2 (a conditional block), and their respective
  * optional arg arrays ARGARRAY1 and ARGARRAY2. Returns true if BLOCKSPEC1 is
  * inside of the block represented by BLOCKSPEC2.
  */
-function CBlockContainsInCustom(customBlockSpec, spriteIndex, blockSpec1, blockSpec2, argArray1, argArray2) {
+function CBlockContainsInCustom(customBlockSpec, blockSpec1, blockSpec2, argArray1, argArray2) {
 	if (argArray1 === undefined) {
 		argArray1 = [];
 	}
 	if (argArray2 === undefined) {
 		argArray2 = [];
 	}
-	if (spriteIndex === undefined) {
-		spriteIndex = 0;
-	}
-
 	try {
-		var customBlock = getScript(customBlockSpec, spriteIndex);
+		var script = getCustomBody(customBlockSpec);
 	}
 	catch(e) {
 		return false;
 	}
-	var jsonifiedCustomBlock = JSONcustomBlock(customBlock);
-	var script = jsonifiedCustomBlock.body;
-	var block1 = {blockSp: blockSpec1, inputs: argArray1};
-	var block2 = {blockSp: blockSpec2, inputs: argArray2};
-
-	return CBlockContains(block1, block2, script);
+	return CBlockContains(blockSpec1, blockSpec2, script, argArray1, argArray2);
 
 }
 
@@ -1855,30 +1858,37 @@ function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex) 
 	return false;
 }
 
-/* Takes in two javascript objects (block1 and block2) and a script.
- * Returns true if the block represented by BLOCK1 occurs inside 
- * the C-shaped block represented by BLOCK2. SCRIPT can be
+/* Takes in BLOCK1SPEC (any block) and BLOCK2SPEC (a C-block), 
+ * a script, and respective inputs ARGARRAY1 and ARGARRAY2.
+ * Returns true if the block represented by block1 occurs inside 
+ * the C-shaped block represented by block2. SCRIPT can be
  * obtained by calling:
  *
  * JSONscript(...)
  *
  * The following 8 blocks are considered C-shaped:
  *  -repeat, repeat until, warp, forever, for loop, if, if else, for each
- *
  */
-function CBlockContains(block1, block2, script) {
+function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2) {
 	if (Object.prototype.toString.call(script) !== '[object Array]') {
 		return false;
+	}
+	if (argArray1 === undefined) {
+		argArray1 = [];
+	}
+	if (argArray2 === undefined) {
+		argArray2 = [];
 	}
     var morph1, type1, CblockSpecs;
     CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
     CblockSpecs = CblockSpecs.concat(["repeat until %b %c", "if %b %c", "if %b %c else %c"]);
     CblockSpecs = CblockSpecs.concat(["for each %upvar of %l %cs"]);
     
-    if (CblockSpecs.indexOf(block2.blockSp) < 0) {
-        var rValue = "The second input should be a C-shaped block. See CBlockContains";
-        rValue += " definition for a list of the blocks designated as C-shaped blocks.";
-        return rValue;
+    if (CblockSpecs.indexOf(block2Spec) < 0) {
+        // var rValue = "The second input should be a C-shaped block. See CBlockContains";
+        // rValue += " definition for a list of the blocks designated as C-shaped blocks.";
+        // return rValue;
+        return false;
     }
 
     for (var i = 0; i < script.length; i++) {
@@ -1887,23 +1897,23 @@ function CBlockContains(block1, block2, script) {
         if ((type1 === "string")) {
             continue;
         } else if (Object.prototype.toString.call(morph1) === '[object Array]') { 
-            if (CBlockContains(block1, block2, morph1)) {
+            if (CBlockContains(block1Spec, block2Spec, morph1, argArray1, argArray2)) {
                 return true;
             }
-        } else if (morph1.blockSp === block2.blockSp) {
-            if (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 1], block1.blockSp, block1.inputs)) {
+        } else if (morph1.blockSp === block2Spec) {
+            if (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 1], block1Spec, argArray1)) {
                 return true;
             }
             if ((morph1.blockSp === "if %b %c else %c")
-                && (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 2], block1.blockSp, block1.inputs))) {
+                && (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 2], block1Spec, argArray1))) {
                 return true;
             }
         } else if (CblockSpecs.indexOf(morph1.blockSp) >= 0) {
-            if (CBlockContains(block1, block2, morph1.inputs[morph1.inputs.length - 1])) {
+            if (CBlockContains(block1Spec, block2Spec, morph1.inputs[morph1.inputs.length - 1], argArray1, argArray2)) {
                 return true;
             }
             if ((morph1.blockSp === "if %b %c else %c")
-                && (CBlockContains(block1, block2, morph1.inputs[morph1.inputs.length - 2]))) {
+                && (CBlockContains(block1Spec, block2Spec, morph1.inputs[morph1.inputs.length - 2], argArray1, argArray2))) {
                 return true;
             }
         }
@@ -1941,34 +1951,28 @@ function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
             throw "The given C-block nickname is invalid.";
         }
         var block2Spec = nicknameDict[block2Name];
-        var block2 = {blockSp: block2Spec, inputs: argArray2};
-        var block1 = {blockSp: blockSpec1, inputs: argArray1};
-        return CBlockContains(block1, block2, script);
+        return CBlockContains(blockSpec1, block2Spec, script, argArray1, argArray2);
 }
 
-
-/* Takes in two strings (representing a block (block1String) and a C-shaped block 
-* (block2String)) and a SPRITEINDEX. 
-* 
-* Returns true if the block represented by BLOCK1STRING occurs inside 
-* the C-shaped block represented by BLOCK2STRING in any script in 
+/* Takes in two blockspecs and two argument arrays (representing a block and 
+* a C-shaped block), and a SPRITEINDEX. 
+* Returns true if the block represented by BLOCK1SPEC occurs inside 
+* the C-shaped block represented by BLOCK2SPEC in any script in
 * the Scripts tab of the given sprite. See documentation of CBlockContains for 
 * details of what blocks are considered C-shaped.
 */
-function CBlockContainsInSprite(block1String, block2String, spriteIndex) {
+function CBlockContainsInSprite(block1Spec, block2Spec, spriteIndex, argArray1, argArray2) {
     //Populate optional parameters
     if (spriteIndex === undefined) {
         spriteIndex = 0;
     }
     try {
-    	var block1 = stringToJSON(block1String)[0];
-	    var block2 = stringToJSON(block2String)[0];
         var JSONtarget;
         var doesContain;
         var scriptsOnScreen = getScripts(spriteIndex);
         for (var i = 0; i < scriptsOnScreen.length; i++) {
             JSONtarget = JSONscript(scriptsOnScreen[i]);
-            doesContain = CBlockContains(block1, block2, JSONtarget);
+            doesContain = CBlockContains(block1Spec, block2Spec, JSONtarget, argArray1, argArray2);
             if (doesContain) {
                 return true;
             }
@@ -2027,9 +2031,7 @@ function ifElseContains(script, clause, block1Spec, argArray1) {
 }
 
 /* Takes in a string that is either "if" or "else" named CLAUSE, a blockspec
- * such as "move %n steps" BLOCK1SPEC (can be general, such as "factorial %", 
- * since this calls blockSpecMatch), and an optional argument array ARGARRAY1 belonging 
- * to block1.
+ * such as "move %n steps" BLOCK1SPEC, and an optional argument array ARGARRAY1 belonging to block1.
  * Returns true if the block represented by BLOCK1SPEC occurs inside the clause represented 
  * by CLAUSE in an if-else block in any script in the given sprite's scripts tab.
  */
@@ -2055,8 +2057,7 @@ function ifElseContainsInSprite(clause, block1Spec, argArray1, spriteIndex) {
     return false;
 }
 
-/* Takes in two blockSpecs and boolean SEEN1, which is initialized to false. The
- * two blockSpecs can be general, such as "factorial %", since this calls blockSpecMatch.
+/* Takes in two blockSpecs and boolean SEEN1, which is initialized to false.
  * Returns true if blockSpec string BLOCK1 precedes the blockSpec string BLOCK2
  * in terms of the order that they appear in the script SCRIPT which can be
  * obtained by calling:

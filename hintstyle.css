@@ -53,6 +53,7 @@ table.results {
     color: #4F5150;
     white-space: normal;
 	padding: 3px 20px;
+	font-size:0.7em;
   }
 
   td.hidden {
@@ -144,21 +145,25 @@ span {
 	vertical-align: middle;
 	/*text-transform: uppercase;*/
 	font-weight: 600;
-	width: 71px;
+	width: 81px;
 	display: none;
 }
 
 #full-screen {
-  z-index: 100;
+  z-index: 16777271;
   position: fixed;
   right: 0;
   bottom: 0;
   box-shadow: 3px 3px 10px #000000;
-  color: white;
-  background-color: rgb(71, 71, 71);
+  color: black;
+  background-color: white;
   outline: none;
   border-radius: 8px;
   cursor: pointer;
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
 }
 		
 
