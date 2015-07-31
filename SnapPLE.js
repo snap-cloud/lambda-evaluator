@@ -240,7 +240,17 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	if (output === undefined) {
 		test.output = null;
 	} else {
-		test.output = output;
+		if (output instanceof List) {
+			test.output = output.asArray();
+		} else {
+			test.output = output;
+		}
+	}
+	console.log('TEST OUTPUT')
+	console.log(test.output)
+
+	if (expOut instanceof Array) {
+		expOut = new List(expOut);
 	}
 
 	if (expOut instanceof Array) {
@@ -248,7 +258,7 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	}
 
 	//Update feedback and 'correct' flag depending on output.
-	if (snapEquals(test.output, expOut)) {
+	if (snapEquals(output, expOut)) {
 		test.correct = true;
 		//test.feedback = test.feedback || "Test Passed.";
 		test.feedback = "Test Passed." || test.feedback;
@@ -461,10 +471,15 @@ function dictLog(outputLog) {
 		testDict["id"] = i;
 		testDict["testClass"] = outputLog[i]["testClass"];
 		if (outputLog[i]["blockSpec"] !== undefined) {
-			testDict["blockSpec"] = "'(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")'";
+			testDict["blockSpec"] = "(" + outputLog[i]["blockSpec"].replace(/%[a-z]/g, "[]") + ")";
 		}
 		testDict["input"] = outputLog[i]["input"];
 		testDict["expOut"] = outputLog[i]["expOut"];
+		if (outputLog[i]["output"] instanceof List) {
+			testDict["output"] = outputLog[i]["output"].contents
+		} else {
+			testDict["output"] = outputLog[i]["output"];
+		}
 		testDict["output"] = outputLog[i]["output"];
 		testDict["correct"] = outputLog[i]["correct"];
 		testDict["feedback"] = outputLog[i]["feedback"];
@@ -1374,7 +1389,7 @@ function makeDragon(iterations, callback) {
 function getListBlock(blockSpec, spriteIndex) {
 	var block = null,
 		listArgs = [];
-	if (isScriptPresent(blockSpec, spriteIndex)) { //isScriptPresent() does not exist. Use scriptPresentInSprite() instead.
+	if (isScriptPresent(blockSpec, spriteIndex)) { // This block is DEPRICATED, use ScriptPresentInSprite
 		block = getScript(blockSpec);
 	} else {
 		return listArgs;
@@ -1490,11 +1505,9 @@ function addBlockToSprite(sprite, block) {
 }
 
 function createTestSprite(log, testID) {
-	var ide = log.snapWorld.children[0];
-	ide.addNewSprite();
-	var sprites = ide.sprites.contents;
+	log.snapWorld.children[0].addNewSprite();
+	var sprites = log.snapWorld.children[0].sprites.contents;
 	log[testID].sprite = sprites.length - 1;
-	ide.selectSprite(sprites[0]);
 	return sprites[sprites.length - 1];
 }
 
@@ -1684,8 +1697,7 @@ function getGlobalVar(varToGet, globalVars) {
 	return globalVars[varToGet].value;
 }
 
-/* Takes in string CUSTOMBLOCKSPEC (can be general, such as "factorial %", 
- * since this calls blockSpecMatch), the strings BLOCKSPEC1 (any block)
+/* Takes in string CUSTOMBLOCKSPEC, the strings BLOCKSPEC1 (any block)
  * and BLOCKSPEC2 (a conditional block), and their respective
  * optional arg arrays ARGARRAY1 and ARGARRAY2. Returns true if BLOCKSPEC1 is
  * inside of the block represented by BLOCKSPEC2.
@@ -1935,11 +1947,10 @@ function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
         return CBlockContains(blockSpec1, block2Spec, script, argArray1, argArray2);
 }
 
-
 /* Takes in two blockspecs and two argument arrays (representing a block and 
 * a C-shaped block), and a SPRITEINDEX. 
 * Returns true if the block represented by BLOCK1SPEC occurs inside 
-* the C-shaped block represented by BLOCK2SPEC in any script in 
+* the C-shaped block represented by BLOCK2SPEC in any script in
 * the Scripts tab of the given sprite. See documentation of CBlockContains for 
 * details of what blocks are considered C-shaped.
 */
@@ -2013,9 +2024,7 @@ function ifElseContains(script, clause, block1Spec, argArray1) {
 }
 
 /* Takes in a string that is either "if" or "else" named CLAUSE, a blockspec
- * such as "move %n steps" BLOCK1SPEC (can be general, such as "factorial %", 
- * since this calls blockSpecMatch), and an optional argument array ARGARRAY1 belonging 
- * to block1.
+ * such as "move %n steps" BLOCK1SPEC, and an optional argument array ARGARRAY1 belonging to block1.
  * Returns true if the block represented by BLOCK1SPEC occurs inside the clause represented 
  * by CLAUSE in an if-else block in any script in the given sprite's scripts tab.
  */
@@ -2041,8 +2050,7 @@ function ifElseContainsInSprite(clause, block1Spec, argArray1, spriteIndex) {
     return false;
 }
 
-/* Takes in two blockSpecs and boolean SEEN1, which is initialized to false. The
- * two blockSpecs can be general, such as "factorial %", since this calls blockSpecMatch.
+/* Takes in two blockSpecs and boolean SEEN1, which is initialized to false.
  * Returns true if blockSpec string BLOCK1 precedes the blockSpec string BLOCK2
  * in terms of the order that they appear in the script SCRIPT which can be
  * obtained by calling:
