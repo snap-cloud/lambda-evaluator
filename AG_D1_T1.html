@@ -315,6 +315,13 @@
             localStorage.removeItem(taskID + "_c_test_state");
 
             var ide = snapWorld.children[0];
+
+            if (starter_path) {
+                $.get(starter_path, function(data) {
+                ide.openProjectString(data)}, 
+                "text");
+            }
+
             ide.newProject();
             var new_log = AGStart(snapWorld, taskID);
             new_log.numAttempts = numAttempts;
