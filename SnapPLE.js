@@ -1400,8 +1400,11 @@ function getListBlock(blockSpec, spriteIndex) {
 	return listArgs;
 }
 
-function getPaletteScripts(pal) {
-	return world.children[0].sprites.contents[0].palette(pal).children[0].children;
+function getPaletteScripts(pal, whichWorld) {
+	if (whichWorld === undefined) {
+		whichWorld = world;
+	}
+	return whichWorld.children[0].sprites.contents[0].palette(pal).children[0].children;
 }
 
 function cloneListReporter() {
@@ -1463,6 +1466,9 @@ function simplifySpec(blockSpec) {
 	return newSpec;
 }
 
+/* To compare the blockSpecs we use blockSpecMatch()
+ * simplifySpec(palette[i].blockSpec) === simplifySpec(blockSpec)
+ */
 function findBlockInPalette(blockSpec, workingWorld) {
 	var thisWorld = workingWorld || world,
 		palette = null,
@@ -1470,11 +1476,11 @@ function findBlockInPalette(blockSpec, workingWorld) {
 		pList = ["motion", "variables", "looks", "sound", "pen", "control", "sensing", "operators"];
 
 	for (var item of pList) {
-		palette = getPaletteScripts(item);
+		palette = getPaletteScripts(item, workingWorld);
 		i = 0;
 
 		while (i < palette.length) {
-			if (palette[i].blockSpec && simplifySpec(palette[i].blockSpec) === simplifySpec(blockSpec)) {
+			if (palette[i].blockSpec && blockSpecMatch(palette[i].blockSpec, blockSpec)) {
 				return palette[i].fullCopy();
 			}
 			i++;
@@ -1553,7 +1559,9 @@ function JSONblock(block) {
 	var morph;
 	for (var i = 0; i < block.children.length; i++) {
 		morph = block.children[i];
-		if (morph instanceof InputSlotMorph) {
+		if (morph.selector === "reportGetVar") {
+			blockArgs.push(morph.blockSpec);
+		} else if (morph instanceof InputSlotMorph) {
 			blockArgs.push(morph.children[0].text);
 		} else if (morph instanceof CSlotMorph) {
 			if (morph.children.length == 0) {
@@ -1621,8 +1629,7 @@ function getCustomBody(blockSpec, spriteIndex) {
 		spriteIndex = 0;
 	}
 	try {
-		var customBlock = getScript(blockSpec, spriteIndex);
-		return JSONcustomBlock(customBlock).body;
+		return JSONcustomBlock(findBlockInPalette(blockSpec)).body;
 	}
 	catch(e) {
 		return undefined;
