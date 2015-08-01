@@ -6,6 +6,13 @@
     <link rel="shortcut icon" href="favicon.ico">
     <script src="jschannel.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript">
+        var pageLocation = JSON.parse(sessionStorage.getItem("pageLocation"));
+        if (pageLocation) {
+            parent.window.scrollTo(pageLocation[0], pageLocation[1]);
+            sessionStorage.removeItem("pageLocation");
+        }
+    </script>
     <script type="text/javascript" src="underscore-min.js"></script>
     <script type="text/javascript" src="SnapPLE.js"></script>
     <meta charset="utf-8">  <!-- This line is needed in order to pass strings into test functions that contain characters
@@ -33,6 +40,9 @@
     <script type="text/javascript" src="AG_hint_format.js"></script>
 
     <script type="text/javascript">
+
+        var starter_path = "starter.xml";
+
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
         var courseID = "";  // e.g. "BJCx"
@@ -51,23 +61,31 @@
             var assert1 = function assert1() {
                 return scriptPresentInSprite('[{"blockSp":"factorial %s","inputs":["A"]}]',0,["A"]);
             }
+
+            var assert2 = function assert2() {
+                return customBlockContains('factorial %s', 'factorial %s');
+            }
+
+            var assert3 = function assert3() {
+                return blockPrecedes('factorial %s', "%n − %n", getCustomBody('factorial %s', 0));
+            }
             testAssert(outputLog, assert1,//isScriptPresent('factorial %s',0),
                 "The 'factorial' block is present.", 
                 "The 'factorial %num' block was not found on-screen.", 
                 "Make sure you name your custom block, 'factorial %num'.");
-            testAssert(outputLog, customBlockContains('factorial %s', 'factorial %s'),
+            testAssert(outputLog, assert2,//customBlockContains('factorial %s', 'factorial %s'),
                 "The 'factorial' block has a recursive call to itself.",
                 "There is no recursive call to 'factorial.",
                 "Make sure you have a recursive call inside of 'factorial.");
-            testAssert(outputLog, blockPrecedes('factorial %s', "%n − %n", getCustomBody('factorial %s', 0)),
+            testAssert(outputLog, assert3,//blockPrecedes('factorial %s', "%n − %n", getCustomBody('factorial %s', 0)),
                 "The recursive call to'factorial' block contains a minus block",
                 "There is no minus block in the recursive call to 'factorial'.",
                 "Make sure you have a minus block inside of the recursive call.");
-            multiTestBlock('factorial %s', 
+            multiTestBlock(outputLog, 'factorial %s', 
                 [[0],[1],[2],[4],[5],[10]],
                 [1,1,2,24,120,3628800],
                 [-1,-1,-1,-1,-1,-1],
-                [false,false,false,false,false,false])
+                [false,false,false,false,false,false]);
             
             // /* KScopeTest */
             // testAssert(outputLog, 
@@ -197,13 +215,9 @@
                 console.log(prev_xml);
                 console.log(curr_xml);
             }
-
-
             //menu bar grays out options that are not available 
             //(ex. current state is same as best attempt) and restores the button state
-
             grayOutButtons(snapWorld, taskID);
-
             var outputLog;
             //If current XML is different from prev_xml
             if (c_prev_xml && isSameSnapXML(c_prev_xml, curr_xml)) {               
@@ -242,6 +256,8 @@
                 //Restore the AG status bar to a graded state
                 var numAttempts = setNumAttempts(taskID);
                 outputLog = new gradingLog(snapWorld, taskID, numAttempts);
+                //outputLog = JSON.parse(prev_log);
+                //outputLog.snapWorld = snapWorld;
                 AG_bar_ungraded(outputLog);
                 document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
                 if (isEDX) {
@@ -279,6 +295,10 @@
             grayOutButtons(outputLog.snapWorld, outputLog.taskID);
             console.log('Autograder test Results:');
             console.log(outputLog);
+            //populateFeedback(outputLog);
+            if (isEDX) {
+                parent.document.getElementsByClassName('check-label')[0].click();
+            } 
             //parent.document.getElementsByClassName('check-label')[0].click();
         }
         /*
@@ -416,6 +436,11 @@
             var button_text = "&#x2770&#x2770 FEEDBACK";
             var button_elem = $('#autograding_button span');
             var regex = new RegExp("FEEDBACK","g");
+            var num_errors = outputLog.testCount - outputLog.numCorrect;
+            var plural = "";
+            if (num_errors > 1) { plural = "s"};
+            $('#feedback-button').html("View Feedback ("+ 
+                num_errors +" Error" + plural + ")");
             if (button_elem.html().match(regex) !== null) {
                 return;
             }
@@ -426,11 +451,6 @@
             });
             $('#autograding_button .hover_darken').show();
             $('#onclick-menu').css('color', 'orange');
-            var num_errors = outputLog.testCount - outputLog.numCorrect;
-            var plural = "";
-            if (num_errors > 1) { plural = "s"};
-            $('#feedback-button').html("View Feedback ("+ 
-                num_errors +" Error" + plural + ")");
         }
 
         /* Checks if two Snap! XML strings have approximately the same state.
@@ -653,12 +673,23 @@
                         addReporterHeadings();
                     }
                     addTableCell(String(repTest), "tests", newRow);
-                    var keys = ["input", "output", "expOut"];
-                    for (key=0; key<3; key++) {
-                        if (repTest % 2 === 0) {
-                            addTableCell(feedback[test][keys[key]], ["data", "evens"], newRow);
+                    var keys = ["blockSpec", "input", "output", "expOut"];
+                    for (key=0; key<keys.length; key++) {
+                        if (keys[key] === "blockSpec") {
+                            var blockSpec = feedback[test][keys[key]];
+                            // var blockSpecSliced = blockSpec.slice(2, blockSpec.length - 2);
+                            // console.log(blockSpecSliced);
+                            if (repTest % 2 === 0) {
+                                addTableCell(blockSpec, ["data", "evens"], newRow);
+                            } else {
+                                addTableCell(blockSpec, "data", newRow);
+                            }
                         } else {
-                            addTableCell(feedback[test][keys[key]], "data", newRow);
+                            if (repTest % 2 === 0) {
+                                addTableCell(feedback[test][keys[key]], ["data", "evens"], newRow);
+                            } else {
+                                addTableCell(feedback[test][keys[key]], "data", newRow);
+                            }
                         }
                     }
                     repTest += 1;
@@ -706,8 +737,8 @@
         }
 
         function addReporterHeadings() {
-            var columns = ["Test", "Input", "Output", "Expected", "Feedback"];
-            for (i=0; i<5; i++) {
+            var columns = ["Test", "Block", "Input", "Output", "Expected", "Feedback"];
+            for (i=0; i<columns.length; i++) {
                 var header = document.createElement("th");
                 var text = document.createTextNode(columns[i]);
                 var repTitles = document.getElementById("reporter-table-titles");
@@ -858,11 +889,13 @@
                 iframe.style.right = '0';
                 iframe.style.width = '100%';
                 iframe.style.height = '100vh';
-                iframe.style.zIndex = '99';
+                iframe.style.zIndex = '16777270';
                 button.className = "on";
+                button.innerHTML = "Windowed";
                 /*button.style.position = 'fixed';
                 button.style.right = '0';
                 button.style.bottom = '0';*/
+                sessionStorage.setItem("full-screen-on", JSON.stringify(true));
             } else {
                 iframe.style.position = 'initial';
                 iframe.style.top = 'initial';
@@ -871,14 +904,38 @@
                 iframe.style.height = '500px';
                 iframe.style.zIndex = 'initial';
                 button.className = "off";
+                button.innerHTML = "Full-Screen";
+                sessionStorage.removeItem("full-screen-on");
                 /*button.style.position = 'absolute';
                 button.style.right = '31px';
                 button.style.bottom = '225px';*/
             }
         }
 
+        /*var pageLocation = JSON.parse(sessionStorage.getItem("pageLocation"));
+
+        if (pageLocation) {
+            parent.window.scrollTo(pageLocation[0], pageLocation[1]);
+            sessionStorage.removeItem("pageLocation");
+        }*/
+
+        /*$( parent.document ).ready(function() {
+            var pageLocation = JSON.parse(sessionStorage.getItem("pageLocation"));
+
+            if (pageLocation) {
+                parent.window.scrollTo(pageLocation[0], pageLocation[1]);
+                sessionStorage.removeItem("pageLocation");
+            }
+        });*/
+
         var world;
         window.onload = function () {
+
+            /*var pageLocation = sessionStorage.getItem("pageLocation");
+
+            if (pageLocation) {
+                parent.window.scrollTo(pageLocation[0], pageLocation[1]);
+            }*/
 
             //check if attempt num for problem exists in local storage:
 
@@ -895,9 +952,13 @@
             //INITIALIZE UP SNAP
             world = new WorldMorph(document.getElementById('world'));
             new IDE_Morph().openIn(world);
+            
 
 
             var ide = world.children[0];
+            //console.log(starterXML);
+            //ide.openProjectString(starterXML);
+
             //Reduce Stage Size on initialization
             ide.toggleStageSize(true);
 
@@ -921,6 +982,12 @@
                     ide.openProjectString(localStorage.getItem(preReqID));
                 }
             }
+
+            if (isEDX) {
+                parent.document.getElementsByClassName('check-label')[0].onclick = function () {
+                    sessionStorage.setItem("pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
+                }
+            }
             
 
             //AUTOGRADER ADDITION - 
@@ -935,7 +1002,8 @@
             //Call the test suite when this element is clicked.
             var update_listener = function() {
                 var outputLog = AGUpdate(world, id);
-                populateFeedback(outputLog);
+                //populateFeedback(outputLog);
+                //runAGTest(world, id);
             };
             var button_listener = function(event) {
                 event.stopPropagation();
@@ -944,14 +1012,13 @@
                 outputLog = new gradingLog(world, id, numAttempts);
                 outputLog.numAttempts += 1;
                 runAGTest(world, id, outputLog);
-                if (isEDX) {
-                    parent.document.getElementsByClassName('check-label')[0].click();
-                } 
+                //sessionStorage.setItem("pageLocation", [parent.window.scrollY, parent.window.scrollX]);
                 // var outputLog = AGStart(world, id);
             }
             grade_button.addEventListener('click', button_listener);
             var world_canvas = document.getElementById('world');
             world_canvas.addEventListener("mouseup", update_listener);
+            
 
             // grade_button.onclick = function(event) {
             //     // event.stopPropagation();
@@ -1043,23 +1110,76 @@
                     toggleSnapWindow(full_screen);   
                 }
 
+                var full_screen_on = JSON.parse(sessionStorage.getItem("full-screen-on"));
+                if (full_screen_on) {
+                    var iframe = parent.document.getElementsByTagName('iframe')[0];
+                    iframe.style.position = 'fixed';
+                    iframe.style.top = '0';
+                    iframe.style.right = '0';
+                    iframe.style.width = '100%';
+                    iframe.style.height = '100vh';
+                    iframe.style.zIndex = '16777270';
+                    full_screen.className = "on";
+                    full_screen.innerHTML = "Windowed";
+                    //toggleSnapWindow(full_screen); 
+                    //sessionStorage.removeItem("full-screen-on");
+                    sessionStorage.setItem("full-screen-on", JSON.stringify(true));
+                }
             }
 
-            IDE_Morph.prototype.originalOpenProject = IDE_Morph.prototype.openProject;
-            IDE_Morph.prototype.openProject = function (name) {
+            IDE_Morph.prototype.originalOpenProject = IDE_Morph.prototype.openProjectString;
+            IDE_Morph.prototype.openProjectString = function (name) {
                 this.originalOpenProject(name);
                 setTimeout(function() {
-                    runAGTest(world, id);
+                    AGUpdate(world, id);
                 }, 500);
                 //runAGTest(world, id);
             }
+
+            IDE_Morph.prototype.originalCloudOpenProject = IDE_Morph.prototype.openCloudDataString;
+            IDE_Morph.prototype.openCloudDataString = function (name) {
+                this.originalCloudOpenProject(name);
+                setTimeout(function() {
+                    AGUpdate(world, id);
+                }, 500);
+                //runAGTest(world, id);
+            }
+
+            IDE_Morph.prototype.originalToggleStageSize = IDE_Morph.prototype.toggleStageSize;
+            IDE_Morph.prototype.toggleStageSize = function (isSmall) {
+                this.originalToggleStageSize(isSmall);
+                setTimeout(function() {
+                    moveAutogradingBar()
+                }, 100);
+            }
+
+            function moveAutogradingBar() {
+                var autograding_bar = document.getElementById('autograding_bar');
+                var ide = world.children[0];
+                if (ide.stageRatio === 1) {
+                    autograding_bar.style.right = '9em';
+                } else {
+                    autograding_bar.style.right = '16em';
+                }
+            }
+
+            /*setTimeout(function() {
+                var pageLocation = JSON.parse(sessionStorage.getItem("pageLocation"));
+
+                if (pageLocation) {
+                    parent.window.scrollTo(parseInt(pageLocation[0]), parseInt(pageLocation[1]));
+                    sessionStorage.removeItem("pageLocation");
+                }
+            }, 3000);*/
+
 
             //TODO: Fix this timeout.
             setTimeout(function() {
 
                 console.log(world);
                 var outputLog = AGStart(world,id);
-                runAGTest(world, id);
+                populateFeedback(outputLog);
+                //runAGTest(world, id);
                 //runAGTest(world, id);
 
                 /*if (isEDX) {
@@ -1169,7 +1289,7 @@
             <p>
                 Please remember to click the 'Submit' button below the Snap! window to obtain credit for this problem!
             </p>
-            <div class="example-ag-buttons" id="ex-ungraded" style="display:inline-block;">
+            <!--<div class="example-ag-buttons" id="ex-ungraded" style="display:inline-block;">
                 &#9744;
             </div>
             <p style="display:inline-block;">
@@ -1190,7 +1310,7 @@
             <p style="display:inline-block;">
                 The Snap! autograder has been run, and all the tests have passed!
             </p>
-            </br>
+            </br>-->
     </div>
 </div>
 
