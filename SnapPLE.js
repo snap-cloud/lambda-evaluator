@@ -1062,6 +1062,89 @@ function testSayTo30(outputLog) {
 	return gLog;
 }
 
+function testStateOfWater(outputLog) {
+	//add a catch for if the blockspec is not found!
+	testContitionalSay(outputLog, "state of water %", "100", "gas");
+	testContitionalSay(outputLog, "state of water %", "0", "solid");
+	testContitionalSay(outputLog, "state of water %", "10", "liquid");
+	return outputLog;
+}
+
+function testTrafficSignal(outputLog) {
+
+	testContitionalSay(outputLog, "traffic signal %", "green", "go");
+	testContitionalSay(outputLog, "traffic signal %", "red", "stop");
+	return outputLog;
+}
+
+function testContitionalSay(outputLog, blockSpec, input, expOut) {
+	var backupOrigFunc = ThreadManager.prototype.removeTerminatedProcesses;
+	ThreadManager.prototype.removeTerminatedProcesses = tempRemoveTP;
+	try {
+		var gLog = outputLog,
+			eLog = new SpriteEventLog(),
+			testID = gLog.addTest("s", blockSpec, input, expOut, -1),
+			block = setUpIsolatedTest(blockSpec, gLog, testID);
+
+		if (!(input instanceof Array)) {
+			input = [input];
+		}
+
+		setValues(block, input);
+
+	} catch(e) {
+		gLog[testID].graded = true;
+		gLog[testID]["feedback"] = e;
+		gLog[testID].correct = false;
+		ThreadManager.prototype.removeTerminatedProcesses = backupOrigFunc;
+		return outputLog;
+	}
+
+		//spriteList = gLog.snapWorld.children[0].sprites.contents,
+	var collect = setInterval(function() {
+       		eLog.addEvent(gLog[testID].sprite, 0);
+		}, 5);
+
+	var stage = gLog.snapWorld.children[0].stage;
+	stage.threads.startProcess(block,
+		stage.isThreadSafe,
+		false,
+		function() {
+			clearInterval(collect);
+			//this loop hacky fixes the above issue
+			eLog.spliceIgnores();
+			gLog[testID].graded = true;
+			gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Beautiful!";
+			gLog[testID].correct = true;
+
+			for (var i = 0; i < eLog["0"].length; i++) {
+				if (eLog["0"][i].bubbleData === "nothing...") {
+					continue;
+				}
+				if (eLog["0"][i].bubbleData.toLowerCase() !== expOut) {
+					gLog[testID]["feedback"] = "Did not 'say' the proper phrase for " + input[0];
+					gLog[testID].output = eLog["0"][i].bubbleData;
+					gLog[testID].correct = false;
+				} else {
+					gLog[testID].output = eLog["0"][i].bubbleData;
+				}
+			}
+
+			gLog[testID].sprite.remove();
+			gLog[testID].sprite = null;
+			var allGraded = true;
+			for (var i = 1; i <= gLog.testCount; i++) {
+				if (!gLog[i].graded) { 
+					allGraded = false;
+				}
+			}
+			if (allGraded) {
+				ThreadManager.prototype.removeTerminatedProcesses = backupOrigFunc;
+				gLog.scoreLog();
+			}
+		});
+}
+
 //Specific test function for snap autograder
 //Checks for a sprite following the Y and -X of the user mouse input
 //Super similar to testKScope! 
