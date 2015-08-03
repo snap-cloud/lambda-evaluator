@@ -315,7 +315,14 @@
             localStorage.removeItem(taskID + "_c_test_state");
 
             var ide = snapWorld.children[0];
-            ide.newProject();
+
+            if (starter_path) {
+                $.get(starter_path, function(data) {
+                ide.openProjectString(data)}, 
+                "text");
+            } else {
+                ide.newProject();
+            }
             var new_log = AGStart(snapWorld, taskID);
             new_log.numAttempts = numAttempts;
             //localStorage.setItem(taskID + "_test_log", new_log);
@@ -983,6 +990,13 @@
                 }
             }
 
+            /*var starter_xml = sessionStorage.getItem("starter_file");
+            if (starter_xml) {
+                ide.openProjectString(starter_xml);
+                //sessionStorage.removeItem("starter_file");
+            }*/
+
+
             if (isEDX) {
                 parent.document.getElementsByClassName('check-label')[0].onclick = function () {
                     sessionStorage.setItem("pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
@@ -1179,6 +1193,14 @@
                 console.log(world);
                 var outputLog = AGStart(world,id);
                 populateFeedback(outputLog);
+
+
+                var starter_xml = sessionStorage.getItem("starter_file");
+                if (starter_xml) {
+                    ide.openProjectString(starter_xml);
+                    sessionStorage.removeItem("starter_file");
+                }
+
                 //runAGTest(world, id);
                 //runAGTest(world, id);
 
@@ -1219,7 +1241,7 @@
                 //AGUpdate(world, id);
 
                 
-            },1000);
+            },500);
 
             /*var overlay_button = document.createElement('button');
             var overlay_button_text = document.createTextNode('Grade');
@@ -1286,6 +1308,13 @@
 <div class="overlay is-hidden" id="overlay">
     <div class="popup-content" id="help-popup">
         <span class="button-close" onclick="closePopup();">X</span>
+            <img id="example-image" src="edX_snap_example.png">
+            <p id="full-screen-arrow">&#8600;</p>
+            <p id="full-screen-help">This full-screen button will pop out the Snap! window.</p>
+            <p id="menu-item-arrow">&#8599;</p>
+            <p id="menu-item-help">The first menu item will display the results from running the autograder.</br></br>The next three menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your last correct attempt, to the attempt that edX has recorded, or just to your last graded attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
+            <p id="ag-button-arrow">&#8593;</p>
+            <p id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
             <p>
                 Please remember to click the 'Submit' button below the Snap! window to obtain credit for this problem!
             </p>
