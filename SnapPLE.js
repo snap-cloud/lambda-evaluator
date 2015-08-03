@@ -490,6 +490,7 @@ function dictLog(outputLog) {
 		testDict["output"] = outputLog[i]["output"];
 		testDict["correct"] = outputLog[i]["correct"];
 		testDict["feedback"] = outputLog[i]["feedback"];
+		testDict["pointValue"] = outputLog[i]["pointValue"];
 		outDict[i] = testDict;
 	}
 	//Populate outDict with outputLog instantiation variables.

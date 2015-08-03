@@ -622,10 +622,13 @@
             var edx_caution = document.getElementById("edx-submit-different");
             var caution = document.getElementById("different-feedback");
 
+            console.log(outputLog);
             var glog = outputLog;
             var log = AG_log(glog);
             var feedback = log["feedback"];
             var title = log["comment"];
+
+            console.log(feedback);
 
             // Checks if the grading button has been clicked
             if (title === "Please run the Snap Autograder before clicking the 'Submit' button.") {
@@ -663,6 +666,7 @@
             var repTest = 1;
             for (i=1; i<=feedback["testCount"]; i++) {
                 var test = String(i);
+                console.log(test);
                 var newRow = document.createElement("tr");
 
                 // If test is not a reporter test, only add columns for Test # and Feedback
@@ -671,6 +675,11 @@
                         addBasicHeadings();
                     }
                     addTableCell(String(nonRepTest), "tests", newRow);
+                    if (nonRepTest % 2 === 0) {
+                        addTableCell(feedback[test]["pointValue"], ["data", "evens"], newRow);
+                    } else {
+                        addTableCell(feedback[test]["pointValue"], "data", newRow);
+                    }
                     nonRepTest += 1;
                 }
 
@@ -680,7 +689,7 @@
                         addReporterHeadings();
                     }
                     addTableCell(String(repTest), "tests", newRow);
-                    var keys = ["blockSpec", "input", "output", "expOut"];
+                    var keys = ["pointValue", "blockSpec", "input", "output", "expOut"];
                     for (key=0; key<keys.length; key++) {
                         if (keys[key] === "blockSpec") {
                             var blockSpec = feedback[test][keys[key]];
@@ -705,10 +714,10 @@
                 // If test is correct, make the feedback appropriately colored. 
                 if (feedback[test]["correct"] === true) {
                     addTableCell(feedback[test]["feedback"], "correctans", newRow);
-                    addRegradeButton("Regrade", ["data", "hidden"], newRow);
+                    //addRegradeButton("Regrade", ["data", "hidden"], newRow);
                 } else {
                     addTableCell(feedback[test]["feedback"], "incorrectans", newRow);
-                    addRegradeButton("Regrade", ["data", "regrade", test], newRow);
+                    //addRegradeButton("Regrade", ["data", "regrade", test], newRow);
                 }
 
                 if (feedback[test]["testClass"] === "r") {
@@ -721,18 +730,18 @@
             //outputLog.saveLog();
 
             // makes recently created regrade buttons clickable 
-            var regrade_buttons = document.getElementsByClassName("regrade");
+            /*var regrade_buttons = document.getElementsByClassName("regrade");
             for(var i=0; i<regrade_buttons.length; i++) {
                 regrade_buttons[i].onclick = function() {
                     var testId = this.classList[2];
                     regradeOnClick(outputLog, testId);
                 }
-            }
+            }*/
         }
 
         function addBasicHeadings() {
-            basicCols = ["Test", "Feedback"];
-            for (i=0; i<2; i++) {
+            basicCols = ["Test", "Points", "Feedback"];
+            for (i=0; i<basicCols.length; i++) {
                 var header = document.createElement("th");
                 var text = document.createTextNode(basicCols[i]);
                 //var lastCol = document.getElementById("reporter-last-column");
@@ -744,7 +753,7 @@
         }
 
         function addReporterHeadings() {
-            var columns = ["Test", "Block", "Input", "Output", "Expected", "Feedback"];
+            var columns = ["Test", "Points", "Block", "Input", "Output", "Expected", "Feedback"];
             for (i=0; i<columns.length; i++) {
                 var header = document.createElement("th");
                 var text = document.createTextNode(columns[i]);
@@ -1192,7 +1201,10 @@
 
                 console.log(world);
                 var outputLog = AGStart(world,id);
-                populateFeedback(outputLog);
+                //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
+                populateFeedback(outputLog); 
+                populateFeedback(outputLog); 
+                
 
 
                 var starter_xml = sessionStorage.getItem("starter_file");
