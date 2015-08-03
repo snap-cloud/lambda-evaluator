@@ -100,7 +100,8 @@ var AG_EDX = (function() {
     function setState() {
         console.log('SET STATE IS CALLED');
         var last_state_string = arguments.length === 1 ? arguments[0] : arguments[1];
-        var ide = world.children[0];
+        console.log(last_state_string);
+        //var ide = world.children[0];
         if (last_state_string === 'starter file') {
             var starter_xml = $.get(starter_path, function(data) {
                 sessionStorage.setItem("starter_file", data)},
