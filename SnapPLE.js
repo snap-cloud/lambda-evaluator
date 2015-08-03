@@ -17,6 +17,7 @@ function gradingLog(snapWorld, taskID, numAttempts) {
 	this.snapWorld = snapWorld || null;
 	this.graded = false;
 	this.numCorrect = 0;
+	this.totalPoints = 0;
 	/*var prev_log = localStorage.getItem(taskID + "_test_log");
 	if (prev_log !== null && JSON.parse(prev_log).numAttempts !== undefined) {
 		this.numAttempts = JSON.parse(prev_log).numAttempts;
@@ -80,8 +81,9 @@ gradingLog.prototype.stringifySnapXML = function() {
 *		"r" - reporter test
 *		"s" - stage event test
 */
-gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, timeOut, isolate) {
+gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, timeOut, isolate, point) {
 	this.testCount += 1;
+	this.totalPoints += point;
 	this["" + this.testCount] = {"testClass": testClass,
 								 "blockSpec": blockSpec,
 								 "input": input,
@@ -93,14 +95,16 @@ gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, tim
 								 "proc": null,
 								 'graded': false,
 								 "isolated": isolate || false,
+								 "pointValue": point,
 								 "sprite": 0};
 	//if thie expected output is an array, convert it to  snap list so snapEquals works
 
 	return this.testCount;
 };
 
-gradingLog.prototype.addAssert = function(testClass, statement, feedback, text, pos_fb, neg_fb) {
+gradingLog.prototype.addAssert = function(testClass, statement, feedback, text, pos_fb, neg_fb, point) {
 	this.testCount += 1;
+	this.totalPoints += point;
 	this[this.testCount] = {'testClass': "a",
 							'text': text,
 							'correct': statement(),
@@ -108,7 +112,8 @@ gradingLog.prototype.addAssert = function(testClass, statement, feedback, text, 
 							'feedback': feedback,
 							'graded': true,
 							'pos_fb': pos_fb,
-							'neg_fb': neg_fb};
+							'neg_fb': neg_fb,
+							'pointValue': point};
 							//'assertion': statement};
 	return this.testCount;
 
@@ -428,12 +433,14 @@ gradingLog.prototype.scoreLog = function() {
 	this.allCorrect = true;
 	// Passed test counter.
 	var tests_passed = 0;
+	var partial_points = 0;
 	var test;
 	for (var id of testIDs) {
 		test = this[id];
 		//If the test is correct, increase the tests_passed counter.
 		if (test.correct) {
 			tests_passed += 1;
+			partial_points += test.pointValue;
 		} else {	//One failed test flips the allCorrect flag.
 			this.allCorrect = false;
 		}
@@ -447,7 +454,7 @@ gradingLog.prototype.scoreLog = function() {
 
 	//Calculate the pScore
 	this.numCorrect = tests_passed;
-	this.pScore = tests_passed / this.testCount;
+	this.pScore = partial_points / this.totalPoints;
 	//this.numAttempts += 1;
 	//Save the log in localStorage
 	this.saveLog();
@@ -538,11 +545,11 @@ function AG_log(outputLog, snapXMLString) {
  * TODO: Consider separating assertions into two classes
  * WARNING: DOES NOT EVALUATE LOG
  */
-function testAssert(outputLog, assertion, pos_fb, neg_fb, ass_text) {
+function testAssert(outputLog, assertion, pos_fb, neg_fb, ass_text, point) {
 	if (assertion()) {
-		outputLog.addAssert("a", assertion, pos_fb, ass_text, pos_fb, neg_fb);
+		outputLog.addAssert("a", assertion, pos_fb, ass_text, pos_fb, neg_fb, point);
 	} else {
-		outputLog.addAssert("a", assertion, neg_fb, ass_text, pos_fb, neg_fb);
+		outputLog.addAssert("a", assertion, neg_fb, ass_text, pos_fb, neg_fb, point);
 	}
 	return outputLog;
 }
@@ -698,13 +705,18 @@ function testBlock(outputLog, testID) {
 	return testID;
 }
 
-function multiTestBlock(outputLog, blockSpec, inputs, expOuts, timeOuts, isolated) {
+function multiTestBlock(outputLog, blockSpec, inputs, expOuts, timeOuts, isolated, points) {
 
 	if (outputLog === undefined) {
 		outputLog = new gradingLog(world);
 	}
 	if (inputs.length !== expOuts.length && inputs.length !== timeOuts.length) {
 		throw "multiTestBlock: Mismatched arguments";
+	}
+
+	var pointsArray = points;
+	if (!Array.isArray(points)) {
+		pointsArray = Array(inputs.length + 1).join(points).split("");
 	}
 
 	var testIDs = new Array(inputs.length);
@@ -714,7 +726,7 @@ function multiTestBlock(outputLog, blockSpec, inputs, expOuts, timeOuts, isolate
 
 	for (var i=0;i<inputs.length; i++) {
 		//checkArrayForList(inputs[i]);
-		testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i], isolated[i]);
+		testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i], isolated[i], parseInt(pointsArray[i]));
 	}
 	// testBlock(outputLog, testIDs[0]);
 	// outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
@@ -939,11 +951,11 @@ function printEventLog(eventLog, ignore) {
 	}
 }
 
-function testSayTo30(outputLog) {
+function testSayTo30(outputLog, point) {
 	var block = getScript("for %upvar = %n to %n %cs"),
 		gLog = outputLog,
 		eLog = new SpriteEventLog(),
-		testID = gLog.addTest("s", undefined, null, true, -1),
+		testID = gLog.addTest("s", undefined, null, true, -1, point),
 		spriteList = gLog.snapWorld.children[0].sprites.contents,
 		collect = setInterval(function() {
        		eLog.addEvent(spriteList[0], 0);
@@ -995,13 +1007,13 @@ function testTrafficSignal(outputLog) {
 	return outputLog;
 }
 
-function testContitionalSay(outputLog, blockSpec, input, expOut) {
+function testContitionalSay(outputLog, blockSpec, input, expOut, point) {
 	var backupOrigFunc = ThreadManager.prototype.removeTerminatedProcesses;
 	ThreadManager.prototype.removeTerminatedProcesses = tempRemoveTP;
 	try {
 		var gLog = outputLog,
 			eLog = new SpriteEventLog(),
-			testID = gLog.addTest("s", blockSpec, input, expOut, -1),
+			testID = gLog.addTest("s", blockSpec, input, expOut, -1, point),
 			block = setUpIsolatedTest(blockSpec, gLog, testID);
 
 		if (!(input instanceof Array)) {
@@ -1067,13 +1079,13 @@ function testContitionalSay(outputLog, blockSpec, input, expOut) {
 //Checks for a sprite following the Y and -X of the user mouse input
 //Super similar to testKScope! 
 //Does not check for PenDown however
-function testMouseMove(outputLog, iter) {
+function testMouseMove(outputLog, iter, point) {
 	var snapWorld = outputLog.snapWorld;
 	var taskID = outputLog.taskID;
 	var gLog = outputLog;
 	var eLog = new SpriteEventLog(),
 		iterations = iter || 3,
-		testID = gLog.addTest("s", undefined, null, true, -1),
+		testID = gLog.addTest("s", undefined, null, true, -1, point),
 		spriteList = snapWorld.children[0].sprites.contents;
 
 	//creating this too early has caused issues with getting incorect data
@@ -1119,12 +1131,12 @@ function testMouseMove(outputLog, iter) {
 //Does not test "clear"/"penup"/"pendown"
 //Only tests for prescence of 4 sprites and
 //proper sprite movements
-function testKScope(outputLog, iter) {
+function testKScope(outputLog, iter, point) {
 	var snapWorld = outputLog.snapWorld;
 	var taskID = outputLog.taskID;
 	var gLog = outputLog;
 	var eLog = new SpriteEventLog(),
-		testID = gLog.addTest("s", undefined, null, true, -1),
+		testID = gLog.addTest("s", undefined, null, true, -1, point),
 		iterations = iter || 3,
 		spriteList = snapWorld.children[0].sprites.contents;
 
@@ -1222,9 +1234,9 @@ function getAngle(a, b) {
 //length - the length the sides should be
 //blockSpec - not required at this time
 //gradeLog - the grading log this test will be added to
-function testUniformShapeInLoop(sides, angle, length, gradeLog, blockSpec) {
+function testUniformShapeInLoop(sides, angle, length, gradeLog, blockSpec, point) {
 	var gLog = gradeLog || new gradingLog(),
-		testID = gLog.addTest("s", blockSpec, null, true, -1),
+		testID = gLog.addTest("s", blockSpec, null, true, -1, point),
 		eLog = new SpriteEventLog(),
 		block = blockSpec && getScript(blockSpec),
 		//this collects the sprite log data
