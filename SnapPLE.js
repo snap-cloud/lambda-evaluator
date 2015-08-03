@@ -1,6 +1,4 @@
-
 //Snap Protocol Language Enabler
-
 
 /*
 	gradingLog is initialized when a block is tested.
@@ -50,7 +48,8 @@ gradingLog.prototype.saveLog = function() {
 	}
 
 }
-/* Save the gradingLog.snapWorld into localStorage with the
+/* 
+ * Save the gradingLog.snapWorld into localStorage with the
  * specified key. Does nothing if 'store_key' or
  * gradingLog.snapWorld are unspecified (null or undefined).
  * @param {String} store_key
@@ -324,91 +323,6 @@ gradingLog.prototype.updateLog = function(testID, output, feedback, correct) {
 		throw "gradingLog.finishTest: TestID is invalid.";
 	}
 
-}
-
-/*
- * Evaluate the gradingLog, match the expected output with the recieved output
- * Add relevant feedback with associated issue. (Timeout, Error, bad output)
- * Additional processing occurs if all tests are evaluated:
- *	- pScore is calculated
- *  - Store the gradingLog in localStorage //TODO: Move this to a separate function?
- *  - Store the Snap! state in localStorage
- *  - Update the AG_status_bar, AGFinish()
-*/
-gradingLog.prototype.evaluateLog = function(testIDs) {
-	// Evaluate all tests if no specific testIDs are specified.
-	var outputLog = this;
-	if (gradingLog.testCount === 0) {
-		return gradingLog;
-	}
-	if (testIDs === undefined) {
-		testIDs = [];
-		for (var i = 1; i <= outputLog.testCount; i++) {
-		   testIDs.push(i);
-		}
-	}
-	// .allCorrect is initially true, and set to false if a test has failed.
-	outputLog.allCorrect = true;
-	// Passed test counter.
-	var tests_passed = 0;
-	//Set 'correct' and 'feedback' fields for all in testIDs
-	for (var id of testIDs) {
-		
-		// if (outputLog[id]["output"] instanceof List) {
-		//	console.log(outputLog[id]["output"].contents);
-		// 	outputLog[id]["output"] = outputLog[id]["output"].asArray();
-		// }
-		//TODO: Terribly ugly. This should be abstracted.
-		if (outputLog[id]['testClass'] === "a") {
-			if (outputLog[id]['correct']) {
-				tests_passed += 1;
-			}
-			continue;
-		}
-		if (outputLog[id]["correct"] === true) {
-			tests_passed += 1;
-			continue;
-		}
-		if (outputLog[id]["feedback"] === "Error!") {
-			outputLog.allCorrect = false;
-			outputLog[id]["output"] = "Error!";
-		} else if (outputLog["" + id]["output"] === undefined) {
-			outputLog.allCorrect = false;
-			outputLog[id]["output"] = "Timeout error.";
-			outputLog[id]["feedback"] = "Timeout error: Function did not finish before " +
-				((outputLog[id]["timeOut"] < 0) ? 1000 : outputLog[id]["timeOut"]) + " ms.";
-		} else if (snapEquals(outputLog[id]["output"], outputLog[id]["expOut"])) {
-			//Changed === snapEquals() to better evaluate snap output
-			outputLog[id]["feedback"] = "Correct!";
-			outputLog[id]["correct"] = true;
-		} else {
-			outputLog.allCorrect = false;
-			if (outputLog[id]["testClass"] === "r") {
-				outputLog[id]["feedback"] = "Expected: " +
-					outputLog[id]["expOut"] + " , Got: " + outputLog[id]["output"];
-			} else if (outputLog[id]["testClass"] === "p") {
-				//outputLog[id]["feedback"] = "Script is not"
-			}
-			outputLog[id]["correct"] = false;
-		}
-	}
-	//Additional gradingLog fields are updated if all tests are evaluated.
-	if (outputLog.testCount === testIDs.length) {
-		// Calculate the pScore, the percentage of tests that have passed.
-		outputLog.pScore = tests_passed / outputLog.testCount;
-		//Save the output log to localStorage.
-		//Saves _c_ 'correct' log if all tests passed.
-		outputLog.saveLog();
-
-		if (outputLog.allCorrect) {
-			//TODO: Consider saving the XML in runAGTest()
-			//Save the passing evaluated Log. key = taskID + "_c_test_log"
-			//Save the passing Snap! XML string. key = taskID + "_c_test_state"
-		}
-	}
-
-	//Update the AG status bar when the gradingLog is complete.
-	AGFinish(this);
 }
 
 gradingLog.prototype.scoreLog = function() {
