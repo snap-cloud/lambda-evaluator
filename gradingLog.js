@@ -412,6 +412,7 @@ function dictLog(outputLog) {
 	outDict["allCorrect"] = outputLog.allCorrect;
 	outDict["taskID"] = outputLog.taskID;
 	outDict["pScore"] = outputLog.pScore;
+	outDict["totalPoints"] = outputLog.totalPoints;
 	return outDict;
 }
 

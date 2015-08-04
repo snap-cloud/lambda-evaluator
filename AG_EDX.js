@@ -74,10 +74,16 @@ var AG_EDX = (function() {
 
         var graded_xml = localStorage.getItem(id + "_test_state");
         var graded_log = localStorage.getItem(id + "_test_log");
+        var correct_xml = localStorage.getItem(id + "_c_test_state");
+        var correct_log = localStorage.getItem(id + "_c_test_log");
         if (!graded_xml || !graded_log) {
             return 'never graded';
         }
-        var output = encodeURI(JSON.stringify({out_log:graded_log,state:encodeURIComponent(graded_xml)}));
+        if (correct_xml && correct_log) {
+            var output = encodeURI(JSON.stringify({out_log:graded_log,state:encodeURIComponent(graded_xml),c_log:correct_log, c_state:encodeURIComponent(correct_xml)})); 
+        } else {
+            var output = encodeURI(JSON.stringify({out_log:graded_log,state:encodeURIComponent(graded_xml)}));
+        }
         console.log(output);
         return output;
 
@@ -100,7 +106,7 @@ var AG_EDX = (function() {
     function setState() {
         console.log('SET STATE IS CALLED');
         var last_state_string = arguments.length === 1 ? arguments[0] : arguments[1];
-        console.log(last_state_string);
+        //console.log(last_state_string);
         //var ide = world.children[0];
         if (last_state_string === 'starter file') {
             var starter_xml = $.get(starter_path, function(data) {
@@ -117,6 +123,10 @@ var AG_EDX = (function() {
             last_state.state = decodeURIComponent(last_state.state);
             localStorage.setItem(id + '_test_state', last_state.state);
             localStorage.setItem(id + '_test_log', last_state.out_log);
+            if (last_state.c_state && last_state.c_log) {
+                localStorage.setItem(id + '_c_test_state', last_state.c_state);
+                localStorage.setItem(id + '_c_test_log', last_state.c_log);
+            }
         }
 
 

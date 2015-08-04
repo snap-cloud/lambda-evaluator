@@ -657,7 +657,7 @@
             }
 
             // Warnings for when student's feedback differ from what's on the scripting area/what's been submitted to edX
-            document.getElementById("comment").innerHTML = title;
+            document.getElementById("comment").innerHTML = title + "(" + String(Math.round(feedback["totalPoints"] * feedback["pScore"])) + "/" + String(feedback["totalPoints"]) + ")";
             if (!last_log) {
                 edx_caution.innerHTML = "[WARNING: You have not submitted your results to edX yet.]"
             }
