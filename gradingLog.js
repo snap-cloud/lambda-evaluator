@@ -57,7 +57,7 @@ gradingLog.prototype.saveLog = function() {
  */
 gradingLog.prototype.saveSnapXML = function(store_key) {
 	if (this.snapWorld !== null && store_key !== undefined) {
-        localStorage.setItem(store_key, this.stringifySnapXML());
+        sessionStorage.setItem(store_key, this.stringifySnapXML());
 	}
 }
 
