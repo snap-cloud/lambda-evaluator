@@ -42,10 +42,10 @@ gradingLog.prototype.saveLog = function() {
 	this.snapWorld = world_ref;
 
 	// Store the log string in localStorage
-	localStorage.setItem(this.taskID + "_test_log", log_string);
+	sessionStorage.setItem(this.taskID + "_test_log", log_string);
 	if (this.allCorrect) { // If all tests passed.
 		// Store the correct log in localStorage
-		localStorage.setItem(this.taskID + "_c_test_log", log_string);
+		sessionStorage.setItem(this.taskID + "_c_test_log", log_string);
 	}
 
 }
@@ -57,7 +57,7 @@ gradingLog.prototype.saveLog = function() {
  */
 gradingLog.prototype.saveSnapXML = function(store_key) {
 	if (this.snapWorld !== null && store_key !== undefined) {
-        localStorage.setItem(store_key, this.stringifySnapXML());
+        sessionStorage.setItem(store_key, this.stringifySnapXML());
 	}
 }
 
@@ -412,6 +412,7 @@ function dictLog(outputLog) {
 	outDict["allCorrect"] = outputLog.allCorrect;
 	outDict["taskID"] = outputLog.taskID;
 	outDict["pScore"] = outputLog.pScore;
+	outDict["totalPoints"] = outputLog.totalPoints;
 	return outDict;
 }
 
