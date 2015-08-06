@@ -14,7 +14,10 @@
         }
     </script>
     <script type="text/javascript" src="underscore-min.js"></script>
-    <script type="text/javascript" src="SnapPLE.js"></script>
+    <!-- // <script type="text/javascript" src="SnapPLE.js"></script> -->
+    <script type="text/javascript" src='gradingLog.js'></script>
+    <script type="text/javascript" src='spriteEventLog.js'></script>
+    <script type="text/javascript" src='scriptAnalysis.js'></script>
     <meta charset="utf-8">  <!-- This line is needed in order to pass strings into test functions that contain characters
     like "-" and what not. -->
     <!-- Moved down to the bottom to have var id. -->
@@ -72,20 +75,20 @@
             testAssert(outputLog, assert1,//isScriptPresent('factorial %s',0),
                 "The 'factorial' block is present.", 
                 "The 'factorial %num' block was not found on-screen.", 
-                "Make sure you name your custom block, 'factorial %num'.");
+                "Make sure you name your custom block, 'factorial %num'.", 1);
             testAssert(outputLog, assert2,//customBlockContains('factorial %s', 'factorial %s'),
                 "The 'factorial' block has a recursive call to itself.",
                 "There is no recursive call to 'factorial.",
-                "Make sure you have a recursive call inside of 'factorial.");
+                "Make sure you have a recursive call inside of 'factorial.", 1);
             testAssert(outputLog, assert3,//blockPrecedes('factorial %s', "%n − %n", getCustomBody('factorial %s', 0)),
                 "The recursive call to'factorial' block contains a minus block",
                 "There is no minus block in the recursive call to 'factorial'.",
-                "Make sure you have a minus block inside of the recursive call.");
+                "Make sure you have a minus block inside of the recursive call.", 1);
             multiTestBlock(outputLog, 'factorial %s', 
                 [[0],[1],[2],[4],[5],[10]],
                 [1,1,2,24,120,3628800],
                 [-1,-1,-1,-1,-1,-1],
-                [false,false,false,false,false,false]);
+                [true,true,true,true,true,true], 2);
             
             // /* KScopeTest */
             // testAssert(outputLog, 
@@ -315,7 +318,14 @@
             localStorage.removeItem(taskID + "_c_test_state");
 
             var ide = snapWorld.children[0];
-            ide.newProject();
+
+            if (starter_path) {
+                $.get(starter_path, function(data) {
+                ide.openProjectString(data)}, 
+                "text");
+            } else {
+                ide.newProject();
+            }
             var new_log = AGStart(snapWorld, taskID);
             new_log.numAttempts = numAttempts;
             //localStorage.setItem(taskID + "_test_log", new_log);
@@ -615,10 +625,13 @@
             var edx_caution = document.getElementById("edx-submit-different");
             var caution = document.getElementById("different-feedback");
 
+            console.log(outputLog);
             var glog = outputLog;
             var log = AG_log(glog);
             var feedback = log["feedback"];
             var title = log["comment"];
+
+            console.log(feedback);
 
             // Checks if the grading button has been clicked
             if (title === "Please run the Snap Autograder before clicking the 'Submit' button.") {
@@ -656,6 +669,7 @@
             var repTest = 1;
             for (i=1; i<=feedback["testCount"]; i++) {
                 var test = String(i);
+                console.log(test);
                 var newRow = document.createElement("tr");
 
                 // If test is not a reporter test, only add columns for Test # and Feedback
@@ -664,6 +678,11 @@
                         addBasicHeadings();
                     }
                     addTableCell(String(nonRepTest), "tests", newRow);
+                    if (nonRepTest % 2 === 0) {
+                        addTableCell(feedback[test]["pointValue"], ["data", "evens"], newRow);
+                    } else {
+                        addTableCell(feedback[test]["pointValue"], "data", newRow);
+                    }
                     nonRepTest += 1;
                 }
 
@@ -673,7 +692,7 @@
                         addReporterHeadings();
                     }
                     addTableCell(String(repTest), "tests", newRow);
-                    var keys = ["blockSpec", "input", "output", "expOut"];
+                    var keys = ["pointValue", "blockSpec", "input", "output", "expOut"];
                     for (key=0; key<keys.length; key++) {
                         if (keys[key] === "blockSpec") {
                             var blockSpec = feedback[test][keys[key]];
@@ -698,10 +717,10 @@
                 // If test is correct, make the feedback appropriately colored. 
                 if (feedback[test]["correct"] === true) {
                     addTableCell(feedback[test]["feedback"], "correctans", newRow);
-                    addRegradeButton("Regrade", ["data", "hidden"], newRow);
+                    //addRegradeButton("Regrade", ["data", "hidden"], newRow);
                 } else {
                     addTableCell(feedback[test]["feedback"], "incorrectans", newRow);
-                    addRegradeButton("Regrade", ["data", "regrade", test], newRow);
+                    //addRegradeButton("Regrade", ["data", "regrade", test], newRow);
                 }
 
                 if (feedback[test]["testClass"] === "r") {
@@ -714,18 +733,18 @@
             //outputLog.saveLog();
 
             // makes recently created regrade buttons clickable 
-            var regrade_buttons = document.getElementsByClassName("regrade");
+            /*var regrade_buttons = document.getElementsByClassName("regrade");
             for(var i=0; i<regrade_buttons.length; i++) {
                 regrade_buttons[i].onclick = function() {
                     var testId = this.classList[2];
                     regradeOnClick(outputLog, testId);
                 }
-            }
+            }*/
         }
 
         function addBasicHeadings() {
-            basicCols = ["Test", "Feedback"];
-            for (i=0; i<2; i++) {
+            basicCols = ["Test", "Points", "Feedback"];
+            for (i=0; i<basicCols.length; i++) {
                 var header = document.createElement("th");
                 var text = document.createTextNode(basicCols[i]);
                 //var lastCol = document.getElementById("reporter-last-column");
@@ -737,7 +756,7 @@
         }
 
         function addReporterHeadings() {
-            var columns = ["Test", "Block", "Input", "Output", "Expected", "Feedback"];
+            var columns = ["Test", "Points", "Block", "Input", "Output", "Expected", "Feedback"];
             for (i=0; i<columns.length; i++) {
                 var header = document.createElement("th");
                 var text = document.createTextNode(columns[i]);
@@ -983,6 +1002,13 @@
                 }
             }
 
+            /*var starter_xml = sessionStorage.getItem("starter_file");
+            if (starter_xml) {
+                ide.openProjectString(starter_xml);
+                //sessionStorage.removeItem("starter_file");
+            }*/
+
+
             if (isEDX) {
                 parent.document.getElementsByClassName('check-label')[0].onclick = function () {
                     sessionStorage.setItem("pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
@@ -1178,7 +1204,18 @@
 
                 console.log(world);
                 var outputLog = AGStart(world,id);
-                populateFeedback(outputLog);
+                //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
+                populateFeedback(outputLog); 
+                populateFeedback(outputLog); 
+                
+
+
+                var starter_xml = sessionStorage.getItem("starter_file");
+                if (starter_xml) {
+                    ide.openProjectString(starter_xml);
+                    sessionStorage.removeItem("starter_file");
+                }
+
                 //runAGTest(world, id);
                 //runAGTest(world, id);
 
@@ -1219,7 +1256,7 @@
                 //AGUpdate(world, id);
 
                 
-            },1000);
+            },500);
 
             /*var overlay_button = document.createElement('button');
             var overlay_button_text = document.createTextNode('Grade');
@@ -1286,6 +1323,13 @@
 <div class="overlay is-hidden" id="overlay">
     <div class="popup-content" id="help-popup">
         <span class="button-close" onclick="closePopup();">X</span>
+            <img id="example-image" src="edX_snap_example.png">
+            <p id="full-screen-arrow">&#8600;</p>
+            <p id="full-screen-help">This full-screen button will pop out the Snap! window.</p>
+            <p id="menu-item-arrow">&#8599;</p>
+            <p id="menu-item-help">The first menu item will display the results from running the autograder.</br></br>The next three menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your last correct attempt, to the attempt that edX has recorded, or just to your last graded attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
+            <p id="ag-button-arrow">&#8593;</p>
+            <p id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
             <p>
                 Please remember to click the 'Submit' button below the Snap! window to obtain credit for this problem!
             </p>

@@ -1,6 +1,4 @@
-
 //Snap Protocol Language Enabler
-
 
 /*
 	gradingLog is initialized when a block is tested.
@@ -50,7 +48,8 @@ gradingLog.prototype.saveLog = function() {
 	}
 
 }
-/* Save the gradingLog.snapWorld into localStorage with the
+/* 
+ * Save the gradingLog.snapWorld into localStorage with the
  * specified key. Does nothing if 'store_key' or
  * gradingLog.snapWorld are unspecified (null or undefined).
  * @param {String} store_key
@@ -324,91 +323,6 @@ gradingLog.prototype.updateLog = function(testID, output, feedback, correct) {
 		throw "gradingLog.finishTest: TestID is invalid.";
 	}
 
-}
-
-/*
- * Evaluate the gradingLog, match the expected output with the recieved output
- * Add relevant feedback with associated issue. (Timeout, Error, bad output)
- * Additional processing occurs if all tests are evaluated:
- *	- pScore is calculated
- *  - Store the gradingLog in localStorage //TODO: Move this to a separate function?
- *  - Store the Snap! state in localStorage
- *  - Update the AG_status_bar, AGFinish()
-*/
-gradingLog.prototype.evaluateLog = function(testIDs) {
-	// Evaluate all tests if no specific testIDs are specified.
-	var outputLog = this;
-	if (gradingLog.testCount === 0) {
-		return gradingLog;
-	}
-	if (testIDs === undefined) {
-		testIDs = [];
-		for (var i = 1; i <= outputLog.testCount; i++) {
-		   testIDs.push(i);
-		}
-	}
-	// .allCorrect is initially true, and set to false if a test has failed.
-	outputLog.allCorrect = true;
-	// Passed test counter.
-	var tests_passed = 0;
-	//Set 'correct' and 'feedback' fields for all in testIDs
-	for (var id of testIDs) {
-		
-		// if (outputLog[id]["output"] instanceof List) {
-		//	console.log(outputLog[id]["output"].contents);
-		// 	outputLog[id]["output"] = outputLog[id]["output"].asArray();
-		// }
-		//TODO: Terribly ugly. This should be abstracted.
-		if (outputLog[id]['testClass'] === "a") {
-			if (outputLog[id]['correct']) {
-				tests_passed += 1;
-			}
-			continue;
-		}
-		if (outputLog[id]["correct"] === true) {
-			tests_passed += 1;
-			continue;
-		}
-		if (outputLog[id]["feedback"] === "Error!") {
-			outputLog.allCorrect = false;
-			outputLog[id]["output"] = "Error!";
-		} else if (outputLog["" + id]["output"] === undefined) {
-			outputLog.allCorrect = false;
-			outputLog[id]["output"] = "Timeout error.";
-			outputLog[id]["feedback"] = "Timeout error: Function did not finish before " +
-				((outputLog[id]["timeOut"] < 0) ? 1000 : outputLog[id]["timeOut"]) + " ms.";
-		} else if (snapEquals(outputLog[id]["output"], outputLog[id]["expOut"])) {
-			//Changed === snapEquals() to better evaluate snap output
-			outputLog[id]["feedback"] = "Correct!";
-			outputLog[id]["correct"] = true;
-		} else {
-			outputLog.allCorrect = false;
-			if (outputLog[id]["testClass"] === "r") {
-				outputLog[id]["feedback"] = "Expected: " +
-					outputLog[id]["expOut"] + " , Got: " + outputLog[id]["output"];
-			} else if (outputLog[id]["testClass"] === "p") {
-				//outputLog[id]["feedback"] = "Script is not"
-			}
-			outputLog[id]["correct"] = false;
-		}
-	}
-	//Additional gradingLog fields are updated if all tests are evaluated.
-	if (outputLog.testCount === testIDs.length) {
-		// Calculate the pScore, the percentage of tests that have passed.
-		outputLog.pScore = tests_passed / outputLog.testCount;
-		//Save the output log to localStorage.
-		//Saves _c_ 'correct' log if all tests passed.
-		outputLog.saveLog();
-
-		if (outputLog.allCorrect) {
-			//TODO: Consider saving the XML in runAGTest()
-			//Save the passing evaluated Log. key = taskID + "_c_test_log"
-			//Save the passing Snap! XML string. key = taskID + "_c_test_state"
-		}
-	}
-
-	//Update the AG status bar when the gradingLog is complete.
-	AGFinish(this);
 }
 
 gradingLog.prototype.scoreLog = function() {
@@ -1415,11 +1329,8 @@ function getListBlock(blockSpec, spriteIndex) {
 	return listArgs;
 }
 
-function getPaletteScripts(pal, whichWorld) {
-	if (whichWorld === undefined) {
-		whichWorld = world;
-	}
-	return whichWorld.children[0].sprites.contents[0].palette(pal).children[0].children;
+function getPaletteScripts(pal) {
+	return world.children[0].sprites.contents[0].palette(pal).children[0].children;
 }
 
 function cloneListReporter() {
@@ -1481,9 +1392,6 @@ function simplifySpec(blockSpec) {
 	return newSpec;
 }
 
-/* To compare the blockSpecs we use blockSpecMatch()
- * simplifySpec(palette[i].blockSpec) === simplifySpec(blockSpec)
- */
 function findBlockInPalette(blockSpec, workingWorld) {
 	var thisWorld = workingWorld || world,
 		palette = null,
@@ -1491,11 +1399,11 @@ function findBlockInPalette(blockSpec, workingWorld) {
 		pList = ["motion", "variables", "looks", "sound", "pen", "control", "sensing", "operators"];
 
 	for (var item of pList) {
-		palette = getPaletteScripts(item, workingWorld);
+		palette = getPaletteScripts(item);
 		i = 0;
 
 		while (i < palette.length) {
-			if (palette[i].blockSpec && blockSpecMatch(palette[i].blockSpec, blockSpec)) {
+			if (palette[i].blockSpec && simplifySpec(palette[i].blockSpec) === simplifySpec(blockSpec)) {
 				return palette[i].fullCopy();
 			}
 			i++;
@@ -1572,9 +1480,7 @@ function JSONblock(block) {
 	var morph;
 	for (var i = 0; i < block.children.length; i++) {
 		morph = block.children[i];
-		if (morph.selector === "reportGetVar") {
-			blockArgs.push(morph.blockSpec);
-		} else if (morph instanceof InputSlotMorph) {
+		if (morph instanceof InputSlotMorph) {
 			blockArgs.push(morph.children[0].text);
 		} else if (morph instanceof CSlotMorph) {
 			if (morph.children.length == 0) {
@@ -1642,7 +1548,8 @@ function getCustomBody(blockSpec, spriteIndex) {
 		spriteIndex = 0;
 	}
 	try {
-		return JSONcustomBlock(findBlockInPalette(blockSpec)).body;
+		var customBlock = getScript(blockSpec, spriteIndex);
+		return JSONcustomBlock(customBlock).body;
 	}
 	catch(e) {
 		return undefined;
@@ -1709,20 +1616,29 @@ function getGlobalVar(varToGet, globalVars) {
  * optional arg arrays ARGARRAY1 and ARGARRAY2. Returns true if BLOCKSPEC1 is
  * inside of the block represented by BLOCKSPEC2.
  */
-function CBlockContainsInCustom(customBlockSpec, blockSpec1, blockSpec2, argArray1, argArray2) {
+function CBlockContainsInCustom(customBlockSpec, spriteIndex, blockSpec1, blockSpec2, argArray1, argArray2) {
 	if (argArray1 === undefined) {
 		argArray1 = [];
 	}
 	if (argArray2 === undefined) {
 		argArray2 = [];
 	}
+	if (spriteIndex === undefined) {
+		spriteIndex = 0;
+	}
+
 	try {
-		var script = getCustomBody(customBlockSpec);
+		var customBlock = getScript(customBlockSpec, spriteIndex);
 	}
 	catch(e) {
 		return false;
 	}
-	return CBlockContains(blockSpec1, blockSpec2, script, argArray1, argArray2);
+	var jsonifiedCustomBlock = JSONcustomBlock(customBlock);
+	var script = jsonifiedCustomBlock.body;
+	var block1 = {blockSp: blockSpec1, inputs: argArray1};
+	var block2 = {blockSp: blockSpec2, inputs: argArray2};
+
+	return CBlockContains(block1, block2, script);
 
 }
 
@@ -1858,37 +1774,30 @@ function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex) 
 	return false;
 }
 
-/* Takes in BLOCK1SPEC (any block) and BLOCK2SPEC (a C-block), 
- * a script, and respective inputs ARGARRAY1 and ARGARRAY2.
- * Returns true if the block represented by block1 occurs inside 
- * the C-shaped block represented by block2. SCRIPT can be
+/* Takes in two javascript objects (block1 and block2) and a script.
+ * Returns true if the block represented by BLOCK1 occurs inside 
+ * the C-shaped block represented by BLOCK2. SCRIPT can be
  * obtained by calling:
  *
  * JSONscript(...)
  *
  * The following 8 blocks are considered C-shaped:
  *  -repeat, repeat until, warp, forever, for loop, if, if else, for each
+ *
  */
-function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2) {
+function CBlockContains(block1, block2, script) {
 	if (Object.prototype.toString.call(script) !== '[object Array]') {
 		return false;
-	}
-	if (argArray1 === undefined) {
-		argArray1 = [];
-	}
-	if (argArray2 === undefined) {
-		argArray2 = [];
 	}
     var morph1, type1, CblockSpecs;
     CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
     CblockSpecs = CblockSpecs.concat(["repeat until %b %c", "if %b %c", "if %b %c else %c"]);
     CblockSpecs = CblockSpecs.concat(["for each %upvar of %l %cs"]);
     
-    if (CblockSpecs.indexOf(block2Spec) < 0) {
-        // var rValue = "The second input should be a C-shaped block. See CBlockContains";
-        // rValue += " definition for a list of the blocks designated as C-shaped blocks.";
-        // return rValue;
-        return false;
+    if (CblockSpecs.indexOf(block2.blockSp) < 0) {
+        var rValue = "The second input should be a C-shaped block. See CBlockContains";
+        rValue += " definition for a list of the blocks designated as C-shaped blocks.";
+        return rValue;
     }
 
     for (var i = 0; i < script.length; i++) {
@@ -1897,23 +1806,23 @@ function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2) {
         if ((type1 === "string")) {
             continue;
         } else if (Object.prototype.toString.call(morph1) === '[object Array]') { 
-            if (CBlockContains(block1Spec, block2Spec, morph1, argArray1, argArray2)) {
+            if (CBlockContains(block1, block2, morph1)) {
                 return true;
             }
-        } else if (morph1.blockSp === block2Spec) {
-            if (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 1], block1Spec, argArray1)) {
+        } else if (morph1.blockSp === block2.blockSp) {
+            if (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 1], block1.blockSp, block1.inputs)) {
                 return true;
             }
             if ((morph1.blockSp === "if %b %c else %c")
-                && (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 2], block1Spec, argArray1))) {
+                && (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 2], block1.blockSp, block1.inputs))) {
                 return true;
             }
         } else if (CblockSpecs.indexOf(morph1.blockSp) >= 0) {
-            if (CBlockContains(block1Spec, block2Spec, morph1.inputs[morph1.inputs.length - 1], argArray1, argArray2)) {
+            if (CBlockContains(block1, block2, morph1.inputs[morph1.inputs.length - 1])) {
                 return true;
             }
             if ((morph1.blockSp === "if %b %c else %c")
-                && (CBlockContains(block1Spec, block2Spec, morph1.inputs[morph1.inputs.length - 2], argArray1, argArray2))) {
+                && (CBlockContains(block1, block2, morph1.inputs[morph1.inputs.length - 2]))) {
                 return true;
             }
         }
@@ -1951,28 +1860,34 @@ function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
             throw "The given C-block nickname is invalid.";
         }
         var block2Spec = nicknameDict[block2Name];
-        return CBlockContains(blockSpec1, block2Spec, script, argArray1, argArray2);
+        var block2 = {blockSp: block2Spec, inputs: argArray2};
+        var block1 = {blockSp: blockSpec1, inputs: argArray1};
+        return CBlockContains(block1, block2, script);
 }
 
-/* Takes in two blockspecs and two argument arrays (representing a block and 
-* a C-shaped block), and a SPRITEINDEX. 
-* Returns true if the block represented by BLOCK1SPEC occurs inside 
-* the C-shaped block represented by BLOCK2SPEC in any script in
+
+/* Takes in two strings (representating a block (block1String) and a C-shaped block 
+* (block2String)) and a SPRITEINDEX. 
+* 
+* Returns true if the block represented by BLOCK1STRING occurs inside 
+* the C-shaped block represented by BLOCK2STRING in any script in 
 * the Scripts tab of the given sprite. See documentation of CBlockContains for 
 * details of what blocks are considered C-shaped.
 */
-function CBlockContainsInSprite(block1Spec, block2Spec, spriteIndex, argArray1, argArray2) {
+function CBlockContainsInSprite(block1String, block2String, spriteIndex) {
     //Populate optional parameters
     if (spriteIndex === undefined) {
         spriteIndex = 0;
     }
     try {
+    	var block1 = stringToJSON(block1String)[0];
+	    var block2 = stringToJSON(block2String)[0];
         var JSONtarget;
         var doesContain;
         var scriptsOnScreen = getScripts(spriteIndex);
         for (var i = 0; i < scriptsOnScreen.length; i++) {
             JSONtarget = JSONscript(scriptsOnScreen[i]);
-            doesContain = CBlockContains(block1Spec, block2Spec, JSONtarget, argArray1, argArray2);
+            doesContain = CBlockContains(block1, block2, JSONtarget);
             if (doesContain) {
                 return true;
             }

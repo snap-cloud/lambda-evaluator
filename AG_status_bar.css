@@ -224,7 +224,7 @@ div {
     width: 0;
     z-index: -1;
     top: -10px;
-    left: 155px;
+    left: 153px;
 }
 
 .bubble:before {
@@ -367,4 +367,59 @@ div {
   box-shadow: 2px 2px 5px #888888;
   margin: 0px;
   cursor: pointer;
+}
+
+#example-image {
+  width: 100%;
+}
+
+#full-screen-arrow {
+    position: absolute;
+    right: 12%;
+    top: 73%;
+    color: white;
+    font-size: 120%;
+}
+
+#full-screen-help {
+    position: absolute;
+    width: 20%;
+    right: 3%;
+    top: 70%;
+    color: white;
+    font-size: 75%
+}
+
+#menu-item-arrow {
+    position: absolute;
+    top: 25%;
+    left: 35%;
+    color: white;
+    font-size: 120%;
+}
+
+#menu-item-help {
+    position: absolute;
+    top: 30%;
+    width: 20%;
+    left: 25%;
+    color: white;
+    font-size: 70%;
+}
+
+#ag-button-arrow {
+    position: absolute;
+    top: 6%;
+    right: 33%;
+    color: white;
+    font-size: 120%;
+}
+
+#ag-button-help {
+    position: absolute;
+    width: 8%;
+    top: 8%;
+    right: 32%;
+    color: white;
+    font-size: 75%;
 }

@@ -100,11 +100,14 @@ var AG_EDX = (function() {
     function setState() {
         console.log('SET STATE IS CALLED');
         var last_state_string = arguments.length === 1 ? arguments[0] : arguments[1];
-        var ide = world.children[0];
+        console.log(last_state_string);
+        //var ide = world.children[0];
         if (last_state_string === 'starter file') {
             var starter_xml = $.get(starter_path, function(data) {
-                console.log(data);
-                ide.openProjectString(data)}, "text"); //TODO: Loading here still unsafe
+                sessionStorage.setItem("starter_file", data)},
+                //console.log(data);
+                //ide.openProjectString(data)}, 
+                "text"); //TODO: Loading here still unsafe
             return;
         } else if (last_state_string === 'never graded') {
             return;
