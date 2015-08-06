@@ -53,7 +53,7 @@ table.results {
     color: #4F5150;
     white-space: normal;
 	padding: 3px 20px;
-	font-size:0.7em;
+	/*font-size:0.7em;*/
   }
 
   td.hidden {
@@ -107,7 +107,7 @@ table.results {
 .toggle-box:checked + label + div {
 	display: block;
 	height: auto;
-	width: 500px;
+	width: 100%;
 }
 
 .toggle-box + label:before {
