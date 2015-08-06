@@ -49,8 +49,8 @@ var AG_EDX = (function() {
                 console.log(JSON.stringify(edx_log));
 
                 //saves correct student answer, as well as state, in case student returns to question
-                sessionStorage.setItem(id + "_last_submitted_log", sessionStorage.getItem(id + "_test_log"));
-                sessionStorage.setItem(id + "_last_submitted_state", snapXML);
+                //sessionStorage.setItem(id + "_last_submitted_log", sessionStorage.getItem(id + "_test_log"));
+                //sessionStorage.setItem(id + "_last_submitted_state", snapXML);
                 //localStorage.setItem(id + "_ag_output", JSON.stringify(edx_log));
             }
             console.log("GET GRADE SUCCEEDING");
@@ -78,8 +78,8 @@ var AG_EDX = (function() {
         var graded_log = sessionStorage.getItem(id + "_test_log");
         var correct_xml = sessionStorage.getItem(id + "_c_test_state");
         var correct_log = sessionStorage.getItem(id + "_c_test_log");
-        var submit_xml = sessionStorage.getItem(id + "_last_submitted_state");
-        var submit_log = sessionStorage.getItem(id + "_last_submitted_log");
+        /*var submit_xml = sessionStorage.getItem(id + "_last_submitted_state");
+        var submit_log = sessionStorage.getItem(id + "_last_submitted_log");*/
 
         if (!graded_xml || !graded_log) {
             return 'never graded';
@@ -91,10 +91,10 @@ var AG_EDX = (function() {
             output['c_log'] = correct_log;
             output['c_state'] = encodeURIComponent(correct_xml);
         }
-        if (submit_xml && submit_log) {
+        /*if (submit_xml && submit_log) {
             output['submit_log'] = submit_log;
             output['submit_state'] = encodeURIComponent(submit_xml);
-        }
+        }*/
         console.log(encodeURIComponent(correct_xml));
         output = encodeURI(JSON.stringify(output));
         //console.log(output);
@@ -140,10 +140,10 @@ var AG_EDX = (function() {
                 sessionStorage.setItem(id + '_c_test_state', decodeURIComponent(last_state.c_state));
                 sessionStorage.setItem(id + '_c_test_log', last_state.c_log);
             }
-            if (last_state.submit_state && last_state.submit_log) {
+            /*if (last_state.submit_state && last_state.submit_log) {
                 sessionStorage.setItem(id + '_last_submitted_state', decodeURIComponent(last_state.submit_state));
                 sessionStorage.setItem(id + '_last_submitted_log', last_state.submit_log);
-            }
+            }*/
         }
 
 

@@ -210,7 +210,7 @@
             var c_prev_xml = sessionStorage.getItem(taskID + "_c_test_state");
             var prev_xml = sessionStorage.getItem(taskID + "_test_state");
 
-            var last_xml = sessionStorage.getItem(taskID + "_last_submitted_state");
+            //var last_xml = sessionStorage.getItem(taskID + "_last_submitted_state");
             //Retrieve previous grade logs (if in sessionStorage). As {String}s
             var c_prev_log = sessionStorage.getItem(taskID + "_c_test_log");
             var prev_log = sessionStorage.getItem(taskID + "_test_log");
@@ -371,7 +371,7 @@
             grayOutButtons(snapWorld, taskID);
         }
 
-        function revertToLastSubmit(snapWorld, taskID) {
+        /*function revertToLastSubmit(snapWorld, taskID) {
             var numAttempts = JSON.parse(sessionStorage.getItem(taskID + "_test_log")).numAttempts;
 
             var last_xml = sessionStorage.getItem(taskID + "_last_submitted_state");
@@ -391,7 +391,7 @@
             ide.openProjectString(last_xml);
             grayOutButtons(snapWorld, taskID);
 
-        }
+        }*/
 
         /*
          * Makes AG status bar reflect the ungraded state of the outputLog.
@@ -620,7 +620,7 @@
 
         function populateFeedback(outputLog) {
             var taskID = outputLog.taskID;
-            var last_log = sessionStorage.getItem(taskID + "_last_submitted_log");
+            //var last_log = sessionStorage.getItem(taskID + "_last_submitted_log");
             var prev_log = sessionStorage.getItem(taskID + "_test_log");
             var edx_caution = document.getElementById("edx-submit-different");
             var caution = document.getElementById("different-feedback");
@@ -658,12 +658,12 @@
 
             // Warnings for when student's feedback differ from what's on the scripting area/what's been submitted to edX
             document.getElementById("comment").innerHTML = title + "(" + String(Math.round(feedback["totalPoints"] * feedback["pScore"])) + "/" + String(feedback["totalPoints"]) + ")";
-            if (!last_log) {
+            /*if (!last_log) {
                 edx_caution.innerHTML = "[WARNING: You have not submitted your results to edX yet.]"
             }
             else if (last_log !== prev_log) {
                 edx_caution.innerHTML = "[WARNING: These results differ from your last edX submission.]"
-            }
+            }*/
 
             var nonRepTest = 1;
             var repTest = 1;
@@ -801,7 +801,7 @@
             var c_prev_xml = sessionStorage.getItem(taskID + "_c_test_state");
             var prev_xml = sessionStorage.getItem(taskID + "_test_state");
 
-            var last_xml = sessionStorage.getItem(taskID + "_last_submitted_state");
+            /*var last_xml = sessionStorage.getItem(taskID + "_last_submitted_state");
 
             var last_submit = document.getElementById("last-submit");
             if (last_xml === null || isSameSnapXML(last_xml, curr_xml)) {
@@ -812,7 +812,7 @@
                 last_submit.parentNode.id = "enabled-button";
                 last_submit.style.color = "white";
                 last_submit.style.pointerEvents = "auto";
-            }
+            }*/
 
             var revert_button = document.getElementById("revert-button");
             if (c_prev_xml === null || isSameSnapXML(c_prev_xml, curr_xml)) {
@@ -1061,7 +1061,7 @@
             var reset_button = document.getElementById("reset-button");
             var revert_button = document.getElementById("revert-button");
             var undo_button = document.getElementById("undo-button");
-            var last_submit = document.getElementById("last-submit");
+            //var last_submit = document.getElementById("last-submit");
             //var menu_button = document.getElementById("hamburger-menu");
             var menu_button = document.getElementsByClassName("onclick-menu")[0];
             //var help_menu = document.getElementById("circle");
@@ -1075,7 +1075,7 @@
 
             reset_button.onclick = function() { resetState(world, id); toggleMenu(id); };
             revert_button.onclick = function() { revertToBestState(world, id); toggleMenu(id); };
-            last_submit.onclick = function() { revertToLastSubmit(world, id); toggleMenu(id); };
+            //last_submit.onclick = function() { revertToLastSubmit(world, id); toggleMenu(id); };
             undo_button.onclick = function() { revertToLastState(world, id); toggleMenu(id); };
             menu_button.onclick = function() { toggleMenu(id); };
             //var overlay_button = parent.document.getElementById('overlay-button');
@@ -1280,7 +1280,7 @@
             <li class="menu-item-sub-menu" id="enabled-button"><a id="feedback-button">View Feedback</a></li>
             <li class="menu-divider-sub-menu" id='menu-divider'></li>
             <li class="menu-item-sub-menu" id="enabled-button"><a id="revert-button">Revert To Best Attempt</a></li>
-            <li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last edX Submission</a></li>
+            <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last edX Submission</a></li>-->
             <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Revert To Last Attempt</a></li>
             <li class="menu-item-sub-menu" id="enabled-button"><a id="reset-button">Reset</a></li>
             <li class="menu-divider-sub-menu" id='menu-divider'></li>
