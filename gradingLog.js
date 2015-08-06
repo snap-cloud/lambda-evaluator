@@ -42,10 +42,10 @@ gradingLog.prototype.saveLog = function() {
 	this.snapWorld = world_ref;
 
 	// Store the log string in localStorage
-	localStorage.setItem(this.taskID + "_test_log", log_string);
+	sessionStorage.setItem(this.taskID + "_test_log", log_string);
 	if (this.allCorrect) { // If all tests passed.
 		// Store the correct log in localStorage
-		localStorage.setItem(this.taskID + "_c_test_log", log_string);
+		sessionStorage.setItem(this.taskID + "_c_test_log", log_string);
 	}
 
 }
