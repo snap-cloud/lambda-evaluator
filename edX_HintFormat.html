@@ -8,7 +8,12 @@ def vglcfn(e, ans):
     par = json.loads(ans)
     log = urllib.unquote(par['answer']).decode('utf8')
     answer = json.loads(log)
-    return answer["checkState"]
+    state = False
+    if answer["feedback"]["pScore"] == 1:
+        state = True
+    return {'input_list': [{ 'ok': state, 'msg': '', 'grade_decimal': answer["feedback"]["pScore"]}]}
+    #return answer["checkState"]
+
 def feedback_print(feedback):
     output = ""
     for test in feedback:
@@ -69,8 +74,9 @@ def hint_fn(answer_ids, student_answers, new_cmap, old_cmap):
                 rep_output += "rowstart" + test_string[:] + "rowend"
             else:
                 norep_output += "rowstart" + test_string[:] + "rowend"
-        output = " ({0}/{1})".format(numcorrect, numpoints) + \
-            """linebreak collapsedivstart
+        output = " ({0}/{1})".format(numcorrect, numpoints)
+        if (log['showFeedback']):
+            output += """linebreak collapsedivstart
                     tablestart""" + \
                         headings + norep_output + \
                     """tableend 
