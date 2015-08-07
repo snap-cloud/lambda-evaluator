@@ -11,6 +11,12 @@ var taskID = "AG_D1_T1";
 var id = courseID + taskID;
 var isEDX = isEDXurl();
 
+// if this question is not meant to be graded, change this flag to false
+var graded = true;
+
+// to hide feedback for this problem, change this flag to false
+var showFeedback = true;
+
 // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
 // var testLog;
 function AGTest(outputLog) {

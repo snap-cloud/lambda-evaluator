@@ -44,6 +44,7 @@ var AG_EDX = (function() {
             //If AGTest() has been called, save the gradeLog in 
             if (glog !== undefined) {
                 //Convert to an AG_state
+                glog["showFeedback"] = showFeedback;
                 var edx_log = AG_log(glog, snapXML);
                 edx_log["snapXML"] = snapXML;
                 console.log(JSON.stringify(edx_log));

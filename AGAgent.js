@@ -42,12 +42,21 @@ function AGStart(snapWorld, taskID) {
     var prev_xml = sessionStorage.getItem(taskID + "_test_state");
 
     var outputLog;
+
+    if (!graded) {
+        AG_bar_nograde();
+        return
+    }
     //If the current XML matches the stored correct XML
     if (isSameSnapXML(c_prev_xml, curr_xml)) {
         //Restore the AG status bar to a graded state
         var outputLog = JSON.parse(sessionStorage.getItem(taskID + "_c_test_log"));
         outputLog.snapWorld = snapWorld;
-        AG_bar_graded(outputLog);
+        if (outputLog.pScore === 1) {
+            AG_bar_graded(outputLog);
+        } else {
+            AG_bar_semigraded(outputLog);
+        }
         return outputLog;
     }
     //If the current XML matches the last stored gradingLog
@@ -86,6 +95,7 @@ function AGUpdate(snapWorld, taskID) {
     var curr_xml = ide.serializer.serialize(ide.stage);
     //Retrieve previously graded Snap XML strings (if in sessionStorage).
     var c_prev_xml = sessionStorage.getItem(taskID + "_c_test_state");
+    var c_prev_log = JSON.parse(sessionStorage.getItem(taskID + "_c_test_log"));
     var prev_xml = sessionStorage.getItem(taskID + "_test_state");
 
     //var last_xml = sessionStorage.getItem(taskID + "_last_submitted_state");
@@ -100,6 +110,11 @@ function AGUpdate(snapWorld, taskID) {
     //(ex. current state is same as best attempt) and restores the button state
     grayOutButtons(snapWorld, taskID);
     var outputLog;
+
+    if (!graded) {
+        AG_bar_nograde();
+        return
+    }
     //If current XML is different from prev_xml
     if (c_prev_xml && isSameSnapXML(c_prev_xml, curr_xml)) {               
         //Restore the AG status bar to a graded state
@@ -114,7 +129,11 @@ function AGUpdate(snapWorld, taskID) {
         //Retrieve the correct test log from sessionStorage
         outputLog = JSON.parse(c_prev_log);
         outputLog.snapWorld = snapWorld;
-        AG_bar_graded(outputLog);
+        if (c_prev_log.pScore === 1) {
+            AG_bar_graded(outputLog);
+        } else {
+            AG_bar_semigraded(outputLog);
+        }
 
         if (isEDX) {
             parent.document.getElementById('overlay-button').style.display = "none";
@@ -160,19 +179,33 @@ function AGUpdate(snapWorld, taskID) {
  *  - Should only be called from outputLog.evaluateLog()
  */
 function AGFinish(outputLog) {
+
+    var c_prev_log = JSON.parse(sessionStorage.getItem(outputLog.taskID + "_c_test_log"));
+
+    if (!graded) {
+        AG_bar_nograde();
+        return
+    }
     // Verify correctness
     if (outputLog.allCorrect) {
         // Save the correct XML string into sessionStorage
         AG_bar_graded(outputLog);
         outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
-    } else {
+    } else if ((outputLog.pScore > 0) && ((c_prev_log && outputLog.pScore >= c_prev_log.pScore) || (!c_prev_log))) {
+        
+        //if (outputLog.pScore >= c_prev_log.pScore && c_prev_log || !c_prev_log) {
+        AG_bar_semigraded(outputLog);
+        outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
         // Update AG_status_bar to 'graded, but incorrect state
+    } else {
         AG_bar_semigraded(outputLog);
     }
     //Save the current XML. Log is saved in gradingLog.scoreLog(...)
     outputLog.saveSnapXML(outputLog.taskID + "_test_state");
     //outputLog.numAttempts += 1;
-    populateFeedback(outputLog);
+    if (showFeedback) {
+        populateFeedback(outputLog);
+    }
     grayOutButtons(outputLog.snapWorld, outputLog.taskID);
     console.log('Autograder test Results:');
     console.log(outputLog);
@@ -227,7 +260,9 @@ function revertToBestState(snapWorld, taskID) {
     var prev_log = JSON.parse(sessionStorage.getItem(taskID + "_test_log"));
     prev_log.snapWorld = snapWorld;
     AG_bar_graded(prev_log);
-    populateFeedback(prev_log);
+    if (showFeedback) {
+        populateFeedback(prev_log);
+    }
     prev_log.numAttempts = numAttempts;
     ide.openProjectString(c_prev_xml);
     grayOutButtons(snapWorld, taskID);
@@ -244,7 +279,9 @@ function revertToLastState(snapWorld, taskID) {
     } else {
         AG_bar_semigraded(prev_log);
     }
-    populateFeedback(prev_log);
+    if (showFeedback) {
+        populateFeedback(prev_log);
+    }
     ide.openProjectString(prev_xml);
     grayOutButtons(snapWorld, taskID);
 }
