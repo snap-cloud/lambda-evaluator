@@ -43,6 +43,16 @@ function AGTest(outputLog) {
         [1,1,2,24,120,3628800],
         [-1,-1,-1,-1,-1,-1],
         [true,true,true,true,true,true], 2);
+
+    // Example of using a function in expOut
+    // var testFunc = function(i, t) {t.expOut = true; if (i == 1) {return true;} return false;};
+
+    // multiTestBlock(outputLog, 'factorial %s', 
+    //     [[0],[1],[2],[4],[5],[10]],
+    //     //[1,1,2,24,120,3628800],
+    //     [testFunc,testFunc,testFunc,testFunc,testFunc,testFunc],
+    //     [-1,-1,-1,-1,-1,-1],
+    //     [true,true,true,true,true,true], 2);
     
     // /* KScopeTest */
     // testAssert(outputLog, 
