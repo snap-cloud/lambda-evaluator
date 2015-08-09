@@ -253,12 +253,18 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	console.log('TEST OUTPUT')
 	console.log(test.output)
 
+	//if expOut is an array turn it into a snap! list for processing
 	if (expOut instanceof Array) {
 		expOut = new List(expOut);
 	}
 
-	if (expOut instanceof Array) {
-		expOut = new List(expOut);
+	//if expOut is a seperate function call run it with the output
+	//and update things accordingly. The expOut function should update
+	//the test.expOut!
+	//Format: function(output, test)
+	if (expOut instanceof Function) {
+		output = expOut(output, test);
+		expOut = true;
 	}
 
 	//Update feedback and 'correct' flag depending on output.
@@ -271,8 +277,13 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 		//test.feedback = test.feedback || "Unexpected Output: " + String(output);
 		test.feedback = "Unexpected Output: " + String(output) || test.feedback;
 	}
-	//Set test graded flag to true, for gradingLog.gradeLog()
 
+	//Set expOut back to an array
+	if (expOut instanceof List) {
+		expOut = expOut.asArray();
+	}
+
+	//Set test graded flag to true, for gradingLog.gradeLog()
 	test.graded = true;
 	//Kill error handling timeout
 	clearTimeout(this.currentTimeout);
