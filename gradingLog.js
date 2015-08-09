@@ -282,8 +282,11 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	//Clear the input values.
 	try {
 		if (test.isolated) {
-			console.log("removing sprite");
-			this.snapWorld.children[0].sprites.contents[test.sprite].remove();
+			console.log("removing sprite");	
+			test.sprite.remove();
+			test.sprite = null;
+			var focus = this.snapWorld.children[0].sprites.contents[0];
+			this.snapWorld.children[0].selectSprite(focus);
 		} else {
 			var block = getScript(test.blockSpec);
 			setValues(block, Array(test['input'].length).join('a').split('a'));
@@ -530,6 +533,11 @@ function checkArrayForList(a) {
 function setValues(block, values) {
 	var valIndex = 0,
 		morphIndex = 0;
+
+	if (block.blockSpec == "list %exp") {
+		setNewListToArg(values[valIndex], block, morphIndex);
+		return;
+	}
 
 	var morphList = block.children;
 
