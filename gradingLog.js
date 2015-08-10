@@ -34,6 +34,7 @@ function gradingLog(snapWorld, taskID, numAttempts) {
  *    reverted.
  */
 gradingLog.prototype.saveLog = function() {
+	var c_prev_log = JSON.parse(sessionStorage.getItem(outputLog.taskID + "_c_test_log"));
 	// Save the JSON string of the gradingLog,
 	// without the Snap 'world' reference [To minimize stored data]
 	var world_ref = this.snapWorld;
@@ -43,7 +44,7 @@ gradingLog.prototype.saveLog = function() {
 
 	// Store the log string in localStorage
 	sessionStorage.setItem(this.taskID + "_test_log", log_string);
-	if (this.allCorrect) { // If all tests passed.
+	if (this.allCorrect || ((this.pScore > 0) && ((c_prev_log && this.pScore >= c_prev_log.pScore) || (!c_prev_log)))) {
 		// Store the correct log in localStorage
 		sessionStorage.setItem(this.taskID + "_c_test_log", log_string);
 	}
@@ -413,6 +414,7 @@ function dictLog(outputLog) {
 	outDict["taskID"] = outputLog.taskID;
 	outDict["pScore"] = outputLog.pScore;
 	outDict["totalPoints"] = outputLog.totalPoints;
+	outDict["showFeedback"] = outputLog.showFeedback;
 	return outDict;
 }
 

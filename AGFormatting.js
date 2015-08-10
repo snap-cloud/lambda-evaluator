@@ -68,6 +68,14 @@ function AG_bar_semigraded(outputLog) {
     $('#onclick-menu').css('color', 'orange');
 }
 
+function AG_bar_nograde() {
+    var button_text = "UNGRADED";
+    var button_elem = $('#autograding_button span');
+    button_elem.html(button_text);
+    $('#autograding_button').css({"background":"gray", "cursor":"default"});
+    document.getElementById('autograding_button').style.pointerEvents = 'none';
+}
+
 function escapeRegExp(string) {
     return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
@@ -337,23 +345,23 @@ function grayOutButtons(snapWorld, taskID) {
 
     var revert_button = document.getElementById("revert-button");
     if (c_prev_xml === null || isSameSnapXML(c_prev_xml, curr_xml)) {
-        revert_button.style.color = "#373737";
+        //revert_button.parent.style.backgroundColor = "rgba(0, 0, 0, 0.2)";
         revert_button.style.pointerEvents = "none";
         revert_button.parentNode.id = "disabled-button";
     } else {
         revert_button.parentNode.id = "enabled-button";
-        revert_button.style.color = "white";
+        //revert_button.parent.style.backgroundColor = "white";
         revert_button.style.pointerEvents = "auto";
     }
 
     var undo_button = document.getElementById("undo-button");
     if (prev_xml === null || isSameSnapXML(prev_xml, curr_xml)) {
-        undo_button.style.color = "#373737";
+        //undo_button.parent.style.backgroundColor = "rgba(0, 0, 0, 0.2)";
         undo_button.style.pointerEvents = "none";
         undo_button.parentNode.id = "disabled-button";
     } else {
         undo_button.parentNode.id = "enabled-button";
-        undo_button.style.color = "white";
+        //undo_button.parent.style.backgroundColor = "white";
         undo_button.style.pointerEvents = "auto";
     }
 }
@@ -378,10 +386,10 @@ function makeFullScreenButton() {
     autograding_bar.parentNode.insertBefore(full_screen_button, autograding_bar.nextSibling);
 }
 
-function toggleSnapWindow(button) {
+function toggleSnapWindow(button, taskID) {
     var iframe = parent.document.getElementsByTagName('iframe')[0];
     if (button.className === "off") {
-        fullScreenSnap(button);
+        fullScreenSnap(button, taskID);
     } else {
         iframe.style.position = 'initial';
         iframe.style.top = 'initial';
@@ -391,14 +399,14 @@ function toggleSnapWindow(button) {
         iframe.style.zIndex = 'initial';
         button.className = "off";
         button.innerHTML = "Full-Screen";
-        sessionStorage.removeItem("full-screen-on");
+        sessionStorage.removeItem(taskID + "full-screen-on");
         /*button.style.position = 'absolute';
         button.style.right = '31px';
         button.style.bottom = '225px';*/
     }
 }
 
-function fullScreenSnap(button) {
+function fullScreenSnap(button, taskID) {
     var iframe = parent.document.getElementsByTagName('iframe')[0];
     iframe.style.position = 'fixed';
     iframe.style.top = '0';
@@ -408,7 +416,7 @@ function fullScreenSnap(button) {
     iframe.style.zIndex = '16777270';
     button.className = "on";
     button.innerHTML = "Windowed";
-    sessionStorage.setItem("full-screen-on", JSON.stringify(true));
+    sessionStorage.setItem(taskID + "full-screen-on", JSON.stringify(true));
 }
 
 IDE_Morph.prototype.originalToggleStageSize = IDE_Morph.prototype.toggleStageSize;
@@ -429,6 +437,126 @@ function moveAutogradingBar() {
     }
 }
 
+
+function initializeSnapAdditions(snapWorld, taskID) {
+    var reset_button = document.getElementById("reset-button");
+    var revert_button = document.getElementById("revert-button");
+    var undo_button = document.getElementById("undo-button");
+    //var menu_button = document.getElementsByClassName("onclick-menu")[0];
+    //var menu_button = document.getElementById("menu-icon");
+    var menu_button = document.getElementsByClassName("hover_darken")[0];
+    var help_overlay = document.getElementById('overlay');
+    var feedback_button = document.getElementById("feedback-button");
+    var results_overlay = document.getElementById("ag-output");
+    var regrade_buttons = document.getElementsByClassName("regrade");
+    var grade_button = document.getElementById("autograding_button");
+    var world_canvas = document.getElementById('world');
+    var snap_menu = document.getElementsByClassName('bubble')[0];
+
+
+    document.addEventListener("click", function() { grayOutButtons(world, id); });
+    snap_menu.addEventListener('click', popup_listener);
+    //grade_button.addEventListener('click', button_listener);
+    //world_canvas.addEventListener("mouseup", update_listener);
+    reset_button.onclick = function() { resetState(world, id); toggleMenu(id); };
+    revert_button.onclick = function() { revertToBestState(world, id); toggleMenu(id); };
+    undo_button.onclick = function() { revertToLastState(world, id); toggleMenu(id); };
+    menu_button.onclick = function() { toggleMenu(id); };
+    feedback_button.onclick = function() {openResults(); };
+
+    help_overlay.onclick = function(e) {
+        closePopup();
+    }
+
+    /*help_overlay.onmousemove = function() {
+        moveHelp();
+    }*/
+
+    results_overlay.onclick = function(e) {
+        if (!(document.getElementById('ag-results').contains(e.target)) && e.target.className.indexOf("regrade") === -1) {
+            closeResults();
+        }
+    }
+
+    world_canvas.onclick = function(e) {
+        if (document.getElementById('dropdown-open') !== null && !(document.getElementById('onclick-menu').contains(e.target))) {
+            toggleMenu();
+        }
+    }
+
+    var popup_listener = function(event) {
+        event.stopPropagation();
+    }
+
+    $(".bubble").mouseover(function() {
+
+        moveHelp();
+        // .position() uses position relative to the offset parent, 
+        // so it supports position: relative parent elements
+        /*var pos = $(this).offset();
+
+
+        //show the menu directly over the placeholder
+        $("#menu-item-help").css({
+            position: "absolute",
+            top: pos.top + 100 + "px",
+            left: pos.left - 250 + "px"
+        });
+        $("#menu-item-arrow").css({
+            position: "absolute",
+            top: pos.top + 60 + "px",
+            left: pos.left - 30 + "px"
+        });
+        $("#ag-button-help").css({
+            position: "absolute",
+            top: pos.top + "px",
+            left: pos.left + 200 + "px"
+        });
+        $("#ag-button-arrow").css({
+            position: "absolute",
+            top: pos.top - 30 + "px",
+            left: pos.left + 270 + "px"
+        });*/
+    });
+}
+
+//Call the test suite when this element is clicked.
+var update_listener = function() {
+    var outputLog = AGUpdate(world, id);
+};
+var button_listener = function(event) {
+    event.stopPropagation();
+    console.log('PROPAGATION SHOULD STOP');
+    var numAttempts = setNumAttempts(id);
+    outputLog = new gradingLog(world, id, numAttempts);
+    outputLog.numAttempts += 1;
+    runAGTest(world, id, outputLog);
+}
+
+function moveHelp() {
+    var pos = $(".bubble").offset();
+
+    $("#menu-item-help").css({
+        position: "absolute",
+        top: pos.top + 100 + "px",
+        left: pos.left - 250 + "px"
+    });
+    $("#menu-item-arrow").css({
+        position: "absolute",
+        top: pos.top + 60 + "px",
+        left: pos.left - 30 + "px"
+    });
+    $("#ag-button-help").css({
+        position: "absolute",
+        top: pos.top + "px",
+        left: pos.left + 200 + "px"
+    });
+    $("#ag-button-arrow").css({
+        position: "absolute",
+        top: pos.top - 30 + "px",
+        left: pos.left + 270 + "px"
+    });
+}
 
 
 

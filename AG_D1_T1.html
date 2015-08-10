@@ -89,15 +89,19 @@
                 }
             }
 
+
+            initializeSnapAdditions(world, id);
+
+
             //AUTOGRADER ADDITION - 
             //Forced to use setTimeout() to let the world load before... Maybe not.           
             //Create a gradingLog and initialize the AG status bar (AGSB).
 
             //Initialize AGSB button.
             var grade_button = document.getElementById("autograding_button");
-            grade_button.style.cursor = "pointer";
+            //grade_button.style.cursor = "pointer";
             //Call the test suite when this element is clicked.
-            var update_listener = function() {
+            /*var update_listener = function() {
                 var outputLog = AGUpdate(world, id);
             };
             var button_listener = function(event) {
@@ -107,12 +111,12 @@
                 outputLog = new gradingLog(world, id, numAttempts);
                 outputLog.numAttempts += 1;
                 runAGTest(world, id, outputLog);
-            }
+            }*/
             grade_button.addEventListener('click', button_listener);
             var world_canvas = document.getElementById('world');
             world_canvas.addEventListener("mouseup", update_listener);
             
-            var reset_button = document.getElementById("reset-button");
+            /*var reset_button = document.getElementById("reset-button");
             var revert_button = document.getElementById("revert-button");
             var undo_button = document.getElementById("undo-button");
             var menu_button = document.getElementsByClassName("onclick-menu")[0];
@@ -135,10 +139,14 @@
             $(".bubble").click(function(event){ event.stopPropagation(); });
 
             feedback_button.onclick = function() {openResults(); };
-            help_overlay.onclick = function(e) {
+            /*help_overlay.onclick = function(e) {
                 if (!(document.getElementById('help-popup').contains(e.target))) {
                     closePopup();
                 }
+            }*/
+
+            /*help_overlay.onclick = function(e) {
+                closePopup();
             }
             results_overlay.onclick = function(e) {
                 if (!(document.getElementById('ag-results').contains(e.target)) && e.target.className.indexOf("regrade") === -1) {
@@ -154,9 +162,9 @@
             /* Check if the snap xml has changed "significantly".
              * Exclude script position and edit history.
              */
-            document.addEventListener("click", function() {
+            /*document.addEventListener("click", function() {
                 grayOutButtons(world, id);
-            });
+            });*/
 
             if (isEDX) {
                 makeOverlayButton();
@@ -169,27 +177,62 @@
                 makeFullScreenButton();
                 var full_screen = document.getElementById('full-screen');
                 full_screen.onclick = function() {
-                    toggleSnapWindow(full_screen);   
+                    toggleSnapWindow(full_screen, id);
+                    moveHelp();   
                 }
-                var full_screen_on = JSON.parse(sessionStorage.getItem("full-screen-on"));
+                var full_screen_on = JSON.parse(sessionStorage.getItem(id + "full-screen-on"));
                 if (full_screen_on) {
-                    fullScreenSnap(full_screen);
+                    fullScreenSnap(full_screen, id);
                 }
             }
+
+            /*$(".bubble").mouseover(function() {
+                // .position() uses position relative to the offset parent, 
+                // so it supports position: relative parent elements
+                var pos = $(this).offset();
+
+
+                //show the menu directly over the placeholder
+                $("#menu-item-help").css({
+                    position: "absolute",
+                    top: pos.top + 100 + "px",
+                    left: pos.left - 250 + "px"
+                });
+                $("#menu-item-arrow").css({
+                    position: "absolute",
+                    top: pos.top + 60 + "px",
+                    left: pos.left - 30 + "px"
+                });
+                $("#ag-button-help").css({
+                    position: "absolute",
+                    top: pos.top + "px",
+                    left: pos.left + 200 + "px"
+                });
+                $("#ag-button-arrow").css({
+                    position: "absolute",
+                    top: pos.top - 30 + "px",
+                    left: pos.left + 270 + "px"
+                });
+            });*/
+
 
             //TODO: Fix this timeout.
             setTimeout(function() {
                 console.log(world);
                 var outputLog = AGStart(world,id);
+                if (!graded) {return;}
                 //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
-                populateFeedback(outputLog); 
-                populateFeedback(outputLog); 
+                if (showFeedback) {
+                    populateFeedback(outputLog); 
+                    populateFeedback(outputLog);
+                } 
                 var starter_xml = sessionStorage.getItem("starter_file");
                 if (starter_xml) {
                     ide.openProjectString(starter_xml);
                     sessionStorage.removeItem("starter_file");
                 }
                 grayOutButtons(world, id);
+                moveAutogradingBar();
                 
             },500);
             // Start Snap Environment Loop
@@ -233,19 +276,16 @@
 <!-- Snap Autograding Menu -->
 <!-- Autograding Menu Help Button -->
 <div class="overlay is-hidden" id="overlay">
-    <div class="popup-content" id="help-popup">
+    <!--<div class="popup-content" id="help-popup">
         <span class="button-close" onclick="closePopup();">X</span>
-            <img id="example-image" src="edX_snap_example.png">
-            <p id="full-screen-arrow">&#8600;</p>
-            <p id="full-screen-help">This full-screen button will pop out the Snap! window.</p>
-            <p id="menu-item-arrow">&#8599;</p>
-            <p id="menu-item-help">The first menu item will display the results from running the autograder.</br></br>The next three menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your last correct attempt, to the attempt that edX has recorded, or just to your last graded attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
-            <p id="ag-button-arrow">&#8593;</p>
-            <p id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
-            <p>
-                Please remember to click the 'Submit' button below the Snap! window to obtain credit for this problem!
-            </p>
-    </div>
+            <img id="example-image" src="edX_snap_example.png">-->
+            <p class="help-text" id="full-screen-arrow">&#8600;</p>
+            <p class="help-text" id="full-screen-help">This full-screen button will pop out the Snap! window.</p>
+            <p class="help-text" id="menu-item-arrow">&#8599;</p>
+            <p class="help-text" id="menu-item-help">The first menu item will display the results from running the autograder.</br></br>The next two menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your best attempt or to your last graded attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
+            <p class="help-text" id="ag-button-arrow">&#8593;</p>
+            <p class="help-text" id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
+    <!--</div>-->
 </div>
 
 <div style="display:inline-block" class="view-results" id="circle" onclick="openResults();">Results

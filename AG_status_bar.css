@@ -55,6 +55,7 @@ div {
   transition: all 0.5s;
 
   border:1px solid #666666;
+  cursor: pointer;
 }
 
 /*#autograding_button:hover {
@@ -145,6 +146,7 @@ div {
     list-style-type:none;
     padding: 1px 3px;
     font-size: 12px;
+    color: black;
 }
 
 .menu-divider-sub-menu{
@@ -153,13 +155,13 @@ div {
 }
 
 
-#enabled-button:hover, #enabled-button:hover a {
-    background-color: #1C1C1C;
+#enabled-button:hover/*, #enabled-button:hover a*/ {
+    background-color: rgba(0, 0, 0, 0.2);
     /*width: 100%;*/
 }
 
 
-#reset-button, #revert-button, #last-submit, #undo-button, #feedback-button {
+#reset-button, #revert-button, #last-submit, #undo-button, #feedback-button, #help-button {
     color: inherit;
     text-decoration: none;
     display: block;
@@ -206,11 +208,11 @@ div {
     /*width: 250px;
     height: 120px;*/
     padding: 0px;
-    background-color: #666666;
+    background-color: white;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    border: #FFFFFF solid 1.5px;
+    border: #3C3C3C solid 2px;
     box-shadow: 3px 3px 10px #000000;
 }
 
@@ -219,7 +221,7 @@ div {
     position: absolute;
     border-style: solid;
     border-width: 0 10px 12px;
-    border-color: #666666 transparent;
+    border-color: white transparent;
     display: block;
     width: 0;
     z-index: -1;
@@ -232,7 +234,7 @@ div {
     position: absolute;
     border-style: solid;
     border-width: 0 9px 11px;
-    border-color: #FFFFFF transparent;
+    border-color: #3C3C3C transparent;
     display: block;
     width: 0;
     z-index: -2;
@@ -241,7 +243,7 @@ div {
 }
 
 #disabled-button {
-    background: #666666;
+    background: rgba(0, 0, 0, 0.2);
     cursor: default;
 }
 
@@ -375,51 +377,67 @@ div {
 
 #full-screen-arrow {
     position: absolute;
-    right: 12%;
-    top: 73%;
+    right: 80px;
+    bottom: 0;
     color: white;
     font-size: 120%;
 }
 
 #full-screen-help {
     position: absolute;
-    width: 20%;
-    right: 3%;
-    top: 70%;
-    color: white;
-    font-size: 75%
-}
+    right: 0;
+    bottom: 30px;
+    width: 150px;
+    color: black;
+    font-size: 0.75em;
+    background-color: white;
+    padding: 10px;
+    border-radius: 15px;
+    box-shadow: 5px 5px 20px black;
+    border: 5px solid rgba(41, 41, 41, 0.74);
+  }
 
 #menu-item-arrow {
-    position: absolute;
-    top: 25%;
-    left: 35%;
+    /*position: absolute;
+    top: 6em;
+    right: 29em;*/
     color: white;
-    font-size: 120%;
+    font-size: 1.2em;
 }
 
 #menu-item-help {
-    position: absolute;
-    top: 30%;
+    /*position: absolute;
+    top: 13em;
+    right: 45em;*/
     width: 20%;
-    left: 25%;
-    color: white;
-    font-size: 70%;
+    color: black;
+    font-size: 0.7em;
+    background-color: white;
+    padding: 10px;
+    border-radius: 15px;
+    box-shadow: 5px 5px 20px black;
+    border: 5px solid rgba(41, 41, 41, 0.74);
 }
 
 #ag-button-arrow {
-    position: absolute;
-    top: 6%;
-    right: 33%;
+    /*position: absolute;
+    top: 1em;
+    right: 14em;*/
     color: white;
-    font-size: 120%;
+    font-size: 1.2em;
 }
 
 #ag-button-help {
-    position: absolute;
-    width: 8%;
-    top: 8%;
-    right: 32%;
-    color: white;
-    font-size: 75%;
+    /*position: absolute;
+    width: 7em;
+    top: 3em;
+    right: 22em;*/
+    width: 7em;
+    color: black;
+    font-size: 0.75em;
+    background-color: white;
+    padding: 10px;
+    border-radius: 15px;
+    box-shadow: 5px 5px 20px black;
+    border: 5px solid rgba(41, 41, 41, 0.74);
 }
