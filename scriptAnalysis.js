@@ -133,6 +133,30 @@ function scriptPresentInSprite(script, spriteIndex, scriptVariables) {
 	return false;
 }
 
+/* Returns true if a reporter block is composed of only text morphs. Takes in
+ * BLOCK is the raw JavaScript morph that we will loop through to check all of
+ * its children and make sure that all of its morphs are text morphs. */
+function reporterHasNoInputs(block) {
+	if (block === undefined) {
+		return false;
+	}
+	if (!(block instanceof ReporterBlockMorph)) {
+		return false;
+	}
+	var morph;
+	try {
+		for (var i = 0; i < block.children.length; i++) {
+			morph = block.children[i];
+			if (!(morph instanceof StringMorph)) {
+				return false;
+			}
+		}
+	} catch(e) {
+		return false;
+	}
+	return true;
+}
+
 /* Takes in a single block and converts it into JSON format.
  * For example, will take in a block like:
  *
@@ -186,7 +210,11 @@ function JSONblock(block) {
 				blockArgs.push(JSONscript(morph.children[0]));
 			}
 		} else if (morph instanceof ReporterBlockMorph) {
-			blockArgs.push(JSONblock(morph));
+			if (reporterHasNoInputs(morph)) {
+				blockArgs.push(morph.blockSpec);
+			} else {
+				blockArgs.push(JSONblock(morph));
+			}
 		}
 	}
 
