@@ -65,23 +65,32 @@
             /* Getting to Know the Snap! Interface */
 
                 /* Recreate the move/say/move/say script */
-                var largeScriptExists = function largeScriptExists() {
-                    return scriptPresentInSprite('[{"blockSp":"move %n steps","inputs":["20"]},{"blockSp":"say %s for %n secs","inputs":["Hello!","2"]},{"blockSp":"move %n steps","inputs":["20"]},{"blockSp":"say %s for %n secs","inputs":["You\'ve just made a script!","2"]}]');
-                }
-                testAssert(outputLog, largeScriptExists,
-                    "The move/say/move/say script was found on the screen.",
-                    "The move/say/move/say script was not found on the screen. Check your inputs.",
-                    "Make sure you have all of the correct inputs and the blocks are in order for the move/say/move/say script.", 1);
+                // var largeScriptExists = function largeScriptExists() {
+                //     return scriptPresentInSprite('[{"blockSp":"move %n steps","inputs":["20"]},{"blockSp":"say %s for %n secs","inputs":["Hello!","2"]},{"blockSp":"move %n steps","inputs":["20"]},{"blockSp":"say %s for %n secs","inputs":["You\'ve just made a script!","2"]}]');
+                // }
+                // testAssert(outputLog, largeScriptExists,
+                //     "The move/say/move/say script was found on the screen.",
+                //     "The move/say/move/say script was not found on the screen. Check your inputs.",
+                //     "Make sure you have all of the correct inputs and the blocks are in order for the move/say/move/say script.", 1);
 
 
-                /* Recreate the move/turn script */
-                var smallScriptExists = function smallScriptExists() {
-                    return scriptPresentInSprite('[{"blockSp":"move %n steps","inputs":["10"]},{"blockSp":"turn %clockwise %n degrees","inputs":["15"]}]');
-                }
-                testAssert(outputLog, smallScriptExists,
-                    "The move/turn was found on the screen.",
-                    "The move/turn was not found on the screen. Check your inputs.",
-                    "Make sure you have all of the correct inputs and the blocks are in order for the move/turn script.", 1);
+                // /* Recreate the move/turn script */
+                // var smallScriptExists = function smallScriptExists() {
+                //     return scriptPresentInSprite('[{"blockSp":"move %n steps","inputs":["10"]},{"blockSp":"turn %clockwise %n degrees","inputs":["15"]}]');
+                // }
+                // testAssert(outputLog, smallScriptExists,
+                //     "The move/turn was found on the screen.",
+                //     "The move/turn was not found on the screen. Check your inputs.",
+                //     "Make sure you have all of the correct inputs and the blocks are in order for the move/turn script.", 1);
+
+                // /* Recreate pendown/repeat/move/turn */
+                // var firstScriptExists = function firstScriptExists() {
+                //     return scriptPresentInSprite('[{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["10",[{"blockSp":"move %n steps","inputs":["10"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]]}]');
+                // }
+                // testAssert(outputLog, firstScriptExists,
+                //     "The penDown/repeat/move/turn block was found on the screen",
+                //     "The penDown/repeat/move/turn block was not found on the screen",
+                //     "Make sure you recreate the exact script on the screen.", 1);
 
         /* Lab 2: Control Commands. */
 
@@ -111,6 +120,33 @@
                 //     "The third forever script was found on the screen.",
                 //     "The third forever script was not found on the screen. Check your inputs.",
                 //     "Make sure you have all of the correct inputs and the blocks are in order for the third forever script script.");
+
+                /* Recreate 3 provided forever scripts */
+                var foreverBlock4 = function foreverBlock4() {
+                    return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
+                }
+                var foreverBlock5 = function foreverBlock5() {
+                    return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
+                }
+                var foreverBlock6 = function foreverBlock6() {
+                    return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
+                }
+                testAssert(outputLog, foreverBlock4,
+                    "The pointtowardsMousePointer/move block was found",
+                    "The pointtowardsMousePointer/move block was found",
+                    "Make sure you match the script exactly.", 1)
+
+                
+                testAssert(outputLog, foreverBlock5,
+                    "The pointtowardsMousePointer/move block was found",
+                    "The pointtowardsMousePointer/move block was found",
+                    "Make sure you match the script exactly.", 1)
+
+                
+                testAssert(outputLog, foreverBlock6,
+                    "The pointtowardsMousePointer/move block was found",
+                    "The pointtowardsMousePointer/move block was found",
+                    "Make sure you match the script exactly.", 1)
 
 
         /* Lab 3: Repeat Commands. */
