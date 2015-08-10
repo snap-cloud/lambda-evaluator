@@ -377,9 +377,10 @@ function testKScope(outputLog, iter, point) {
 	var taskID = outputLog.taskID;
 	var gLog = outputLog;
 	var eLog = new SpriteEventLog(),
-		testID = gLog.addTest("s", undefined, null, true, -1, point),
+		testID = gLog.addTest("s", undefined, null, true, -1, false, point),
 		iterations = iter || 3,
 		spriteList = snapWorld.children[0].sprites.contents;
+	console.log(gLog);
 
 	//creating this too early has caused issues with getting incorect data
 	var collect = setInterval(function() {
@@ -394,9 +395,10 @@ function testKScope(outputLog, iter, point) {
 		for (var i = 0; i < eLog.numSprites; i++) {
 			eLog["" + i][0].ignore = true;
 		}
+		gLog[testID].graded = true;
 		eLog.callVal = eLog.spliceIgnores().compareSprites(function(i) {
 			var log = this;
-			gLog[testID].graded = true;
+			//gLog[testID].graded = true;
 			gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Beautiful Kaleidoscope!";
 			gLog[testID].output = gLog[testID].correct = true;
 			if (log && log.numSprites !== 4) {
