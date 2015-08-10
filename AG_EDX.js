@@ -31,25 +31,27 @@ var AG_EDX = (function() {
     // access to the return value of getState and can choose it instead to
     // grade.
     function getGrade() {
+        console.log("getGrade");
         //Grab Snap ide and testLog, null if AGTest() has not been called.
         var ide = world.children[0];
         // console.log("THE ID IS: " + id);
-        if (localStorage.getItem(id + "_test_log") !== null){
-            var glog = JSON.parse(localStorage.getItem(id + "_test_log"));
-            var snapXML = localStorage.getItem(id + "_test_state");
+        if (sessionStorage.getItem(id + "_test_log") !== null){
+            var glog = JSON.parse(sessionStorage.getItem(id + "_test_log"));
+            var snapXML = sessionStorage.getItem(id + "_test_state");
             // console.log(snapXML);
             //Save Snap XML in Local Storage
             // localStorage.setItem(id, xmlString); 
             //If AGTest() has been called, save the gradeLog in 
             if (glog !== undefined) {
                 //Convert to an AG_state
+                glog["showFeedback"] = showFeedback;
                 var edx_log = AG_log(glog, snapXML);
                 edx_log["snapXML"] = snapXML;
                 console.log(JSON.stringify(edx_log));
 
                 //saves correct student answer, as well as state, in case student returns to question
-                localStorage.setItem(id + "_last_submitted_log", localStorage.getItem(id + "_test_log"));
-                localStorage.setItem(id + "_last_submitted_state", snapXML);
+                //sessionStorage.setItem(id + "_last_submitted_log", sessionStorage.getItem(id + "_test_log"));
+                //sessionStorage.setItem(id + "_last_submitted_state", snapXML);
                 //localStorage.setItem(id + "_ag_output", JSON.stringify(edx_log));
             }
             console.log("GET GRADE SUCCEEDING");
@@ -65,6 +67,7 @@ var AG_EDX = (function() {
     }
 
     function getState() {
+        console.log("getState");
         // return encodeURIComponent(JSON.stringify(AG_state));
 
         // if _test_state and _test_log exist
@@ -72,13 +75,30 @@ var AG_EDX = (function() {
         // else
             // return 'never graded'
 
-        var graded_xml = localStorage.getItem(id + "_test_state");
-        var graded_log = localStorage.getItem(id + "_test_log");
+        var graded_xml = sessionStorage.getItem(id + "_test_state");
+        var graded_log = sessionStorage.getItem(id + "_test_log");
+        var correct_xml = sessionStorage.getItem(id + "_c_test_state");
+        var correct_log = sessionStorage.getItem(id + "_c_test_log");
+        /*var submit_xml = sessionStorage.getItem(id + "_last_submitted_state");
+        var submit_log = sessionStorage.getItem(id + "_last_submitted_log");*/
+
         if (!graded_xml || !graded_log) {
             return 'never graded';
         }
-        var output = encodeURI(JSON.stringify({out_log:graded_log,state:encodeURIComponent(graded_xml)}));
-        console.log(output);
+
+        var output = {out_log:graded_log,state:encodeURIComponent(graded_xml)};
+
+        if (correct_xml && correct_log) {
+            output['c_log'] = correct_log;
+            output['c_state'] = encodeURIComponent(correct_xml);
+        }
+        /*if (submit_xml && submit_log) {
+            output['submit_log'] = submit_log;
+            output['submit_state'] = encodeURIComponent(submit_xml);
+        }*/
+        console.log(encodeURIComponent(correct_xml));
+        output = encodeURI(JSON.stringify(output));
+        //console.log(output);
         return output;
 
         // var last_xml = localStorage.getItem(id + "_test_state");
@@ -100,7 +120,7 @@ var AG_EDX = (function() {
     function setState() {
         console.log('SET STATE IS CALLED');
         var last_state_string = arguments.length === 1 ? arguments[0] : arguments[1];
-        console.log(last_state_string);
+        //console.log(last_state_string);
         //var ide = world.children[0];
         if (last_state_string === 'starter file') {
             var starter_xml = $.get(starter_path, function(data) {
@@ -115,8 +135,16 @@ var AG_EDX = (function() {
             var last_state = JSON.parse(last_state_string);
             console.log(last_state);
             last_state.state = decodeURIComponent(last_state.state);
-            localStorage.setItem(id + '_test_state', last_state.state);
-            localStorage.setItem(id + '_test_log', last_state.out_log);
+            sessionStorage.setItem(id + '_test_state', last_state.state);
+            sessionStorage.setItem(id + '_test_log', last_state.out_log);
+            if (last_state.c_state && last_state.c_log) {
+                sessionStorage.setItem(id + '_c_test_state', decodeURIComponent(last_state.c_state));
+                sessionStorage.setItem(id + '_c_test_log', last_state.c_log);
+            }
+            /*if (last_state.submit_state && last_state.submit_log) {
+                sessionStorage.setItem(id + '_last_submitted_state', decodeURIComponent(last_state.submit_state));
+                sessionStorage.setItem(id + '_last_submitted_log', last_state.submit_log);
+            }*/
         }
 
 

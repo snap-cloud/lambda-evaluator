@@ -34,6 +34,7 @@ function gradingLog(snapWorld, taskID, numAttempts) {
  *    reverted.
  */
 gradingLog.prototype.saveLog = function() {
+	var c_prev_log = JSON.parse(sessionStorage.getItem(outputLog.taskID + "_c_test_log"));
 	// Save the JSON string of the gradingLog,
 	// without the Snap 'world' reference [To minimize stored data]
 	var world_ref = this.snapWorld;
@@ -42,10 +43,10 @@ gradingLog.prototype.saveLog = function() {
 	this.snapWorld = world_ref;
 
 	// Store the log string in localStorage
-	localStorage.setItem(this.taskID + "_test_log", log_string);
-	if (this.allCorrect) { // If all tests passed.
+	sessionStorage.setItem(this.taskID + "_test_log", log_string);
+	if (this.allCorrect || ((this.pScore > 0) && ((c_prev_log && this.pScore >= c_prev_log.pScore) || (!c_prev_log)))) {
 		// Store the correct log in localStorage
-		localStorage.setItem(this.taskID + "_c_test_log", log_string);
+		sessionStorage.setItem(this.taskID + "_c_test_log", log_string);
 	}
 
 }
@@ -57,7 +58,7 @@ gradingLog.prototype.saveLog = function() {
  */
 gradingLog.prototype.saveSnapXML = function(store_key) {
 	if (this.snapWorld !== null && store_key !== undefined) {
-        localStorage.setItem(store_key, this.stringifySnapXML());
+        sessionStorage.setItem(store_key, this.stringifySnapXML());
 	}
 }
 
@@ -253,12 +254,18 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	console.log('TEST OUTPUT')
 	console.log(test.output)
 
+	//if expOut is an array turn it into a snap! list for processing
 	if (expOut instanceof Array) {
 		expOut = new List(expOut);
 	}
 
-	if (expOut instanceof Array) {
-		expOut = new List(expOut);
+	//if expOut is a seperate function call run it with the output
+	//and update things accordingly. The expOut function should update
+	//the test.expOut!
+	//Format: function(output, test)
+	if (expOut instanceof Function) {
+		output = expOut(output, test);
+		expOut = true;
 	}
 
 	//Update feedback and 'correct' flag depending on output.
@@ -271,8 +278,13 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 		//test.feedback = test.feedback || "Unexpected Output: " + String(output);
 		test.feedback = "Unexpected Output: " + String(output) || test.feedback;
 	}
-	//Set test graded flag to true, for gradingLog.gradeLog()
 
+	//Set expOut back to an array
+	if (expOut instanceof List) {
+		expOut = expOut.asArray();
+	}
+
+	//Set test graded flag to true, for gradingLog.gradeLog()
 	test.graded = true;
 	//Kill error handling timeout
 	clearTimeout(this.currentTimeout);
@@ -282,8 +294,11 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	//Clear the input values.
 	try {
 		if (test.isolated) {
-			console.log("removing sprite");
-			this.snapWorld.children[0].sprites.contents[test.sprite].remove();
+			console.log("removing sprite");	
+			test.sprite.remove();
+			test.sprite = null;
+			var focus = this.snapWorld.children[0].sprites.contents[0];
+			this.snapWorld.children[0].selectSprite(focus);
 		} else {
 			var block = getScript(test.blockSpec);
 			setValues(block, Array(test['input'].length).join('a').split('a'));
@@ -412,6 +427,8 @@ function dictLog(outputLog) {
 	outDict["allCorrect"] = outputLog.allCorrect;
 	outDict["taskID"] = outputLog.taskID;
 	outDict["pScore"] = outputLog.pScore;
+	outDict["totalPoints"] = outputLog.totalPoints;
+	outDict["showFeedback"] = outputLog.showFeedback;
 	return outDict;
 }
 
@@ -529,6 +546,11 @@ function checkArrayForList(a) {
 function setValues(block, values) {
 	var valIndex = 0,
 		morphIndex = 0;
+
+	if (block.blockSpec == "list %exp") {
+		setNewListToArg(values[valIndex], block, morphIndex);
+		return;
+	}
 
 	var morphList = block.children;
 

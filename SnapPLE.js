@@ -277,8 +277,11 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 	//Clear the input values.
 	try {
 		if (test.isolated) {
-			console.log("removing sprite");
-			this.snapWorld.children[0].sprites.contents[test.sprite].remove();
+			console.log("removing sprite");	
+			test.sprite.remove();
+			test.sprite = null;
+			var focus = this.snapWorld.children[0].sprites.contents[0];
+			this.snapWorld.children[0].selectSprite(focus);
 		} else {
 			var block = getScript(test.blockSpec);
 			setValues(block, Array(test['input'].length).join('a').split('a'));
@@ -653,6 +656,11 @@ function setValues(block, values) {
 	var valIndex = 0,
 		morphIndex = 0;
 
+	if (block.blockSpec == "list %exp") {
+		setNewListToArg(values[valIndex], block, morphIndex);
+		return;
+	}
+
 	var morphList = block.children;
 
 	for (var morph of morphList) {
@@ -853,7 +861,65 @@ function printEventLog(eventLog, ignore) {
 	}
 }
 
+//THIS! is a way around making snap call a callback for EVERY process
+//I basically took the ThreadManager.prototype.removeTerminatedProcesses
+//and added a few lines
+//I temporarily replace ThreadManager.prototype.removeTerminatedProcesses
+//with this function for testing callbacks
+function tempRemoveTP() {
+	// and un-highlight their scripts
+    var remaining = [];
+    this.processes.forEach(function (proc) {
+        if ((!proc.isRunning() && !proc.errorFlag) || proc.isDead) {
+            if (proc.topBlock instanceof BlockMorph) {
+                proc.topBlock.removeHighlight();
+            }
+            if (proc.prompter) {
+                proc.prompter.destroy();
+                if (proc.homeContext.receiver.stopTalking) {
+                    proc.homeContext.receiver.stopTalking();
+                }
+            }
+
+            if (proc.topBlock instanceof ReporterBlockMorph) {
+                if (proc.onComplete instanceof Function) {
+                    proc.onComplete(proc.homeContext.inputs[0]);
+                } else {
+                    if (proc.homeContext.inputs[0] instanceof List) {
+                        proc.topBlock.showBubble(
+                            new ListWatcherMorph(
+                                proc.homeContext.inputs[0]
+                            ),
+                            proc.exportResult
+                        );
+                    } else {
+                        proc.topBlock.showBubble(
+                            proc.homeContext.inputs[0],
+                            proc.exportResult
+                        );
+                    }
+                }
+            //This else block is the newly added code, it simply runs the callback
+            } else {
+            	if (proc.onComplete instanceof Function) {
+            		proc.onComplete();
+            	}
+            }
+        } else {
+            remaining.push(proc);
+        }
+    });
+    this.processes = remaining;
+}
+
+//Specific test function for snap autograder
+//Tests if a FOR block "says" 0 through 30 by even numbers
+//This test temporarily modifies Snap itself by using tempRemoveTP
+//@param outputLog - the required test output Log
 function testSayTo30(outputLog) {
+	var backupOrigFunc = ThreadManager.prototype.removeTerminatedProcesses;
+	ThreadManager.prototype.removeTerminatedProcesses = tempRemoveTP;
+
 	var block = getScript("for %upvar = %n to %n %cs"),
 		gLog = outputLog,
 		eLog = new SpriteEventLog(),
@@ -875,19 +941,24 @@ function testSayTo30(outputLog) {
 			gLog[testID].graded = true;
 			gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Beautiful!";
 			gLog[testID].output = gLog[testID].correct = true;
-			var num = 0;
+			var num = 2;
 			for (var i = 0; i < eLog["0"].length; i++) {
-				if (eLog.bubbleData === "nothing...") {
+				if (eLog["0"][i].bubbleData === "nothing...") {
 					continue;
 				}
-				if (num.toString() !== eLog["0"].bubbleData) {
-					gLog[testID]["feedback"] = "You did not 'say' every even number from 0 to 30.";
-					gLog[testID].output = gLog[testID].correct = false;
-					//set false values and return
+				if (num !== eLog["0"][i].bubbleData) {
 					break;
+				} else {
+					num += 2;
 				}
-				num += 2;
 			}
+
+			if (num !== 32) {
+				gLog[testID]["feedback"] = "You did not 'say' every even number from 0 to 30.";
+				gLog[testID].output = gLog[testID].correct = false;
+			}
+
+		ThreadManager.prototype.removeTerminatedProcesses = backupOrigFunc;
 			gLog.scoreLog();
 		});
 
@@ -1419,11 +1490,33 @@ function addBlockToSprite(sprite, block) {
 }
 
 function createTestSprite(log, testID) {
-	log.snapWorld.children[0].addNewSprite();
-	var sprites = log.snapWorld.children[0].sprites.contents;
-	log[testID].sprite = sprites.length - 1;
-	return sprites[sprites.length - 1];
+	var ide = log.snapWorld.children[0];
+	var sprite = addInvisibleSprite(ide);
+	log[testID].sprite = sprite;
+	return sprite;
 }
+
+//Creates a semi invisable sprite for testing purposes
+//Adds the sprite to the stage but no where else!
+//returns the new sprite
+//@param ide - the working snap IDE
+function addInvisibleSprite(ide) {
+	var sprite = new SpriteMorph(ide.globalVariables),
+        rnd = Process.prototype.reportRandom;
+
+    sprite.name = ide.newSpriteName(sprite.name);
+
+    sprite.setCenter(ide.stage.center());
+   	ide.stage.add(sprite);
+    // randomize sprite properties
+    sprite.setHue(rnd.call(ide, 0, 100));
+    sprite.setBrightness(rnd.call(ide, 50, 100));
+    sprite.turn(rnd.call(ide, 1, 360));
+    sprite.setXPosition(rnd.call(ide, -220, 220));
+    sprite.setYPosition(rnd.call(ide, -160, 160));
+
+   return sprite;
+ }
 
 function setUpIsolatedTest(blockSpec, log, testID) {
 	var block = findBlockInPalette(blockSpec, log.snapWorld);
@@ -1431,7 +1524,7 @@ function setUpIsolatedTest(blockSpec, log, testID) {
 		throw blockSpec + " not found in Palette!";
 	}
 	var sprite = createTestSprite(log, testID);
-	addBlockToSprite(sprite, block, log.snapWorld);
+	addBlockToSprite(sprite, block);
 	return block;
 }
 
