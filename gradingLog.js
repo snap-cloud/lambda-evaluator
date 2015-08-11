@@ -354,7 +354,6 @@ gradingLog.prototype.scoreLog = function() {
 		//If any tests are incomplete, return the log and prevent updating.
 		if (!this[i].graded) { 
 			console.log("scoreLog: The log is not yet complete.");
-			console.log(this);
 			return this; 
 		}
 	   	testIDs.push(i);
