@@ -96,7 +96,7 @@
             }, 500);
 
             if (isEDX) {
-                parent.document.getElementsByClassName('check-label')[0].onclick = function () {
+                parent.document.getElementsByClassName('check-label')[id_problem].onclick = function () {
                     sessionStorage.setItem(id + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
                 }
             }
