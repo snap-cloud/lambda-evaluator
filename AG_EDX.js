@@ -124,16 +124,14 @@ var AG_EDX = (function() {
         //var ide = world.children[0];
         if (last_state_string === 'starter file') {
             var starter_xml = $.get(starter_path, function(data) {
-                sessionStorage.setItem("starter_file", data)},
-                //console.log(data);
-                //ide.openProjectString(data)}, 
-                "text"); //TODO: Loading here still unsafe
+                sessionStorage.setItem("starter_file", data)}, "text"); //TODO: Loading here still unsafe
             return;
         } else if (last_state_string === 'never graded') {
             return;
         } else {
             var last_state = JSON.parse(last_state_string);
             console.log(last_state);
+            console.log(last_state.out_log)
             last_state.state = decodeURIComponent(last_state.state);
             sessionStorage.setItem(id + '_test_state', last_state.state);
             sessionStorage.setItem(id + '_test_log', last_state.out_log);

@@ -95,13 +95,12 @@ function AGUpdate(snapWorld, taskID) {
     var curr_xml = ide.serializer.serialize(ide.stage);
     //Retrieve previously graded Snap XML strings (if in sessionStorage).
     var c_prev_xml = sessionStorage.getItem(taskID + "_c_test_state");
-    var c_prev_log = JSON.parse(sessionStorage.getItem(taskID + "_c_test_log"));
+    var c_prev_log = sessionStorage.getItem(taskID + "_c_test_log");
     var prev_xml = sessionStorage.getItem(taskID + "_test_state");
-
+    var prev_log = sessionStorage.getItem(taskID + "_test_log");
     //var last_xml = sessionStorage.getItem(taskID + "_last_submitted_state");
     //Retrieve previous grade logs (if in sessionStorage). As {String}s
-    var c_prev_log = sessionStorage.getItem(taskID + "_c_test_log");
-    var prev_log = sessionStorage.getItem(taskID + "_test_log");
+    
     if (!prev_xml || !curr_xml) {
         console.log(prev_xml);
         console.log(curr_xml);
@@ -129,7 +128,7 @@ function AGUpdate(snapWorld, taskID) {
         //Retrieve the correct test log from sessionStorage
         outputLog = JSON.parse(c_prev_log);
         outputLog.snapWorld = snapWorld;
-        if (c_prev_log.pScore === 1) {
+        if (outputLog.pScore === 1) {
             AG_bar_graded(outputLog);
         } else {
             AG_bar_semigraded(outputLog);

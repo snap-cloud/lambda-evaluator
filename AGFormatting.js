@@ -69,7 +69,7 @@ function AG_bar_semigraded(outputLog) {
 }
 
 function AG_bar_nograde() {
-    var button_text = "UNGRADED";
+    var button_text = "NOT GRADED";
     var button_elem = $('#autograding_button span');
     button_elem.html(button_text);
     $('#autograding_button').css({"background":"gray", "cursor":"default"});
