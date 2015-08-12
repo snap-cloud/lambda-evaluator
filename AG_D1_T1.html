@@ -180,12 +180,15 @@
 
             if (isEDX) {
                 makeOverlayButton();
-                var overlay_button = parent.document.getElementsByClassName('overlay-button')[id_problem];
-                //overlay_button.style.display = "block";
-                overlay_button.onclick = function() { 
-                    overlay_button.style.display = "none";
-                    grade_button.click(); 
-                }
+                setTimeout(function() {
+                    var overlay_button = parent.document.getElementsByClassName('overlay-button')[id_problem];
+                    //overlay_button.style.display = "block";
+                    overlay_button.onclick = function() { 
+                        overlay_button.style.display = "none";
+                        grade_button.click(); 
+                    } 
+                }, 500);
+                
                 makeFullScreenButton();
                 var full_screen = document.getElementById('full-screen');
                 full_screen.onclick = function() {
