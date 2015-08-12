@@ -397,7 +397,7 @@ function makeFullScreenButton() {
 }
 
 function toggleSnapWindow(button, taskID) {
-    var iframe = parent.document.getElementsByTagName('iframe')[0];
+    var iframe = parent.document.getElementsByTagName('iframe')[id_problem];
     if (button.className === "off") {
         fullScreenSnap(button, taskID);
     } else {
@@ -417,7 +417,7 @@ function toggleSnapWindow(button, taskID) {
 }
 
 function fullScreenSnap(button, taskID) {
-    var iframe = parent.document.getElementsByTagName('iframe')[0];
+    var iframe = parent.document.getElementsByTagName('iframe')[id_problem];
     iframe.style.position = 'fixed';
     iframe.style.top = '0';
     iframe.style.right = '0';

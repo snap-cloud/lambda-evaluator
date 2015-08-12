@@ -4,7 +4,6 @@ var iframes = window.parent.document.getElementsByTagName("iframe");
 for (i = 0; i < num_iframes; i++) {
     if (iframes[i] === current_iframe) {
         var id_problem = i;
-        parent.id_problem = i;
     }
 }
 
