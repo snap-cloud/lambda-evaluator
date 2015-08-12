@@ -77,7 +77,7 @@ function AGTest(outputLog) {
             || simpleCBlockContains(realTriangleBody, "turn %clockwise % degrees", "repeat", ["120"]);
     }
     var penDownPresent = function penDownPresent() {
-        return spriteContainsBlock("pen down") && (!blockPrecedesInSprite("draw triangle", "pen down") || blockPrecedes("pen down", "repeat % %", realTriangleBody);
+        return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw triangle", "pen down")) || blockPrecedes("pen down", "repeat % %", realTriangleBody);
     }
 
     testAssert(outputLog, trianglePresent,
