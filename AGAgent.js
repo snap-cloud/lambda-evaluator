@@ -1,3 +1,13 @@
+current_iframe = window.frameElement;
+num_iframes = window.parent.document.getElementsByTagName("iframe").length;
+var iframes = window.parent.document.getElementsByTagName("iframe");
+for (i = 0; i < num_iframes; i++) {
+    if (iframes[i] === current_iframe) {
+        var id_problem = i;
+        parent.id_problem = i;
+    }
+}
+
 function isEDXurl() {
     var url = window.location.href;
     if (url.indexOf("edx") !== -1) {
@@ -210,7 +220,7 @@ function AGFinish(outputLog) {
     console.log(outputLog);
     //populateFeedback(outputLog);
     if (isEDX) {
-        parent.document.getElementsByClassName('check-label')[0].click();
+        parent.document.getElementsByClassName('check-label')[id_problem].click();
     } 
     //parent.document.getElementsByClassName('check-label')[0].click();
 }

@@ -17,6 +17,9 @@ var graded = true;
 // to hide feedback for this problem, change this flag to false
 var showFeedback = true;
 
+// to allow for the ability to regrade certain tests, change this flag to true
+var regradeOn = false;
+
 // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
 // var testLog;
 function AGTest(outputLog) {
@@ -30,7 +33,7 @@ function AGTest(outputLog) {
         return spriteContainsBlock("draw square");
     }
     var penDownPresent = function penDownPresent() {
-        return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw square", "pen down")) || blockPrecedes("pen down", "repeat % %", realSquareBody);
+        return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw square", "pen down")) || blockPrecedes("pen down", "repeat % %", realSquareBody)
     }
 
     testAssert(outputLog, squarePresentTest,
@@ -73,9 +76,9 @@ function AGTest(outputLog) {
         return simpleCBlockContains(realTriangleBody, "turn %counterclockwise % degrees", "repeat", ["120"])
             || simpleCBlockContains(realTriangleBody, "turn %clockwise % degrees", "repeat", ["120"]);
     }
-    var penDownPresent = function penDownPresent() {
-        return (spriteContainsBlock("pen down") && (!blockPrecedesInSprite("draw triangle", "pen down") || blockPrecedes("pen down", "repeat % %", realTriangleBody);
-    }
+    /*var penDownPresent = function penDownPresent() {
+        return (spriteContainsBlock("pen down") && (!blockPrecedesInSprite("draw triangle", "pen down") || blockPrecedes("pen down", "repeat % %", realTriangleBody)
+    }*/
 
     testAssert(outputLog, trianglePresent,
         "The 'draw triangle' block is found.",
@@ -112,10 +115,10 @@ function AGTest(outputLog) {
         "The 'draw triangle' block needs a turn block with correct inputs.",
         "Try using a turn block, how many degrees should we turn?",1);
 
-    testAssert(outputLog, penDownPresent,
+    /*testAssert(outputLog, penDownPresent,
         "The 'draw triangle' block contains the 'pen down' block.",
         "The 'draw triangle' block is not drawing anything. What block draws things? Try placing it in a different place.",
-        "Try using blocks to draw things inside of the 'draw triangle'",1);
+        "Try using blocks to draw things inside of the 'draw triangle'",1);*/
     // Draw House
     /* Create 'draw house' command block */
     var realHouseBody = getCustomBody("draw house");
@@ -129,7 +132,7 @@ function AGTest(outputLog) {
         return occurancesOfBlockSpec("draw square", realHouseBody) === 1;
     }
     var penDownPresent = function penDownPresent() {
-        return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw house", "pen down")) || ((blockPrecedes("pen down", "draw square", realHouseBody)) && (blockPrecedes("pen down", "draw triangle", realHouseBody)));
+        return ((spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw house", "pen down")) || ((blockPrecedes("pen down", "draw square", realHouseBody)) && (blockPrecedes("pen down", "draw triangle", realHouseBody))));
     }
 
     testAssert(outputLog, housePresent,

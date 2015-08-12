@@ -459,11 +459,12 @@ function printLog(outputLog) {
 function AG_log(outputLog, snapXMLString) {
  	var AG_state = {
 	    'checkState': outputLog.allCorrect,
-	    'comment': "Please run the Snap Autograder before clicking the 'Submit' button.",
+	    'comment': "Please run the Snap! Autograder to view feedback.",
 	    'feedback': dictLog(outputLog),
 	    'snapXML' : snapXMLString
 	};
 	//Only update the
+	console.log(outputLog);
 	if (outputLog.pScore !== null) {
 		var percent_score = Number((outputLog.pScore * 100).toFixed(1));
 		AG_state['comment'] = "Autograder Score: " + percent_score + "%"
