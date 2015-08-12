@@ -1,3 +1,6 @@
+/* DEPRICATED: SPLIT INTO gradingLog.js, 
+spriteEventLog.js, and scriptAnalysis.js */
+
 //Snap Protocol Language Enabler
 
 /*
