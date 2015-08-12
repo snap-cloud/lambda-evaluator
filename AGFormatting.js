@@ -381,8 +381,8 @@ function makeOverlayButton() {
     var overlay_button = parent.document.createElement('button');
     var overlay_button_text = parent.document.createTextNode('Grade');
     overlay_button.appendChild(overlay_button_text);
-    overlay_button.id = 'overlay-button';
-    var button =  parent.document.getElementsByName('problem_id')[id_problem];
+    overlay_button.classList.add('overlay-button');
+    var button = parent.document.getElementsByName('problem_id')[id_problem];
     button.parentNode.insertBefore(overlay_button, button.nextSibling);
 }
 

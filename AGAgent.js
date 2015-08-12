@@ -144,7 +144,7 @@ function AGUpdate(snapWorld, taskID) {
         }
 
         if (isEDX) {
-            parent.document.getElementById('overlay-button').style.display = "none";
+            parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "none";
         }
 
     } else if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
@@ -157,7 +157,7 @@ function AGUpdate(snapWorld, taskID) {
         outputLog.snapWorld = snapWorld;
         AG_bar_semigraded(outputLog);
         if (isEDX) {
-            parent.document.getElementById('overlay-button').style.display = "none";
+            parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "none";
         }
 
     } else {
@@ -169,7 +169,7 @@ function AGUpdate(snapWorld, taskID) {
         AG_bar_ungraded(outputLog);
         document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
         if (isEDX) {
-            parent.document.getElementById('overlay-button').style.display = "block";
+            parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "block";
         }
 
     }

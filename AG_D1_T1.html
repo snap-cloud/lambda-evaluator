@@ -180,7 +180,7 @@
 
             if (isEDX) {
                 makeOverlayButton();
-                var overlay_button = parent.document.getElementById('overlay-button');
+                var overlay_button = parent.document.getElementsByClassName('overlay-button')[id_problem];
                 //overlay_button.style.display = "block";
                 overlay_button.onclick = function() { 
                     overlay_button.style.display = "none";
