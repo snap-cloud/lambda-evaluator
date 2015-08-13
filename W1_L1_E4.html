@@ -49,8 +49,8 @@
             //AUTOGRADER ADDITION - FEEDBACK FORMATTING
             // Checks if problem has been checked and modifies the autograded output if it has been checked
 
-            if (parent.document.getElementsByClassName("message").length !== 0) {
-                var hint = parent.document.getElementsByClassName("message")[0];
+            if (isEDX && parent.document.getElementsByClassName("message")[id_problem]) {
+                var hint = parent.document.getElementsByClassName("message")[id_problem];
                 hint.innerHTML = formatFeedback(hint);
                 hint.style.display = "inline";
             }
@@ -75,17 +75,23 @@
 
             //If page has already been loaded, restore previously tested XML
             //TODO: Separate this into its own function.
-            var prev_xml = sessionStorage.getItem(id + "_test_state");
-            if (prev_xml !== null) {
-                ide.openProjectString(prev_xml);
-            } else if (preReqTaskID !== null) {
-                if (preReqLog !== null && preReqLog.allCorrect) {
-                    ide.openProjectString(sessionStorage.getItem(preReqID));
+            setTimeout(function() {
+                //If page has already been loaded, restore previously tested XML
+                //TODO: Separate this into its own function.
+                //Moved this into the timeout so that keys in session storage have time to be set from setstate in AGEDX before they are called
+                var prev_xml = sessionStorage.getItem(id + "_test_state");
+                if (prev_xml !== null) {
+                    ide.openProjectString(prev_xml);
+                } else if (preReqTaskID !== null) {
+                    if (preReqLog !== null && preReqLog.allCorrect) {
+                        ide.openProjectString(sessionStorage.getItem(preReqID));
+                    }
                 }
-            }
+            }, 500);
+
             if (isEDX) {
-                parent.document.getElementsByClassName('check-label')[0].onclick = function () {
-                    sessionStorage.setItem("pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
+                parent.document.getElementsByClassName('check-label')[id_problem].onclick = function () {
+                    sessionStorage.setItem(id + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
                 }
             }
 
@@ -168,12 +174,15 @@
 
             if (isEDX) {
                 makeOverlayButton();
-                var overlay_button = parent.document.getElementById('overlay-button');
-                //overlay_button.style.display = "block";
-                overlay_button.onclick = function() { 
-                    overlay_button.style.display = "none";
-                    grade_button.click(); 
-                }
+                setTimeout(function() {
+                    var overlay_button = parent.document.getElementsByClassName('overlay-button')[id_problem];
+                    //overlay_button.style.display = "block";
+                    overlay_button.onclick = function() { 
+                        overlay_button.style.display = "none";
+                        grade_button.click(); 
+                    } 
+                }, 500);
+                
                 makeFullScreenButton();
                 var full_screen = document.getElementById('full-screen');
                 full_screen.onclick = function() {
@@ -226,10 +235,10 @@
                     populateFeedback(outputLog); 
                     populateFeedback(outputLog);
                 } 
-                var starter_xml = sessionStorage.getItem("starter_file");
+                var starter_xml = sessionStorage.getItem(id + "starter_file");
                 if (starter_xml) {
                     ide.openProjectString(starter_xml);
-                    sessionStorage.removeItem("starter_file");
+                    sessionStorage.removeItem(id + "starter_file");
                 }
                 grayOutButtons(world, id);
                 moveAutogradingBar();

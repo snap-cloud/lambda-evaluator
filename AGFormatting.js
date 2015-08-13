@@ -528,9 +528,10 @@ function initializeSnapAdditions(snapWorld, taskID) {
             left: pos.left + 270 + "px"
         });*/
     });
-
-    var button_text = parent.document.getElementsByClassName('check-label')[id_problem];
-    button_text.innerHTML = "Submit";
+    if (isEDX) {
+        var button_text = parent.document.getElementsByClassName('check-label')[id_problem];
+        button_text.innerHTML = "Submit";
+    }
 }
 
 //Call the test suite when this element is clicked.

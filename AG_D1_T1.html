@@ -55,7 +55,8 @@
             //AUTOGRADER ADDITION - FEEDBACK FORMATTING
             // Checks if problem has been checked and modifies the autograded output if it has been checked
 
-            if (parent.document.getElementsByClassName("message").length !== 0) {
+            //if (isEDX && parent.document.getElementsByClassName("message").length !== 0) {
+            if (isEDX && parent.document.getElementsByClassName("message")[id_problem]) {
                 var hint = parent.document.getElementsByClassName("message")[id_problem];
                 hint.innerHTML = formatFeedback(hint);
                 hint.style.display = "inline";
@@ -241,10 +242,10 @@
                     populateFeedback(outputLog); 
                     populateFeedback(outputLog);
                 } 
-                var starter_xml = sessionStorage.getItem("starter_file");
+                var starter_xml = sessionStorage.getItem(id + "starter_file");
                 if (starter_xml) {
                     ide.openProjectString(starter_xml);
-                    sessionStorage.removeItem("starter_file");
+                    sessionStorage.removeItem(id + "starter_file");
                 }
                 grayOutButtons(world, id);
                 moveAutogradingBar();

@@ -17,6 +17,9 @@ var graded = false;
 // to hide feedback for this problem, change this flag to false
 var showFeedback = false;
 
+// to allow for the ability to regrade certain tests, change this flag to true
+var regradeOn = false;
+
 // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
 // var testLog;
 function AGTest(outputLog) {
