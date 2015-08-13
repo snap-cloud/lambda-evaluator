@@ -33,7 +33,7 @@ var AG_EDX = (function() {
     function getGrade() {
         console.log("getGrade");
         //Grab Snap ide and testLog, null if AGTest() has not been called.
-        //var ide = world.children[0];
+        var ide = world.children[0];
         // console.log("THE ID IS: " + id);
         if (sessionStorage.getItem(id + "_test_log") !== null){
             var glog = JSON.parse(sessionStorage.getItem(id + "_test_log"));
