@@ -459,11 +459,12 @@ function printLog(outputLog) {
 function AG_log(outputLog, snapXMLString) {
  	var AG_state = {
 	    'checkState': outputLog.allCorrect,
-	    'comment': "Please run the Snap Autograder before clicking the 'Submit' button.",
+	    'comment': "Please run the Snap! Autograder to view feedback.",
 	    'feedback': dictLog(outputLog),
 	    'snapXML' : snapXMLString
 	};
 	//Only update the
+	console.log(outputLog);
 	if (outputLog.pScore !== null) {
 		var percent_score = Number((outputLog.pScore * 100).toFixed(1));
 		AG_state['comment'] = "Autograder Score: " + percent_score + "%"
@@ -478,6 +479,7 @@ function AG_log(outputLog, snapXMLString) {
  * WARNING: DOES NOT EVALUATE LOG
  */
 function testAssert(outputLog, assertion, pos_fb, neg_fb, ass_text, point) {
+	point = typeof point !== 'undefined' ? point : 1;
 	if (assertion()) {
 		outputLog.addAssert("a", assertion, pos_fb, ass_text, pos_fb, neg_fb, point);
 	} else {
@@ -503,6 +505,8 @@ function testBlock(outputLog, testID) {
 }
 
 function multiTestBlock(outputLog, blockSpec, inputs, expOuts, timeOuts, isolated, points) {
+
+	points = typeof points !== 'undefined' ? points : 1;
 
 	if (outputLog === undefined) {
 		outputLog = new gradingLog(world);

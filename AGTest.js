@@ -17,6 +17,9 @@ var graded = true;
 // to hide feedback for this problem, change this flag to false
 var showFeedback = true;
 
+// to allow for the ability to regrade certain tests, change this flag to true
+var regradeOn = false;
+
 // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
 // var testLog;
 function AGTest(outputLog) {
@@ -74,7 +77,7 @@ function AGTest(outputLog) {
             || simpleCBlockContains(realTriangleBody, "turn %clockwise % degrees", "repeat", ["120"]);
     }
     var penDownPresent = function penDownPresent() {
-        return (spriteContainsBlock("pen down") && (!blockPrecedesInSprite("draw triangle", "pen down") || blockPrecedes("pen down", "repeat % %", realTriangleBody);
+        return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw triangle", "pen down")) || blockPrecedes("pen down", "repeat % %", realTriangleBody);
     }
 
     testAssert(outputLog, trianglePresent,

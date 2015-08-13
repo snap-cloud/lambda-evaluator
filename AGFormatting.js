@@ -90,7 +90,7 @@ function replaceall(string, find, replace) {
  */
 function formatFeedback(hint) {
     var tags = 
-    [['collapsedivstart', '<input class="toggle-box" id="expander" type="checkbox" ><label for="expander">Details</label><div id="table-wrapper">'], 
+    [['collapsedivstart', '<input class="toggle-box" id="expander' + String(id_problem) + '" type="checkbox" ><label for="expander' + String(id_problem) + '">Details</label><div id="table-wrapper">'], 
     ['collapsedivend', '</div>'], 
     ['linebreak', '<br /></br />'], 
     ['tablestart', '<table class="results">'], 
@@ -162,15 +162,6 @@ function populateFeedback(outputLog) {
 
     console.log(feedback);
 
-    // Checks if the grading button has been clicked
-    if (title === "Please run the Snap Autograder before clicking the 'Submit' button.") {
-        document.getElementById("table-data").style.display = "none";
-        document.getElementById("reporter-table-data").style.display = "none";
-    } else {
-        document.getElementById("table-data").style.display = "table";
-        document.getElementById("reporter-table-data").style.display = "table";
-    }
-
     // Wipes the feedback clean, including if it has been populated before. 
     caution.innerHTML = "";
     edx_caution.innerHTML = "";
@@ -185,8 +176,21 @@ function populateFeedback(outputLog) {
         repTableResults.removeChild(repTableResults.children[1]);
     }
 
+    document.getElementById("comment").innerHTML = title;
+
+    // Checks if the grading button has been clicked
+    if (title === "Please run the Snap! Autograder to view feedback.") {
+        document.getElementById("table-data").style.display = "none";
+        document.getElementById("reporter-table-data").style.display = "none";
+    } else {
+        document.getElementById("table-data").style.display = "table";
+        document.getElementById("reporter-table-data").style.display = "table";
+        document.getElementById("comment").innerHTML += " (" + String(Math.round(feedback["totalPoints"] * feedback["pScore"])) + "/" + String(feedback["totalPoints"]) + ")";
+    }
+
+
     // Warnings for when student's feedback differ from what's on the scripting area/what's been submitted to edX
-    document.getElementById("comment").innerHTML = title + "(" + String(Math.round(feedback["totalPoints"] * feedback["pScore"])) + "/" + String(feedback["totalPoints"]) + ")";
+    //document.getElementById("comment").innerHTML = title + "(" + String(Math.round(feedback["totalPoints"] * feedback["pScore"])) + "/" + String(feedback["totalPoints"]) + ")";
     /*if (!last_log) {
         edx_caution.innerHTML = "[WARNING: You have not submitted your results to edX yet.]"
     }
@@ -246,10 +250,14 @@ function populateFeedback(outputLog) {
         // If test is correct, make the feedback appropriately colored. 
         if (feedback[test]["correct"] === true) {
             addTableCell(feedback[test]["feedback"], "correctans", newRow);
-            //addRegradeButton("Regrade", ["data", "hidden"], newRow);
+            if (regradeOn) {
+                addRegradeButton("Regrade", ["data", "hidden"], newRow);
+            }
         } else {
             addTableCell(feedback[test]["feedback"], "incorrectans", newRow);
-            //addRegradeButton("Regrade", ["data", "regrade", test], newRow);
+            if (regradeOn) {
+                addRegradeButton("Regrade", ["data", "regrade", test], newRow);
+            }
         }
 
         if (feedback[test]["testClass"] === "r") {
@@ -261,14 +269,16 @@ function populateFeedback(outputLog) {
     console.log(outputLog);
     //outputLog.saveLog();
 
-    // makes recently created regrade buttons clickable 
-    /*var regrade_buttons = document.getElementsByClassName("regrade");
-    for(var i=0; i<regrade_buttons.length; i++) {
-        regrade_buttons[i].onclick = function() {
-            var testId = this.classList[2];
-            regradeOnClick(outputLog, testId);
+    if (regradeOn) {
+        // makes recently created regrade buttons clickable 
+        var regrade_buttons = document.getElementsByClassName("regrade");
+        for(var i=0; i<regrade_buttons.length; i++) {
+            regrade_buttons[i].onclick = function() {
+                var testId = this.classList[2];
+                regradeOnClick(outputLog, testId);
+            }
         }
-    }*/
+    }
 }
 
 function addBasicHeadings() {
@@ -371,8 +381,8 @@ function makeOverlayButton() {
     var overlay_button = parent.document.createElement('button');
     var overlay_button_text = parent.document.createTextNode('Grade');
     overlay_button.appendChild(overlay_button_text);
-    overlay_button.id = 'overlay-button';
-    var button =  parent.document.getElementsByName('problem_id')[0];
+    overlay_button.classList.add('overlay-button');
+    var button = parent.document.getElementsByName('problem_id')[id_problem];
     button.parentNode.insertBefore(overlay_button, button.nextSibling);
 }
 
@@ -387,7 +397,7 @@ function makeFullScreenButton() {
 }
 
 function toggleSnapWindow(button, taskID) {
-    var iframe = parent.document.getElementsByTagName('iframe')[0];
+    var iframe = parent.document.getElementsByTagName('iframe')[id_problem];
     if (button.className === "off") {
         fullScreenSnap(button, taskID);
     } else {
@@ -407,7 +417,7 @@ function toggleSnapWindow(button, taskID) {
 }
 
 function fullScreenSnap(button, taskID) {
-    var iframe = parent.document.getElementsByTagName('iframe')[0];
+    var iframe = parent.document.getElementsByTagName('iframe')[id_problem];
     iframe.style.position = 'fixed';
     iframe.style.top = '0';
     iframe.style.right = '0';
@@ -518,6 +528,9 @@ function initializeSnapAdditions(snapWorld, taskID) {
             left: pos.left + 270 + "px"
         });*/
     });
+
+    var button_text = parent.document.getElementsByClassName('check-label')[id_problem];
+    button_text.innerHTML = "Submit";
 }
 
 //Call the test suite when this element is clicked.

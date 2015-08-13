@@ -1,3 +1,12 @@
+current_iframe = window.frameElement;
+num_iframes = window.parent.document.getElementsByTagName("iframe").length;
+var iframes = window.parent.document.getElementsByTagName("iframe");
+for (i = 0; i < num_iframes; i++) {
+    if (iframes[i] === current_iframe) {
+        var id_problem = i;
+    }
+}
+
 function isEDXurl() {
     var url = window.location.href;
     if (url.indexOf("edx") !== -1) {
@@ -135,7 +144,7 @@ function AGUpdate(snapWorld, taskID) {
         }
 
         if (isEDX) {
-            parent.document.getElementById('overlay-button').style.display = "none";
+            parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "none";
         }
 
     } else if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
@@ -148,7 +157,7 @@ function AGUpdate(snapWorld, taskID) {
         outputLog.snapWorld = snapWorld;
         AG_bar_semigraded(outputLog);
         if (isEDX) {
-            parent.document.getElementById('overlay-button').style.display = "none";
+            parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "none";
         }
 
     } else {
@@ -160,7 +169,7 @@ function AGUpdate(snapWorld, taskID) {
         AG_bar_ungraded(outputLog);
         document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
         if (isEDX) {
-            parent.document.getElementById('overlay-button').style.display = "block";
+            parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "block";
         }
 
     }
@@ -210,7 +219,7 @@ function AGFinish(outputLog) {
     console.log(outputLog);
     //populateFeedback(outputLog);
     if (isEDX) {
-        parent.document.getElementsByClassName('check-label')[0].click();
+        parent.document.getElementsByClassName('check-label')[id_problem].click();
     } 
     //parent.document.getElementsByClassName('check-label')[0].click();
 }
