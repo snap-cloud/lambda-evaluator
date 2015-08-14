@@ -1,3 +1,12 @@
+current_iframe = window.frameElement;
+num_iframes = window.parent.document.getElementsByTagName("iframe").length;
+var iframes = window.parent.document.getElementsByTagName("iframe");
+for (i = 0; i < num_iframes; i++) {
+    if (iframes[i] === current_iframe) {
+        var id_problem = i;
+    }
+}
+
 function isEDXurl() {
     var url = window.location.href;
     if (url.indexOf("edx") !== -1) {
@@ -95,13 +104,12 @@ function AGUpdate(snapWorld, taskID) {
     var curr_xml = ide.serializer.serialize(ide.stage);
     //Retrieve previously graded Snap XML strings (if in sessionStorage).
     var c_prev_xml = sessionStorage.getItem(taskID + "_c_test_state");
-    var c_prev_log = JSON.parse(sessionStorage.getItem(taskID + "_c_test_log"));
+    var c_prev_log = sessionStorage.getItem(taskID + "_c_test_log");
     var prev_xml = sessionStorage.getItem(taskID + "_test_state");
-
+    var prev_log = sessionStorage.getItem(taskID + "_test_log");
     //var last_xml = sessionStorage.getItem(taskID + "_last_submitted_state");
     //Retrieve previous grade logs (if in sessionStorage). As {String}s
-    var c_prev_log = sessionStorage.getItem(taskID + "_c_test_log");
-    var prev_log = sessionStorage.getItem(taskID + "_test_log");
+    
     if (!prev_xml || !curr_xml) {
         console.log(prev_xml);
         console.log(curr_xml);
@@ -129,14 +137,14 @@ function AGUpdate(snapWorld, taskID) {
         //Retrieve the correct test log from sessionStorage
         outputLog = JSON.parse(c_prev_log);
         outputLog.snapWorld = snapWorld;
-        if (c_prev_log.pScore === 1) {
+        if (outputLog.pScore === 1) {
             AG_bar_graded(outputLog);
         } else {
             AG_bar_semigraded(outputLog);
         }
 
         if (isEDX) {
-            parent.document.getElementById('overlay-button').style.display = "none";
+            parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "none";
         }
 
     } else if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
@@ -149,7 +157,7 @@ function AGUpdate(snapWorld, taskID) {
         outputLog.snapWorld = snapWorld;
         AG_bar_semigraded(outputLog);
         if (isEDX) {
-            parent.document.getElementById('overlay-button').style.display = "none";
+            parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "none";
         }
 
     } else {
@@ -161,7 +169,7 @@ function AGUpdate(snapWorld, taskID) {
         AG_bar_ungraded(outputLog);
         document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
         if (isEDX) {
-            parent.document.getElementById('overlay-button').style.display = "block";
+            parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "block";
         }
 
     }
@@ -211,7 +219,7 @@ function AGFinish(outputLog) {
     console.log(outputLog);
     //populateFeedback(outputLog);
     if (isEDX) {
-        parent.document.getElementsByClassName('check-label')[0].click();
+        parent.document.getElementsByClassName('check-label')[id_problem].click();
     } 
     //parent.document.getElementsByClassName('check-label')[0].click();
 }

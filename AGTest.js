@@ -1,4 +1,4 @@
-var starter_path = "starter.xml";
+var starter_path = null;
 
 // The id is to act as a course identifier.
 // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
@@ -17,83 +17,144 @@ var graded = true;
 // to hide feedback for this problem, change this flag to false
 var showFeedback = true;
 
+// to allow for the ability to regrade certain tests, change this flag to true
+var regradeOn = false;
+
 // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
 // var testLog;
 function AGTest(outputLog) {
-    /* Factorial */
-    var assert1 = function assert1() {
-        return scriptPresentInSprite('[{"blockSp":"factorial %s","inputs":["A"]}]',0,["A"]);
+    // /* Factorial */
+    /* Create 'draw square' command motion */
+    var realSquareBody = getCustomBody("draw square");
+    var squarePresentTest = function squarePresentTest() {
+        return spriteContainsBlock("draw square");
+    }
+    var squareBodyTest = function squareBodyTest() {
+        return spriteContainsBlock("draw square");
+    }
+    var penDownPresent = function penDownPresent() {
+        return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw square", "pen down")) || blockPrecedes("pen down", "repeat % %", realSquareBody);
     }
 
-    var assert2 = function assert2() {
-        return customBlockContains('factorial %s', 'factorial %s');
+    testAssert(outputLog, squarePresentTest,
+        "The 'draw square' block is found.",
+        "The 'draw square' block is not on the screen.",
+        "Follow the directions to make a 'draw square' block",1);
+
+    testAssert(outputLog, squareBodyTest,
+        "The body of the 'draw square' block is correct.",
+        "The body of the 'draw square' block is incorrect. Try checking the block order and inputs.",
+        "Try making sure all of the correct blocks and inputs are in order.",1);
+
+    testAssert(outputLog, penDownPresent,
+        "The 'draw square' block contains the 'pen down' block.",
+        "The 'draw square' block is not drawing anything. What block draws things?",
+        "Try using blocks to draw things inside of the 'draw square'",1);
+
+    /* Create 'draw triangle' command block */
+    var realTriangleBody = getCustomBody("draw triangle");
+    var trianglePresent = function trianglePresent() {
+        return spriteContainsBlock("draw triangle");
+    }
+    var containsRepeat = function containsRepeat() {
+        return scriptContainsBlock(realTriangleBody, "repeat % %");
+    }
+    var containsCorrectRepeat = function containsCorrectRepeat() {
+        return scriptContainsBlock(realTriangleBody, "repeat % %", ["3", []], true);
+    }
+    var containsMove = function containsMove() {
+        return simpleCBlockContains(realTriangleBody, "move % steps", "repeat");
+    }
+    var containsCorrectMove = function containsCorrectMove() {
+        return simpleCBlockContains(realTriangleBody, "move % steps", "repeat", ["100"]);
+    }
+    var containsTurn = function containsTurn() {
+        return simpleCBlockContains(realTriangleBody, "turn %counterclockwise % degrees", "repeat")
+            || simpleCBlockContains(realTriangleBody, "turn %clockwise % degrees", "repeat");
+    }
+    var containsCorrectTurn = function containsCorrectTurn() {
+        return simpleCBlockContains(realTriangleBody, "turn %counterclockwise % degrees", "repeat", ["120"])
+            || simpleCBlockContains(realTriangleBody, "turn %clockwise % degrees", "repeat", ["120"]);
+    }
+    var penDownPresent = function penDownPresent() {
+        return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw triangle", "pen down")) || blockPrecedes("pen down", "repeat % %", realTriangleBody);
     }
 
-    var assert3 = function assert3() {
-        return blockPrecedes('factorial %s', "%n − %n", getCustomBody('factorial %s', 0));
+    testAssert(outputLog, trianglePresent,
+        "The 'draw triangle' block is found.",
+        "The 'draw triangle' block cannot be found.",
+        "Make sure you name the block 'draw triangle'",1);
+
+    testAssert(outputLog, containsRepeat,
+        "The 'repeat' block is found inside 'draw triangle'.",
+        "The 'repeat' block is not found inside 'draw triangle'.",
+        "Make sure you use a repeat inside of 'draw triangle'",1);
+
+    testAssert(outputLog, containsCorrectRepeat,
+        "The 'repeat' block has a counter of 3.",
+        "The 'repeat' block does not have the correct counter.",
+        "How many times should we repeat to draw a triangle?",1);
+
+    testAssert(outputLog, containsMove,
+        "The 'draw triangle' block contains move inside of the repeat loop.",
+        "The 'draw triangle' block is missing a move block.",
+        "What blocks helps move the sprite?",1);
+
+    testAssert(outputLog, containsCorrectMove,
+        "The 'draw triangle' block contains move 100 inside of the repeat loop.",
+        "The 'draw triangle' block is missing a correct move block.",
+        "How far is the move supposed to be?",1);
+
+    testAssert(outputLog, containsTurn,
+        "The 'draw triangle' block contains a turn block.",
+        "The 'draw triangle' block is missing a turn block",
+        "Try turn clockwise or counterclockwise block",1);
+
+    testAssert(outputLog, containsCorrectTurn,
+        "The 'draw triangle' block contains turn block with 120 degrees.",
+        "The 'draw triangle' block needs a turn block with correct inputs.",
+        "Try using a turn block, how many degrees should we turn?",1);
+
+    testAssert(outputLog, penDownPresent,
+        "The 'draw triangle' block contains the 'pen down' block.",
+        "The 'draw triangle' block is not drawing anything. What block draws things? Try placing it in a different place.",
+        "Try using blocks to draw things inside of the 'draw triangle'",1);
+    // Draw House
+    /* Create 'draw house' command block */
+    var realHouseBody = getCustomBody("draw house");
+    var housePresent = function housePresent() {
+        return spriteContainsBlock("draw house");
     }
-    testAssert(outputLog, assert1,//isScriptPresent('factorial %s',0),
-        "The 'factorial' block is present.", 
-        "The 'factorial %num' block was not found on-screen.", 
-        "Make sure you name your custom block, 'factorial %num'.", 1);
-    testAssert(outputLog, assert2,//customBlockContains('factorial %s', 'factorial %s'),
-        "The 'factorial' block has a recursive call to itself.",
-        "There is no recursive call to 'factorial.",
-        "Make sure you have a recursive call inside of 'factorial.", 1);
-    testAssert(outputLog, assert3,//blockPrecedes('factorial %s', "%n − %n", getCustomBody('factorial %s', 0)),
-        "The recursive call to'factorial' block contains a minus block",
-        "There is no minus block in the recursive call to 'factorial'.",
-        "Make sure you have a minus block inside of the recursive call.", 1);
-    multiTestBlock(outputLog, 'factorial %s', 
-        [[0],[1],[2],[4],[5],[10]],
-        [1,1,2,24,120,3628800],
-        [-1,-1,-1,-1,-1,-1],
-        [true,true,true,true,true,true], 2);
+    var trianglePresent = function trianglePresent() {
+        return  occurancesOfBlockSpec("draw triangle", realHouseBody) === 1;
+    }
+    var squarePresent = function squarePresent() {
+        return occurancesOfBlockSpec("draw square", realHouseBody) === 1;
+    }
+    var penDownPresent = function penDownPresent() {
+        return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw house", "pen down")) || ((blockPrecedes("pen down", "draw square", realHouseBody)) && (blockPrecedes("pen down", "draw triangle", realHouseBody)));
+    }
 
-    // Example of using a function in expOut
-    // var testFunc = function(i, t) {t.expOut = true; if (i == 1) {return true;} return false;};
+    testAssert(outputLog, housePresent,
+        "The 'draw house' block is found.",
+        "The 'draw house' block cannot be found.",
+        "Follow directions to make the 'draw house' block",1);
 
-    // multiTestBlock(outputLog, 'factorial %s', 
-    //     [[0],[1],[2],[4],[5],[10]],
-    //     //[1,1,2,24,120,3628800],
-    //     [testFunc,testFunc,testFunc,testFunc,testFunc,testFunc],
-    //     [-1,-1,-1,-1,-1,-1],
-    //     [true,true,true,true,true,true], 2);
-    
-    // /* KScopeTest */
-    // testAssert(outputLog, 
-    //     spriteContainsBlock('when %keyHat key pressed', 0, ['space']) &&
-    //     spriteContainsBlock('when %keyHat key pressed', 1, ['space']) &&
-    //     spriteContainsBlock('when %keyHat key pressed', 2, ['space']) &&
-    //     spriteContainsBlock('when %keyHat key pressed', 3, ['space']),
-    //     "All sprites have the 'when [space] key pressed' hat-block.",
-    //     "All sprites must have a 'when [space] key pressed' hat-block.",
-    //     "The Kaleidoscope should begin drawing when the 'space' key is pressed.");
-    // testAssert(outputLog,
-    //     spriteContainsBlock('forever %c', 0) &&
-    //     spriteContainsBlock('forever %c', 1) &&
-    //     spriteContainsBlock('forever %c', 2) &&
-    //     spriteContainsBlock('forever %c', 3),
-    //     "All sprites have a forever loop",
-    //     "All sprites must have a 'forever' loop.",
-    //     "The 'forever' loop is required.");
-    // testAssert(outputLog,
-    //     spriteContainsBlock('go to x: %n y: %n', 0) &&
-    //     spriteContainsBlock('go to x: %n y: %n', 1) &&
-    //     spriteContainsBlock('go to x: %n y: %n', 2) &&
-    //     spriteContainsBlock('go to x: %n y: %n', 3),
-    //     "All sprites have a 'go to' motion-block",
-    //     "All sprites must have a 'go to' motion-block",
-    //     "The 'go to' motion-block is required.");
-    // testAssert(outputLog,
-    //     spriteContainsBlock('pen down', 0) &&
-    //     spriteContainsBlock('pen down', 1) &&
-    //     spriteContainsBlock('pen down', 2) &&
-    //     spriteContainsBlock('pen down', 3),
-    //     "All sprites have a 'pen down' pen-block",
-    //     "All sprites must have a 'pen down' pen-block",
-    //     "The 'pen down' pen-block is required.");
-    // testKScope(outputLog);
+    testAssert(outputLog, trianglePresent,
+        "The 'draw house' block contains the 'draw triangle' block.",
+        "The 'draw house' is missing the roof. Try using blocks you have previously made.",
+        "Try using previously made blocks inside the body of 'draw house",1);
+
+    testAssert(outputLog, squarePresent,
+        "The 'draw house' block contains the 'draw square' block.",
+        "The 'draw house' is missing the walls. Try using blocks you have previously made.",
+        "Try using previously made blocks inside the body of 'draw house",1);
+
+    testAssert(outputLog, penDownPresent,
+        "The 'draw house' block contains the 'pen down' block.",
+        "The 'draw house' block is not drawing anything. What block draws things?",
+        "Try using blocks to draw things inside of the 'draw house'",1);
+
     /**/
     return outputLog;
 }
