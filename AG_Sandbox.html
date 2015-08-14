@@ -6,13 +6,6 @@
     <link rel="shortcut icon" href="favicon.ico">
     <script src="jschannel.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script type="text/javascript">
-        var pageLocation = JSON.parse(sessionStorage.getItem("pageLocation"));
-        if (pageLocation) {
-            parent.window.scrollTo(pageLocation[0], pageLocation[1]);
-            sessionStorage.removeItem("pageLocation");
-        }
-    </script>
     <script type="text/javascript" src="underscore-min.js"></script>
     <script type="text/javascript" src='gradingLog.js'></script>
     <script type="text/javascript" src='spriteEventLog.js'></script>
@@ -46,15 +39,6 @@
         var world_AG_Sandbox;
         window.onload = function () {
 
-            //AUTOGRADER ADDITION - FEEDBACK FORMATTING
-            // Checks if problem has been checked and modifies the autograded output if it has been checked
-
-            if (parent.document.getElementsByClassName("message").length !== 0) {
-                var hint = parent.document.getElementsByClassName("message")[0];
-                hint.innerHTML = formatFeedback(hint);
-                hint.style.display = "inline";
-            }
-
             //INITIALIZE UP SNAP
             world = new WorldMorph(document.getElementById('world'));
             new IDE_Morph().openIn(world);
@@ -63,35 +47,7 @@
             //Reduce Stage Size on initialization
             ide.toggleStageSize(true);
 
-            //AUTOGRADER ADDITION
-            //Check if Pre-requisite task has completed
-            var req_check = parent.document.getElementById("pre_req");
-            if (preReqTaskID !== null) {
-                var preReqLog = JSON.parse(sessionStorage.getItem(preReqID + "_test_log"));
-                if ((preReqLog === null || !preReqLog.allCorrect) && req_check) {
-                    req_check.innerHTML = "[WARNING: The previous task must be completed before continuing.]"
-                }
-            }
-
-            //If page has already been loaded, restore previously tested XML
-            //TODO: Separate this into its own function.
-            var prev_xml = sessionStorage.getItem(id + "_test_state");
-            if (prev_xml !== null) {
-                ide.openProjectString(prev_xml);
-            } else if (preReqTaskID !== null) {
-                if (preReqLog !== null && preReqLog.allCorrect) {
-                    ide.openProjectString(sessionStorage.getItem(preReqID));
-                }
-            }
-            if (isEDX) {
-                parent.document.getElementsByClassName('check-label')[0].onclick = function () {
-                    sessionStorage.setItem("pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
-                }
-            }
-
-
             initializeSnapAdditions(world, id);
-
 
             //AUTOGRADER ADDITION - 
             //Forced to use setTimeout() to let the world load before... Maybe not.           
@@ -99,142 +55,9 @@
 
             //Initialize AGSB button.
             var grade_button = document.getElementById("autograding_button");
-            //grade_button.style.cursor = "pointer";
-            //Call the test suite when this element is clicked.
-            /*var update_listener = function() {
-                var outputLog = AGUpdate(world, id);
-            };
-            var button_listener = function(event) {
-                event.stopPropagation();
-                console.log('PROPAGATION SHOULD STOP');
-                var numAttempts = setNumAttempts(id);
-                outputLog = new gradingLog(world, id, numAttempts);
-                outputLog.numAttempts += 1;
-                runAGTest(world, id, outputLog);
-            }*/
             grade_button.addEventListener('click', button_listener);
             var world_canvas = document.getElementById('world');
             world_canvas.addEventListener("mouseup", update_listener);
-            
-            /*var reset_button = document.getElementById("reset-button");
-            var revert_button = document.getElementById("revert-button");
-            var undo_button = document.getElementById("undo-button");
-            var menu_button = document.getElementsByClassName("onclick-menu")[0];
-            var help_overlay = document.getElementById('overlay');
-            var feedback_button = document.getElementById("feedback-button");
-            var results_overlay = document.getElementById("ag-output");
-            var snapWorld = document.getElementById("world");
-            var regrade_buttons = document.getElementsByClassName("regrade");
-            
-            //var outside_menu = document.getElementById("outside-menu");
-
-            reset_button.onclick = function() { resetState(world, id); toggleMenu(id); };
-            revert_button.onclick = function() { revertToBestState(world, id); toggleMenu(id); };
-            //last_submit.onclick = function() { revertToLastSubmit(world, id); toggleMenu(id); };
-            undo_button.onclick = function() { revertToLastState(world, id); toggleMenu(id); };
-            menu_button.onclick = function() { toggleMenu(id); };
-            //var overlay_button = parent.document.getElementById('overlay-button');
-            //overlay_button.onclick = function() { grade_button.click(); }
-
-            $(".bubble").click(function(event){ event.stopPropagation(); });
-
-            feedback_button.onclick = function() {openResults(); };
-            /*help_overlay.onclick = function(e) {
-                if (!(document.getElementById('help-popup').contains(e.target))) {
-                    closePopup();
-                }
-            }*/
-
-            /*help_overlay.onclick = function(e) {
-                closePopup();
-            }
-            results_overlay.onclick = function(e) {
-                if (!(document.getElementById('ag-results').contains(e.target)) && e.target.className.indexOf("regrade") === -1) {
-                    closeResults();
-                }
-            }
-            snapWorld.onclick = function(e) {
-                if (document.getElementById('dropdown-open') !== null && !(document.getElementById('onclick-menu').contains(e.target))) {
-                    toggleMenu();
-                }
-            }
-
-            /* Check if the snap xml has changed "significantly".
-             * Exclude script position and edit history.
-             */
-            /*document.addEventListener("click", function() {
-                grayOutButtons(world, id);
-            });*/
-
-            if (isEDX) {
-                makeOverlayButton();
-                var overlay_button = parent.document.getElementById('overlay-button');
-                //overlay_button.style.display = "block";
-                overlay_button.onclick = function() { 
-                    overlay_button.style.display = "none";
-                    grade_button.click(); 
-                }
-                makeFullScreenButton();
-                var full_screen = document.getElementById('full-screen');
-                full_screen.onclick = function() {
-                    toggleSnapWindow(full_screen, id);
-                    moveHelp();   
-                }
-                var full_screen_on = JSON.parse(sessionStorage.getItem(id + "full-screen-on"));
-                if (full_screen_on) {
-                    fullScreenSnap(full_screen, id);
-                }
-            }
-
-            /*$(".bubble").mouseover(function() {
-                // .position() uses position relative to the offset parent, 
-                // so it supports position: relative parent elements
-                var pos = $(this).offset();
-
-
-                //show the menu directly over the placeholder
-                $("#menu-item-help").css({
-                    position: "absolute",
-                    top: pos.top + 100 + "px",
-                    left: pos.left - 250 + "px"
-                });
-                $("#menu-item-arrow").css({
-                    position: "absolute",
-                    top: pos.top + 60 + "px",
-                    left: pos.left - 30 + "px"
-                });
-                $("#ag-button-help").css({
-                    position: "absolute",
-                    top: pos.top + "px",
-                    left: pos.left + 200 + "px"
-                });
-                $("#ag-button-arrow").css({
-                    position: "absolute",
-                    top: pos.top - 30 + "px",
-                    left: pos.left + 270 + "px"
-                });
-            });*/
-
-
-            //TODO: Fix this timeout.
-            setTimeout(function() {
-                console.log(world);
-                var outputLog = AGStart(world,id);
-                if (!graded) {return;}
-                //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
-                if (showFeedback) {
-                    populateFeedback(outputLog); 
-                    populateFeedback(outputLog);
-                } 
-                var starter_xml = sessionStorage.getItem("starter_file");
-                if (starter_xml) {
-                    ide.openProjectString(starter_xml);
-                    sessionStorage.removeItem("starter_file");
-                }
-                grayOutButtons(world, id);
-                moveAutogradingBar();
-                
-            },500);
             // Start Snap Environment Loop
             setInterval(loop, 1);
             
