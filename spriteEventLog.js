@@ -94,12 +94,12 @@ SpriteEventLog.prototype.spliceIgnores = function() {
 //the input function must take care of all event errors and
 //base cases (ex: must be 4 sprites)
 SpriteEventLog.prototype.compareSprites = function(f) {
-	if (this["" + 0] === undefined) {
+	if (this["0"] === undefined) {
 		return false;
 	}
 
 	for (var i = 0; i < this["0"].length; i++) {
-		if (!f.call(this, i)) {
+		if (!f(i)) {
 			return false;
 		}
 	}
@@ -382,6 +382,17 @@ function testKScope(outputLog, iter, point) {
 		spriteList = snapWorld.children[0].sprites.contents;
 	console.log(gLog);
 
+	gLog[testID].graded = true;
+	gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Beautiful Kaleidoscope!";
+	gLog[testID].output = gLog[testID].correct = true;
+	if (spriteList && spriteList.length !== 4) {
+		gLog[testID]["feedback"] = "You do not have the correct amount of Sprites. " +
+									"Make sure you have four different sprites.";
+		gLog[testID].output = gLog[testID].correct = false;
+		gLog.scoreLog();
+		return gLog;
+	}
+
 	//creating this too early has caused issues with getting incorect data
 	var collect = setInterval(function() {
         for (var i = 0; i < spriteList.length; i++) {
@@ -395,47 +406,64 @@ function testKScope(outputLog, iter, point) {
 		for (var i = 0; i < eLog.numSprites; i++) {
 			eLog["" + i][0].ignore = true;
 		}
-		gLog[testID].graded = true;
-		eLog.callVal = eLog.spliceIgnores().compareSprites(function(i) {
-			var log = this;
-			//gLog[testID].graded = true;
-			gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Beautiful Kaleidoscope!";
-			gLog[testID].output = gLog[testID].correct = true;
-			if (log && log.numSprites !== 4) {
-				gLog[testID]["feedback"] = "You do not have the correct amount of Sprites." +
-												"Make sure you have four different sprites.";
+		
+		eLog.spliceIgnores();
+		console.log(eLog);
+
+		for (var j = 0; j < eLog.numSprites; j++) {
+			if (eLog["" + j].length < 3) {
+				gLog[testID]["feedback"] = "One of your sprites did not move at all. " +
+											"Make sure your sprites use the 'Go to X: Y:' " +
+											"block to follow the mouse.";
 				gLog[testID].output = gLog[testID].correct = false;
-				return false;
 			}
+		}
 
-			var x1 = eLog["0"][i].x, penDown1 = eLog["0"][i].penDown,
-				x2 = eLog["1"][i].x, penDown2 = eLog["1"][i].penDown,
-				x3 = eLog["2"][i].x, penDown3 = eLog["2"][i].penDown,
-				x4 = eLog["3"][i].x, penDown4 = eLog["3"][i].penDown,
-				y1 = eLog["0"][i].y,
-				y2 = eLog["1"][i].y,
-				y3 = eLog["2"][i].y,
-				y4 = eLog["3"][i].y;
+		if (gLog[testID].correct) {
+			eLog.callVal = eLog.compareSprites(function(i) {
+				var log = this;
+				/*
+				gLog[testID].graded = true;
+				gLog[testID]["feedback"] = gLog[testID]["feedback"] || "Beautiful Kaleidoscope!";
+				gLog[testID].output = gLog[testID].correct = true;
+				if (log && log.numSprites !== 4) {
+					gLog[testID]["feedback"] = "You do not have the correct amount of Sprites." +
+												"Make sure you have four different sprites.";
+					gLog[testID].output = gLog[testID].correct = false;
+					return false;
+				}*/
 
-			if (penDown1 !== penDown2 !== penDown3 !== penDown4) {
-				gLog[testID]["feedback"] = "One of your sprites did not draw to the stage. " +
+				var x1 = eLog["0"][i].x, penDown1 = eLog["0"][i].penDown,
+					x2 = eLog["1"][i].x, penDown2 = eLog["1"][i].penDown,
+					x3 = eLog["2"][i].x, penDown3 = eLog["2"][i].penDown,
+					x4 = eLog["3"][i].x, penDown4 = eLog["3"][i].penDown,
+					y1 = eLog["0"][i].y,
+					y2 = eLog["1"][i].y,
+					y3 = eLog["2"][i].y,
+					y4 = eLog["3"][i].y;
+
+				console.log(penDown1 + " " + penDown2 + " " + penDown3 + " " + penDown4);
+
+				if (penDown1 !== penDown2 !== penDown3 !== penDown4) {
+					gLog[testID]["feedback"] = "One of your sprites did not draw to the stage. " +
 												"Make sure your sprites all call pen down before " +
 												"following the mouse.";
-				gLog[testID].output = gLog[testID].correct = false;
-				return false;
-			}
+					gLog[testID].output = gLog[testID].correct = false;
+					return false;
+				}
 
-			if (x1 + x2 + x3 + x4 !== 0 ||
-				y1 + y2 + y3 + y4 !== 0) {
-				gLog[testID]["feedback"] = "One or more sprite X, Y values are incorrect. " +
+				if (x1 + x2 + x3 + x4 !== 0 ||
+					y1 + y2 + y3 + y4 !== 0) {
+					gLog[testID]["feedback"] = "One or more sprite X, Y values are incorrect. " +
 												"Make sure your sprites all go to the correct " +
 												"mouse x, y values.";
 
-				gLog[testID].output = gLog[testID].correct = false;
-				return false;
-			}
-			return true;
-		});
+					gLog[testID].output = gLog[testID].correct = false;
+					return false;
+				}
+				return true;
+			});
+		}
 		gLog.scoreLog();
 	};
 
@@ -599,21 +627,21 @@ function createInputSpoof(timeout, callback, element) {
 		switch(action){
 			case "mousemove":
 				evt = new MouseEvent(action, {clientX: relX, clientY: relY});
-				setTimeout(function() {world.hand.processMouseMove(evt)}, timeoutCount);
+				setTimeout(function() {console.log("mouse Move"); world.hand.processMouseMove(evt)}, timeoutCount);
 				break;
 			case "stop all":
-				setTimeout(function() {world.children[0].stage.fireStopAllEvent()}, timeoutCount);
+				setTimeout(function() {console.log("stop all"); world.children[0].stage.fireStopAllEvent()}, timeoutCount);
 				break;
 			case "green flag":
-				setTimeout(function() {world.children[0].stage.fireGreenFlagEvent()}, timeoutCount);
+				setTimeout(function() {console.log("green flag"); world.children[0].stage.fireGreenFlagEvent()}, timeoutCount);
 				break;
 			case "callback":
-				setTimeout(function() {callB();}, timeoutCount);
+				setTimeout(function() {console.log("callback"); callB();}, timeoutCount);
 				break;
 			case "time":
 				return timeoutCount;
 			default:
-				setTimeout(function() {world.children[0].stage.fireKeyEvent(action)}, timeoutCount);
+				setTimeout(function() {console.log("keypress"); world.children[0].stage.fireKeyEvent(action)}, timeoutCount);
 		}
 		timeoutCount += timeoutInc;
 	});
