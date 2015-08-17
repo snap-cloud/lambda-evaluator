@@ -32,15 +32,15 @@
     
     <script type="text/javascript" src="AGAgent.js"></script>
     <script type='text/javascript'>
-        var starter_path = "snapTools.xml";
+        var starter_path = null;
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
         var courseID = "BJC.1x";  // e.g. "BJCx"
         // Specify a prerequisite task id, should be null if no such requirement.
-        var preReqTaskID = null;
+        var preReqTaskID = "_W2_L1_E2";
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_W1_L2_E4";
+        var taskID = "_W2_L1_E3";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -52,16 +52,112 @@
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
-            
-            /*Input an argument value into the given script to create the given picture*/
-            /* Recreate exact squirrel script */
-            var squirrelTest = function squirrelTest() {
-                return scriptPresentInSprite('[{"blockSp":"pen down","inputs":[]},{"blockSp":"for %upvar = %n to %n %cs","inputs":["1","100",[{"blockSp":"move %n steps","inputs":[{"blockSp":"%n × %n","inputs":["2","length"]}]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]]}]');
+
+            /* Create "draw square-petal flower with % petals of size %" motion command block */
+
+            var realFlowerBody = getCustomBody("draw square-petal flower with % petals of size %");
+            var realFlowerParameters = JSONcustomBlock(findBlockInPalette("draw square-petal flower with % petals of size %")).variables;
+            var flowerPresent = function flowerPresent() {
+                return spriteContainsBlock("draw square-petal flower with % petals of size %");
             }
-            testAssert(outputLog, squirrelTest,
-                "The squirrel script was found on the screen.",
-                "The squirrel script was not found on the screen. Try checking your inputs and variable names",
-                "Try making sure all of the correct blocks and inputs are in order.");
+            var containsRepeat = function containsRepeat() {
+                return scriptContainsBlock(realFlowerBody, "repeat % %");
+            }
+            var containsCorrectRepeat = function containsCorrectRepeat() {
+                return scriptContainsBlock(realFlowerBody, "repeat % %", [realFlowerParameters[0], []], true);
+            }
+            var containsDrawSquare = function containsDrawSquare() {
+                return simpleCBlockContains(realFlowerBody, "draw square %", "repeat");
+            }
+            var containsCorrectDrawSquare = function containsCorrectDrawSquare() {
+                return simpleCBlockContains(realFlowerBody, "draw square %", "repeat", [realFlowerParameters[1]]);
+            }
+            var containsTurn = function containsTurn() {
+                return simpleCBlockContains(realFlowerBody, "turn %counterclockwise % degrees", "repeat")
+                    || simpleCBlockContains(realFlowerBody, "turn %clockwise % degrees", "repeat");
+            }
+            var containsCorrectTurn = function containsCorrectTurn() {
+                var turnDegree = (360 / parseInt(realFlowerParameters[0])).toString();
+                console.log(turnDegree);
+                return simpleCBlockContains(realFlowerBody, "turn %counterclockwise % degrees", "repeat", [turnDegree])
+                    || simpleCBlockContains(realFlowerBody, "turn %clockwise % degrees", "repeat", [{"blockSp":"%n / %n","inputs":["360","numPetals"]}]);
+            }
+            var penDownPresent = function penDownPresent() {
+                return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw square-petal flower with % petals of size %", "pen down")) || (blockPrecedes("pen down", "repeat % %", realFlowerBody));
+            }
+
+            testAssert(outputLog, flowerPresent,
+                "The 'draw square-petal flower with % petals of size %' block is found.",
+                "The 'draw square-petal flower with % petals of size %' block cannot be found.",
+                "Follow directions to make the 'draw square-petal flower with % petals of size %' block");
+
+            testAssert(outputLog, containsRepeat,
+                "The 'repeat' block is found inside 'draw square-petal flower with % petals of size %'.",
+                "The 'repeat' block is not found inside 'draw square-petal flower with % petals of size %'.",
+                "Make sure you use a repeat inside of 'draw square-petal flower with % petals of size %'");
+
+            testAssert(outputLog, containsCorrectRepeat,
+                "The 'repeat' block has a counter of the number of petals.",
+                "The 'repeat' block does not have the correct counter. Think about the number of petals.",
+                "How many times should we repeat to draw a flower?");
+
+            testAssert(outputLog, containsDrawSquare,
+                "The 'draw square-petal flower with % petals of size %' block contains 'draw square %' inside of the repeat loop.",
+                "The 'draw square-petal flower with % petals of size %' block is not drawing square petals.",
+                "What blocks helps move the sprite?");
+
+            testAssert(outputLog, containsCorrectDrawSquare,
+                "The 'draw square-petal flower with % petals of size %' block contains the correct 'draw square %' inside of the repeat loop.",
+                "The 'draw square-petal flower with % petals of size %' block is missing a correct 'draw square %' block.",
+                "How big are the petals supposed to be supposed to be?");
+
+            testAssert(outputLog, containsTurn,
+                "The 'draw square-petal flower with % petals of size %' block contains a turn block.",
+                "The 'draw square-petal flower with % petals of size %' block is missing a turn block",
+                "Try turn clockwise or counterclockwise block");
+
+            testAssert(outputLog, containsCorrectTurn,
+                "The 'draw square-petal flower with % petals of size %' block contains turn block with 360/numberOfPetals degrees.",
+                "The 'draw square-petal flower with % petals of size %' block needs a turn block with correct inputs.",
+                "Try using a turn block, how many degrees should we turn?");
+
+            testAssert(outputLog, penDownPresent,
+                "The 'draw triangle' block contains the 'pen down' block.",
+                "The 'draw triangle' block is not drawing anything. What block draws things?",
+                "Try using blocks to draw things inside of the 'draw triangle'");
+
+
+            /*Draw a field of flowers using repeat block and randomness block and others..*/
+            var repeatExists = function repeatExists() {
+                return spriteContainsBlock("repeat %n %c", 0);
+            }
+            testAssert(outputLog, repeatExists,
+                "There is a 'repeat' block.",
+                "There is no 'repeat' block in the scripting area.",
+                "Make sure to use a 'repeat' block!");
+            var randomExists = function randomExists() {
+                return spriteContainsBlock("pick random %n to %n", 0);
+            }
+            testAssert(outputLog, randomExists,
+                "There is a 'pick random' block.",
+                "There is no 'pick random' block in the scripting area.",
+                "Make sure to draw different flowers using a 'pick random' block!");
+            var drawFlowerExists = function drawFlowerExists() {
+                return spriteContainsBlock("draw square-petal flower with % petals of size %", 0);
+            }
+            testAssert(outputLog, drawFlowerExists,
+                "There is a 'draw square-petal flower' block.",
+                "There is no 'draw square-petal flower' block in the scripting area.",
+                "Make sure to draw flowers using your 'draw square-petal flower' block!");
+            var drawInRepeat = function drawInRepeat() {
+                var drawFlowerSpec = "draw square-petal flower with %s petals of size %s";
+                var repeatSpec = "repeat %n %c";
+                return CBlockContainsInSprite(drawFlowerSpec, repeatSpec, 0);
+            }
+            testAssert(outputLog, drawInRepeat,
+                "There is a 'draw square-petal flower' in a repeat loop.",
+                "There is no 'draw square-petal flower' in a repeat loop.",
+                "Make sure to draw lots of flowers using a repeat loop!");
 
             /**/
             return outputLog;

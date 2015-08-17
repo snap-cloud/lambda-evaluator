@@ -32,15 +32,15 @@
     
     <script type="text/javascript" src="AGAgent.js"></script>
     <script type='text/javascript'>
-        var starter_path = "snapTools.xml";
+        var starter_path = null;
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
         var courseID = "BJC.1x";  // e.g. "BJCx"
         // Specify a prerequisite task id, should be null if no such requirement.
-        var preReqTaskID = null;
+        var preReqTaskID = "_W2_L1_E1";
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_W1_L2_E4";
+        var taskID = "_W2_L1_E2";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -52,17 +52,33 @@
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
-            
-            /*Input an argument value into the given script to create the given picture*/
-            /* Recreate exact squirrel script */
-            var squirrelTest = function squirrelTest() {
-                return scriptPresentInSprite('[{"blockSp":"pen down","inputs":[]},{"blockSp":"for %upvar = %n to %n %cs","inputs":["1","100",[{"blockSp":"move %n steps","inputs":[{"blockSp":"%n × %n","inputs":["2","length"]}]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]]}]');
-            }
-            testAssert(outputLog, squirrelTest,
-                "The squirrel script was found on the screen.",
-                "The squirrel script was not found on the screen. Try checking your inputs and variable names",
-                "Try making sure all of the correct blocks and inputs are in order.");
 
+            /*Add an input to the draw square block.*/
+            var drawSquareHasInput = function drawSquareHasInput() {
+                return spriteContainsBlock("draw square %", 0);
+            }
+            testAssert(outputLog,  drawSquareHasInput,
+                "There is a 'draw square' block with a parameter.",
+                "There is no 'draw square' block with a parameter.",
+                "Make sure to give your 'draw square' block a parameter.");
+
+            /*Add an input to the draw triangle block.*/
+            var drawTriangleHasInput = function drawTriangleHasInput() {
+                return spriteContainsBlock("draw triangle %", 0);
+            }
+            testAssert(outputLog,  drawTriangleHasInput,
+                "There is a 'draw triangle' block with a parameter.",
+                "There is no 'draw triangle' block with a parameter.",
+                "Make sure to give your 'draw triangle' block a parameter.");
+
+            /*Add an input to the draw house block.*/
+            var drawHouseHasInput = function drawHouseHasInput() {
+                return spriteContainsBlock("draw house %", 0);
+            }
+            testAssert(outputLog,  drawHouseHasInput,
+                "There is a 'draw house' block with a parameter.",
+                "There is no 'draw house' block with a parameter.",
+                "Make sure to give your 'draw house' block a parameter.");
             /**/
             return outputLog;
         }
