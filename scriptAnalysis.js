@@ -514,12 +514,18 @@ function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2) {
     CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
     CblockSpecs = CblockSpecs.concat(["repeat until %b %c", "if %b %c", "if %b %c else %c"]);
     CblockSpecs = CblockSpecs.concat(["for each %upvar of %l %cs"]);
-    
-    if (CblockSpecs.indexOf(block2Spec) < 0) {
-        // var rValue = "The second input should be a C-shaped block. See CBlockContains";
-        // rValue += " definition for a list of the blocks designated as C-shaped blocks.";
-        // return rValue;
-        return false;
+
+    //Added the below for loop to make checking for valid blockSpecs more robust using blockSpecMatch()
+    var foundSpec = false;
+    for (var i = 0; i < CblockSpecs.length; i++) {
+    	if (blockSpecMatch(CblockSpecs[i], block2Spec)) {
+    		foundSpec = true;
+    		break;
+    	}
+    }
+
+    if (!foundSpec) {
+    	return false;
     }
 
     for (var i = 0; i < script.length; i++) {
@@ -531,7 +537,7 @@ function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2) {
             if (CBlockContains(block1Spec, block2Spec, morph1, argArray1, argArray2)) {
                 return true;
             }
-        } else if (morph1.blockSp === block2Spec) {
+        } else if (blockSpecMatch(morph1.blockSp, block2Spec) && checkArgArrays(argArray2, morph1.inputs)) {
             if (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 1], block1Spec, argArray1)) {
                 return true;
             }
