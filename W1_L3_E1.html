@@ -43,7 +43,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_W1_L2_E1";
+        var taskID = "_W1_L3_E1";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -51,31 +51,78 @@
         // to hide feedback for this problem, change this flag to false
         var showFeedback = true;
         // to allow for the ability to regrade certain tests, change this flag to true
-        var regradeOn = false;
+        var regradeOn = true;
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
-            
-            /*Input an argument value into the given script to create the given picture*/
-            var scriptExists = function scriptExists() {
-                var template = '[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["A",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]';
-                var vars = ["A"];
-                return scriptPresentInSprite(template, 0, vars);
+            /* Draw a square, hexagon, octagon, dodecagon */
+            var realTriangleBody = getCustomBody("draw triangle");
+            var trianglePresent = function trianglePresent() {
+                return spriteContainsBlock("draw triangle");
             }
-            testAssert(outputLog, scriptExists,
-                "The given script has been recreated exactly.",
-                "The given script has not been recreated exactly.",
-                "Make sure to recreate the given script!");
-            var repeat9 = function repeat9() {
-                var script = '[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["9",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]';
-                return scriptPresentInSprite(script, 0);
+            var containsRepeat = function containsRepeat() {
+                return scriptContainsBlock(realTriangleBody, "repeat % %");
             }
-            testAssert(outputLog, repeat9,
-                "The input to the repeat loop is 9.",
-                "The input to the repeat loop is incorrect.",
-                "Try checking how many sides the given shape has!");
+            var containsCorrectRepeat = function containsCorrectRepeat() {
+                return scriptContainsBlock(realTriangleBody, "repeat % %", ["3", []], true);
+            }
+            var containsMove = function containsMove() {
+                return simpleCBlockContains(realTriangleBody, "move % steps", "repeat");
+            }
+            var containsCorrectMove = function containsCorrectMove() {
+                return simpleCBlockContains(realTriangleBody, "move % steps", "repeat", ["100"]);
+            }
+            var containsTurn = function containsTurn() {
+                return simpleCBlockContains(realTriangleBody, "turn %counterclockwise % degrees", "repeat")
+                    || simpleCBlockContains(realTriangleBody, "turn %clockwise % degrees", "repeat");
+            }
+            var containsCorrectTurn = function containsCorrectTurn() {
+                return simpleCBlockContains(realTriangleBody, "turn %counterclockwise % degrees", "repeat", ["120"])
+                    || simpleCBlockContains(realTriangleBody, "turn %clockwise % degrees", "repeat", ["120"]);
+            }
+            var penDownPresent = function penDownPresent() {
+                return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw triangle", "pen down")) || blockPrecedes("pen down", "repeat % %", realTriangleBody);
+            }
 
-            /**/
+            testAssert(outputLog, trianglePresent,
+                "The 'draw triangle' block is found.",
+                "The 'draw triangle' block cannot be found.",
+                "Make sure you name the block 'draw triangle'");
+
+            testAssert(outputLog, containsRepeat,
+                "The 'repeat' block is found inside 'draw triangle'.",
+                "The 'repeat' block is not found inside 'draw triangle'.",
+                "Make sure you use a repeat inside of 'draw triangle'");
+
+            testAssert(outputLog, containsCorrectRepeat,
+                "The 'repeat' block has a counter of 3.",
+                "The 'repeat' block does not have the correct counter.",
+                "How many times should we repeat to draw a triangle?");
+
+            testAssert(outputLog, containsMove,
+                "The 'draw triangle' block contains move inside of the repeat loop.",
+                "The 'draw triangle' block is missing a move block.",
+                "What blocks helps move the sprite?");
+
+            testAssert(outputLog, containsCorrectMove,
+                "The 'draw triangle' block contains move 100 inside of the repeat loop.",
+                "The 'draw triangle' block is missing a correct move block.",
+                "How far is the move supposed to be?");
+
+            testAssert(outputLog, containsTurn,
+                "The 'draw triangle' block contains a turn block.",
+                "The 'draw triangle' block is missing a turn block",
+                "Try turn clockwise or counterclockwise block");
+
+            testAssert(outputLog, containsCorrectTurn,
+                "The 'draw triangle' block contains turn block with 120 degrees.",
+                "The 'draw triangle' block needs a turn block with correct inputs.",
+                "Try using a turn block, how many degrees should we turn?");
+
+            testAssert(outputLog, penDownPresent,
+                "The 'draw triangle' block contains the 'pen down' block.",
+                "The 'draw triangle' block is not drawing anything. What block draws things? Try placing it in a different place.",
+                "Try using blocks to draw things inside of the 'draw triangle'");
             return outputLog;
         }
 

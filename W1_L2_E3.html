@@ -43,7 +43,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_W1_L2_E1";
+        var taskID = "_W1_L2_E3";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -51,31 +51,33 @@
         // to hide feedback for this problem, change this flag to false
         var showFeedback = true;
         // to allow for the ability to regrade certain tests, change this flag to true
-        var regradeOn = false;
+        var regradeOn = true;
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
-            
-            /*Input an argument value into the given script to create the given picture*/
-            var scriptExists = function scriptExists() {
-                var template = '[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["A",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]';
-                var vars = ["A"];
-                return scriptPresentInSprite(template, 0, vars);
+            /* Recreate provided forever script */
+            var foreverBlock1 = function foreverBlock1() {
+                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
             }
-            testAssert(outputLog, scriptExists,
-                "The given script has been recreated exactly.",
-                "The given script has not been recreated exactly.",
-                "Make sure to recreate the given script!");
-            var repeat9 = function repeat9() {
-                var script = '[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["9",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]';
-                return scriptPresentInSprite(script, 0);
+            var foreverBlock2 = function foreverBlock2() {
+                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["mouse x","mouse y"]}]]}]');
             }
-            testAssert(outputLog, repeat9,
-                "The input to the repeat loop is 9.",
-                "The input to the repeat loop is incorrect.",
-                "Try checking how many sides the given shape has!");
+            var foreverBlock3 = function foreverBlock3() {
+                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["x position",{"blockSp":"%n + %n","inputs":["y position","30"]}]}]]}]');
+            }
 
-            /**/
+            testAssert(outputLog, foreverBlock1,
+                "The first forever script was found on the screen.",
+                "The first forever script was not found on the screen. Check your inputs.",
+                "Make sure you have all of the correct inputs and the blocks are in order for the first forever script script.");
+            testAssert(outputLog, foreverBlock2,
+                "The second forever script was found on the screen.",
+                "The second forever script was not found on the screen. Check your inputs.",
+                "Make sure you have all of the correct inputs and the blocks are in order for the second forever script script.");
+            testAssert(outputLog, foreverBlock3,
+                "The third forever script was found on the screen.",
+                "The third forever script was not found on the screen. Check your inputs.",
+                "Make sure you have all of the correct inputs and the blocks are in order for the third forever script script.");
             return outputLog;
         }
 
