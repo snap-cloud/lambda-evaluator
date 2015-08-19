@@ -438,13 +438,17 @@ function checkArgArrays(template, actual) {
  * such as "factorial %", since this calls blockSpecMatch) is anywhere on the screen.
  * Otherwise returns false. If ARGARRAY is an array, then we check that all of the inputs
  * are correct in addition to the blockspec. Otherwise we will just check that the blockspec is fine.
+ * If SOFTMATCH is true, then we will ignore empty inputs like "" or [].
  */
-function spriteContainsBlock(blockSpec, spriteIndex, argArray) {
+function spriteContainsBlock(blockSpec, spriteIndex, argArray, softMatch) {
 	if (argArray === undefined) {
 		argArray = [];
 	}
 	if (spriteIndex === undefined) {
 		spriteIndex = 0;
+	}
+	if (softMatch === undefined) {
+		softMatch = false;
 	}
 
 	var JSONtarget;
@@ -452,7 +456,7 @@ function spriteContainsBlock(blockSpec, spriteIndex, argArray) {
 	var scriptsOnScreen = getScripts(spriteIndex);
 	for (var i = 0; i < scriptsOnScreen.length; i++) {
 		JSONtarget = JSONscript(scriptsOnScreen[i]);
-		hasFound = scriptContainsBlock(JSONtarget, blockSpec, argArray);
+		hasFound = scriptContainsBlock(JSONtarget, blockSpec, argArray, softMatch);
 		if (hasFound) {
 			return true;
 		}

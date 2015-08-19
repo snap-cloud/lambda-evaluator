@@ -456,42 +456,168 @@
 
 
                 /* Draw triangle, pentagon, hexagon, octagon scripts (The Polygons)*/
-                var repeatSpec = "repeat % %";
-                var turnClockwiseSpec = "turn %clockwise % degrees";
-                var turnCounterClockwiseSpec = "turn %counterclockwise % degrees";
-                var emptyInputs = [];
+                //Begin triangle
+                // var repeatSpec = "repeat % %";
+                // var turnClockwiseSpec = "turn %clockwise % degrees";
+                // var turnCounterClockwiseSpec = "turn %counterclockwise % degrees";
+                // var emptyInputs = [];
                 
-                var triangleRepeatInputs = ["3", []];
-                var triangleTurnInputs = ["120"];
+                // var triangleRepeatInputs = ["3", []];
+                // var triangleTurnInputs = ["120"];
                 
-                var pentagonRepeatInputs = ["5", []];
-                var pentagonTurnInputs = ["72"];
+                // var pentagonRepeatInputs = ["5", []];
+                // var pentagonTurnInputs = ["72"];
                 
-                var hexagonRepeatInputs = ["6", []];
-                var hexagonTurnInputs = ["60"];
+                // var hexagonRepeatInputs = ["6", []];
+                // var hexagonTurnInputs = ["60"];
                 
-                var octagonRepeatInputs = ["8", []];
-                var octagonTurnInputs = ["45"];
+                // var octagonRepeatInputs = ["8", []];
+                // var octagonTurnInputs = ["45"];
 
-                var triangleHasTurn = function triangleHasTurn() {
-                    var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, emptyInputs, triangleRepeatInputs);
-                    var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, emptyInputs, triangleRepeatInputs);
-                    return withClockwise || withCounterClockwise;
-                }
-                var triangleHasCorrectTurn = function triangleHasCorrectTurn() {
-                    var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, triangleTurnInputs, triangleRepeatInputs);
-                    var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, triangleTurnInputs, triangleRepeatInputs);
-                    return withClockwise || withCounterClockwise;
-                }
+                // //Begin triangle
+                // var trianglePresent = false;
+                // var triangleHasCorrectRepeat = function triangleHasCorrectRepeat() {
+                //     var result = spriteContainsBlock("repeat % %", 0, triangleRepeatInputs, true);
+                //     if (result) {
+                //         trianglePresent = true;
+                //     }
+                //     return result;
+                // }
+                // var triangleHasTurn = function triangleHasTurn() {
+                //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, emptyInputs, triangleRepeatInputs);
+                //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, emptyInputs, triangleRepeatInputs);
+                //     return withClockwise || withCounterClockwise;
+                // }
+                // var triangleHasCorrectTurn = function triangleHasCorrectTurn() {
+                //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, triangleTurnInputs, triangleRepeatInputs);
+                //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, triangleTurnInputs, triangleRepeatInputs);
+                //     return withClockwise || withCounterClockwise;
+                // }
 
-                testAssert(outputLog, triangleHasTurn,
-                    "The script for drawing a triangle has a turn block.",
-                    "The script for drawing a triangle is not changing direction, how can we fix this?",
-                    "Which block can we use to help the sprite change direction?");
-                testAssert(outputLog, triangleHasCorrectTurn,
-                    "The script for drawing a triangle has the correct turn of 120 degrees",
-                    "The script for drawing a triangle has incorrect turning radius. How much do we need to turn by for each turn?",
-                    "Try thinking about the internal angles of a triangle. How much do we need to turn? How many times should we do this?");
+                // testAssert(outputLog, triangleHasCorrectRepeat,
+                //     "The script for the triangle has the correct counter 3 for the repeat loop",
+                //     "The script for the triangle does not have the correct counter for the repeat loop. How many times should we repeat the commands that occur within the repeat loop?",
+                //     "Try thinking about how we can use the repeat loop. How many times should the commands in the body of the repeat block be repeated?");
+                // if (trianglePresent) {
+                //     testAssert(outputLog, triangleHasTurn,
+                //     "The script for drawing a triangle has a turn block.",
+                //     "The script for drawing a triangle is not changing direction, how can we fix this?",
+                //     "Which block can we use to help the sprite change direction?");
+                // testAssert(outputLog, triangleHasCorrectTurn,
+                //     "The script for drawing a triangle has the correct turn of 120 degrees",
+                //     "The script for drawing a triangle has incorrect turning radius. How much do we need to turn by for each turn?",
+                //     "Try thinking about the internal angles of a triangle. How much do we need to turn? How many times should we do this?");
+                // }
+
+                // //Begin Pentagon
+                // var pentagonPresent = false;
+                // var pentagonHasCorrectRepeat = function pentagonHasCorrectRepeat() {
+                //     var result = spriteContainsBlock("repeat % %", 0, pentagonRepeatInputs, true);
+                //     if (result) {
+                //         pentagonPresent = true;
+                //     }
+                //     return result;
+                // }
+                // var pentagonHasTurn = function pentagonHasTurn() {
+                //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, emptyInputs, pentagonRepeatInputs);
+                //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, emptyInputs, pentagonRepeatInputs);
+                //     return withClockwise || withCounterClockwise;
+                // }
+                // var pentagonHasCorrectTurn = function pentagonHasCorrectTurn() {
+                //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, pentagonTurnInputs, pentagonRepeatInputs);
+                //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, pentagonTurnInputs, pentagonRepeatInputs);
+                //     return withClockwise || withCounterClockwise;
+                // }
+
+                // testAssert(outputLog, pentagonHasCorrectRepeat,
+                //     "The script for the pentagon has the correct counter 5 for the repeat loop",
+                //     "The script for the pentagon does not have the correct counter for the repeat loop. How many times should we repeat the commands that occur within the repeat loop?",
+                //     "Try thinking about how we can use the repeat loop. How many times should the commands in the body of the repeat block be repeated?");
+                // if (pentagonPresent) {
+                //     testAssert(outputLog, pentagonHasTurn,
+                //     "The script for drawing a pentagon has a turn block.",
+                //     "The script for drawing a pentagon is not changing direction, how can we fix this?",
+                //     "Which block can we use to help the sprite change direction?");
+                // testAssert(outputLog, pentagonHasCorrectTurn,
+                //     "The script for drawing a pentagon has the correct turn of 72 degrees",
+                //     "The script for drawing a pentagon has incorrect turning radius. How much do we need to turn by for each turn?",
+                //     "Try thinking about the internal angles of a pentagon. How much do we need to turn? How many times should we do this?");
+                // }
+
+                // //Begin hexagon
+                // var hexagonPresent = false;
+                // var hexagonHasCorrectRepeat = function hexagonHasCorrectRepeat() {
+                //     var result = spriteContainsBlock("repeat % %", 0, hexagonRepeatInputs, true);
+                //     if (result) {
+                //         hexagonPresent = true;
+                //     }
+                //     return result;
+                // }
+                // var hexagonHasTurn = function hexagonHasTurn() {
+                //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, emptyInputs, hexagonRepeatInputs);
+                //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, emptyInputs, hexagonRepeatInputs);
+                //     return withClockwise || withCounterClockwise;
+                // }
+                // var hexagonHasCorrectTurn = function hexagonHasCorrectTurn() {
+                //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, hexagonTurnInputs, hexagonRepeatInputs);
+                //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, hexagonTurnInputs, hexagonRepeatInputs);
+                //     return withClockwise || withCounterClockwise;
+                // }
+
+                // testAssert(outputLog, hexagonHasCorrectRepeat,
+                //     "The script for the hexagon has the correct counter 6 for the repeat loop",
+                //     "The script for the hexagon does not have the correct counter for the repeat loop. How many times should we repeat the commands that occur within the repeat loop?",
+                //     "Try thinking about how we can use the repeat loop. How many times should the commands in the body of the repeat block be repeated?");
+                // if (hexagonPresent) {
+                //     testAssert(outputLog, hexagonHasTurn,
+                //     "The script for drawing a hexagon has a turn block.",
+                //     "The script for drawing a hexagon is not changing direction, how can we fix this?",
+                //     "Which block can we use to help the sprite change direction?");
+                // testAssert(outputLog, hexagonHasCorrectTurn,
+                //     "The script for drawing a hexagon has the correct turn of 60 degrees",
+                //     "The script for drawing a hexagon has incorrect turning radius. How much do we need to turn by for each turn?",
+                //     "Try thinking about the internal angles of a hexagon. How much do we need to turn? How many times should we do this?");
+                // }
+
+                // //Begin octagon
+                // var octagonPresent = false;
+                // var octagonHasCorrectRepeat = function octagonHasCorrectRepeat() {
+                //     var result = spriteContainsBlock("repeat % %", 0, octagonRepeatInputs, true);
+                //     if (result) {
+                //         octagonPresent = true;
+                //     }
+                //     return result;
+                // }
+                // var octagonHasTurn = function octagonHasTurn() {
+                //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, emptyInputs, octagonRepeatInputs);
+                //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, emptyInputs, octagonRepeatInputs);
+                //     return withClockwise || withCounterClockwise;
+                // }
+                // var octagonHasCorrectTurn = function octagonHasCorrectTurn() {
+                //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, octagonTurnInputs, octagonRepeatInputs);
+                //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, octagonTurnInputs, octagonRepeatInputs);
+                //     return withClockwise || withCounterClockwise;
+                // }
+
+                // testAssert(outputLog, octagonHasCorrectRepeat,
+                //     "The script for the octagon has the correct counter 8 for the repeat loop",
+                //     "The script for the octagon does not have the correct counter for the repeat loop. How many times should we repeat the commands that occur within the repeat loop?",
+                //     "Try thinking about how we can use the repeat loop. How many times should the commands in the body of the repeat block be repeated?");
+
+                // if (octagonPresent) {
+                //     testAssert(outputLog, octagonHasTurn,
+                //         "The script for drawing a octagon has a turn block.",
+                //         "The script for drawing a octagon is not changing direction, how can we fix this?",
+                //         "Which block can we use to help the sprite change direction?");
+                //     testAssert(outputLog, octagonHasCorrectTurn,
+                //         "The script for drawing a octagon has the correct turn of 45 degrees",
+                //         "The script for drawing a octagon has incorrect turning radius. How much do we need to turn by for each turn?",
+                //         "Try thinking about the internal angles of a octagon. How much do we need to turn? How many times should we do this?");
+                // }
+
+
+        /* BEGIN UNIT 2 STUFF */
+            
 
             return outputLog;
         }
