@@ -617,7 +617,137 @@
 
 
         /* BEGIN UNIT 2 STUFF */
-            
+            //Tests for 'vowel? %letter' predicate block
+            // multiTestBlock(outputLog, 'vowel? %',
+            //     [["p"], ["a"], ["e"], ["i"], ["o"], ["u"], ["y"], ["f"]], //inputs
+            //     [false, true, true, true, true, true, false, false], //expected outputs
+            //     [-1, -1, -1, -1, -1, -1, -1, -1], //timeouts
+            //     [true, true, true, true, true, true, true, true]); //Boolean stuff
+
+            /* Line 50 (recreate forever and repeat until scripts) test in excel doc */
+            // var foreverScriptPresent = function foreverScriptPresent() {
+            //     return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"if %b %c else %c","inputs":[{"blockSp":"%s = %s","inputs":[{"blockSp":"%n mod %n","inputs":["direction","60"]},"0"]},[{"blockSp":"set pen size to %n","inputs":["5"]}],[{"blockSp":"set pen size to %n","inputs":["1"]}]]},{"blockSp":"move %n steps","inputs":["1"]},{"blockSp":"turn %clockwise %n degrees","inputs":["1"]}]]}]');
+            // }
+
+            // testAssert(outputLog, foreverScriptPresent,
+            //     "The forever script was found.",
+            //     "The forever script was not found. Look at the lab exercise for more guidance.",
+            //     "Look at the diagram given to recreate the exact script.");
+
+            // var repeatUntilScriptPresent = function repeatUntilScriptPresent() {
+            //     return scriptPresentInSprite('[{"blockSp":"repeat until %b %c","inputs":[{"blockSp":"%s > %s","inputs":["direction","180"]},[{"blockSp":"if %b %c else %c","inputs":[{"blockSp":"%s = %s","inputs":[{"blockSp":"%n mod %n","inputs":["direction","45"]},"0"]},[{"blockSp":"set pen color to %clr","inputs":[]},{"blockSp":"set pen size to %n","inputs":["5"]}],[{"blockSp":"set pen color to %clr","inputs":[]},{"blockSp":"set pen size to %n","inputs":["1"]}]]},{"blockSp":"move %n steps","inputs":["1"]},{"blockSp":"turn %clockwise %n degrees","inputs":["1"]}]]},{"blockSp":"repeat until %b %c","inputs":[{"blockSp":"%s = %s","inputs":["direction","0"]},[{"blockSp":"move %n steps","inputs":["1"]},{"blockSp":"turn %clockwise %n degrees","inputs":["1"]}]]}]');
+            // }
+
+            // testAssert(outputLog, repeatUntilScriptPresent,
+            //     "The repeat until script was found.",
+            //     "The repeat until script was not found. Please try to match the script exactly as shown in the exercise.",
+            //     "Please try to match the script exactly as shown in the exercise.");
+
+            /* Line 61 recreate random polygon drawer */
+            // var randomPolygonPresent = function randomPolygonPresent() {
+            //     return scriptPresentInSprite('[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"script variables %scriptVars","inputs":[]},{"blockSp":"set %var to %s","inputs":["sides",{"blockSp":"pick random %n to %n","inputs":["3","10"]}]},{"blockSp":"clear","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["sides",[{"blockSp":"move %n steps","inputs":["50"]},{"blockSp":"turn %clockwise %n degrees","inputs":[{"blockSp":"%n / %n","inputs":["360","sides"]}]}]]}]');
+            // }
+
+            // testAssert(outputLog, randomPolygonPresent,
+            //     "The random polygon script is present.",
+            //     "The random polygon script is not found on the screen. Look at the exercise image to recreate the exact script.",
+            //     "Look at the exercise image to recreate the exact script.");
+
+            /* Line 67 create the number-of-divisors */
+            //Number-of-divisors: Make sure you create and name your block exactly 'number-of-divisors %'.
+            // var numberOfDivisorsExists = function numberOfDivisorsExists() {
+            //     var numberOfDivisorsFound = findBlockInPalette("number-of-divisors %");
+            //     if (numberOfDivisorsFound !== null) {
+            //         return true;
+            //     }
+            //     return false;
+            // }
+            // testAssert(outputLog, numberOfDivisorsExists,
+            //     "There is a 'number-of-divisors %' block.",
+            //     "N/A",
+            //     "Make sure you create and name your block exactly 'number-of-divisors %'.");
+
+            // // Number-of-divisors: Make sure your function works for positive numbers!
+            // multiTestBlock(outputLog, 'number-of-divisors %',
+            //     [[8], [11], [3]],
+            //     [4, 2, 2],
+            //     [-1, -1, -1],
+            //     [true, true, true]);
+
+            /* Line 68 create the 'digital sum' block */
+            //Digital sum: make sure create and name your block exactly 'digital sum %'
+            // var digitalSumExists = function digitalSumExists() {
+            //     var digitalSumFound = findBlockInPalette("digital sum %");
+            //     if (digitalSumFound !== null) {
+            //         return true;
+            //     }
+            //     return false;
+            // }
+            // testAssert(outputLog, digitalSumExists,
+            //     "There is a 'digital sum %' block.",
+            //     "N/A",
+            //     "Make sure you create and name your block exactly 'digital sum %'.");
+
+            // //Digital sum: Make sure your function works for positive numbers!
+            // multiTestBlock(outputLog, 'digital sum %',
+            //     [[888], [464], [10000302]],
+            //     [24, 14, 6],
+            //     [-1, -1, -1],
+            //     [true, true, true]);
+
+            /* Line 69 create the 'multiples of 7 algorithm' block */
+            //Digital sum: make sure create and name your block exactly 'digital sum %'
+            // var multiplesOf7Exists = function multiplesOf7Exists() {
+            //     var multiplesOf7Found = findBlockInPalette("multiples of 7 algorithm %");
+            //     if (multiplesOf7Found !== null) {
+            //         return true;
+            //     }
+            //     return false;
+            // }
+            // var notContainsModBlock = function notContainsModBlock() {
+            //     var multiplesOf7Body = getCustomBody('multiples of 7 algorithm %');
+            //     if (multiplesOf7Body === undefined) {
+            //         return false;
+            //     }
+            //     var modBlockFound = scriptContainsBlock(multiplesOf7Body, '% mod %');
+            //     if (modBlockFound) {
+            //         return false;
+            //     }
+            //     return true;
+            // }
+
+            // testAssert(outputLog, multiplesOf7Exists,
+            //     "There is a 'multiples of 7 algorithm %' block.",
+            //     "N/A",
+            //     "Make sure you create and name your block exactly 'multiples of 7 algorithm %'.");
+
+            // testAssert(outputLog, notContainsModBlock,
+            //     "There is a not '% mod %' block inside the definition of 'multiples of 7 algorithm %'.",
+            //     "N/A",
+            //     "Try making the function without using a '% mod %' block. A repeat-until block sounds like it could work. Also look at the blocks on the screen in the exercise that we suggest.");
+
+
+            // //Digital sum: Make sure your function works for numbers greater than 21!
+            // multiTestBlock(outputLog, 'multiples of 7 algorithm %',
+            //     [[501298], [28], [23], [35]],
+            //     [-14, -14, -4, -7],
+            //     [-1, -1, -1, -1],
+            //     [true, true, true, true]);
+
+            // //Digital sum: Make sure your function works for 21!
+            // multiTestBlock(outputLog, 'multiples of 7 algorithm %',
+            //     [[21]],
+            //     [0],
+            //     [-1],
+            //     [true]);
+
+            // //Digital sum: Make sure your function works for numbers less than 21!
+            // multiTestBlock(outputLog, 'multiples of 7 algorithm %',
+            //     [[14], [10], [-4], [-90]],
+            //     [14, 10, -4, -90],
+            //     [-1, -1, -1, -1],
+            //     [true, true, true, true]);
+
 
             return outputLog;
         }

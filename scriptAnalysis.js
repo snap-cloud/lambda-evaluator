@@ -201,6 +201,8 @@ function JSONblock(block) {
 		morph = block.children[i];
 		if (morph.selector === "reportGetVar") {
 			blockArgs.push(morph.blockSpec);
+		} else if (morph.selector === "reportTrue" || morph.selector === "reportFalse") {
+			blockArgs.push(morph.blockSpec);
 		} else if (morph instanceof InputSlotMorph) {
 			blockArgs.push(morph.children[0].text);
 		} else if (morph instanceof CSlotMorph) {
