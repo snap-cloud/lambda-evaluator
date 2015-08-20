@@ -43,7 +43,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_W2_L1_E1";
+        var taskID = "_W1_L2_E3";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -55,35 +55,28 @@
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
-            /* Recreate provided forever scripts */
+            /* Recreate provided forever script */
             var foreverBlock1 = function foreverBlock1() {
-                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["mouse x","mouse y"]},{"blockSp":"if %b %c else %c","inputs":[{"blockSp":"%s < %s","inputs":["x position","0"]},[{"blockSp":"set pen color to %clr","inputs":[]}],[{"blockSp":"set pen color to %clr","inputs":[]}]]}]]}]');
+                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
             }
             var foreverBlock2 = function foreverBlock2() {
-                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"if %b %c else %c","inputs":[{"blockSp":"%s < %s","inputs":["direction","90"]},[{"blockSp":"set pen size to %n","inputs":["5"]}],[{"blockSp":"set pen size to %n","inputs":["1"]}]]},{"blockSp":"move %n steps","inputs":["1"]},{"blockSp":"turn %clockwise %n degrees","inputs":["1"]}]]}]');
+                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["mouse x","mouse y"]}]]}]');
             }
             var foreverBlock3 = function foreverBlock3() {
-                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"if %b %c else %c","inputs":[{"blockSp":"%b and %b","inputs":[{"blockSp":"%s > %s","inputs":["direction","180"]},{"blockSp":"%s < %s","inputs":["direction","270"]}]},[{"blockSp":"set pen color to %clr","inputs":[]}],[{"blockSp":"set pen color to %clr","inputs":[]}]]},{"blockSp":"move %n steps","inputs":["1"]},{"blockSp":"turn %clockwise %n degrees","inputs":["1"]}]]}]');
-            }
-            var foreverBlock4 = function foreverBlock4() {
-                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"if %b %c else %c","inputs":[{"blockSp":"%b and %b","inputs":[{"blockSp":"%s = %s","inputs":["direction","30"]},{"blockSp":"%s = %s","inputs":["direction","60"]}]},[{"blockSp":"set pen size to %n","inputs":["10"]},{"blockSp":"set pen color to %clr","inputs":[]}],[{"blockSp":"set pen size to %n","inputs":["1"]},{"blockSp":"set pen color to %clr","inputs":[]}]]},{"blockSp":"move %n steps","inputs":["1"]},{"blockSp":"turn %clockwise %n degrees","inputs":["1"]}]]}]');
+                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["x position",{"blockSp":"%n + %n","inputs":["y position","30"]}]}]]}]');
             }
 
             testAssert(outputLog, foreverBlock1,
-                "The first forever script from exercise 1 was found on the screen.",
-                "The first forever script from exercise 1 was not found on the screen. Check your inputs and make sure all of the blocks are in order.",
+                "The first forever script was found on the screen.",
+                "The first forever script was not found on the screen. Check your inputs.",
                 "Make sure you have all of the correct inputs and the blocks are in order for the first forever script script.");
             testAssert(outputLog, foreverBlock2,
-                "The second forever script from exercise 1 was found on the screen.",
-                "The second forever script from exercise 1 was not found on the screen. Check your inputs and make sure all of the blocks are in order.",
+                "The second forever script was found on the screen.",
+                "The second forever script was not found on the screen. Check your inputs.",
                 "Make sure you have all of the correct inputs and the blocks are in order for the second forever script script.");
             testAssert(outputLog, foreverBlock3,
-                "The third forever script from exercise 1 was found on the screen.",
-                "The third forever script from exercise 1 was not found on the screen. Check your inputs and make sure all of the blocks are in order.",
-                "Make sure you have all of the correct inputs and the blocks are in order for the third forever script script.");
-            testAssert(outputLog, foreverBlock4,
-                "The fourth forever script from exercise 1 was found on the screen.",
-                "The fourth forever script from exercise 1 was not found on the screen. Check your inputs and make sure all of the blocks are in order.",
+                "The third forever script was found on the screen.",
+                "The third forever script was not found on the screen. Check your inputs.",
                 "Make sure you have all of the correct inputs and the blocks are in order for the third forever script script.");
             return outputLog;
         }
