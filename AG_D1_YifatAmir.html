@@ -320,9 +320,11 @@
 
 /*UNIT 2*/
 
-    /*1: Developing a block that makes plurals*/
+        /*1: Developing a block that makes plurals*/
 
-            // /*Create a "plural %" block that makes nouns plural*/
+            /*Create a "plural %" block that makes nouns plural*/
+
+            // //Make sure you name your block "plural %"!
             // var exists;
             // var pluralExists = function pluralExists() {
             //     exists = findBlockInPalette("plural %");
@@ -334,22 +336,127 @@
             //     return exists;
             // }
             // testAssert(outputLog, pluralExists,
-            //     "There is a 'plural %' block.",
-            //     "There is no 'plural %' block.",
+            //     "A 'plural %' block has been found.",
+            //     "",
             //     "Make sure you name your block exactly 'plural %'.");
-            // if (exists) {
-            //     multiTestBlock(outputLog, 
-            //         "plural %",
-            //         ["day", "boss", "medicine", "box", "cat"],
-            //         ["days", "bosses", "medicines", "boxes", "cats"],
-            //         [-1, -1, -1, -1, -1],
-            //         [true, true, true, true, true],
-            //         1);
+            // //possibly add an assertion checking that they have a conditional in their definition, etc. (unnecessary, given example in lab?)
+
+            // //Make sure your block works on basic inputs!
+            // multiTestBlock(outputLog, 
+            //     "plural %",
+            //     [["cat"], ["day"]],
+            //     ["cats", "days"],
+            //     [-1, -1],
+            //     [true, true]);
+
+            // //Make sure your block works when the singular word ends in 's'!
+            // multiTestBlock(outputLog, 
+            //     "plural %",
+            //     [["boss"], ["dress"]],
+            //     ["bosses", "dresses"],
+            //     [-1, -1],
+            //     [true, true]);
+
+            // //Make sure your block works when the singular word ends in 'x'!
+            // multiTestBlock(outputLog, 
+            //     "plural %",
+            //     [["fox"], ["box"]],
+            //     ["foxes", "boxes"],
+            //     [-1, -1],
+            //     [true, true]);
+
+        /*1: Plurals Continued*/
+
+            /*Make a plural-h block only for words that end with "h".*/
+
+            // //Make sure you name your block "plural-h %"!
+            // var exists;
+            // var pluralhExists = function pluralhExists() {
+            //     exists = findBlockInPalette("plural-h %");
+            //     if (exists !== null) {
+            //         exists = true;
+            //     } else {
+            //         exists = false;
+            //     }
+            //     return exists;
             // }
-            // //^FIX?!?!?!?
+            // testAssert(outputLog, pluralhExists,
+            //     "A 'plural-h %' block has been found.",
+            //     "",
+            //     "Make sure you name your block exactly 'plural-h %'.");
+            // //possibly add an assertion checking that they have a conditional in their definition?
 
+            // //Make sure your block works when the singular word ends in 'th'!
+            // multiTestBlock(outputLog, 
+            //     "plural-h %",
+            //     [["moth"], ["sloth"]],
+            //     ["moths", "sloths"],
+            //     [-1, -1],
+            //     [true, true]);
 
-    /*2: Script Variables*/
+            // //Make sure your block works when the singular word ends in 'tch'!
+            // multiTestBlock(outputLog, 
+            //     "plural-h %",
+            //     [["match"], ["crutch"]],
+            //     ["matches", "crutches"],
+            //     [-1, -1],
+            //     [true, true]);
+
+            // //Make sure your block works when the singular word ends in 'sh'!
+            // multiTestBlock(outputLog, 
+            //     "plural-h %",
+            //     [["dish"], ["wish"]],
+            //     ["dishes", "wishes"],
+            //     [-1, -1],
+            //     [true, true]);
+
+            /*Use the new suffix block in the old one.*/
+
+            // //Make sure you use your plural-h block within your plural block!
+            // var hAbstracted = function hAbstracted() {
+            //     return customBlockContains("plural %", "plural-h %");
+            // }
+            // testAssert(outputLog, hAbstracted,
+            //     "The 'plural-h %' block has been found within the definition of 'plural %'.",
+            //     "",
+            //     "Make sure you use your plural-h block within your plural block!");
+
+            /*Make a plural-y block only for words that end with "y".*/
+
+            // //Make sure you name your block "plural-y %"!
+            // var exists;
+            // var pluralyExists = function pluralyExists() {
+            //     exists = findBlockInPalette("plural-y %");
+            //     if (exists !== null) {
+            //         exists = true;
+            //     } else {
+            //         exists = false;
+            //     }
+            //     return exists;
+            // }
+            // testAssert(outputLog, pluralyExists,
+            //     "A 'plural-y %' block has been found.",
+            //     "",
+            //     "Make sure you name your block exactly 'plural-y %'.");
+            // //possibly add an assertion checking that they have a conditional in their definition?
+
+            // //Make sure your block works when the second-to-last letter is a vowel!
+            // multiTestBlock(outputLog, 
+            //     "plural-y %",
+            //     [["tray"], ["boy"]],
+            //     ["trays", "boys"],
+            //     [-1, -1],
+            //     [true, true]);
+
+            // //Make sure your block works when the second-to-last letter is a consonant!
+            // multiTestBlock(outputLog, 
+            //     "plural-y %",
+            //     [["sky"], ["try"]],
+            //     ["skies", "tries"],
+            //     [-1, -1],
+            //     [true, true]);
+
+        /*2: Script Variables*/
 
             // /*Modify the script so that it also picks a size randomly from 30 to 60 using only multiples of 10*/
             // var twoPickRandoms = function twoPickRandoms() {
@@ -401,7 +508,7 @@
             // if (exists) {
             //     multiTestBlock(outputLog, 
             //         "% !", 
-            //         [0, 1, 2, 3, 4, 5],
+            //         [[0], [1], [2], [3], [4], [5]],
             //         [1, 1, 2, 6, 24, 120],
             //         [-1, -1, -1, -1, -1, -1],
             //         [true, true, true, true, true, true],
@@ -426,7 +533,7 @@
             // if (exists) {
             //     multiTestBlock(outputLog, 
             //         "triangular number %", 
-            //         [0, 1, 2, 3, 4, 5],
+            //         [[0], [1], [2], [3], [4], [5]],
             //         [0, 1, 3, 6, 10, 15],
             //         [-1, -1, -1, -1, -1, -1],
             //         [true, true, true, true, true, true],
@@ -457,6 +564,9 @@
             //         [true, true, true, true, true],
             //         1);
             // }
+
+
+
 
             return outputLog;
         }

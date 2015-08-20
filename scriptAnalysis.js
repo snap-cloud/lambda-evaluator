@@ -471,22 +471,13 @@ function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex) 
 	if (spriteIndex === undefined) {
 		spriteIndex = 0;
 	}
-
-	var JSONtarget;
-	var hasFound = false;
-	var scriptsOnScreen = getScripts(spriteIndex);
-	for (var i = 0; i < scriptsOnScreen.length; i++) {
-		JSONtarget = JSONscript(scriptsOnScreen[i]);
-		if (blockSpecMatch(JSONtarget[0].blockSp, customBlockSpec)) {
-			customJSON = JSONcustomBlock(scriptsOnScreen[i]);
-			hasFound = scriptContainsBlock(customJSON.body, blockSpec, argArray);
-		}
-		if (hasFound) {
-			return true;
-		}
+	var customBody = JSONcustomBlock(findBlockInPalette(blockSpec)).body;
+	var hasFound = scriptContainsBlock(customBody, blockSpec, argArray);
+	if (hasFound) {
+		return true;
+	} else {
+		return false;
 	}
-
-	return false;
 }
 
 /* Takes in BLOCK1SPEC (any block) and BLOCK2SPEC (a C-block), 
