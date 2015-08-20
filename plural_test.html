@@ -40,13 +40,13 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_W1_L2_E4b";
+        var taskID = "_plural_test";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
-        var graded = false;
+        var graded = true;
         // to hide feedback for this problem, change this flag to false
-        var showFeedback = false;
+        var showFeedback = true;
         // to allow for the ability to regrade certain tests, change this flag to true
         var regradeOn = false;
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
@@ -55,7 +55,7 @@
             
             var exists;
             var pluralExists = function pluralExists() {
-                exists = findBlockInPalette("plural %");
+                exists = findBlockInPalette("plural %s");
                 if (exists !== null) {
                     exists = true;
                 } else {
@@ -69,11 +69,11 @@
                 "Make sure you name your block exactly 'plural %'.");
             if (exists) {
                 multiTestBlock(outputLog, 
-                    "plural %",
+                    "plural %s",
                     ["day", "boss", "medicine", "box", "cat"],
                     ["days", "bosses", "medicines", "boxes", "cats"],
                     [-1, -1, -1, -1, -1],
-                    [true, true, true, true, true],
+                    [false, false, false, false, false],
                     1);
             }
 
