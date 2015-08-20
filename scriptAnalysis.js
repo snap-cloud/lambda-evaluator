@@ -201,6 +201,8 @@ function JSONblock(block) {
 		morph = block.children[i];
 		if (morph.selector === "reportGetVar") {
 			blockArgs.push(morph.blockSpec);
+		} else if (morph.selector === "reportTrue" || morph.selector === "reportFalse") {
+			blockArgs.push(morph.blockSpec);
 		} else if (morph instanceof InputSlotMorph) {
 			blockArgs.push(morph.children[0].text);
 		} else if (morph instanceof CSlotMorph) {
@@ -440,6 +442,7 @@ function checkArgArrays(template, actual) {
  * such as "factorial %", since this calls blockSpecMatch) is anywhere on the screen.
  * Otherwise returns false. If ARGARRAY is an array, then we check that all of the inputs
  * are correct in addition to the blockspec. Otherwise we will just check that the blockspec is fine.
+ * If SOFTMATCH is true, then we will ignore empty inputs like "" or [].
  */
 function spriteContainsBlock(blockSpec, spriteIndex, argArray, softMatch) {
 	if (argArray === undefined) {
@@ -447,6 +450,9 @@ function spriteContainsBlock(blockSpec, spriteIndex, argArray, softMatch) {
 	}
 	if (spriteIndex === undefined) {
 		spriteIndex = 0;
+	}
+	if (softMatch === undefined) {
+		softMatch = false;
 	}
 
 	var JSONtarget;
