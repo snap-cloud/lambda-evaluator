@@ -163,12 +163,12 @@ gradingLog.prototype.startSnapTest = function(testID) {
 
 		var stage = this.snapWorld.children[0].stage;
 		var outputLog = this; //Reference for the anonymouse function to follow
+
 		var proc = stage.threads.startProcess(block,
 			stage.isThreadSafe,
 			false,
 			function() {
 				outputLog.finishSnapTest(testID, readValue(proc));
-
 		});
 	//Add reference to proc in gradingLog for error handling
 		test.proc = proc;
@@ -483,7 +483,7 @@ function testAssert(outputLog, assertion, pos_fb, neg_fb, ass_text, point) {
 	if (assertion()) {
 		outputLog.addAssert("a", assertion, pos_fb, ass_text, pos_fb, neg_fb, point);
 	} else {
-		outputLog.addAssert("a", assertion, neg_fb, ass_text, pos_fb, neg_fb, point);
+		outputLog.addAssert("a", assertion, pos_fb, ass_text, pos_fb, neg_fb, point);
 	}
 	return outputLog;
 }
