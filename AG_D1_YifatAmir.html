@@ -585,7 +585,7 @@
             //     "",
             //     "Make sure you name your block exactly 'even? %'.");
 
-            //Make sure your block is a predicate: it returns true/false values.
+            // //Make sure your block is a predicate: it returns true/false values.
             // var predicate = function predicate() {
             //     var customBody = getCustomBody("even? %");
             //     return ((customBlockContains("even? %", "report %", ["true"]) && 
@@ -618,6 +618,62 @@
             // //Make sure your block works when the input is zero!
             // multiTestBlock(outputLog, 
             //     "even? %",
+            //     [[0]],
+            //     [true],
+            //     [-1],
+            //     [true]);
+
+            /*Create "% >= %" predicate block.*/
+            
+            // //Make sure you name your block "% >= %"!
+            // var exists;
+            // var gtoetExists = function gtoetExists() {
+            //     exists = findBlockInPalette("% >= %");
+            //     if (exists !== null) {
+            //         exists = true;
+            //     } else {
+            //         exists = false;
+            //     }
+            //     return exists;
+            // }
+            // testAssert(outputLog, gtoetExists,
+            //     "A '% >= %' block has been found.",
+            //     "",
+            //     "Make sure you name your block exactly '% >= %'.");
+
+            // //Make sure your block is a predicate: it returns true/false values.
+            // var predicate = function predicate() {
+            //     var customBody = getCustomBody("% >= %");
+            //     return ((customBlockContains("% >= %", "report %", ["true"]) && 
+            //         customBlockContains("% >= %", "report %", ["false"])) || 
+            //         (blockPrecedes("report %", "% or %", customBody))); 
+            //         //assuming they are reporting the equals block --> boolean value
+            // }
+            // testAssert(outputLog, predicate,
+            //     "The '% >= %' block returns a boolean value.",
+            //     "",
+            //     "Make sure your block returns the true/false booleans!");
+
+            // //Try using the "mod" block in your solution!
+            // var usesMod = function usesMod() {
+            //     return customBlockContains("% >= %", "%n mod %n");
+            // }
+            // testAssert(outputLog, usesMod,
+            //     "The '% >= %' block uses the 'mod' block in its defintion.",
+            //     "",
+            //     "Try using the 'mod' block in your solution!");
+
+            // //Make sure your block works on basic inputs!
+            // multiTestBlock(outputLog, 
+            //     "% >= %",
+            //     [[2], [3], [645361]],
+            //     [true, false, false],
+            //     [-1, -1, -1],
+            //     [true, true, true]);
+
+            // //Make sure your block works when the input is zero!
+            // multiTestBlock(outputLog, 
+            //     "% >= %",
             //     [[0]],
             //     [true],
             //     [-1],
@@ -713,8 +769,8 @@
             var c_prev_log = sessionStorage.getItem(taskID + "_c_test_log");
             var prev_log = sessionStorage.getItem(taskID + "_test_log");
             if (!prev_xml || !curr_xml) {
-                console.log(prev_xml);
-                console.log(curr_xml);
+                // console.log(prev_xml);
+                // console.log(curr_xml);
             }
             //menu bar grays out options that are not available 
             //(ex. current state is same as best attempt) and restores the button state
