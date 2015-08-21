@@ -158,7 +158,14 @@ gradingLog.prototype.startSnapTest = function(testID) {
 			block = getScript(test.blockSpec);
 		}
 	//Set the selected block's inputs for the test
+		console.log('test input');
+		console.log(test);
+		console.log(test['input']);
 		setValues(block, test['input']);
+		console.log(block);
+		console.log(block.children[1].children[0].text)
+		setValues(block, test['input']);
+		console.log(block.children[1].children[0].text)
 	//Initiate the Snap Process with a callback to .finishSnapTest
 
 		var stage = this.snapWorld.children[0].stage;
@@ -168,6 +175,8 @@ gradingLog.prototype.startSnapTest = function(testID) {
 			stage.isThreadSafe,
 			false,
 			function() {
+				console.log('')
+				console.log(readValue(proc));
 				outputLog.finishSnapTest(testID, readValue(proc));
 		});
 	//Add reference to proc in gradingLog for error handling
@@ -548,6 +557,9 @@ function checkArrayForList(a) {
 //David added in a way to populate a list in the
 //set values. Does not yet work for variables!
 function setValues(block, values) {
+	if (!(values instanceof Array)) {
+		values = [values];
+	}
 	var valIndex = 0,
 		morphIndex = 0;
 

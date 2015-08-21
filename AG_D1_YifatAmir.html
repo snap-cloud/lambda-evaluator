@@ -600,7 +600,7 @@
 
             // //Try using the "mod" block in your solution!
             // var usesMod = function usesMod() {
-            //     return customBlockContains("even? %", "%n mod %n");
+            //     return customBlockContains("even? %", "% mod %");
             // }
             // testAssert(outputLog, usesMod,
             //     "The 'even? %' block uses the 'mod' block in its defintion.",
@@ -646,38 +646,130 @@
             //     var customBody = getCustomBody("% >= %");
             //     return ((customBlockContains("% >= %", "report %", ["true"]) && 
             //         customBlockContains("% >= %", "report %", ["false"])) || 
-            //         (blockPrecedes("report %", "% or %", customBody))); 
-            //         //assuming they are reporting the equals block --> boolean value
+            //         (blockPrecedes("report %", "% or %", customBody)) || 
+            //         (blockPrecedes("report %", "not %", customBody))); 
+            //         //assuming they are reporting the OR or NOT block --> boolean value
             // }
             // testAssert(outputLog, predicate,
             //     "The '% >= %' block returns a boolean value.",
             //     "",
             //     "Make sure your block returns the true/false booleans!");
 
-            // //Try using the "mod" block in your solution!
-            // var usesMod = function usesMod() {
-            //     return customBlockContains("% >= %", "%n mod %n");
+            // //Try using the "or" block in your solution!
+            // var usesOrNot = function usesOrNot() {
+            //     return customBlockContains("% >= %", "% or %") ||
+            //             customBlockContains("% >= %", "not %");
             // }
-            // testAssert(outputLog, usesMod,
-            //     "The '% >= %' block uses the 'mod' block in its defintion.",
+            // testAssert(outputLog, usesOrNot,
+            //     "The '% >= %' block uses either the 'or' block or the 'not' block in its defintion.",
             //     "",
-            //     "Try using the 'mod' block in your solution!");
+            //     "Try using the 'or' block or the 'not' block in your solution!");
 
             // //Make sure your block works on basic inputs!
             // multiTestBlock(outputLog, 
             //     "% >= %",
-            //     [[2], [3], [645361]],
-            //     [true, false, false],
-            //     [-1, -1, -1],
-            //     [true, true, true]);
+            //     [[2, 3], [3, 2], [645361, -645361], [3, 3]],
+            //     [false, true, true, true],
+            //     [-1, -1, -1, -1],
+            //     [true, true, true, true]);
 
-            // //Make sure your block works when the input is zero!
-            // multiTestBlock(outputLog, 
-            //     "% >= %",
-            //     [[0]],
-            //     [true],
-            //     [-1],
-            //     [true]);
+            /*Create "integer? %" predicate block.*/
+            
+            // //Make sure you name your block "integer? %"!
+            // var exists;
+            // var integerExists = function integerExists() {
+            //     exists = findBlockInPalette("integer? %");
+            //     if (exists !== null) {
+            //         exists = true;
+            //     } else {
+            //         exists = false;
+            //     }
+            //     return exists;
+            // }
+            // testAssert(outputLog, integerExists,
+            //     "A 'integer? %' block has been found.",
+            //     "",
+            //     "Make sure you name your block exactly 'integer? %'.");
+
+            // //Make sure your block is a predicate: it returns true/false values.
+            // var predicate = function predicate() {
+            //     var customBody = getCustomBody("integer? %");
+            //     return ((customBlockContains("integer? %", "report %", ["true"]) && 
+            //         customBlockContains("integer? %", "report %", ["false"])) || 
+            //         (blockPrecedes("report %", "% = %", customBody))); 
+            //         //assuming they are reporting the equals block --> boolean value
+            // }
+            // testAssert(outputLog, predicate,
+            //     "The 'integer? %' block returns a boolean value.",
+            //     "",
+            //     "Make sure your block returns the true/false booleans!");
+
+            // //Try using the "round" block or the "mod" block in your solution!
+            // var usesRoundMod = function usesRoundMod() {
+            //     return (customBlockContains("integer? %", "round %") || 
+            //             customBlockContains("integer? %", "% mod %"));
+            // }
+            // testAssert(outputLog, usesRoundMod,
+            //     "The 'integer? %' block uses either the 'round' block or the 'mod' block in its defintion.",
+            //     "",
+            //     "Try using the 'round' block or the 'mod' block in your solution!");
+
+            // //Make sure your block works on basic inputs!
+            // multiTestBlock(outputLog,
+            //     "integer? %",
+            //     [[2], [2.55], [-6453], [0]],
+            //     [true, false, true, true],
+            //     [-1, -1, -1, -1],
+            //     [true, true, true, true]);
+
+            /*Create "% between? % and %" predicate block.*/
+            
+            //Make sure you name your block "% between? % and %"!
+            var exists;
+            var betweenExists = function betweenExists() {
+                exists = findBlockInPalette("% between? % and %");
+                if (exists !== null) {
+                    exists = true;
+                } else {
+                    exists = false;
+                }
+                return exists;
+            }
+            testAssert(outputLog, betweenExists,
+                "A '% between? % and %' block has been found.",
+                "",
+                "Make sure you name your block exactly '% between? % and %'.");
+
+            //Make sure your block is a predicate: it returns true/false values.
+            var predicate = function predicate() {
+                var customBody = getCustomBody("% between? % and %");
+                return ((customBlockContains("% between? % and %", "report %", ["true"]) && 
+                    customBlockContains("% between? % and %", "report %", ["false"])) || 
+                    (blockPrecedes("report %", "% and %", customBody))); 
+                    //assuming they are reporting the AND block --> boolean value
+            }
+            testAssert(outputLog, predicate,
+                "The '% between? % and %' block returns a boolean value.",
+                "",
+                "Make sure your block returns the true/false booleans!");
+
+            //Try using the "and" block in your solution!
+            var usesRoundMod = function usesRoundMod() {
+                return (customBlockContains("% between? % and %", "round %") || 
+                        customBlockContains("% between? % and %", "% mod %"));
+            }
+            testAssert(outputLog, usesRoundMod,
+                "The '% between? % and %' block uses either the 'round' block or the 'mod' block in its defintion.",
+                "",
+                "Try using the 'round' block or the 'mod' block in your solution!");
+
+            //Make sure your block works on basic inputs!
+            multiTestBlock(outputLog,
+                "% between? % and %",
+                [[2], [2.55], [-6453], [0]],
+                [true, false, true, true],
+                [-1, -1, -1, -1],
+                [true, true, true, true]);
 
             return outputLog;
         }
