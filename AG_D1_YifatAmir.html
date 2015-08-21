@@ -724,52 +724,148 @@
 
             /*Create "% between? % and %" predicate block.*/
             
-            //Make sure you name your block "% between? % and %"!
-            var exists;
-            var betweenExists = function betweenExists() {
-                exists = findBlockInPalette("% between? % and %");
-                if (exists !== null) {
-                    exists = true;
-                } else {
-                    exists = false;
-                }
-                return exists;
-            }
-            testAssert(outputLog, betweenExists,
-                "A '% between? % and %' block has been found.",
-                "",
-                "Make sure you name your block exactly '% between? % and %'.");
+            // //Make sure you name your block "% between? % and %"!
+            // var exists;
+            // var betweenExists = function betweenExists() {
+            //     exists = findBlockInPalette("% between? % and %");
+            //     if (exists !== null) {
+            //         exists = true;
+            //     } else {
+            //         exists = false;
+            //     }
+            //     return exists;
+            // }
+            // testAssert(outputLog, betweenExists,
+            //     "A '% between? % and %' block has been found.",
+            //     "",
+            //     "Make sure you name your block exactly '% between? % and %'.");
 
-            //Make sure your block is a predicate: it returns true/false values.
-            var predicate = function predicate() {
-                var customBody = getCustomBody("% between? % and %");
-                return ((customBlockContains("% between? % and %", "report %", ["true"]) && 
-                    customBlockContains("% between? % and %", "report %", ["false"])) || 
-                    (blockPrecedes("report %", "% and %", customBody))); 
-                    //assuming they are reporting the AND block --> boolean value
-            }
-            testAssert(outputLog, predicate,
-                "The '% between? % and %' block returns a boolean value.",
-                "",
-                "Make sure your block returns the true/false booleans!");
+            // //Make sure your block is a predicate: it returns true/false values.
+            // var predicate = function predicate() {
+            //     var customBody = getCustomBody("% between? % and %");
+            //     return ((customBlockContains("% between? % and %", "report %", ["true"]) && 
+            //         customBlockContains("% between? % and %", "report %", ["false"])) || 
+            //         (blockPrecedes("report %", "% and %", customBody))); 
+            //         //assuming they are reporting the AND block --> boolean value
+            // }
+            // testAssert(outputLog, predicate,
+            //     "The '% between? % and %' block returns a boolean value.",
+            //     "",
+            //     "Make sure your block returns the true/false booleans!");
 
-            //Try using the "and" block in your solution!
-            var usesRoundMod = function usesRoundMod() {
-                return (customBlockContains("% between? % and %", "round %") || 
-                        customBlockContains("% between? % and %", "% mod %"));
-            }
-            testAssert(outputLog, usesRoundMod,
-                "The '% between? % and %' block uses either the 'round' block or the 'mod' block in its defintion.",
-                "",
-                "Try using the 'round' block or the 'mod' block in your solution!");
+            // //Try using the "and" block in your solution!
+            // var usesAnd = function usesAnd() {
+            //     return customBlockContains("% between? % and %", "% and %");
+            // }
+            // testAssert(outputLog, usesAnd,
+            //     "The '% between? % and %' block uses the 'and' block in its defintion.",
+            //     "",
+            //     "Try using the 'and' block in your solution!");
 
-            //Make sure your block works on basic inputs!
-            multiTestBlock(outputLog,
-                "% between? % and %",
-                [[2], [2.55], [-6453], [0]],
-                [true, false, true, true],
-                [-1, -1, -1, -1],
-                [true, true, true, true]);
+            // //Make sure your block works on basic inputs!
+            // multiTestBlock(outputLog,
+            //     "% between? % and %",
+            //     [[2, 3, 4], [2.55, 2, 3], [-5, 0, -6], [0, 7, 2]],
+            //     [false, true, true, false],
+            //     [-1, -1, -1, -1],
+            //     [true, true, true, true]);
+            // // ^THIS MULTITESTBLOCK CALL IS PROBLEMATIC: "Uncaught TypeError: Converting circular structure to JSON"
+
+            /*Create "weekend? %" predicate block.*/
+            
+            // //Make sure you name your block "weekend? %"!
+            // var exists;
+            // var weekendExists = function weekendExists() {
+            //     exists = findBlockInPalette("weekend? %");
+            //     if (exists !== null) {
+            //         exists = true;
+            //     } else {
+            //         exists = false;
+            //     }
+            //     return exists;
+            // }
+            // testAssert(outputLog, weekendExists,
+            //     "A 'weekend? %' block has been found.",
+            //     "",
+            //     "Make sure you name your block exactly 'weekend? %'.");
+
+            // //Make sure your block is a predicate: it returns true/false values.
+            // var predicate = function predicate() {
+            //     var customBody = getCustomBody("weekend? %");
+            //     return ((customBlockContains("weekend? %", "report %", ["true"]) && 
+            //         customBlockContains("weekend? %", "report %", ["false"])) || 
+            //         (blockPrecedes("report %", "% or %", customBody))); 
+            //         //assuming they are reporting the OR block --> boolean value
+            // }
+            // testAssert(outputLog, predicate,
+            //     "The 'weekend? %' block returns a boolean value.",
+            //     "",
+            //     "Make sure your block returns the true/false booleans!");
+
+            // //Try using the "or" block in your solution!
+            // var usesOr = function usesOr() {
+            //     return customBlockContains("weekend? %", "% or %");
+            // }
+            // testAssert(outputLog, usesOr,
+            //     "The 'weekend? %' block uses the 'or' block in its defintion.",
+            //     "",
+            //     "Try using the 'or' block in your solution!");
+
+            // //Make sure your block works on basic inputs!
+            // multiTestBlock(outputLog,
+            //     "weekend? %",
+            //     [["Saturday"], ["Sunday"], ["Monday"], ["Tuesday"]],
+            //     [true, true, false, false],
+            //     [-1, -1, -1, -1],
+            //     [true, true, true, true]);
+
+            /*Create "weekday? %" predicate block.*/
+            
+            // //Make sure you name your block "weekday? %"!
+            // var exists;
+            // var weekdayExists = function weekdayExists() {
+            //     exists = findBlockInPalette("weekday? %");
+            //     if (exists !== null) {
+            //         exists = true;
+            //     } else {
+            //         exists = false;
+            //     }
+            //     return exists;
+            // }
+            // testAssert(outputLog, weekdayExists,
+            //     "A 'weekday? %' block has been found.",
+            //     "",
+            //     "Make sure you name your block exactly 'weekday? %'.");
+
+            // //Make sure your block is a predicate: it returns true/false values.
+            // var predicate = function predicate() {
+            //     var customBody = getCustomBody("weekday? %");
+            //     return ((customBlockContains("weekday? %", "report %", ["true"]) && 
+            //         customBlockContains("weekday? %", "report %", ["false"])) || 
+            //         (blockPrecedes("report %", "not %", customBody))); 
+            //         //assuming they are reporting the NOT block --> boolean value
+            // }
+            // testAssert(outputLog, predicate,
+            //     "The 'weekday? %' block returns a boolean value.",
+            //     "",
+            //     "Make sure your block returns the true/false booleans!");
+
+            // //Try using the "weekend? %" block in your solution!
+            // var usesWeekend = function usesWeekend() {
+            //     return customBlockContains("weekday? %", "weekend? %");
+            // }
+            // testAssert(outputLog, usesWeekend,
+            //     "The 'weekday? %' block uses the 'weekend? %' block in its defintion.",
+            //     "",
+            //     "Try using the 'weekend? %' block in your solution!");
+
+            // //Make sure your block works on basic inputs!
+            // multiTestBlock(outputLog,
+            //     "weekday? %",
+            //     [["Saturday"], ["Sunday"], ["Monday"], ["Tuesday"]],
+            //     [false, false, true, true],
+            //     [-1, -1, -1, -1],
+            //     [true, true, true, true]);
 
             return outputLog;
         }
