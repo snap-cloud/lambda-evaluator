@@ -917,4 +917,45 @@ function setUpIsolatedTest(blockSpec, log, testID) {
 	return block;
 }
 
+function waitForAsk(gradingLog, timeout, callback) {
+	var gLog = gradingLog,
+		timeout = timeout || 1000;
+
+	function wait() {
+		var hasPrompt = gLog.proc && gLog.proc.prompter;
+
+		if (!hasPrompt) {
+			if (timeout < 0) {
+				throw "Timed out waiting for prompter.";
+			} else {
+				timeout -= 100;
+				setTimeout(wait, 100);
+			}
+		} else {
+			callback();
+		}
+	}
+}
+
+function inputAsk(gradingLog, input) {
+	if (gradingLog.proc && gradingLog.proc.prompter) {
+		gradingLog.proc.prompter.inputField.setContents(input);
+		gradingLog.proc.prompter.accept();
+	} else {
+		throw "No prompter to place input into!"
+	}
+}
+
+function testAskFun(blockSpec) {
+	var gLog = new gradingLog(world);
+	var stage = world.children[0].stage;
+	var proc = stage.threads.startProcess(block,
+					stage.isThreadSafe,
+					false,
+					function() {
+						console.log(readValue(proc));
+					});
+	waitForAsk(gLog, 1000, function(){console.log("finished waiting for ASK"); inputAsk(gLog, "THE INPUTS!");});
+}
+
 /* ------ END DAVID'S MESS ------ */
