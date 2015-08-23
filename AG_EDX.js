@@ -5,7 +5,7 @@
 
 var AG_state = {
     'checkState': false,
-    'comment': "Please run the Snap Autograder before clicking the 'Submit' button.",
+    'comment': "Please run the Snap! Autograder to view feedback.",
     'feedback': {}
 };
 
@@ -120,20 +120,19 @@ var AG_EDX = (function() {
     function setState() {
         console.log('SET STATE IS CALLED');
         var last_state_string = arguments.length === 1 ? arguments[0] : arguments[1];
-        //console.log(last_state_string);
         //var ide = world.children[0];
         if (last_state_string === 'starter file') {
             var starter_xml = $.get(starter_path, function(data) {
-                sessionStorage.setItem("starter_file", data)},
-                //console.log(data);
-                //ide.openProjectString(data)}, 
-                "text"); //TODO: Loading here still unsafe
+                sessionStorage.setItem(id + "starter_file", data)}, "text"); //TODO: Loading here still unsafe
             return;
         } else if (last_state_string === 'never graded') {
+            return;
+        } else if (last_state_string === 'no starter file') {
             return;
         } else {
             var last_state = JSON.parse(last_state_string);
             console.log(last_state);
+            console.log(last_state.out_log)
             last_state.state = decodeURIComponent(last_state.state);
             sessionStorage.setItem(id + '_test_state', last_state.state);
             sessionStorage.setItem(id + '_test_log', last_state.out_log);

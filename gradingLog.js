@@ -158,7 +158,14 @@ gradingLog.prototype.startSnapTest = function(testID) {
 			block = getScript(test.blockSpec);
 		}
 	//Set the selected block's inputs for the test
+		console.log('test input');
+		console.log(test);
+		console.log(test['input']);
 		setValues(block, test['input']);
+		console.log(block);
+		console.log(block.children[1].children[0].text)
+		setValues(block, test['input']);
+		console.log(block.children[1].children[0].text)
 	//Initiate the Snap Process with a callback to .finishSnapTest
 
 		var stage = this.snapWorld.children[0].stage;
@@ -167,6 +174,8 @@ gradingLog.prototype.startSnapTest = function(testID) {
 			stage.isThreadSafe,
 			false,
 			function() {
+				console.log('')
+				console.log(readValue(proc));
 				outputLog.finishSnapTest(testID, readValue(proc));
 
 		});
@@ -459,11 +468,12 @@ function printLog(outputLog) {
 function AG_log(outputLog, snapXMLString) {
  	var AG_state = {
 	    'checkState': outputLog.allCorrect,
-	    'comment': "Please run the Snap Autograder before clicking the 'Submit' button.",
+	    'comment': "Please run the Snap! Autograder to view feedback.",
 	    'feedback': dictLog(outputLog),
 	    'snapXML' : snapXMLString
 	};
 	//Only update the
+	console.log(outputLog);
 	if (outputLog.pScore !== null) {
 		var percent_score = Number((outputLog.pScore * 100).toFixed(1));
 		AG_state['comment'] = "Autograder Score: " + percent_score + "%"
@@ -478,6 +488,7 @@ function AG_log(outputLog, snapXMLString) {
  * WARNING: DOES NOT EVALUATE LOG
  */
 function testAssert(outputLog, assertion, pos_fb, neg_fb, ass_text, point) {
+	point = typeof point !== 'undefined' ? point : 1;
 	if (assertion()) {
 		outputLog.addAssert("a", assertion, pos_fb, ass_text, pos_fb, neg_fb, point);
 	} else {
@@ -503,6 +514,8 @@ function testBlock(outputLog, testID) {
 }
 
 function multiTestBlock(outputLog, blockSpec, inputs, expOuts, timeOuts, isolated, points) {
+
+	points = typeof points !== 'undefined' ? points : 1;
 
 	if (outputLog === undefined) {
 		outputLog = new gradingLog(world);
@@ -544,6 +557,9 @@ function checkArrayForList(a) {
 //David added in a way to populate a list in the
 //set values. Does not yet work for variables!
 function setValues(block, values) {
+	if (!(values instanceof Array)) {
+		values = [values];
+	}
 	var valIndex = 0,
 		morphIndex = 0;
 

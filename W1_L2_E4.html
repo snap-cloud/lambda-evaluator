@@ -31,7 +31,42 @@
     <link rel="stylesheet" type="text/css" href="hintstyle.css" />
     
     <script type="text/javascript" src="AGAgent.js"></script>
-    <script type="text/javascript" src="AGTest.js"></script>
+    <script type='text/javascript'>
+        var starter_path = null;
+        // The id is to act as a course identifier.
+        // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
+        var courseID = "BJC.1x";  // e.g. "BJCx"
+        // Specify a prerequisite task id, should be null if no such requirement.
+        var preReqTaskID = null;
+        var preReqID = courseID + preReqTaskID;
+        // taskID uniquely identifies the task for saving in browser sessionStorage.
+        var taskID = "_W1_L2_E4";
+        var id = courseID + taskID;
+        var isEDX = isEDXurl();
+        // if this question is not meant to be graded, change this flag to false
+        var graded = true;
+        // to hide feedback for this problem, change this flag to false
+        var showFeedback = true;
+        // to allow for the ability to regrade certain tests, change this flag to true
+        var regradeOn = false;
+        // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
+        // var testLog;
+        function AGTest(outputLog) {
+            
+            /*Input an argument value into the given script to create the given picture*/
+            /* Recreate exact squirrel script */
+            var squirrelTest = function squirrelTest() {
+                return scriptPresentInSprite('[{"blockSp":"pen down","inputs":[]},{"blockSp":"for %upvar = %n to %n %cs","inputs":["1","100",[{"blockSp":"move %n steps","inputs":[{"blockSp":"%n × %n","inputs":["2","length"]}]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]]}]');
+            }
+            testAssert(outputLog, squirrelTest,
+                "The squirrel script was found on the screen.",
+                "The squirrel script was not found on the screen. Try checking your inputs and variable names",
+                "Try making sure all of the correct blocks and inputs are in order.");
+
+            /**/
+            return outputLog;
+        }
+    </script>
     <script type="text/javascript" src="AGFormatting.js"></script>
 
     <script type="text/javascript">

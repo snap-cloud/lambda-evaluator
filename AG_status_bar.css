@@ -35,7 +35,7 @@ div {
 #autograding_button {
   position:absolute;
   height:1em;
-  width: 6.5em;
+  width: 6.7em;
   right:0px;
   padding-top:2px;
   padding-right:3px;
@@ -67,7 +67,7 @@ div {
 
 #autograding_button > .hover_darken {
     position:absolute;
-    width:6.88em;
+    width:7.04em;
     height:calc(100%);
     top:0px;
     right:0em;
@@ -100,7 +100,7 @@ div {
     cursor: pointer;
     outline: 0;
     outline: none;
-    right: 7.25em;
+    right: 7.4em;
     height:1.25em;
     margin-right: -5px;
     margin-left: 0px;

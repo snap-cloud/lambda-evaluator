@@ -31,10 +31,64 @@
     <link rel="stylesheet" type="text/css" href="hintstyle.css" />
     
     <script type="text/javascript" src="AGAgent.js"></script>
-    <script type="text/javascript" src="AGTest.js"></script>
     <script type="text/javascript" src="AGFormatting.js"></script>
 
     <script type="text/javascript">
+
+        var starter_path = null;
+        // The id is to act as a course identifier.
+        // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
+        var courseID = "BJC.1x";  // e.g. "BJCx"
+        // Specify a prerequisite task id, should be null if no such requirement.
+        var preReqTaskID = null;
+        var preReqID = courseID + preReqTaskID;
+        // taskID uniquely identifies the task for saving in browser sessionStorage.
+        var taskID = "_W1_L2_E3";
+        var id = courseID + taskID;
+        var isEDX = isEDXurl();
+        // if this question is not meant to be graded, change this flag to false
+        var graded = true;
+        // to hide feedback for this problem, change this flag to false
+        var showFeedback = true;
+        // to allow for the ability to regrade certain tests, change this flag to true
+        var regradeOn = true;
+        // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
+        // var testLog;
+        function AGTest(outputLog) {
+            /* Recreate provided forever script */
+            var incorrectExists;
+            var EvenOrOddExists = function EvenOrOddExists() {
+                incorrectExists = findBlockInPalette("Even Or Odd %");
+                if (incorrectExists !== null) {
+                    incorrectExists = true;
+                } else {
+                    incorrectExists = false;
+                }
+                return incorrectExists;
+            }
+
+            var correctExists;
+            var even_or_odd_exists = function even_or_odd_exists() {
+                correctExists = findBlockInPalette("even or odd %");
+                if (correctExists !== null) {
+                    correctExists = true;
+                } else {
+                    correctExists = false;
+                }
+                return correctExists;
+            }
+
+            testAssert(outputLog, EvenOrOddExists,
+                "There is an 'Even Or Odd %' block.",
+                "There is no 'Even Or Odd %' block.",
+                "Make sure you name your block exactly 'Even Or Odd %'.");
+
+            testAssert(outputLog, even_or_odd_exists,
+                "There is an 'even or odd %' block.",
+                "There is no 'even or odd %' block.",
+                "Make sure you name your block exactly 'even or odd %'.");
+            return outputLog;
+        }
 
         var world;
         window.onload = function () {

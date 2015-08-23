@@ -69,7 +69,7 @@ function AG_bar_semigraded(outputLog) {
 }
 
 function AG_bar_nograde() {
-    var button_text = "UNGRADED";
+    var button_text = "NOT GRADED";
     var button_elem = $('#autograding_button span');
     button_elem.html(button_text);
     $('#autograding_button').css({"background":"gray", "cursor":"default"});
@@ -90,7 +90,7 @@ function replaceall(string, find, replace) {
  */
 function formatFeedback(hint) {
     var tags = 
-    [['collapsedivstart', '<input class="toggle-box" id="expander" type="checkbox" ><label for="expander">Details</label><div id="table-wrapper">'], 
+    [['collapsedivstart', '<input class="toggle-box" id="expander' + String(id_problem) + '" type="checkbox" ><label for="expander' + String(id_problem) + '">Details</label><div id="table-wrapper">'], 
     ['collapsedivend', '</div>'], 
     ['linebreak', '<br /></br />'], 
     ['tablestart', '<table class="results">'], 
@@ -162,15 +162,6 @@ function populateFeedback(outputLog) {
 
     console.log(feedback);
 
-    // Checks if the grading button has been clicked
-    if (title === "Please run the Snap Autograder before clicking the 'Submit' button.") {
-        document.getElementById("table-data").style.display = "none";
-        document.getElementById("reporter-table-data").style.display = "none";
-    } else {
-        document.getElementById("table-data").style.display = "table";
-        document.getElementById("reporter-table-data").style.display = "table";
-    }
-
     // Wipes the feedback clean, including if it has been populated before. 
     caution.innerHTML = "";
     edx_caution.innerHTML = "";
@@ -185,8 +176,21 @@ function populateFeedback(outputLog) {
         repTableResults.removeChild(repTableResults.children[1]);
     }
 
+    document.getElementById("comment").innerHTML = title;
+
+    // Checks if the grading button has been clicked
+    if (title === "Please run the Snap! Autograder to view feedback.") {
+        document.getElementById("table-data").style.display = "none";
+        document.getElementById("reporter-table-data").style.display = "none";
+    } else {
+        document.getElementById("table-data").style.display = "table";
+        document.getElementById("reporter-table-data").style.display = "table";
+        document.getElementById("comment").innerHTML += " (" + String(Math.round(feedback["totalPoints"] * feedback["pScore"])) + "/" + String(feedback["totalPoints"]) + ")";
+    }
+
+
     // Warnings for when student's feedback differ from what's on the scripting area/what's been submitted to edX
-    document.getElementById("comment").innerHTML = title + "(" + String(Math.round(feedback["totalPoints"] * feedback["pScore"])) + "/" + String(feedback["totalPoints"]) + ")";
+    //document.getElementById("comment").innerHTML = title + "(" + String(Math.round(feedback["totalPoints"] * feedback["pScore"])) + "/" + String(feedback["totalPoints"]) + ")";
     /*if (!last_log) {
         edx_caution.innerHTML = "[WARNING: You have not submitted your results to edX yet.]"
     }
@@ -246,10 +250,14 @@ function populateFeedback(outputLog) {
         // If test is correct, make the feedback appropriately colored. 
         if (feedback[test]["correct"] === true) {
             addTableCell(feedback[test]["feedback"], "correctans", newRow);
-            //addRegradeButton("Regrade", ["data", "hidden"], newRow);
+            if (regradeOn) {
+                addRegradeButton("Regrade", ["data", "hidden"], newRow);
+            }
         } else {
             addTableCell(feedback[test]["feedback"], "incorrectans", newRow);
-            //addRegradeButton("Regrade", ["data", "regrade", test], newRow);
+            if (regradeOn) {
+                addRegradeButton("Regrade", ["data", "regrade", test], newRow);
+            }
         }
 
         if (feedback[test]["testClass"] === "r") {
@@ -261,14 +269,16 @@ function populateFeedback(outputLog) {
     console.log(outputLog);
     //outputLog.saveLog();
 
-    // makes recently created regrade buttons clickable 
-    /*var regrade_buttons = document.getElementsByClassName("regrade");
-    for(var i=0; i<regrade_buttons.length; i++) {
-        regrade_buttons[i].onclick = function() {
-            var testId = this.classList[2];
-            regradeOnClick(outputLog, testId);
+    if (regradeOn) {
+        // makes recently created regrade buttons clickable 
+        var regrade_buttons = document.getElementsByClassName("regrade");
+        for(var i=0; i<regrade_buttons.length; i++) {
+            regrade_buttons[i].onclick = function() {
+                var testId = this.classList[2];
+                regradeOnClick(outputLog, testId);
+            }
         }
-    }*/
+    }
 }
 
 function addBasicHeadings() {
@@ -371,8 +381,8 @@ function makeOverlayButton() {
     var overlay_button = parent.document.createElement('button');
     var overlay_button_text = parent.document.createTextNode('Grade');
     overlay_button.appendChild(overlay_button_text);
-    overlay_button.id = 'overlay-button';
-    var button =  parent.document.getElementsByName('problem_id')[0];
+    overlay_button.classList.add('overlay-button');
+    var button = parent.document.getElementsByName('problem_id')[id_problem];
     button.parentNode.insertBefore(overlay_button, button.nextSibling);
 }
 
@@ -387,7 +397,7 @@ function makeFullScreenButton() {
 }
 
 function toggleSnapWindow(button, taskID) {
-    var iframe = parent.document.getElementsByTagName('iframe')[0];
+    var iframe = parent.document.getElementsByTagName('iframe')[id_problem];
     if (button.className === "off") {
         fullScreenSnap(button, taskID);
     } else {
@@ -407,7 +417,7 @@ function toggleSnapWindow(button, taskID) {
 }
 
 function fullScreenSnap(button, taskID) {
-    var iframe = parent.document.getElementsByTagName('iframe')[0];
+    var iframe = parent.document.getElementsByTagName('iframe')[id_problem];
     iframe.style.position = 'fixed';
     iframe.style.top = '0';
     iframe.style.right = '0';
@@ -439,6 +449,51 @@ function moveAutogradingBar() {
 
 
 function initializeSnapAdditions(snapWorld, taskID) {
+
+    var pageLocation = JSON.parse(sessionStorage.getItem(taskID + "pageLocation"));
+    if (pageLocation) {
+        parent.window.scrollTo(pageLocation[0], pageLocation[1]);
+        sessionStorage.removeItem(taskID + "pageLocation");
+    }
+
+    ide = snapWorld.children[0];
+
+    //AUTOGRADER ADDITION - FEEDBACK FORMATTING
+    // Checks if problem has been checked and modifies the autograded output if it has been checked
+
+    //if (isEDX && parent.document.getElementsByClassName("message").length !== 0) {
+    if (isEDX && parent.document.getElementsByClassName("message")[id_problem]) {
+        var hint = parent.document.getElementsByClassName("message")[id_problem];
+        hint.innerHTML = formatFeedback(hint);
+        hint.style.display = "inline";
+    }
+
+    //AUTOGRADER ADDITION
+    //Check if Pre-requisite task has completed
+    var req_check = parent.document.getElementById("pre_req");
+    if (preReqTaskID !== null) {
+        var preReqLog = JSON.parse(sessionStorage.getItem(preReqID + "_test_log"));
+        if ((preReqLog === null || !preReqLog.allCorrect) && req_check) {
+            req_check.innerHTML = "[WARNING: The previous task must be completed before continuing.]"
+        }
+    }
+
+    setTimeout(function() {
+        //If page has already been loaded, restore previously tested XML
+        //TODO: Separate this into its own function.
+        //Moved this into the timeout so that keys in session storage have time to be set from setstate in AGEDX before they are called
+        var prev_xml = sessionStorage.getItem(taskID + "_test_state");
+        if (prev_xml !== null) {
+            ide.openProjectString(prev_xml);
+        } else if (preReqTaskID !== null) {
+            if (preReqLog !== null && preReqLog.allCorrect) {
+                ide.openProjectString(sessionStorage.getItem(preReqID));
+            }
+        }
+    }, 500);
+
+    var prev_log = JSON.parse(sessionStorage.getItem(taskID + "_test_log"));
+
     var reset_button = document.getElementById("reset-button");
     var revert_button = document.getElementById("revert-button");
     var undo_button = document.getElementById("undo-button");
@@ -454,14 +509,14 @@ function initializeSnapAdditions(snapWorld, taskID) {
     var snap_menu = document.getElementsByClassName('bubble')[0];
 
 
-    document.addEventListener("click", function() { grayOutButtons(world, id); });
+    document.addEventListener("click", function() { grayOutButtons(snapWorld, taskID); });
     snap_menu.addEventListener('click', popup_listener);
     //grade_button.addEventListener('click', button_listener);
     //world_canvas.addEventListener("mouseup", update_listener);
-    reset_button.onclick = function() { resetState(world, id); toggleMenu(id); };
-    revert_button.onclick = function() { revertToBestState(world, id); toggleMenu(id); };
-    undo_button.onclick = function() { revertToLastState(world, id); toggleMenu(id); };
-    menu_button.onclick = function() { toggleMenu(id); };
+    reset_button.onclick = function() { resetState(snapWorld, taskID); toggleMenu(taskID); };
+    revert_button.onclick = function() { revertToBestState(snapWorld, taskID); toggleMenu(taskID); };
+    undo_button.onclick = function() { revertToLastState(snapWorld, taskID); toggleMenu(taskID); };
+    menu_button.onclick = function() { toggleMenu(taskID); };
     feedback_button.onclick = function() {openResults(); };
 
     help_overlay.onclick = function(e) {
@@ -489,35 +544,64 @@ function initializeSnapAdditions(snapWorld, taskID) {
     }
 
     $(".bubble").mouseover(function() {
-
         moveHelp();
-        // .position() uses position relative to the offset parent, 
-        // so it supports position: relative parent elements
-        /*var pos = $(this).offset();
-
-
-        //show the menu directly over the placeholder
-        $("#menu-item-help").css({
-            position: "absolute",
-            top: pos.top + 100 + "px",
-            left: pos.left - 250 + "px"
-        });
-        $("#menu-item-arrow").css({
-            position: "absolute",
-            top: pos.top + 60 + "px",
-            left: pos.left - 30 + "px"
-        });
-        $("#ag-button-help").css({
-            position: "absolute",
-            top: pos.top + "px",
-            left: pos.left + 200 + "px"
-        });
-        $("#ag-button-arrow").css({
-            position: "absolute",
-            top: pos.top - 30 + "px",
-            left: pos.left + 270 + "px"
-        });*/
     });
+
+    if (isEDX) {
+        parent.document.getElementsByClassName('check-label')[id_problem].onclick = function () {
+            sessionStorage.setItem(taskID + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
+        }
+
+        var button_text = parent.document.getElementsByClassName('check-label')[id_problem];
+        button_text.innerHTML = "Submit";
+
+        makeOverlayButton();
+        setTimeout(function() {
+            var overlay_button = parent.document.getElementsByClassName('overlay-button')[id_problem];
+            //overlay_button.style.display = "block";
+            overlay_button.onclick = function() { 
+                overlay_button.style.display = "none";
+                grade_button.click(); 
+            } 
+        }, 500);
+        
+        makeFullScreenButton();
+        var full_screen = document.getElementById('full-screen');
+        full_screen.onclick = function() {
+            toggleSnapWindow(full_screen, id);
+            moveHelp();   
+        }
+        var full_screen_on = JSON.parse(sessionStorage.getItem(taskID + "full-screen-on"));
+        if (full_screen_on) {
+            fullScreenSnap(full_screen, id);
+        }
+    }
+
+    setTimeout(function() {
+        console.log(snapWorld);
+        if (prev_log) {
+            var outputLog = prev_log;
+        } else {
+           var outputLog = AGStart(snapWorld, taskID); 
+        }
+        if (!graded) {return;}
+        //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
+        if (showFeedback) {
+            populateFeedback(outputLog); 
+            populateFeedback(outputLog);
+        }
+        grayOutButtons(snapWorld, taskID);
+        moveAutogradingBar();
+        
+    },500);
+
+    setTimeout(function() {
+        var starter_xml = sessionStorage.getItem(taskID + "starter_file");
+        if (starter_xml) {
+            ide.openProjectString(starter_xml);
+            sessionStorage.removeItem(taskID + "starter_file");
+        }
+    }, 1500);
 }
 
 //Call the test suite when this element is clicked.

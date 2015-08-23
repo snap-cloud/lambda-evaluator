@@ -137,7 +137,7 @@ span {
   text-transform: initial;
 }
 
-#overlay-button {
+.overlay-button {
 	position: absolute;
 	margin-right: 10px;
 	margin-bottom: 10px;
@@ -146,7 +146,7 @@ span {
 	/*text-transform: uppercase;*/
 	font-weight: 600;
 	width: 81px;
-	display: none;
+	display: block;
 }
 
 #full-screen {

@@ -201,6 +201,8 @@ function JSONblock(block) {
 		morph = block.children[i];
 		if (morph.selector === "reportGetVar") {
 			blockArgs.push(morph.blockSpec);
+		} else if (morph.selector === "reportTrue" || morph.selector === "reportFalse") {
+			blockArgs.push(morph.blockSpec);
 		} else if (morph instanceof InputSlotMorph) {
 			blockArgs.push(morph.children[0].text);
 		} else if (morph instanceof CSlotMorph) {
@@ -368,6 +370,8 @@ function CBlockContainsInCustom(customBlockSpec, blockSpec1, blockSpec2, argArra
  * first block and access to all the blocks connected to that block:
  *
  * JSONscript(...)
+ *
+ * BLOCKSPEC should not be "true" or "false".
  */
 function scriptContainsBlock(script, blockSpec, argArray, softMatch) {
 	if (Object.prototype.toString.call(script) !== '[object Array]') {
@@ -438,13 +442,17 @@ function checkArgArrays(template, actual) {
  * such as "factorial %", since this calls blockSpecMatch) is anywhere on the screen.
  * Otherwise returns false. If ARGARRAY is an array, then we check that all of the inputs
  * are correct in addition to the blockspec. Otherwise we will just check that the blockspec is fine.
+ * If SOFTMATCH is true, then we will ignore empty inputs like "" or [].
  */
-function spriteContainsBlock(blockSpec, spriteIndex, argArray) {
+function spriteContainsBlock(blockSpec, spriteIndex, argArray, softMatch) {
 	if (argArray === undefined) {
 		argArray = [];
 	}
 	if (spriteIndex === undefined) {
 		spriteIndex = 0;
+	}
+	if (softMatch === undefined) {
+		softMatch = false;
 	}
 
 	var JSONtarget;
@@ -452,7 +460,7 @@ function spriteContainsBlock(blockSpec, spriteIndex, argArray) {
 	var scriptsOnScreen = getScripts(spriteIndex);
 	for (var i = 0; i < scriptsOnScreen.length; i++) {
 		JSONtarget = JSONscript(scriptsOnScreen[i]);
-		hasFound = scriptContainsBlock(JSONtarget, blockSpec, argArray);
+		hasFound = scriptContainsBlock(JSONtarget, blockSpec, argArray, softMatch);
 		if (hasFound) {
 			return true;
 		}
@@ -463,30 +471,19 @@ function spriteContainsBlock(blockSpec, spriteIndex, argArray) {
 
 /* Takes in a CUSTOMBLOCKSPEC and a string BLOCKSPEC, both of which can be general 
 * blockSpec such as "factorial %" since this calls blockSpecMatch. 
+* SPRITEINDEX is not used... deprecated but left just in case it is called in an already 
+* written test...
 */
-function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex) {
+function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex, softMatch) {
 	if (argArray === undefined) {
 		argArray = [];
 	}
 	if (spriteIndex === undefined) {
 		spriteIndex = 0;
 	}
-
-	var JSONtarget;
-	var hasFound = false;
-	var scriptsOnScreen = getScripts(spriteIndex);
-	for (var i = 0; i < scriptsOnScreen.length; i++) {
-		JSONtarget = JSONscript(scriptsOnScreen[i]);
-		if (blockSpecMatch(JSONtarget[0].blockSp, customBlockSpec)) {
-			customJSON = JSONcustomBlock(scriptsOnScreen[i]);
-			hasFound = scriptContainsBlock(customJSON.body, blockSpec, argArray);
-		}
-		if (hasFound) {
-			return true;
-		}
-	}
-
-	return false;
+	var customBody = JSONcustomBlock(findBlockInPalette(customBlockSpec)).body;
+	var hasFound = scriptContainsBlock(customBody, blockSpec, argArray, softMatch);
+	return hasFound;
 }
 
 /* Takes in BLOCK1SPEC (any block) and BLOCK2SPEC (a C-block), 
@@ -514,12 +511,18 @@ function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2) {
     CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
     CblockSpecs = CblockSpecs.concat(["repeat until %b %c", "if %b %c", "if %b %c else %c"]);
     CblockSpecs = CblockSpecs.concat(["for each %upvar of %l %cs"]);
-    
-    if (CblockSpecs.indexOf(block2Spec) < 0) {
-        // var rValue = "The second input should be a C-shaped block. See CBlockContains";
-        // rValue += " definition for a list of the blocks designated as C-shaped blocks.";
-        // return rValue;
-        return false;
+
+    //Added the below for loop to make checking for valid blockSpecs more robust using blockSpecMatch()
+    var foundSpec = false;
+    for (var i = 0; i < CblockSpecs.length; i++) {
+    	if (blockSpecMatch(CblockSpecs[i], block2Spec)) {
+    		foundSpec = true;
+    		break;
+    	}
+    }
+
+    if (!foundSpec) {
+    	return false;
     }
 
     for (var i = 0; i < script.length; i++) {
@@ -531,7 +534,7 @@ function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2) {
             if (CBlockContains(block1Spec, block2Spec, morph1, argArray1, argArray2)) {
                 return true;
             }
-        } else if (morph1.blockSp === block2Spec) {
+        } else if (blockSpecMatch(morph1.blockSp, block2Spec) && checkArgArrays(argArray2, morph1.inputs)) {
             if (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 1], block1Spec, argArray1)) {
                 return true;
             }
