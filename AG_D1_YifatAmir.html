@@ -70,65 +70,64 @@
             // }
             // testAssert(outputLog, moveExists,
             //     "The 'move' block is present.",
-            //     "The 'move' block was not found on-screen.",
-            //     "Make sure to make your sprite move on the stage.");
-            // var turnExists = function turnExists() { //counterclockwise is incorrect
-            //     return spriteContainsBlock('turn %clockwise %n degrees', 0);
+            //     "N/A",
+            //     "Make sure to make your sprite move on the stage!");
+            // var turnExists = function turnExists() {
+            //     return spriteContainsBlock('turn %clockwise %n degrees', 0) ||
+            //             spriteContainsBlock('turn %counterclockwise %n degrees', 0);
             // }
             // testAssert(outputLog, turnExists,
-            //     "The 'turn clockwise' block is present.",
-            //     "The 'turn clockwise' block was not found on-screen.",
-            //     "Make sure you make your sprite turns clockwise on the stage.");
+            //     "The 'turn' block is present.",
+            //     "N/A",
+            //     "Make sure your sprite turns on the stage!");
             // var turn90 = function turn90() {
-            //     return spriteContainsBlock('turn %clockwise %n degrees', 0, ["90"]);
+            //     return spriteContainsBlock('turn %clockwise %n degrees', 0, ["90"]) ||
+            //             spriteContainsBlock('turn %counterclockwise %n degrees', 0, ["90"]);
             // }
             // testAssert(outputLog, turn90,
             //     "The turn block has an input of 90 degrees.",
-            //     "The turn block does not have the correct input.",
-            //     "Make sure your sprite turns an appropriate amount.");
+            //     "N/A",
+            //     "Make sure your sprite turns an appropriate amount to make a square path!");
             // var moveThenTurn = function moveThenTurn() {
-            //     var template1 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]';
-            //     var template2 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]';
-            //     var template3 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]';
-            //     var vars = ["A"];
-            //     return scriptPresentInSprite(template1, 0, vars) || scriptPresentInSprite(template2, 0, vars) || scriptPresentInSprite(template3, 0, vars);
+            //     return blockPrecedesInSprite("move %n steps", "turn %clockwise %n degrees", 0) ||
+            //             blockPrecedesInSprite("move %n steps", "turn %counterclockwise %n degrees", 0);
             // }
             // testAssert(outputLog, moveThenTurn,
-            //     "'Turn 90' follows the 'move' block in a script.",
-            //     "The 'move' block is not followed by a turn with correct inputs, or the square's sidelengths/angles are inconsistent.",
+            //     "The 'turn' block follows the 'move' block in a script.",
+            //     "N/A",
             //     "Make sure your sprite moves and then turns with just one click.");
             
-            // /*Modify the previous script to make the sprite follow a triangular path if clicked enough times.*/
+            // Modify the previous script to make the sprite follow a triangular path if clicked enough times.
             // var moveExists = function moveExists() {
             //     return spriteContainsBlock('move %n steps', 0);
             // }
             // testAssert(outputLog, moveExists,
             //     "The 'move' block is present.",
-            //     "The 'move' block was not found on-screen.",
+            //     "N/A",
             //     "Make sure to make your sprite move on the stage.");
-            // var turnExists = function turnExists() { //counterclockwise is incorrect
-            //     return spriteContainsBlock('turn %clockwise %n degrees', 0);
+            // var turnExists = function turnExists() {
+            //     return spriteContainsBlock('turn %clockwise %n degrees', 0) ||
+            //             spriteContainsBlock('turn %counterclockwise %n degrees', 0);
             // }
             // testAssert(outputLog, turnExists,
             //     "The 'turn clockwise' block is present.",
-            //     "The 'turn clockwise' block was not found on-screen.",
+            //     "N/A",
             //     "Make sure you make your sprite turns clockwise on the stage.");
             // var turn120 = function turn120() {
-            //     return spriteContainsBlock('turn %clockwise %n degrees', 0, ["120"]);
+            //     return spriteContainsBlock('turn %clockwise %n degrees', 0, ["120"]) ||
+            //             spriteContainsBlock('turn %counterclockwise %n degrees', 0, ["120"]);
             // }
             // testAssert(outputLog, turn120,
             //     "The turn block has an input of 120 degrees.",
-            //     "The turn block does not have the correct input.",
-            //     "Make sure your sprite turns an appropriate amount.");
+            //     "N/A",
+            //     "Make sure your sprite turns an appropriate amount to make a triangle.");
             // var moveThenTurn = function moveThenTurn() {
-            //     var template1 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["120"]}]';
-            //     var template2 = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["120"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["120"]},{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["120"]}]';
-            //     var vars = ["A"];
-            //     return scriptPresentInSprite(template1, 0, vars) || scriptPresentInSprite(template2, 0, vars);
+            //     return blockPrecedesInSprite("move %n steps", "turn %clockwise %n degrees", 0) ||
+            //             blockPrecedesInSprite("move %n steps", "turn %counterclockwise %n degrees", 0);
             // }
             // testAssert(outputLog, moveThenTurn,
-            //     "'Turn 120' follows the 'move' block in a script.",
-            //     "The 'move' block is not followed by a turn with correct inputs, or the triangle's sidelengths/angles are inconsistent.",
+            //     "The 'turn' block follows the 'move' block in a script.",
+            //     "N/A",
             //     "Make sure your sprite moves and then turns with just one click.");
 
         /*2: The Repeat Block*/
@@ -331,7 +330,7 @@
             // }
             // testAssert(outputLog, pluralExists,
             //     "A 'plural %' block has been found.",
-            //     "",
+            //     "N/A",
             //     "Make sure you name your block exactly 'plural %'.");
             // //possibly add an assertion checking that they have a conditional in their definition, etc. (unnecessary, given example in lab?)
 
@@ -376,7 +375,7 @@
             // }
             // testAssert(outputLog, pluralhExists,
             //     "A 'plural-h %' block has been found.",
-            //     "",
+            //     "N/A",
             //     "Make sure you name your block exactly 'plural-h %'.");
             // //possibly add an assertion checking that they have a conditional in their definition?
 
@@ -412,7 +411,7 @@
             // }
             // testAssert(outputLog, hAbstracted,
             //     "The 'plural-h %' block has been found within the definition of 'plural %'.",
-            //     "",
+            //     "N/A",
             //     "Make sure you use your plural-h block within your plural block!");
 
             /*Make a plural-y block only for words that end with "y".*/
@@ -430,7 +429,7 @@
             // }
             // testAssert(outputLog, pluralyExists,
             //     "A 'plural-y %' block has been found.",
-            //     "",
+            //     "N/A",
             //     "Make sure you name your block exactly 'plural-y %'.");
             // //possibly add an assertion checking that they have a conditional in their definition?
 
@@ -576,7 +575,7 @@
             // }
             // testAssert(outputLog, evenExists,
             //     "A 'even? %' block has been found.",
-            //     "",
+            //     "N/A",
             //     "Make sure you name your block exactly 'even? %'.");
 
             // //Make sure your block is a predicate: it returns true/false values.
@@ -589,7 +588,7 @@
             // }
             // testAssert(outputLog, predicate,
             //     "The 'even? %' block returns a boolean value.",
-            //     "",
+            //     "N/A",
             //     "Make sure your block returns the true/false booleans!");
 
             // //Try using the "mod" block in your solution!
@@ -598,7 +597,7 @@
             // }
             // testAssert(outputLog, usesMod,
             //     "The 'even? %' block uses the 'mod' block in its defintion.",
-            //     "",
+            //     "N/A",
             //     "Try using the 'mod' block in your solution!");
 
             // //Make sure your block works on basic inputs!
@@ -632,7 +631,7 @@
             // }
             // testAssert(outputLog, gtoetExists,
             //     "A '% >= %' block has been found.",
-            //     "",
+            //     "N/A",
             //     "Make sure you name your block exactly '% >= %'.");
 
             // //Make sure your block is a predicate: it returns true/false values.
@@ -646,7 +645,7 @@
             // }
             // testAssert(outputLog, predicate,
             //     "The '% >= %' block returns a boolean value.",
-            //     "",
+            //     "N/A",
             //     "Make sure your block returns the true/false booleans!");
 
             // //Try using the "or" block in your solution!
@@ -656,7 +655,7 @@
             // }
             // testAssert(outputLog, usesOrNot,
             //     "The '% >= %' block uses either the 'or' block or the 'not' block in its defintion.",
-            //     "",
+            //     "N/A",
             //     "Try using the 'or' block or the 'not' block in your solution!");
 
             // //Make sure your block works on basic inputs!
@@ -682,7 +681,7 @@
             // }
             // testAssert(outputLog, integerExists,
             //     "A 'integer? %' block has been found.",
-            //     "",
+            //     "N/A",
             //     "Make sure you name your block exactly 'integer? %'.");
 
             // //Make sure your block is a predicate: it returns true/false values.
@@ -695,7 +694,7 @@
             // }
             // testAssert(outputLog, predicate,
             //     "The 'integer? %' block returns a boolean value.",
-            //     "",
+            //     "N/A",
             //     "Make sure your block returns the true/false booleans!");
 
             // //Try using the "round" block or the "mod" block in your solution!
@@ -705,7 +704,7 @@
             // }
             // testAssert(outputLog, usesRoundMod,
             //     "The 'integer? %' block uses either the 'round' block or the 'mod' block in its defintion.",
-            //     "",
+            //     "N/A",
             //     "Try using the 'round' block or the 'mod' block in your solution!");
 
             // //Make sure your block works on basic inputs!
@@ -731,7 +730,7 @@
             // }
             // testAssert(outputLog, betweenExists,
             //     "A '% between? % and %' block has been found.",
-            //     "",
+            //     "N/A",
             //     "Make sure you name your block exactly '% between? % and %'.");
 
             // //Make sure your block is a predicate: it returns true/false values.
@@ -744,7 +743,7 @@
             // }
             // testAssert(outputLog, predicate,
             //     "The '% between? % and %' block returns a boolean value.",
-            //     "",
+            //     "N/A",
             //     "Make sure your block returns the true/false booleans!");
 
             // //Try using the "and" block in your solution!
@@ -753,7 +752,7 @@
             // }
             // testAssert(outputLog, usesAnd,
             //     "The '% between? % and %' block uses the 'and' block in its defintion.",
-            //     "",
+            //     "N/A",
             //     "Try using the 'and' block in your solution!");
 
             // //Make sure your block works on basic inputs!
@@ -779,7 +778,7 @@
             // }
             // testAssert(outputLog, weekendExists,
             //     "A 'weekend? %' block has been found.",
-            //     "",
+            //     "N/A",
             //     "Make sure you name your block exactly 'weekend? %'.");
 
             // //Make sure your block is a predicate: it returns true/false values.
@@ -792,7 +791,7 @@
             // }
             // testAssert(outputLog, predicate,
             //     "The 'weekend? %' block returns a boolean value.",
-            //     "",
+            //     "N/A",
             //     "Make sure your block returns the true/false booleans!");
 
             // //Try using the "or" block in your solution!
@@ -801,7 +800,7 @@
             // }
             // testAssert(outputLog, usesOr,
             //     "The 'weekend? %' block uses the 'or' block in its defintion.",
-            //     "",
+            //     "N/A",
             //     "Try using the 'or' block in your solution!");
 
             // //Make sure your block works on basic inputs!
@@ -827,7 +826,7 @@
             // }
             // testAssert(outputLog, weekdayExists,
             //     "A 'weekday? %' block has been found.",
-            //     "",
+            //     "N/A",
             //     "Make sure you name your block exactly 'weekday? %'.");
 
             // //Make sure your block is a predicate: it returns true/false values.
@@ -840,7 +839,7 @@
             // }
             // testAssert(outputLog, predicate,
             //     "The 'weekday? %' block returns a boolean value.",
-            //     "",
+            //     "N/A",
             //     "Make sure your block returns the true/false booleans!");
 
             // //Try using the "weekend? %" block in your solution!
@@ -849,7 +848,7 @@
             // }
             // testAssert(outputLog, usesWeekend,
             //     "The 'weekday? %' block uses the 'weekend? %' block in its defintion.",
-            //     "",
+            //     "N/A",
             //     "Try using the 'weekend? %' block in your solution!");
 
             // //Make sure your block works on basic inputs!
@@ -877,7 +876,7 @@
             // }
             // testAssert(outputLog, anyEqualExists,
             //     "An 'Are any equal? % and % and %' block has been found.",
-            //     "",
+            //     "N/A",
             //     "Make sure you name your block exactly 'Are any equal? % and % and %'.");
 
             // //Make sure your block is a predicate: it returns true/false values.
@@ -890,7 +889,7 @@
             // }
             // testAssert(outputLog, predicate,
             //     "The 'Are any equal? % and % and %' block returns a boolean value.",
-            //     "",
+            //     "N/A",
             //     "Make sure your block returns the true/false booleans!");
 
             // //Try using the "% or %" block in your solution!
@@ -899,7 +898,7 @@
             // }
             // testAssert(outputLog, usesOr2,
             //     "The 'Are any equal? % and % and %' block uses the '% or %' block in its defintion.",
-            //     "",
+            //     "N/A",
             //     "Try using the '% or %' block in your solution!");
 
             // //Make sure your block works on basic inputs!
