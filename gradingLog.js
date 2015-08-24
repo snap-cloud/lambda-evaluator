@@ -163,13 +163,14 @@ gradingLog.prototype.startSnapTest = function(testID) {
 		console.log(test['input']);
 		setValues(block, test['input']);
 		console.log(block);
-		console.log(block.children[1].children[0].text)
+		// console.log(block.children[1].children[0].text)
 		setValues(block, test['input']);
-		console.log(block.children[1].children[0].text)
+		// console.log(block.children[1].children[0].text)
 	//Initiate the Snap Process with a callback to .finishSnapTest
 
 		var stage = this.snapWorld.children[0].stage;
 		var outputLog = this; //Reference for the anonymouse function to follow
+
 		var proc = stage.threads.startProcess(block,
 			stage.isThreadSafe,
 			false,
@@ -177,7 +178,6 @@ gradingLog.prototype.startSnapTest = function(testID) {
 				console.log('')
 				console.log(readValue(proc));
 				outputLog.finishSnapTest(testID, readValue(proc));
-
 		});
 	//Add reference to proc in gradingLog for error handling
 		test.proc = proc;
@@ -492,7 +492,7 @@ function testAssert(outputLog, assertion, pos_fb, neg_fb, ass_text, point) {
 	if (assertion()) {
 		outputLog.addAssert("a", assertion, pos_fb, ass_text, pos_fb, neg_fb, point);
 	} else {
-		outputLog.addAssert("a", assertion, neg_fb, ass_text, pos_fb, neg_fb, point);
+		outputLog.addAssert("a", assertion, pos_fb, ass_text, pos_fb, neg_fb, point);
 	}
 	return outputLog;
 }
