@@ -917,45 +917,162 @@ function setUpIsolatedTest(blockSpec, log, testID) {
 	return block;
 }
 
-function waitForAsk(gradingLog, timeout, callback) {
-	var gLog = gradingLog,
-		timeout = timeout || 1000;
+function waitForAsk(gradingLogTest, timeout, callback) {
+	var gLog = gradingLogTest,
+		timeout = timeout || 5000;
 
 	function wait() {
-		var hasPrompt = gLog.proc && gLog.proc.prompter;
+		var hasPrompt = gLog.proc && gLog.proc.prompter && !gLog.proc.prompter.isDone;
 
 		if (!hasPrompt) {
 			if (timeout < 0) {
-				throw "Timed out waiting for prompter.";
+				gLog.feedback = "Remember to use the 'Ask And Wait' block for user input.";
+				gLog.correct = false;
+				gLog.proc.stop();
 			} else {
 				timeout -= 100;
+				console.log("waiting");
 				setTimeout(wait, 100);
 			}
 		} else {
+			console.log("prompter present!")
 			callback();
 		}
 	}
+	wait();
 }
 
-function inputAsk(gradingLog, input) {
-	if (gradingLog.proc && gradingLog.proc.prompter) {
-		gradingLog.proc.prompter.inputField.setContents(input);
-		gradingLog.proc.prompter.accept();
+function inputAsk(gradingLogTest, input) {
+	if (gradingLogTest.proc && gradingLogTest.proc.prompter) {
+		console.log("ask was input");
+		gradingLogTest.proc.prompter.inputField.setContents(input);
+		gradingLogTest.proc.prompter.accept();
 	} else {
-		throw "No prompter to place input into!"
+		gLog.feedback = "We couldn't find a promt to input out guesses into.";
+		gLog.correct = false;
+		gLog.proc.stop();
 	}
 }
 
-function testAskFun(blockSpec) {
-	var gLog = new gradingLog(world);
-	var stage = world.children[0].stage;
-	var proc = stage.threads.startProcess(block,
+function checkVariable(proc, varname, val) {
+	var variable = proc.homeContext.variables.vars[varname];
+	console.log(variable);
+	return variable && variable.value == val;
+}
+
+function testAskFun(gradingLog, blockSpec) {
+	var gLog = gradingLog || new gradingLog(world);
+	var block = getScript(blockSpec);
+	var stage = gLog.snapWorld.children[0].stage;
+	var testID = gLog.addTest("s", blockSpec, null, true, -1, 1);
+	var backupOrigFunc = ThreadManager.prototype.removeTerminatedProcesses;
+	ThreadManager.prototype.removeTerminatedProcesses = tempRemoveTP;
+
+	gLog[testID].proc = stage.threads.startProcess(block,
 					stage.isThreadSafe,
 					false,
 					function() {
-						console.log(readValue(proc));
+						console.log("Proc ended");
+						ThreadManager.prototype.removeTerminatedProcesses = backupOrigFunc;
+						gLog[testID].proc = null;
+						gLog.scoreLog();
 					});
-	waitForAsk(gLog, 1000, function(){console.log("finished waiting for ASK"); inputAsk(gLog, "THE INPUTS!");});
+
+	gLog[testID].graded = true;
+
+	try {
+
+	waitForAsk(gLog[testID], 1000, function(){
+
+		console.log("Input secret word.");
+
+		if (!checkVariable(gLog[testID].proc, "guesses", "0")) {
+			gLog[testID].feedback = "Make sure to initilize your 'guesses' variable with 0";
+			gLog[testID].correct = false;
+			stage.fireStopAllEvent();
+			return;
+		}
+		if (!checkVariable(gLog[testID].proc, "guess", 0)) {
+			gLog[testID].feedback = "Make sure to create a 'guess' variable.";
+			gLog[testID].correct = false;
+			stage.fireStopAllEvent();
+			return;
+		}
+		if (!checkVariable(gLog[testID].proc, "secret", 0)) {
+			gLog[testID].feedback = "Make sure to create a 'secret' variable.";
+			gLog[testID].correct = false;
+			stage.fireStopAllEvent();
+			return;
+		}
+
+		inputAsk(gLog[testID], "supercalifragilistic");
+
+		waitForAsk(gLog[testID], 5000, function(){
+
+			console.log("Input first guess.");
+
+			if (!checkVariable(gLog[testID].proc, "secret", "supercalifragilistic")) {
+				gLog[testID].feedback = "Make sure to update the 'secret' variable with the first input.";
+				gLog[testID].correct = false;
+				stage.fireStopAllEvent();
+				return;
+			}
+
+			inputAsk(gLog[testID], "suqeqcaqifrqgilqstiq");
+
+			waitForAsk(gLog[testID], 5000, function(){
+
+				console.log("Input second guess.");
+
+				if (!checkVariable(gLog[testID].proc, "guess", "suqeqcaqifrqgilqstiq")) {
+					gLog[testID].feedback = "Make sure to update the 'guess' variable with the players guess.";
+					gLog[testID].correct = false;
+					stage.fireStopAllEvent();
+					return;
+				}
+				if (!checkVariable(gLog[testID].proc, "guesses", 1)) {
+					gLog[testID].feedback = "Make sure to add one to your 'guesses' variable with every input guess.";
+					gLog[testID].correct = false;
+					stage.fireStopAllEvent();
+					return;
+				}			
+
+				inputAsk(gLog[testID], "suqeqcaqifrqgil");
+
+				waitForAsk(gLog[testID], 5000, function(){
+
+					console.log("Input correct guess.");
+
+					if (!checkVariable(gLog[testID].proc, "guess", "suqeqcaqifrqgil")) {
+						gLog[testID].feedback = "Make sure to update the 'guess' variable with the players guess.";
+						gLog[testID].correct = false;
+						stage.fireStopAllEvent();
+						return;
+					}
+					if (!checkVariable(gLog[testID].proc, "guesses", 2)) {
+						gLog[testID].feedback = "Make sure to add one to your 'guesses' variable with every input guess.";
+						gLog[testID].correct = false;
+						stage.fireStopAllEvent();
+						return;
+					}
+
+					inputAsk(gLog[testID], "supercalifragilistic");
+
+					gLog[testID].feedback = "Very nice job!";
+					gLog[testID].correct = true;
+
+				});
+			});
+		});
+	});
+
+	} catch(e) {
+		gLog[testID].feedback = e;
+		gLog[testID].correct = false;
+		stage.fireStopAllEvent();
+	}
+
+	return gLog;
 }
 
 /* ------ END DAVID'S MESS ------ */
