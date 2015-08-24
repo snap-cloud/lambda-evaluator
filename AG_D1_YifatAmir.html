@@ -62,9 +62,7 @@
         function AGTest(outputLog) {
 /*UNIT 1*/
 
-    /*Lab 1: Introduction*/
-
-        /*Creating a Script*/
+        /*1: Creating a Script*/
 
             // /*Modify given script to make the sprite follow a square path if clicked enough times.*/
             // var moveExists = function moveExists() {
@@ -133,9 +131,7 @@
             //     "The 'move' block is not followed by a turn with correct inputs, or the triangle's sidelengths/angles are inconsistent.",
             //     "Make sure your sprite moves and then turns with just one click.");
 
-    /*Lab 2: Control Commands*/
-
-        /*The Repeat Block*/
+        /*2: The Repeat Block*/
 
             // /*Input an argument value into the given script to create the given picture*/
             // var scriptExists = function scriptExists() {
@@ -156,7 +152,7 @@
             //     "The input to the repeat loop is incorrect.",
             //     "Try checking how many sides the given shape has!");
 
-        /*Nesting Repeats*/
+        /*2: Nesting Repeats*/
 
             // //Embed one more repeat loop between move and turn.
             // var threeNestedRepeats = function threeNestedRepeats() {
@@ -168,7 +164,7 @@
             //     "Make sure to nest another repeat!");
             // // add more?
 
-        /*Adding an Input*/
+        /*2: Adding an Input*/
 
             // /*Add an input to the draw square block.*/
             // var drawSquareHasInput = function drawSquareHasInput() {
@@ -209,9 +205,7 @@
             //     "There is no 'draw house' block with a parameter.",
             //     "Make sure to give your 'draw house' block a parameter.");
 
-    /*Lab 4: Block Types and Calculations*/
-
-        /*Commands and Reporters*/
+        /*4: Commands and Reporters*/
 
             /*Make the sprite move around randomly.*/
             // var penDownExists = function penDownExists() {
@@ -258,7 +252,7 @@
             //     "The 'move' and 'turn' blocks are not in a script together.",
             //     "Make sure your sprite will both move and turn!");
 
-        /*Computer Operations*/
+        /*4: Computer Operations*/
 
             // /*Create a block that reports if x is divisble by y.*/
             // var exists;
@@ -285,7 +279,7 @@
             //         1);
             // }
 
-        /*Draw a field of flowers*/
+        /*4: Draw a field of flowers*/
             /*Draw a field of flowers using repeat block and randomness block and others..*/
             // var repeatExists = function repeatExists() {
             //     return spriteContainsBlock("repeat %n %c", 0);
@@ -769,7 +763,6 @@
             //     [false, true, true, false],
             //     [-1, -1, -1, -1],
             //     [true, true, true, true]);
-            // // ^THIS MULTITESTBLOCK CALL IS PROBLEMATIC: "Uncaught TypeError: Converting circular structure to JSON"
 
             /*Create "weekend? %" predicate block.*/
             
@@ -863,6 +856,56 @@
             // multiTestBlock(outputLog,
             //     "weekday? %",
             //     [["Saturday"], ["Sunday"], ["Monday"], ["Tuesday"]],
+            //     [false, false, true, true],
+            //     [-1, -1, -1, -1],
+            //     [true, true, true, true]);
+
+        /*3: Composition of Functions*/
+
+            /*Create "Are any equal? % and % and %" predicate block.*/
+            
+            // //Make sure you name your block "Are any equal? % and % and %"!
+            // var exists;
+            // var anyEqualExists = function anyEqualExists() {
+            //     exists = findBlockInPalette("Are any equal? % and % and %");
+            //     if (exists !== null) {
+            //         exists = true;
+            //     } else {
+            //         exists = false;
+            //     }
+            //     return exists;
+            // }
+            // testAssert(outputLog, anyEqualExists,
+            //     "An 'Are any equal? % and % and %' block has been found.",
+            //     "",
+            //     "Make sure you name your block exactly 'Are any equal? % and % and %'.");
+
+            // //Make sure your block is a predicate: it returns true/false values.
+            // var predicate = function predicate() {
+            //     var customBody = getCustomBody("Are any equal? % and % and %");
+            //     return ((customBlockContains("Are any equal? % and % and %", "report %", ["true"]) && 
+            //         customBlockContains("Are any equal? % and % and %", "report %", ["false"])) || 
+            //         (blockPrecedes("report %", "% or %", customBody))); 
+            //         //assuming they are reporting the OR block --> boolean value
+            // }
+            // testAssert(outputLog, predicate,
+            //     "The 'Are any equal? % and % and %' block returns a boolean value.",
+            //     "",
+            //     "Make sure your block returns the true/false booleans!");
+
+            // //Try using the "% or %" block in your solution!
+            // var usesOr2 = function usesOr2() {
+            //     return customBlockContains("Are any equal? % and % and %", "% or %");
+            // }
+            // testAssert(outputLog, usesOr2,
+            //     "The 'Are any equal? % and % and %' block uses the '% or %' block in its defintion.",
+            //     "",
+            //     "Try using the '% or %' block in your solution!");
+
+            // //Make sure your block works on basic inputs!
+            // multiTestBlock(outputLog,
+            //     "Are any equal? % and % and %",
+            //     [[2, 3, 4], [-2, 0, 2], [6, 3, 6], [1, 2, 2]],
             //     [false, false, true, true],
             //     [-1, -1, -1, -1],
             //     [true, true, true, true]);

@@ -163,9 +163,9 @@ gradingLog.prototype.startSnapTest = function(testID) {
 		console.log(test['input']);
 		setValues(block, test['input']);
 		console.log(block);
-		console.log(block.children[1].children[0].text)
+		// console.log(block.children[1].children[0].text)
 		setValues(block, test['input']);
-		console.log(block.children[1].children[0].text)
+		// console.log(block.children[1].children[0].text)
 	//Initiate the Snap Process with a callback to .finishSnapTest
 
 		var stage = this.snapWorld.children[0].stage;
