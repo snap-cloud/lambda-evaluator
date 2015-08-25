@@ -980,8 +980,6 @@ function testAskFun(gradingLog, blockSpec) {
 
 	gLog[testID].graded = true;
 
-	try {
-
 	waitForAsk(gLog[testID], 1000, function(){
 
 		console.log("Input secret word.");
@@ -1065,12 +1063,6 @@ function testAskFun(gradingLog, blockSpec) {
 			});
 		});
 	});
-
-	} catch(e) {
-		gLog[testID].feedback = e;
-		gLog[testID].correct = false;
-		stage.fireStopAllEvent();
-	}
 
 	return gLog;
 }
