@@ -79,7 +79,7 @@ function AGStart(snapWorld, taskID) {
         //Restore the AG status bar to a graded state
         //If no previous state is recognized, return new {gradingLog}.
         var numAttempts = setNumAttempts(taskID);
-        outputLog = new gradingLog(snapWorld, taskID, numAttempts); 
+        outputLog = new FeedbackLog(snapWorld, taskID, 'test of new feedback', numAttempts); 
         AG_bar_ungraded(outputLog);
         return outputLog;
     }   

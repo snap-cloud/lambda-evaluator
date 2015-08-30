@@ -158,18 +158,12 @@ gradingLog.prototype.startSnapTest = function(testID) {
 			block = getScript(test.blockSpec);
 		}
 	//Set the selected block's inputs for the test
-		console.log('test input');
-		console.log(test);
-		console.log(test['input']);
 		setValues(block, test['input']);
-		console.log(block);
-		console.log(block.children[1].children[0].text)
-		setValues(block, test['input']);
-		console.log(block.children[1].children[0].text)
 	//Initiate the Snap Process with a callback to .finishSnapTest
 
 		var stage = this.snapWorld.children[0].stage;
 		var outputLog = this; //Reference for the anonymouse function to follow
+
 		var proc = stage.threads.startProcess(block,
 			stage.isThreadSafe,
 			false,
@@ -177,7 +171,6 @@ gradingLog.prototype.startSnapTest = function(testID) {
 				console.log('')
 				console.log(readValue(proc));
 				outputLog.finishSnapTest(testID, readValue(proc));
-
 		});
 	//Add reference to proc in gradingLog for error handling
 		test.proc = proc;
@@ -200,7 +193,6 @@ gradingLog.prototype.startSnapTest = function(testID) {
 			stage.threads.stopProcess(getScript(outputLog[testID]["blockSpec"], test.sprite));
 			test.correct = false;
 			//Set the graded flag to true for this test.
-			console.log(timeout);
 			test.graded = true;
 			// if (test.isolated) {
 			// 	myself.snapWorld.children[0].sprites.contents[test.sprite].remove();
@@ -260,8 +252,6 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 			test.output = output;
 		}
 	}
-	console.log('TEST OUTPUT')
-	console.log(test.output)
 
 	//if expOut is an array turn it into a snap! list for processing
 	if (expOut instanceof Array) {
@@ -330,7 +320,6 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 		}
 	}
 	//If this was the last test, grade the log
-	// console.log(this);
 	this.scoreLog();
 };
 
@@ -492,7 +481,7 @@ function testAssert(outputLog, assertion, pos_fb, neg_fb, ass_text, point) {
 	if (assertion()) {
 		outputLog.addAssert("a", assertion, pos_fb, ass_text, pos_fb, neg_fb, point);
 	} else {
-		outputLog.addAssert("a", assertion, neg_fb, ass_text, pos_fb, neg_fb, point);
+		outputLog.addAssert("a", assertion, pos_fb, ass_text, pos_fb, neg_fb, point);
 	}
 	return outputLog;
 }
