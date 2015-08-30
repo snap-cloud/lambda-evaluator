@@ -158,14 +158,7 @@ gradingLog.prototype.startSnapTest = function(testID) {
 			block = getScript(test.blockSpec);
 		}
 	//Set the selected block's inputs for the test
-		console.log('test input');
-		console.log(test);
-		console.log(test['input']);
 		setValues(block, test['input']);
-		console.log(block);
-		// console.log(block.children[1].children[0].text)
-		setValues(block, test['input']);
-		// console.log(block.children[1].children[0].text)
 	//Initiate the Snap Process with a callback to .finishSnapTest
 
 		var stage = this.snapWorld.children[0].stage;
@@ -200,7 +193,6 @@ gradingLog.prototype.startSnapTest = function(testID) {
 			stage.threads.stopProcess(getScript(outputLog[testID]["blockSpec"], test.sprite));
 			test.correct = false;
 			//Set the graded flag to true for this test.
-			console.log(timeout);
 			test.graded = true;
 			// if (test.isolated) {
 			// 	myself.snapWorld.children[0].sprites.contents[test.sprite].remove();
@@ -260,8 +252,6 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 			test.output = output;
 		}
 	}
-	console.log('TEST OUTPUT')
-	console.log(test.output)
 
 	//if expOut is an array turn it into a snap! list for processing
 	if (expOut instanceof Array) {
@@ -330,7 +320,6 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
 		}
 	}
 	//If this was the last test, grade the log
-	// console.log(this);
 	this.scoreLog();
 };
 
