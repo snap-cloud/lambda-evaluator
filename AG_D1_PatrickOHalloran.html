@@ -688,15 +688,16 @@
             //     "N/A",
             //     "Make sure you create and name your block exactly 'digital sum %'.");
 
-            // //Digital sum: Make sure your function works for positive numbers!
             // multiTestBlock(outputLog, 'digital sum %',
-            //     [[888], [464], [10000302]],
-            //     [24, 14, 6],
+            //     [[55], [123], [1003]],
+            //     [10, 6, 4],
             //     [-1, -1, -1],
             //     [true, true, true]);
 
+            
+
             /* Line 69 create the 'multiples of 7 algorithm' block */
-            //Digital sum: make sure create and name your block exactly 'digital sum %'
+            //multiples of 7 algorithm: make sure create and name your block exactly 'multiples of 7 algorithm %'
             // var multiplesOf7Exists = function multiplesOf7Exists() {
             //     var multiplesOf7Found = findBlockInPalette("multiples of 7 algorithm %");
             //     if (multiplesOf7Found !== null) {
@@ -726,30 +727,92 @@
             //     "N/A",
             //     "Try making the function without using a '% mod %' block. A repeat-until block sounds like it could work. Also look at the blocks on the screen in the exercise that we suggest.");
 
-
-            // //Digital sum: Make sure your function works for numbers greater than 21!
+            // //Make sure your function works for numbers greater than 21!
             // multiTestBlock(outputLog, 'multiples of 7 algorithm %',
             //     [[501298], [28], [23], [35]],
             //     [-14, -14, -4, -7],
             //     [-1, -1, -1, -1],
             //     [true, true, true, true]);
 
-            // //Digital sum: Make sure your function works for 21!
+            // //multiples of 7 algorithm: Make sure your function works for 21!
             // multiTestBlock(outputLog, 'multiples of 7 algorithm %',
             //     [[21]],
             //     [0],
             //     [-1],
             //     [true]);
 
-            // //Digital sum: Make sure your function works for numbers less than 21!
+            // //multiples of 7 algorithm %: Make sure your function works for numbers less than 21!
             // multiTestBlock(outputLog, 'multiples of 7 algorithm %',
             //     [[14], [10], [-4], [-90]],
             //     [14, 10, -4, -90],
             //     [-1, -1, -1, -1],
             //     [true, true, true, true]);
 
+            /* Line 97 Three-input addition block */
+            //Three-input add: Make sure you create a function exactly named: '% + % + %'
+            var add3Exists = function add3Exists() {
+                var add3Found = findBlockInPalette("% + % + %");
+                if (add3Found !== null) {
+                    return true;
+                }
+                return false;
+            }
+            // var sumExists = function sumExists() {
+            //     var customBody = getCustomBody("% + % + %");
+            //     var sumFound = scriptContainsBlock(customBody, "% + %");
+            //     return sumFound;
+            // }
+            testAssert(outputLog, add3Exists,
+                "There is a three-input add block.",
+                "N/A",
+                "Please make a block that looks like exercise 1 among the above exercises.");
+            // testAssert(outputLog, sumExists,
+            //     "There is a '% + %' block inside of the body of the three-input add block.",
+            //     "N/A",
+            //     "We need to add three numbers. Try using the '% + % block in composing your function!");
+
+            //'% + % + %': Make sure your function works for general cases!
+            multiTestBlock(outputLog, '% + % + %',
+                [[10, 2, 5], [-10, -2, 6], [0, 0, 0], [100, -1000, 0]],
+                [17, -6, 0, -900],
+                [-1, -1, -1, -1],
+                [true, true, true, true]);
+
+            /* Line 98 Sum of two smallest block */
+            // //Sum of two smallest: Make sure you create a function exactly named: 'sum of two smallest % and % and %'
+            // var sumOfTwoSmallestExists = function sumOfTwoSmallestExists() {
+            //     var sumOfTwoSmallestFound = findBlockInPalette("sum of two smallest % and % and %");
+            //     if (sumOfTwoSmallestFound !== null) {
+            //         return true;
+            //     }
+            //     return false;
+            // }
+            // var useMaxBlock = function useMaxBlock() {
+            //     var customBody = getCustomBody('sum of two smallest % and % and %');
+            //     var maxBlockFound = scriptContainsBlock(customBody, "max of % and %");
+            //     return maxBlockFound;
+            // }
+            // testAssert(outputLog, sumOfTwoSmallestExists,
+            //     "There is a sum of two smallest block.",
+            //     "N/A",
+            //     "Please make a block that looks like exercise 2 among the above exercises.");
+            // testAssert(outputLog, useMaxBlock,
+            //     "Uses a max block in the definition of the funciton.",
+            //     "N/A",
+            //     "Try using the max block we made in a previous exercise!");
+
+            // //'sum of two smallest % and % and %': Make sure your function works for general cases!
+            // multiTestBlock(outputLog, 'sum of two smallest % and % and %',
+            //     [[10, 2, 5], [-10, -2, 6], [0, 0, 0], [100, -1000, 0]],
+            //     [7, -12, 0, -1000],
+            //     [-1, -1, -1, -1],
+            //     [true, true, true, true]);
+
+
+
 
             return outputLog;
+
         }
 
         /* Removes the previously saved AG_state. Runs the tests in
