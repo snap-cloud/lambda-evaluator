@@ -154,13 +154,13 @@ function populateFeedback(outputLog) {
     var edx_caution = document.getElementById("edx-submit-different");
     var caution = document.getElementById("different-feedback");
 
-    console.log(outputLog);
+    // console.log(outputLog);
     var glog = outputLog;
     var log = AG_log(glog);
     var feedback = log["feedback"];
     var title = log["comment"];
 
-    console.log(feedback);
+    // console.log(feedback);
 
     // Wipes the feedback clean, including if it has been populated before. 
     caution.innerHTML = "";
@@ -202,7 +202,6 @@ function populateFeedback(outputLog) {
     var repTest = 1;
     for (i=1; i<=feedback["testCount"]; i++) {
         var test = String(i);
-        console.log(test);
         var newRow = document.createElement("tr");
 
         // If test is not a reporter test, only add columns for Test # and Feedback
@@ -266,7 +265,7 @@ function populateFeedback(outputLog) {
             document.getElementById("table-data").appendChild(newRow);
         }  
     }
-    console.log(outputLog);
+    // console.log(outputLog);
     //outputLog.saveLog();
 
     if (regradeOn) {
@@ -578,7 +577,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
     }
 
     setTimeout(function() {
-        console.log(snapWorld);
+        // console.log(snapWorld);
         if (prev_log) {
             var outputLog = prev_log;
         } else {
@@ -610,7 +609,7 @@ var update_listener = function() {
 };
 var button_listener = function(event) {
     event.stopPropagation();
-    console.log('PROPAGATION SHOULD STOP');
+    // console.log('PROPAGATION SHOULD STOP');
     var numAttempts = setNumAttempts(id);
     outputLog = new gradingLog(world, id, numAttempts);
     outputLog.numAttempts += 1;
