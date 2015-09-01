@@ -65,14 +65,14 @@
         /*1: Creating a Script*/
 
             // /*Modify given script to make the sprite follow a square path if clicked enough times.*/
-            // var moveExists = function moveExists() {
+            // var moveExists = function() {
             //     return spriteContainsBlock('move %n steps', 0);
             // }
             // testAssert(outputLog, moveExists,
             //     "The 'move' block is present.",
             //     "N/A",
             //     "Make sure to make your sprite move on the stage!");
-            // var turnExists = function turnExists() {
+            // var turnExists = function() {
             //     return spriteContainsBlock('turn %clockwise %n degrees', 0) ||
             //             spriteContainsBlock('turn %counterclockwise %n degrees', 0);
             // }
@@ -80,7 +80,7 @@
             //     "The 'turn' block is present.",
             //     "N/A",
             //     "Make sure your sprite turns on the stage!");
-            // var turn90 = function turn90() {
+            // var turn90 = function() {
             //     return spriteContainsBlock('turn %clockwise %n degrees', 0, ["90"]) ||
             //             spriteContainsBlock('turn %counterclockwise %n degrees', 0, ["90"]);
             // }
@@ -88,7 +88,7 @@
             //     "The turn block has an input of 90 degrees.",
             //     "N/A",
             //     "Make sure your sprite turns an appropriate amount to make a square path!");
-            // var moveThenTurn = function moveThenTurn() {
+            // var moveThenTurn = function() {
             //     return blockPrecedesInSprite("move %n steps", "turn %clockwise %n degrees", 0) ||
             //             blockPrecedesInSprite("move %n steps", "turn %counterclockwise %n degrees", 0);
             // }
@@ -98,14 +98,14 @@
             //     "Make sure your sprite moves and then turns with just one click.");
             
             // Modify the previous script to make the sprite follow a triangular path if clicked enough times.
-            // var moveExists = function moveExists() {
+            // var moveExists = function() {
             //     return spriteContainsBlock('move %n steps', 0);
             // }
             // testAssert(outputLog, moveExists,
             //     "The 'move' block is present.",
             //     "N/A",
             //     "Make sure to make your sprite move on the stage.");
-            // var turnExists = function turnExists() {
+            // var turnExists = function() {
             //     return spriteContainsBlock('turn %clockwise %n degrees', 0) ||
             //             spriteContainsBlock('turn %counterclockwise %n degrees', 0);
             // }
@@ -113,7 +113,7 @@
             //     "The 'turn clockwise' block is present.",
             //     "N/A",
             //     "Make sure you make your sprite turns clockwise on the stage.");
-            // var turn120 = function turn120() {
+            // var turn120 = function() {
             //     return spriteContainsBlock('turn %clockwise %n degrees', 0, ["120"]) ||
             //             spriteContainsBlock('turn %counterclockwise %n degrees', 0, ["120"]);
             // }
@@ -121,7 +121,7 @@
             //     "The turn block has an input of 120 degrees.",
             //     "N/A",
             //     "Make sure your sprite turns an appropriate amount to make a triangle.");
-            // var moveThenTurn = function moveThenTurn() {
+            // var moveThenTurn = function() {
             //     return blockPrecedesInSprite("move %n steps", "turn %clockwise %n degrees", 0) ||
             //             blockPrecedesInSprite("move %n steps", "turn %counterclockwise %n degrees", 0);
             // }
@@ -133,40 +133,39 @@
         /*2: The Repeat Block*/
 
             // /*Input an argument value into the given script to create the given picture*/
-            // var scriptExists = function scriptExists() {
+            // var scriptExists = function() {
             //     var template = '[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["A",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]';
             //     var vars = ["A"];
             //     return scriptPresentInSprite(template, 0, vars);
             // }
             // testAssert(outputLog, scriptExists,
             //     "The given script has been recreated exactly.",
-            //     "The given script has not been recreated exactly.",
+            //     "N/A",
             //     "Make sure to recreate the given script!");
-            // var repeat9 = function repeat9() {
+            // var repeat9 = function() {
             //     var script = '[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["9",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]';
             //     return scriptPresentInSprite(script, 0);
             // }
             // testAssert(outputLog, repeat9,
-            //     "The input to the repeat loop is 9.",
-            //     "The input to the repeat loop is incorrect.",
+            //     "The input to the repeat loop makes a shape with 9 sides.",
+            //     "N/A",
             //     "Try checking how many sides the given shape has!");
 
         /*2: Nesting Repeats*/
 
             // //Embed one more repeat loop between move and turn.
-            // var threeNestedRepeats = function threeNestedRepeats() {
+            // var threeNestedRepeats = function() {
             //     return occurancesOfBlockInSprite("repeat %n %c", 3, 0);
             // }
             // testAssert(outputLog, threeNestedRepeats,
             //     "There are three repeat blocks in a script together.",
-            //     "There are not three repeat blocks in a script together.",
+            //     "N/A",
             //     "Make sure to nest another repeat!");
-            // // add more?
 
         /*2: Adding an Input*/
 
             // /*Add an input to the draw square block.*/
-            // var drawSquareHasInput = function drawSquareHasInput() {
+            // var drawSquareHasInput = function() {
             //     if (findBlockInPalette("draw square %") !== null) {
             //         return true;
             //     } else {
@@ -174,25 +173,25 @@
             //     }
             // }
             // testAssert(outputLog,  drawSquareHasInput,
-            //     "There is a 'draw square' block with a parameter.",
-            //     "There is no 'draw square' block with a parameter.",
+            //     "There is a 'draw square %' block with a parameter.",
+            //     "N/A",
             //     "Make sure to give your 'draw square' block a parameter.");
 
             // /*Add an input to the draw triangle block.*/
-            // var drawTriangleHasInput = function drawTriangleHasInput() {
+            // var drawTriangleHasInput = function() {
             //     if (findBlockInPalette("draw triangle %") !== null) {
             //         return true;
             //     } else {
             //         return false;
-            //     }
+            //     
             // }
             // testAssert(outputLog,  drawTriangleHasInput,
-            //     "There is a 'draw triangle' block with a parameter.",
-            //     "There is no 'draw triangle' block with a parameter.",
+            //     "There is a 'draw triangle %' block with a parameter.",
+            //     "N/A",
             //     "Make sure to give your 'draw triangle' block a parameter.");
 
             // /*Add an input to the draw house block.*/
-            // var drawHouseHasInput = function drawHouseHasInput() {
+            // var drawHouseHasInput = function() {
             //     if (findBlockInPalette("draw house %") !== null) {
             //         return true;
             //     } else {
@@ -200,28 +199,28 @@
             //     }
             // }
             // testAssert(outputLog,  drawHouseHasInput,
-            //     "There is a 'draw house' block with a parameter.",
-            //     "There is no 'draw house' block with a parameter.",
+            //     "There is a 'draw house %' block with a parameter.",
+            //     "N/A",
             //     "Make sure to give your 'draw house' block a parameter.");
 
         /*4: Commands and Reporters*/
 
-            /*Make the sprite move around randomly.*/
-            // var penDownExists = function penDownExists() {
+            // /*Make the sprite move around randomly.*/
+            // var penDownExists = function() {
             //     return spriteContainsBlock("pen down", 0);
             // }
             // testAssert(outputLog, penDownExists,
             //     "There is a 'pen down' block.",
-            //     "There is no 'pen down' block in the scripting area.",
+            //     "N/A",
             //     "Make sure the pen is down.");
-            // var loopExists = function loopExists() {
+            // var loopExists = function() {
             //     return spriteContainsBlock("forever %c", 0) || spriteContainsBlock("repeat %n %c", 0);
             // }
             // testAssert(outputLog, loopExists,
             //     "There is a 'repeat' or a 'forever' block.",
-            //     "There is no 'repeat' or 'forever' block.",
+            //     "N/A",
             //     "Make sure your sprite will change location continuously!");
-            // var moveInLoop = function moveInLoop() {
+            // var moveInLoop = function() {
             //     var moveSpec = "move %n steps";
             //     var moveInputs = [{"blockSp":"pick random %n to %n","inputs":["",""]}];
             //     var repeatSpec = "repeat %n %c";
@@ -230,9 +229,9 @@
             // }
             // testAssert(outputLog, moveInLoop,
             //     "The 'move' block is within a loop and the 'pick random' block is within the 'move' block.",
-            //     "The 'move' block is not within a loop or the 'pick random' block is not within the 'move' block.",
+            //     "N/A",
             //     "Make sure your sprite will move continuously and randomly!");
-            // var turnInLoop = function turnInLoop() {
+            // var turnInLoop = function() {
             //     var turnSpec = "turn %clockwise %n degrees";
             //     var turnInputs = [{"blockSp":"pick random %n to %n","inputs":["",""]}];
             //     var repeatSpec = "repeat %n %c";
@@ -241,21 +240,21 @@
             // }
             // testAssert(outputLog, turnInLoop,
             //     "The 'turn' block is within a loop and the 'pick random' block is within the 'turn' block.",
-            //     "The 'turn' block is not within a loop or the 'pick random' block is not within the 'turn' block.",
+            //     "N/A",
             //     "Make sure your sprite will turn continuously!");
-            // var moveTurnSameScript = function moveTurnSameScript() {
+            // var moveTurnSameScript = function() {
             //     return (blockPrecedesInSprite("turn %clockwise %n degrees", "move %n steps", 0) || blockPrecedesInSprite("move %n steps", "turn %clockwise %n degrees", 0));
             // }
             // testAssert(outputLog, moveTurnSameScript,
             //     "The 'move' and 'turn' blocks are in a script together.",
-            //     "The 'move' and 'turn' blocks are not in a script together.",
+            //     "N/A",
             //     "Make sure your sprite will both move and turn!");
 
         /*4: Computer Operations*/
 
             // /*Create a block that reports if x is divisble by y.*/
             // var exists;
-            // var divisibleExists = function divisibleExists() {
+            // var divisibleExists = function() {
             //     exists = findBlockInPalette("is % divisible by % ?");
             //     if (exists !== null) {
             //         exists = true;
@@ -266,49 +265,48 @@
             // }
             // testAssert(outputLog, divisibleExists,
             //     "There is a 'is % divisible by % ?' block.",
-            //     "There is no 'is % divisible by % ?' block in the scripting area.",
+            //     "N/A",
             //     "Make sure you name your block exactly 'is % divisible by % ?'.");
-            // if (exists) {
-            //     multiTestBlock(outputLog, 
-            //         "is % divisible by % ?", 
-            //         [[1, 4], [3, 6], [6, 3], [6, 6], [4, 1], [7, 4], [-5, 5], [0, 3], [8, 5]],
-            //         [false, false, true, true, true, false, true, true, false],
-            //         [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-            //         [true, true, true, true, true, true, true, true, true],
-            //         1);
-            // }
+            // multiTestBlock(outputLog, 
+            //     "is % divisible by % ?", 
+            //     [[1, 4], [3, 6], [6, 3], [6, 6], [4, 1], [7, 4], [-5, 5], [0, 3], [8, 5]],
+            //     [false, false, true, true, true, false, true, true, false],
+            //     [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+            //     [true, true, true, true, true, true, true, true, true],
+            //     1);
 
         /*4: Draw a field of flowers*/
-            /*Draw a field of flowers using repeat block and randomness block and others..*/
-            // var repeatExists = function repeatExists() {
+
+            // /*Draw a field of flowers using repeat block and randomness block and others..*/
+            // var repeatExists = function() {
             //     return spriteContainsBlock("repeat %n %c", 0);
             // }
             // testAssert(outputLog, repeatExists,
             //     "There is a 'repeat' block.",
-            //     "There is no 'repeat' block in the scripting area.",
+            //     "N/A",
             //     "Make sure to use a 'repeat' block!");
-            // var randomExists = function randomExists() {
+            // var randomExists = function() {
             //     return spriteContainsBlock("pick random %n to %n", 0);
             // }
             // testAssert(outputLog, randomExists,
             //     "There is a 'pick random' block.",
-            //     "There is no 'pick random' block in the scripting area.",
+            //     "N/A",
             //     "Make sure to draw different flowers using a 'pick random' block!");
-            // var drawFlowerExists = function drawFlowerExists() {
+            // var drawFlowerExists = function() {
             //     return spriteContainsBlock("draw square-petal flower with % petals of size %", 0);
             // }
             // testAssert(outputLog, drawFlowerExists,
             //     "There is a 'draw square-petal flower' block.",
-            //     "There is no 'draw square-petal flower' block in the scripting area.",
+            //     "N/A",
             //     "Make sure to draw flowers using your 'draw square-petal flower' block!");
-            // var drawInRepeat = function drawInRepeat() {
+            // var drawInRepeat = function() {
             //     var drawFlowerSpec = "draw square-petal flower with % petals of size %";
             //     var repeatSpec = "repeat %n %c";
             //     return CBlockContainsInSprite(drawFlowerSpec, repeatSpec, 0);
             // }
             // testAssert(outputLog, drawInRepeat,
             //     "There is a 'draw square-petal flower' in a repeat loop.",
-            //     "There is no 'draw square-petal flower' in a repeat loop.",
+            //     "N/A",
             //     "Make sure to draw lots of flowers using a repeat loop!");
 
 /*UNIT 2*/
@@ -319,7 +317,7 @@
 
             // //Make sure you name your block "plural %"!
             // var exists;
-            // var pluralExists = function pluralExists() {
+            // var pluralExists = function() {
             //     exists = findBlockInPalette("plural %");
             //     if (exists !== null) {
             //         exists = true;
@@ -364,7 +362,7 @@
 
             // //Make sure you name your block "plural-h %"!
             // var exists;
-            // var pluralhExists = function pluralhExists() {
+            // var pluralhExists = function() {
             //     exists = findBlockInPalette("plural-h %");
             //     if (exists !== null) {
             //         exists = true;
@@ -406,7 +404,7 @@
             /*Use the new suffix block in the old one.*/
 
             // //Make sure you use your plural-h block within your plural block!
-            // var hAbstracted = function hAbstracted() {
+            // var hAbstracted = function() {
             //     return customBlockContains("plural %", "plural-h %");
             // }
             // testAssert(outputLog, hAbstracted,
@@ -418,7 +416,7 @@
 
             // //Make sure you name your block "plural-y %"!
             // var exists;
-            // var pluralyExists = function pluralyExists() {
+            // var pluralyExists = function() {
             //     exists = findBlockInPalette("plural-y %");
             //     if (exists !== null) {
             //         exists = true;
@@ -452,40 +450,40 @@
         /*2: Script Variables*/
 
             // /*Modify the script so that it also picks a size randomly from 30 to 60 using only multiples of 10*/
-            // var twoPickRandoms = function twoPickRandoms() {
+            // var twoPickRandoms = function() {
             //     return occurancesOfBlockInSprite("pick random %n to %n", 2, 0);
             // }
             // testAssert(outputLog, twoPickRandoms,
-            //     "There are two 'pick random' blocks in a script together.",
-            //     "There are not two 'pick random' blocks in a script together.",
+            //     "There are two 'pick random' blocks in the script together.",
+            //     "N/A",
             //     "Make sure to set the size using the 'pick random' block!");
-            // var scriptVarsExists = function scriptVarsExists() {
+            // var scriptVarsExists = function() {
             //         return spriteContainsBlock("script variables %scriptVars", 0);
-            //     }
-            //     testAssert(outputLog, scriptVarsExists,
-            //         "The 'script variables' block is present.",
-            //         "The 'script variables' block was not found on-screen.",
-            //         "Make sure to use script variables in your script!");
+            // }
+            // testAssert(outputLog, scriptVarsExists,
+            //     "The 'script variables' block is present.",
+            //     "N/A",
+            //     "Make sure to use script variables in your script!");
             // //the two tests below are possibly too specific/restrictive... remove??
-            // var multiplyExists = function multiplyExists() {
+            // var multiplyExists = function() {
             //         return spriteContainsBlock("%n × %n", 0);
-            //     }
-            //     testAssert(outputLog, multiplyExists,
-            //         "The multiplication block is present.",
-            //         "The multiplication block was not found on-screen.",
-            //         "Make sure 'size' is only multiples of 10 between 30 and 60.");
-            // var multiply10Exists = function multiply10Exists() {
+            // }
+            // testAssert(outputLog, multiplyExists,
+            //     "The multiplication block is present.",
+            //     "N/A",
+            //     "Make sure 'size' is only multiples of 10 between 30 and 60.");
+            // var multiply10Exists = function() {
             //         return spriteContainsBlock("%n × %n", 0, ["10", ""]) || 
             //             spriteContainsBlock("%n × %n", 0, ["", "10"]);
-            //     }
-            //     testAssert(outputLog, multiply10Exists,
-            //         "The 'size' is a multiple of 10.",
-            //         "The 'size' is not a multiple of 10.",
-            //         "Make sure 'size' is only multiples of 10 between 30 and 60.");
+            // }
+            // testAssert(outputLog, multiply10Exists,
+            //     "The 'size' is a multiple of 10.",
+            //     "N/A",
+            //     "Make sure 'size' is only multiples of 10 between 30 and 60.");
 
             // /*Create a factorial block.*/
             // var exists;
-            // var factorialExists = function factorialExists() {
+            // var factorialExists = function() {
             //     exists = findBlockInPalette("% !");
             //     if (exists !== null) {
             //         exists = true;
@@ -496,21 +494,35 @@
             // }
             // testAssert(outputLog, factorialExists,
             //     "There is a '% !' factorial block.",
-            //     "There is no '% !' factorial block.",
+            //     "N/A",
             //     "Make sure you name your block exactly '% !'.");
-            // if (exists) {
-            //     multiTestBlock(outputLog, 
-            //         "% !", 
-            //         [[0], [1], [2], [3], [4], [5]],
-            //         [1, 1, 2, 6, 24, 120],
-            //         [-1, -1, -1, -1, -1, -1],
-            //         [true, true, true, true, true, true],
-            //         1);
+            // var multiplyExists = function() {
+            //         return spriteContainsBlock("%n × %n", 0);
             // }
+            // testAssert(outputLog, multiplyExists,
+            //     "The multiplication block is present.",
+            //     "N/A",
+            //     "Make sure to look at the definition of factorial.");
+            // var repeatExists = function() {
+            //     return spriteContainsBlock("repeat %n %c", 0) || 
+            //         spriteContainsBlock("repeat until %b %c", 0) ||
+            //         spriteContainsBlock("for %upvar = %n to %n %cs", 0);
+            // }
+            // testAssert(outputLog, repeatExists,
+            //     "There is a 'repeat' block.",
+            //     "N/A",
+            //     "Make sure to use a 'repeat' block!");
+            // multiTestBlock(outputLog, 
+            //     "% !", 
+            //     [[0], [1], [2], [3], [4], [5]],
+            //     [1, 1, 2, 6, 24, 120],
+            //     [-1, -1, -1, -1, -1, -1],
+            //     [true, true, true, true, true, true],
+            //     1);
 
             // /*Create a triangular number block.*/
             // var exists;
-            // var triangularNumberExists = function triangularNumberExists() {
+            // var triangularNumberExists = function() {
             //     exists = findBlockInPalette("triangular number %");
             //     if (exists !== null) {
             //         exists = true;
@@ -520,22 +532,27 @@
             //     return exists;
             // }
             // testAssert(outputLog, triangularNumberExists,
-            //     "There is a 'triangular number %' factorial block.",
-            //     "There is no 'triangular number %' factorial block.",
+            //     "There is a 'triangular number %' block.",
+            //     "N/A",
             //     "Make sure you name your block exactly 'triangular number %'.");
-            // if (exists) {
-            //     multiTestBlock(outputLog, 
-            //         "triangular number %", 
-            //         [[0], [1], [2], [3], [4], [5]],
-            //         [0, 1, 3, 6, 10, 15],
-            //         [-1, -1, -1, -1, -1, -1],
-            //         [true, true, true, true, true, true],
-            //         1);
+            // var addExists = function() {
+            //         return spriteContainsBlock("%n + %n", 0);
             // }
+            // testAssert(outputLog, addExists,
+            //     "The addition block is present.",
+            //     "N/A",
+            //     "Make sure to look at the definition of triangular number!");
+            // multiTestBlock(outputLog, 
+            //     "triangular number %", 
+            //     [[0], [1], [2], [3], [4], [5]],
+            //     [0, 1, 3, 6, 10, 15],
+            //     [-1, -1, -1, -1, -1, -1],
+            //     [true, true, true, true, true, true],
+            //     1);
 
             // /*Create a raise n to the power of b block.*/
             // var exists;
-            // var raiseExists = function raiseExists() {
+            // var raiseExists = function() {
             //     exists = findBlockInPalette("raise % to the power of %");
             //     if (exists !== null) {
             //         exists = true;
@@ -545,18 +562,23 @@
             //     return exists;
             // }
             // testAssert(outputLog, raiseExists,
-            //     "There is a 'raise % to the power of %' factorial block.",
-            //     "There is no 'raise % to the power of %' factorial block.",
+            //     "There is a 'raise % to the power of %' block.",
+            //     "N/A",
             //     "Make sure you name your block exactly 'raise % to the power of %'.");
-            // if (exists) {
-            //     multiTestBlock(outputLog, 
-            //         "raise % to the power of %", 
-            //         [[2, 3], [3, 4], [2, 5], [2, 1], [8, 0]],
-            //         [8, 81, 32, 2, 1],
-            //         [-1, -1, -1, -1, -1],
-            //         [true, true, true, true, true],
-            //         1);
+            // var multiplyExists = function() {
+            //         return spriteContainsBlock("%n × %n", 0);
             // }
+            // testAssert(outputLog, multiplyExists,
+            //     "The multiplication block is present.",
+            //     "N/A",
+            //     "Make sure to look at the definition of the power function!");
+            // multiTestBlock(outputLog, 
+            //     "raise % to the power of %", 
+            //     [[2, 3], [3, 4], [2, 5], [2, 1], [8, 0]],
+            //     [8, 81, 32, 2, 1],
+            //     [-1, -1, -1, -1, -1],
+            //     [true, true, true, true, true],
+            //     1);
 
         /*2: Building a useful collection of predicates.*/
 
@@ -564,7 +586,7 @@
             
             // //Make sure you name your block "even? %"!
             // var exists;
-            // var evenExists = function evenExists() {
+            // var evenExists = function() {
             //     exists = findBlockInPalette("even? %");
             //     if (exists !== null) {
             //         exists = true;
@@ -579,7 +601,7 @@
             //     "Make sure you name your block exactly 'even? %'.");
 
             // //Make sure your block is a predicate: it returns true/false values.
-            // var predicate = function predicate() {
+            // var predicate = function() {
             //     var customBody = getCustomBody("even? %");
             //     return ((customBlockContains("even? %", "report %", ["true"]) && 
             //         customBlockContains("even? %", "report %", ["false"])) || 
@@ -592,7 +614,7 @@
             //     "Make sure your block returns the true/false booleans!");
 
             // //Try using the "mod" block in your solution!
-            // var usesMod = function usesMod() {
+            // var usesMod = function() {
             //     return customBlockContains("even? %", "% mod %");
             // }
             // testAssert(outputLog, usesMod,
@@ -620,7 +642,7 @@
             
             // //Make sure you name your block "% >= %"!
             // var exists;
-            // var gtoetExists = function gtoetExists() {
+            // var gtoetExists = function() {
             //     exists = findBlockInPalette("% >= %");
             //     if (exists !== null) {
             //         exists = true;
@@ -635,7 +657,7 @@
             //     "Make sure you name your block exactly '% >= %'.");
 
             // //Make sure your block is a predicate: it returns true/false values.
-            // var predicate = function predicate() {
+            // var predicate = function() {
             //     var customBody = getCustomBody("% >= %");
             //     return ((customBlockContains("% >= %", "report %", ["true"]) && 
             //         customBlockContains("% >= %", "report %", ["false"])) || 
@@ -649,7 +671,7 @@
             //     "Make sure your block returns the true/false booleans!");
 
             // //Try using the "or" block in your solution!
-            // var usesOrNot = function usesOrNot() {
+            // var usesOrNot = function() {
             //     return customBlockContains("% >= %", "% or %") ||
             //             customBlockContains("% >= %", "not %");
             // }
@@ -670,7 +692,7 @@
             
             // //Make sure you name your block "integer? %"!
             // var exists;
-            // var integerExists = function integerExists() {
+            // var integerExists = function() {
             //     exists = findBlockInPalette("integer? %");
             //     if (exists !== null) {
             //         exists = true;
@@ -685,7 +707,7 @@
             //     "Make sure you name your block exactly 'integer? %'.");
 
             // //Make sure your block is a predicate: it returns true/false values.
-            // var predicate = function predicate() {
+            // var predicate = function() {
             //     var customBody = getCustomBody("integer? %");
             //     return ((customBlockContains("integer? %", "report %", ["true"]) && 
             //         customBlockContains("integer? %", "report %", ["false"])) || 
@@ -698,7 +720,7 @@
             //     "Make sure your block returns the true/false booleans!");
 
             // //Try using the "round" block or the "mod" block in your solution!
-            // var usesRoundMod = function usesRoundMod() {
+            // var usesRoundMod = function() {
             //     return (customBlockContains("integer? %", "round %") || 
             //             customBlockContains("integer? %", "% mod %"));
             // }
@@ -719,7 +741,7 @@
             
             // //Make sure you name your block "% between? % and %"!
             // var exists;
-            // var betweenExists = function betweenExists() {
+            // var betweenExists = function() {
             //     exists = findBlockInPalette("% between? % and %");
             //     if (exists !== null) {
             //         exists = true;
@@ -734,7 +756,7 @@
             //     "Make sure you name your block exactly '% between? % and %'.");
 
             // //Make sure your block is a predicate: it returns true/false values.
-            // var predicate = function predicate() {
+            // var predicate = function() {
             //     var customBody = getCustomBody("% between? % and %");
             //     return ((customBlockContains("% between? % and %", "report %", ["true"]) && 
             //         customBlockContains("% between? % and %", "report %", ["false"])) || 
@@ -747,7 +769,7 @@
             //     "Make sure your block returns the true/false booleans!");
 
             // //Try using the "and" block in your solution!
-            // var usesAnd = function usesAnd() {
+            // var usesAnd = function() {
             //     return customBlockContains("% between? % and %", "% and %");
             // }
             // testAssert(outputLog, usesAnd,
@@ -767,7 +789,7 @@
             
             // //Make sure you name your block "weekend? %"!
             // var exists;
-            // var weekendExists = function weekendExists() {
+            // var weekendExists = function() {
             //     exists = findBlockInPalette("weekend? %");
             //     if (exists !== null) {
             //         exists = true;
@@ -782,7 +804,7 @@
             //     "Make sure you name your block exactly 'weekend? %'.");
 
             // //Make sure your block is a predicate: it returns true/false values.
-            // var predicate = function predicate() {
+            // var predicate = function() {
             //     var customBody = getCustomBody("weekend? %");
             //     return ((customBlockContains("weekend? %", "report %", ["true"]) && 
             //         customBlockContains("weekend? %", "report %", ["false"])) || 
@@ -795,7 +817,7 @@
             //     "Make sure your block returns the true/false booleans!");
 
             // //Try using the "or" block in your solution!
-            // var usesOr = function usesOr() {
+            // var usesOr = function() {
             //     return customBlockContains("weekend? %", "% or %");
             // }
             // testAssert(outputLog, usesOr,
@@ -815,7 +837,7 @@
             
             // //Make sure you name your block "weekday? %"!
             // var exists;
-            // var weekdayExists = function weekdayExists() {
+            // var weekdayExists = function() {
             //     exists = findBlockInPalette("weekday? %");
             //     if (exists !== null) {
             //         exists = true;
@@ -830,7 +852,7 @@
             //     "Make sure you name your block exactly 'weekday? %'.");
 
             // //Make sure your block is a predicate: it returns true/false values.
-            // var predicate = function predicate() {
+            // var predicate = function() {
             //     var customBody = getCustomBody("weekday? %");
             //     return ((customBlockContains("weekday? %", "report %", ["true"]) && 
             //         customBlockContains("weekday? %", "report %", ["false"])) || 
@@ -843,7 +865,7 @@
             //     "Make sure your block returns the true/false booleans!");
 
             // //Try using the "weekend? %" block in your solution!
-            // var usesWeekend = function usesWeekend() {
+            // var usesWeekend = function() {
             //     return customBlockContains("weekday? %", "weekend? %");
             // }
             // testAssert(outputLog, usesWeekend,
@@ -865,7 +887,7 @@
             
             // //Make sure you name your block "Are any equal? % and % and %"!
             // var exists;
-            // var anyEqualExists = function anyEqualExists() {
+            // var anyEqualExists = function() {
             //     exists = findBlockInPalette("Are any equal? % and % and %");
             //     if (exists !== null) {
             //         exists = true;
@@ -880,7 +902,7 @@
             //     "Make sure you name your block exactly 'Are any equal? % and % and %'.");
 
             // //Make sure your block is a predicate: it returns true/false values.
-            // var predicate = function predicate() {
+            // var predicate = function() {
             //     var customBody = getCustomBody("Are any equal? % and % and %");
             //     return ((customBlockContains("Are any equal? % and % and %", "report %", ["true"]) && 
             //         customBlockContains("Are any equal? % and % and %", "report %", ["false"])) || 
@@ -893,7 +915,7 @@
             //     "Make sure your block returns the true/false booleans!");
 
             // //Try using the "% or %" block in your solution!
-            // var usesOr2 = function usesOr2() {
+            // var usesOr2 = function() {
             //     return customBlockContains("Are any equal? % and % and %", "% or %");
             // }
             // testAssert(outputLog, usesOr2,
