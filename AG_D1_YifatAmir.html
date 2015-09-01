@@ -931,16 +931,6 @@
             //     [-1, -1, -1, -1],
             //     [true, true, true, true]);
 
-            var moveInLoop = function() {
-                var moveSpec = "move %n steps";
-                var repeatSpec = "repeat %n %c";
-                return CBlockContainsInSprite(moveSpec, repeatSpec, 0);
-            }
-            testAssert(outputLog, moveInLoop,
-                "The 'move' block is within a loop.",
-                "N/A",
-                "Make sure your sprite will move continuously and randomly!");
-
             return outputLog;
         }
 
