@@ -58,7 +58,7 @@ function getAllScripts(blockSpec, spriteIndex) {
 function blockSpecMatch(targetBlockSpec, templateBlockSpec) {
 	var targetSplit = targetBlockSpec.split(" ");
 	var templateSplit = templateBlockSpec.split(" ");
-	var symbols = ["%s", "%n", "%b", "%c", "%p", "%txt", "%l", "%(ringified)"];
+	var symbols = ["%s", "%n", "%b", "%c", "%p", "%txt", "%l", "%(ringified)", "%upvar", "%cs", "%scriptVars"];
 	if (targetSplit.length !== templateSplit.length) {
 		return false;
 	}
@@ -423,7 +423,7 @@ function checkArgArrays(template, actual) {
 	if (Object.prototype.toString.call(actual) !== '[object Array]') {
 		return false;
 	}
-	if (template.length !== actual.length) {
+	if ((template.length > 0) && (template.length !== actual.length)) {
 		return false;
 	}
 	for (var i = 0; i < template.length; i++) {
