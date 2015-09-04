@@ -64,112 +64,85 @@
 
             /* Getting to Know the Snap! Interface */
 
-                /* Recreate the move/say/move/say script */
-                // var largeScriptExists = function largeScriptExists() {
+                // /* Recreate the move/say/move/say script */
+                // var largeScriptExists = function () {
                 //     return scriptPresentInSprite('[{"blockSp":"move %n steps","inputs":["20"]},{"blockSp":"say %s for %n secs","inputs":["Hello!","2"]},{"blockSp":"move %n steps","inputs":["20"]},{"blockSp":"say %s for %n secs","inputs":["You\'ve just made a script!","2"]}]');
                 // }
                 // testAssert(outputLog, largeScriptExists,
-                //     "The move/say/move/say script was found on the screen.",
-                //     "The move/say/move/say script was not found on the screen. Check your inputs.",
-                //     "Make sure you have all of the correct inputs and the blocks are in order for the move/say/move/say script.", 1);
+                //     "The move/say/move/say script was found on the screen!",
+                //     "N/A",
+                //     "Make sure you have all of the correct inputs and the blocks are in the correct order!", 1);
 
 
                 // /* Recreate the move/turn script */
-                // var smallScriptExists = function smallScriptExists() {
+                // var smallScriptExists = function () {
                 //     return scriptPresentInSprite('[{"blockSp":"move %n steps","inputs":["10"]},{"blockSp":"turn %clockwise %n degrees","inputs":["15"]}]');
                 // }
                 // testAssert(outputLog, smallScriptExists,
                 //     "The move/turn was found on the screen.",
-                //     "The move/turn was not found on the screen. Check your inputs.",
-                //     "Make sure you have all of the correct inputs and the blocks are in order for the move/turn script.", 1);
+                //     "N/A",
+                //     "Make sure you have all of the correct inputs and the blocks are in the correct order!", 1);
 
                 // /* Recreate pendown/repeat/move/turn */
-                // var firstScriptExists = function firstScriptExists() {
+                // var firstScriptExists = function () {
                 //     return scriptPresentInSprite('[{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["10",[{"blockSp":"move %n steps","inputs":["10"]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]]}]');
                 // }
                 // testAssert(outputLog, firstScriptExists,
                 //     "The penDown/repeat/move/turn block was found on the screen",
-                //     "The penDown/repeat/move/turn block was not found on the screen",
-                //     "Make sure you recreate the exact script on the screen.", 1);
+                //     "N/A",
+                //     "Make sure you recreate the exact script on the screen! Try looking at the exercise again for help!", 1);
 
-        /* Lab 2: Control Commands. */
+        // /* Lab 2: Control Commands. */
 
-            /* The Forever Block */
+            // /* The Forever Block */
 
-                /* Recreate provided forever script */
-                // var foreverBlock1 = function foreverBlock1() {
-                //     return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
-                // }
-                // testAssert(outputLog, foreverBlock1,
-                //     "The first forever script was found on the screen.",
-                //     "The first forever script was not found on the screen. Check your inputs.",
-                //     "Make sure you have all of the correct inputs and the blocks are in order for the first forever script script.");
+            //     /* Recreate provided forever script */
+            //     var foreverBlock1 = function () {
+            //         return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
+            //     }
+            //     testAssert(outputLog, foreverBlock1,
+            //         "The script with the for-loop that contains a 'point towards (mouse-pointer)' block and a 'move (1) step' block was found on the screen!",
+            //         "N/A",
+            //         "One of the scripts is still missing. Double check that the blocks are in the correct order! If you get stuck try also checking the inputs to your blocks and check out the exercise picture for more help!");
 
-                // var foreverBlock2 = function foreverBlock2() {
-                //     return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["mouse x","mouse y"]}]]}]');
-                // }
-                // testAssert(outputLog, foreverBlock2,
-                //     "The second forever script was found on the screen.",
-                //     "The second forever script was not found on the screen. Check your inputs.",
-                //     "Make sure you have all of the correct inputs and the blocks are in order for the second forever script script.");
+            //     var foreverBlock2 = function () {
+            //         return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["mouse x","mouse y"]}]]}]');
+            //     }
+            //     testAssert(outputLog, foreverBlock2,
+            //         "The script with a for-loop that contains a 'go to x:(mouse x) y:(mouse y)' block has been found on the screen!",
+            //         "N/A",
+            //         "One of the scripts is still missing. Double check that the blocks are in the correct order! If you get stuck try also checking the inputs to your blocks and check out the exercise picture for more help!");
 
-                // var foreverBlock3 = function foreverBlock3() {
-                //     return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["x position",{"blockSp":"%n + %n","inputs":["y position","30"]}]}]]}]');
-                // }
-                // testAssert(outputLog, foreverBlock3,
-                //     "The third forever script was found on the screen.",
-                //     "The third forever script was not found on the screen. Check your inputs.",
-                //     "Make sure you have all of the correct inputs and the blocks are in order for the third forever script script.");
-
-                /* Recreate 3 provided forever scripts */
-                // var foreverBlock4 = function foreverBlock4() {
-                //     return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
-                // }
-                // var foreverBlock5 = function foreverBlock5() {
-                //     return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
-                // }
-                // var foreverBlock6 = function foreverBlock6() {
-                //     return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
-                // }
-                // testAssert(outputLog, foreverBlock4,
-                //     "The pointtowardsMousePointer/move block was found",
-                //     "The pointtowardsMousePointer/move block was found",
-                //     "Make sure you match the script exactly.", 1)
+            //     var foreverBlock3 = function () {
+            //         return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["x position",{"blockSp":"%n + %n","inputs":["y position","30"]}]}]]}]');
+            //     }
+            //     testAssert(outputLog, foreverBlock3,
+            //         "The script with a for-loop that contains a 'go to x:(x-position) y:(y-position + 30)' block has been found on the screen!",
+            //         "N/A",
+            //         "One of the scripts is still missing. Double check that the blocks are in the correct order! If you get stuck try also checking the inputs to your blocks and check out the exercise picture for more help!");
 
 
-                // testAssert(outputLog, foreverBlock5,
-                //     "The pointtowardsMousePointer/move block was found",
-                //     "The pointtowardsMousePointer/move block was found",
-                //     "Make sure you match the script exactly.", 1)
-
-
-                // testAssert(outputLog, foreverBlock6,
-                //     "The pointtowardsMousePointer/move block was found",
-                //     "The pointtowardsMousePointer/move block was found",
-                //     "Make sure you match the script exactly.", 1)
-
-
-        /* Lab 3: Repeat Commands. */
+        // /* Lab 3: Repeat Commands. */
 
             /* The For Block */
 
-                /* Recreate exact squirrel script */
-                // var squirrelTest = function squirrelTest() {
+                // /* Recreate exact squirrel script */
+                // var squirrelTest = function () {
                 //     return scriptPresentInSprite('[{"blockSp":"pen down","inputs":[]},{"blockSp":"for %upvar = %n to %n %cs","inputs":["1","100",[{"blockSp":"move %n steps","inputs":[{"blockSp":"%n × %n","inputs":["2","length"]}]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]]}]');
                 // }
                 // testAssert(outputLog, squirrelTest,
-                //     "The squirrel script was found on the screen.",
-                //     "The squirrel script was not found on the screen. Try checking your inputs and variable names",
-                //     "Try making sure all of the correct blocks and inputs are in order.");
+                //     "The squiral script was found on the screen.",
+                //     "N/A.",
+                //     "Double check the image from the exercise to make sure it matches exactly! Make sure the inputs are correct and also make sure the blocks are in the exact order as well!");
 
 
-        /* Lab 4: Making your own blocks. */
+        // /* Lab 4: Making your own blocks. */
 
             /* Making a custom block */
 
-                /* Create 'draw square' command motion */
+                // /* Create 'draw square' command motion */
                 // var sqExists;
-                // var squareExists = function squareExists() {
+                // var squareExists = function () {
                 //     var exists = findBlockInPalette("draw square");
                 //     if (exists !== null) {
                 //         sqExists = true;
@@ -180,7 +153,7 @@
                 // }
                 // testAssert(outputLog, squareExists,
                 //     "There is an 'draw square' block.",
-                //     "There is no 'draw square' block.",
+                //     "N/A",
                 //     "Make sure you name your block exactly 'draw square'.");
 
                 // if (!sqExists) {
@@ -188,64 +161,64 @@
                 // }
 
                 // var realSquareBody = getCustomBody("draw square");
-                // var containsRepeat = function containsRepeat() {
+                // var containsRepeat = function () {
                 //     return scriptContainsBlock(realSquareBody, "repeat % %");
                 // }
-                // var containsCorrectRepeat = function containsCorrectRepeat() {
+                // var containsCorrectRepeat = function () {
                 //     return scriptContainsBlock(realSquareBody, "repeat % %", ["4", []], true);
                 // }
-                // var containsMove = function containsMove() {
+                // var containsMove = function () {
                 //     return simpleCBlockContains(realSquareBody, "move % steps", "repeat");
                 // }
-                // var containsTurn = function containsTurn() {
+                // var containsTurn = function () {
                 //     return simpleCBlockContains(realSquareBody, "turn %counterclockwise % degrees", "repeat")
                 //         || simpleCBlockContains(realSquareBody, "turn %clockwise % degrees", "repeat");
                 // }
-                // var containsCorrectTurn = function containsCorrectTurn() {
+                // var containsCorrectTurn = function () {
                 //     return simpleCBlockContains(realSquareBody, "turn %counterclockwise % degrees", "repeat", ["90"])
                 //         || simpleCBlockContains(realSquareBody, "turn %clockwise % degrees", "repeat", ["90"]);
                 // }
-                // var penDownPresent = function penDownPresent() {
+                // var penDownPresent = function () {
                 //     return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw square", "pen down")) || blockPrecedes("pen down", "repeat % %", realSquareBody);
                 // }
 
                 // testAssert(outputLog, squareExists,
                 //     "The 'draw square' block was found in the pallette.",
-                //     "The 'draw square' block was not found in the pallette.",
+                //     "N/A",
                 //     "Please create the 'draw square %' block.")
                 // testAssert(outputLog, containsRepeat,
                 //     "The 'repeat' block is found inside 'draw square'.",
-                //     "The 'repeat' block is not found inside 'draw square'.",
-                //     "Make sure you use a repeat inside of 'draw square'");
+                //     "N/A",
+                //     "One approach is to try placing a repeat block inside of the definition. Hopefully that helps!");
 
                 // testAssert(outputLog, containsCorrectRepeat,
                 //     "The 'repeat' block has a counter of 4.",
-                //     "The 'repeat' block does not have the correct counter.",
-                //     "How many times should we repeat to draw a square?");
+                //     "N/A",
+                //     "If you're having trouble about what to put into the input for the repeat, try thinking about how many times we would the command blocks to repeat so we can get a square!");
 
                 // testAssert(outputLog, containsMove,
                 //     "The 'draw square' block contains move inside of the repeat loop.",
-                //     "The 'draw square' block is missing a move block.",
-                //     "What blocks helps move the sprite?");
+                //     "N/A",
+                //     "If your sprite is not moving across the stage, what block can we use to do that? Hint: the block is in the blue tab");
 
                 // testAssert(outputLog, containsTurn,
                 //     "The 'draw square' block contains a turn block.",
-                //     "The 'draw square' block is missing a turn block",
-                //     "Try turn clockwise or counterclockwise block");
+                //     "N/A",
+                //     "If your sprite is only going striaght, we need to fix that. How can we redirect the spite's direction? Hint: the block is in the blue tab!");
 
                 // testAssert(outputLog, containsCorrectTurn,
                 //     "The 'draw square' block contains turn block with 90 degrees.",
-                //     "The 'draw square' block needs a turn block with correct inputs.",
-                //     "Try using a turn block, how many degrees should we turn?");
+                //     "N/A",
+                //     "If your sprite is turning at weird angles, think of the internal angles of a square. That is how much we need to turn by.");
 
                 // testAssert(outputLog, penDownPresent,
                 //     "The 'draw square' block contains the 'pen down' block.",
-                //     "The 'draw square' block is not drawing anything. What block draws things? Try placing it in a different place.",
-                //     "Try using blocks to draw things inside of the 'draw square'");
+                //     "N/A",
+                //     "If the sprite is not drawing anything, it could be because we are missing a certain block. Hint: in the teal pen tab!");
 
-                /* Create 'draw triangle' command block */
+                // /* Create 'draw triangle' command block */
                 // var triExists;
-                // var triangleExists = function triangleExists() {
+                // var triangleExists = function () {
                 //     var exists = findBlockInPalette("draw triangle");
                 //     if (exists !== null) {
                 //         triExists = true;
@@ -256,75 +229,75 @@
                 // }
                 // testAssert(outputLog, triangleExists,
                 //     "There is an 'draw triangle' block.",
-                //     "There is no 'draw triangle' block.",
+                //     "N/A",
                 //     "Make sure you name your block exactly 'draw triangle'.");
 
                 // if (!triExists) {
                 //     return outputLog;
                 // }
                 // var realTriangleBody = getCustomBody("draw triangle");
-                // var trianglePresent = function trianglePresent() {
+                // var trianglePresent = function () {
                 //     return spriteContainsBlock("draw triangle");
                 // }
-                // var containsRepeat = function containsRepeat() {
+                // var containsRepeat = function () {
                 //     return scriptContainsBlock(realTriangleBody, "repeat % %");
                 // }
-                // var containsCorrectRepeat = function containsCorrectRepeat() {
+                // var containsCorrectRepeat = function () {
                 //     return scriptContainsBlock(realTriangleBody, "repeat % %", ["3", []], true);
                 // }
-                // var containsMove = function containsMove() {
+                // var containsMove = function () {
                 //     return simpleCBlockContains(realTriangleBody, "move % steps", "repeat");
                 // }
-                // var containsTurn = function containsTurn() {
+                // var containsTurn = function () {
                 //     return simpleCBlockContains(realTriangleBody, "turn %counterclockwise % degrees", "repeat")
                 //         || simpleCBlockContains(realTriangleBody, "turn %clockwise % degrees", "repeat");
                 // }
-                // var containsCorrectTurn = function containsCorrectTurn() {
+                // var containsCorrectTurn = function () {
                 //     return simpleCBlockContains(realTriangleBody, "turn %counterclockwise % degrees", "repeat", ["120"])
                 //         || simpleCBlockContains(realTriangleBody, "turn %clockwise % degrees", "repeat", ["120"]);
                 // }
-                // var penDownPresent = function penDownPresent() {
+                // var penDownPresent = function () {
                 //     return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw triangle", "pen down")) || blockPrecedes("pen down", "repeat % %", realTriangleBody);
                 // }
 
                 // testAssert(outputLog, trianglePresent,
-                //     "The 'draw triangle' block is found.",
-                //     "The 'draw triangle' block cannot be found.",
-                //     "Make sure you name the block 'draw triangle'");
+                //     "The 'draw triangle' block was found in the pallette.",
+                //     "N/A",
+                //     "Please create the 'draw triangle' block.")
 
                 // testAssert(outputLog, containsRepeat,
                 //     "The 'repeat' block is found inside 'draw triangle'.",
-                //     "The 'repeat' block is not found inside 'draw triangle'.",
-                //     "Make sure you use a repeat inside of 'draw triangle'");
+                //     "N/A",
+                //     "If you're getting stuck, try using a repeat block!");
 
                 // testAssert(outputLog, containsCorrectRepeat,
                 //     "The 'repeat' block has a counter of 3.",
-                //     "The 'repeat' block does not have the correct counter.",
-                //     "How many times should we repeat to draw a triangle?");
+                //     "N/A",
+                //     "If we want to repeat the commands inside of a repeat, how many times should we do so for a triangle to be created?");
 
                 // testAssert(outputLog, containsMove,
                 //     "The 'draw triangle' block contains move inside of the repeat loop.",
-                //     "The 'draw triangle' block is missing a move block.",
-                //     "What blocks helps move the sprite?");
+                //     "N/A",
+                //     "We need to sprite to move, how can we do so? Hint: the blue tab!");
 
                 // testAssert(outputLog, containsTurn,
                 //     "The 'draw triangle' block contains a turn block.",
-                //     "The 'draw triangle' block is missing a turn block",
-                //     "Try turn clockwise or counterclockwise block");
+                //     "N/A",
+                //     "If the sprite isn't changing directions, we need to fix that. Look in the blue tab for a helpful block!");
 
                 // testAssert(outputLog, containsCorrectTurn,
                 //     "The 'draw triangle' block contains turn block with 120 degrees.",
-                //     "The 'draw triangle' block needs a turn block with correct inputs.",
-                //     "Try using a turn block, how many degrees should we turn?");
+                //     "N/A",
+                //     "When turning, how much do we need to turn? Try drawing out a triangle and think about the turning degree. ");
 
                 // testAssert(outputLog, penDownPresent,
                 //     "The 'draw triangle' block contains the 'pen down' block.",
-                //     "The 'draw triangle' block is not drawing anything. What block draws things? Try placing it in a different place.",
-                //     "Try using blocks to draw things inside of the 'draw triangle'");
+                //     "N/A",
+                //     "If the sprite is not drawing anything, it could be because we are missing a certain block. Hint: in the teal pen tab!");
 
-                /* Create 'draw house' command block */
+                // /* Create 'draw house' command block */
                 // var houseExists;
-                // var drawHouseExists = function drawHouseExists() {
+                // var drawHouseExists = function () {
                 //     var housefound = findBlockInPalette("draw house");
                 //     if (housefound !== null) {
                 //         houseExists = true;
@@ -335,46 +308,46 @@
                 // }
                 // testAssert(outputLog, drawHouseExists,
                 //     "There is an 'draw house' block.",
-                //     "There is no 'draw house' block.",
+                //     "N/A",
                 //     "Make sure you name your block exactly 'draw house'.");
 
                 // if (!houseExists) {
                 //     return outputLog;
                 // }
                 // var realHouseBody = getCustomBody("draw house");
-                // var housePresent = function housePresent() {
+                // var housePresent = function () {
                 //     return spriteContainsBlock("draw house");
                 // }
-                // var trianglePresent = function trianglePresent() {
+                // var trianglePresent = function () {
                 //     return  occurancesOfBlockSpec("draw triangle", realHouseBody) === 1;
                 // }
-                // var squarePresent = function squarePresent() {
+                // var squarePresent = function () {
                 //     return occurancesOfBlockSpec("draw square", realHouseBody) === 1;
                 // }
-                // var penDownPresent = function penDownPresent() {
+                // var penDownPresent = function () {
                 //     return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw house", "pen down")) || ((blockPrecedes("pen down", "draw square", realHouseBody)) && (blockPrecedes("pen down", "draw triangle", realHouseBody)));
                 // }
 
                 // testAssert(outputLog, trianglePresent,
                 //     "The 'draw house' block contains the 'draw triangle' block.",
-                //     "The 'draw house' is missing the roof. Try using blocks you have previously made.",
-                //     "Try using previously made blocks inside the body of 'draw house");
+                //     "N/A",
+                //     "Try using previously made blocks inside the body of 'draw house' to draw the roof!");
 
                 // testAssert(outputLog, squarePresent,
                 //     "The 'draw house' block contains the 'draw square' block.",
-                //     "The 'draw house' is missing the walls. Try using blocks you have previously made.",
-                //     "Try using previously made blocks inside the body of 'draw house");
+                //     "N/A",
+                //     "Try using previously made blocks inside the body of 'draw house' to draw the rest of the house!");
 
                 // testAssert(outputLog, penDownPresent,
                 //     "The 'draw house' block contains the 'pen down' block.",
-                //     "The 'draw house' block is not drawing anything. What block draws things?",
-                //     "Try using blocks to draw things inside of the 'draw house'");
+                //     "N/A",
+                //     "If the sprite is not drawing anything, it could be because we are missing a certain block. Hint: in the teal pen tab!");
 
-            /* Composition of Blocks */
+            // /* Composition of Blocks */
 
-                /* Create "draw square-petal flower with % petals of size %" motion command block */
+                // /* Create "draw square-petal flower with % petals of size %" motion command block */
                 // var flowerExists;
-                // var drawFlowerExists = function drawFlowerExists() {
+                // var drawFlowerExists = function () {
                 //     var flowerFound = findBlockInPalette("draw house");
                 //     if (flowerFound !== null) {
                 //         flowerExists = true;
@@ -385,7 +358,7 @@
                 // }
                 // testAssert(outputLog, drawFlowerExists,
                 //     "There is a 'draw square-petal flower with % petals of size %' block.",
-                //     "There is no 'draw square-petal flower with % petals of size %' block.",
+                //     "N/A",
                 //     "Make sure you name your block exactly 'draw square-petal flower with % petals of size %'.");
 
                 // if (!flowerExists) {
@@ -393,70 +366,69 @@
                 // }
                 // var realFlowerBody = getCustomBody("draw square-petal flower with % petals of size %");
                 // var realFlowerParameters = JSONcustomBlock(findBlockInPalette("draw square-petal flower with % petals of size %")).variables;
-                // var containsRepeat = function containsRepeat() {
+                // var containsRepeat = function () {
                 //     return scriptContainsBlock(realFlowerBody, "repeat % %");
                 // }
-                // var containsCorrectRepeat = function containsCorrectRepeat() {
+                // var containsCorrectRepeat = function () {
                 //     return scriptContainsBlock(realFlowerBody, "repeat % %", [realFlowerParameters[0], []], true);
                 // }
-                // var containsDrawSquare = function containsDrawSquare() {
+                // var containsDrawSquare = function () {
                 //     return simpleCBlockContains(realFlowerBody, "draw square %", "repeat");
                 // }
-                // var containsCorrectDrawSquare = function containsCorrectDrawSquare() {
+                // var containsCorrectDrawSquare = function () {
                 //     return simpleCBlockContains(realFlowerBody, "draw square %", "repeat", [realFlowerParameters[1]]);
                 // }
-                // var containsTurn = function containsTurn() {
+                // var containsTurn = function () {
                 //     return simpleCBlockContains(realFlowerBody, "turn %counterclockwise % degrees", "repeat")
                 //         || simpleCBlockContains(realFlowerBody, "turn %clockwise % degrees", "repeat");
                 // }
-                // var containsCorrectTurn = function containsCorrectTurn() {
+                // var containsCorrectTurn = function () {
                 //     var turnDegree = (360 / parseInt(realFlowerParameters[0])).toString();
                 //     console.log(turnDegree);
                 //     return simpleCBlockContains(realFlowerBody, "turn %counterclockwise % degrees", "repeat", [turnDegree])
                 //         || simpleCBlockContains(realFlowerBody, "turn %clockwise % degrees", "repeat", [{"blockSp":"%n / %n","inputs":["360","numPetals"]}]);
                 // }
-                // var penDownPresent = function penDownPresent() {
+                // var penDownPresent = function () {
                 //     return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw square-petal flower with % petals of size %", "pen down")) || (blockPrecedes("pen down", "repeat % %", realFlowerBody));
                 // }
 
                 // testAssert(outputLog, containsRepeat,
                 //     "The 'repeat' block is found inside 'draw square-petal flower with % petals of size %'.",
-                //     "The 'repeat' block is not found inside 'draw square-petal flower with % petals of size %'.",
-                //     "Make sure you use a repeat inside of 'draw square-petal flower with % petals of size %'");
+                //     "N/A",
+                //     "If you are stuck try using a repeat inside of 'draw square-petal flower with % petals of size %'");
 
                 // testAssert(outputLog, containsCorrectRepeat,
                 //     "The 'repeat' block has a counter of the number of petals.",
-                //     "The 'repeat' block does not have the correct counter. Think about the number of petals.",
+                //     "N/A",
                 //     "How many times should we repeat to draw a flower?");
 
                 // testAssert(outputLog, containsDrawSquare,
                 //     "The 'draw square-petal flower with % petals of size %' block contains 'draw square %' inside of the repeat loop.",
-                //     "The 'draw square-petal flower with % petals of size %' block is not drawing square petals.",
+                //     "N/A",
                 //     "What blocks helps move the sprite?");
 
                 // testAssert(outputLog, containsCorrectDrawSquare,
                 //     "The 'draw square-petal flower with % petals of size %' block contains the correct 'draw square %' inside of the repeat loop.",
-                //     "The 'draw square-petal flower with % petals of size %' block is missing a correct 'draw square %' block.",
+                //     "N/A",
                 //     "How big are the petals supposed to be supposed to be?");
 
                 // testAssert(outputLog, containsTurn,
                 //     "The 'draw square-petal flower with % petals of size %' block contains a turn block.",
-                //     "The 'draw square-petal flower with % petals of size %' block is missing a turn block",
-                //     "Try turn clockwise or counterclockwise block");
+                //     "N/A",
+                //     "We need to redirect the sprite's motion. How can we do this? Hint: the blue motion tab!");
 
                 // testAssert(outputLog, containsCorrectTurn,
                 //     "The 'draw square-petal flower with % petals of size %' block contains turn block with 360/numberOfPetals degrees.",
-                //     "The 'draw square-petal flower with % petals of size %' block needs a turn block with correct inputs.",
+                //     "N/A",
                 //     "Try using a turn block, how many degrees should we turn?");
 
                 // testAssert(outputLog, penDownPresent,
                 //     "The 'draw triangle' block contains the 'pen down' block.",
-                //     "The 'draw triangle' block is not drawing anything. What block draws things?",
-                //     "Try using blocks to draw things inside of the 'draw triangle'");
+                //     "N/A",
+                //     "If the sprite isn't drawing anything, try looking in the teal pen tab!");
 
 
-                /* Draw triangle, pentagon, hexagon, octagon scripts (The Polygons)*/
-                //Begin triangle
+                // /* Draw triangle, pentagon, hexagon, octagon scripts (The Polygons)*/
                 // var repeatSpec = "repeat % %";
                 // var turnClockwiseSpec = "turn %clockwise % degrees";
                 // var turnCounterClockwiseSpec = "turn %counterclockwise % degrees";
@@ -476,19 +448,19 @@
 
                 // //Begin triangle
                 // var trianglePresent = false;
-                // var triangleHasCorrectRepeat = function triangleHasCorrectRepeat() {
+                // var triangleHasCorrectRepeat = function () {
                 //     var result = spriteContainsBlock("repeat % %", 0, triangleRepeatInputs, true);
                 //     if (result) {
                 //         trianglePresent = true;
                 //     }
                 //     return result;
                 // }
-                // var triangleHasTurn = function triangleHasTurn() {
+                // var triangleHasTurn = function () {
                 //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, emptyInputs, triangleRepeatInputs);
                 //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, emptyInputs, triangleRepeatInputs);
                 //     return withClockwise || withCounterClockwise;
                 // }
-                // var triangleHasCorrectTurn = function triangleHasCorrectTurn() {
+                // var triangleHasCorrectTurn = function () {
                 //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, triangleTurnInputs, triangleRepeatInputs);
                 //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, triangleTurnInputs, triangleRepeatInputs);
                 //     return withClockwise || withCounterClockwise;
@@ -496,34 +468,34 @@
 
                 // testAssert(outputLog, triangleHasCorrectRepeat,
                 //     "The script for the triangle has the correct counter 3 for the repeat loop",
-                //     "The script for the triangle does not have the correct counter for the repeat loop. How many times should we repeat the commands that occur within the repeat loop?",
+                //     "N/A",
                 //     "Try thinking about how we can use the repeat loop. How many times should the commands in the body of the repeat block be repeated?");
                 // if (trianglePresent) {
                 //     testAssert(outputLog, triangleHasTurn,
                 //     "The script for drawing a triangle has a turn block.",
-                //     "The script for drawing a triangle is not changing direction, how can we fix this?",
+                //     "N/A",
                 //     "Which block can we use to help the sprite change direction?");
                 // testAssert(outputLog, triangleHasCorrectTurn,
                 //     "The script for drawing a triangle has the correct turn of 120 degrees",
-                //     "The script for drawing a triangle has incorrect turning radius. How much do we need to turn by for each turn?",
+                //     "N/A",
                 //     "Try thinking about the internal angles of a triangle. How much do we need to turn? How many times should we do this?");
                 // }
 
                 // //Begin Pentagon
                 // var pentagonPresent = false;
-                // var pentagonHasCorrectRepeat = function pentagonHasCorrectRepeat() {
+                // var pentagonHasCorrectRepeat = function () {
                 //     var result = spriteContainsBlock("repeat % %", 0, pentagonRepeatInputs, true);
                 //     if (result) {
                 //         pentagonPresent = true;
                 //     }
                 //     return result;
                 // }
-                // var pentagonHasTurn = function pentagonHasTurn() {
+                // var pentagonHasTurn = function () {
                 //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, emptyInputs, pentagonRepeatInputs);
                 //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, emptyInputs, pentagonRepeatInputs);
                 //     return withClockwise || withCounterClockwise;
                 // }
-                // var pentagonHasCorrectTurn = function pentagonHasCorrectTurn() {
+                // var pentagonHasCorrectTurn = function () {
                 //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, pentagonTurnInputs, pentagonRepeatInputs);
                 //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, pentagonTurnInputs, pentagonRepeatInputs);
                 //     return withClockwise || withCounterClockwise;
@@ -546,19 +518,19 @@
 
                 // //Begin hexagon
                 // var hexagonPresent = false;
-                // var hexagonHasCorrectRepeat = function hexagonHasCorrectRepeat() {
+                // var hexagonHasCorrectRepeat = function () {
                 //     var result = spriteContainsBlock("repeat % %", 0, hexagonRepeatInputs, true);
                 //     if (result) {
                 //         hexagonPresent = true;
                 //     }
                 //     return result;
                 // }
-                // var hexagonHasTurn = function hexagonHasTurn() {
+                // var hexagonHasTurn = function () {
                 //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, emptyInputs, hexagonRepeatInputs);
                 //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, emptyInputs, hexagonRepeatInputs);
                 //     return withClockwise || withCounterClockwise;
                 // }
-                // var hexagonHasCorrectTurn = function hexagonHasCorrectTurn() {
+                // var hexagonHasCorrectTurn = function () {
                 //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, hexagonTurnInputs, hexagonRepeatInputs);
                 //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, hexagonTurnInputs, hexagonRepeatInputs);
                 //     return withClockwise || withCounterClockwise;
@@ -581,19 +553,19 @@
 
                 // //Begin octagon
                 // var octagonPresent = false;
-                // var octagonHasCorrectRepeat = function octagonHasCorrectRepeat() {
+                // var octagonHasCorrectRepeat = function () {
                 //     var result = spriteContainsBlock("repeat % %", 0, octagonRepeatInputs, true);
                 //     if (result) {
                 //         octagonPresent = true;
                 //     }
                 //     return result;
                 // }
-                // var octagonHasTurn = function octagonHasTurn() {
+                // var octagonHasTurn = function () {
                 //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, emptyInputs, octagonRepeatInputs);
                 //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, emptyInputs, octagonRepeatInputs);
                 //     return withClockwise || withCounterClockwise;
                 // }
-                // var octagonHasCorrectTurn = function octagonHasCorrectTurn() {
+                // var octagonHasCorrectTurn = function () {
                 //     var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, octagonTurnInputs, octagonRepeatInputs);
                 //     var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, octagonTurnInputs, octagonRepeatInputs);
                 //     return withClockwise || withCounterClockwise;
@@ -616,25 +588,46 @@
                 // }
 
 
-        /* BEGIN UNIT 2 STUFF */
-            //Tests for 'vowel? %letter' predicate block
+        // /* BEGIN UNIT 2 STUFF */
+            // /*Tests for 'vowel? %letter' predicate block*/
+            // var vowelExists = function () {
+            //     var vowelFound = findBlockInPalette("vowel? %");
+            //     if (vowelFound !== null) {
+            //         return true;
+            //     }
+            //     return false;
+            // }
+
+            // var hasIfStatements = function () {
+            //     return customBlockContains("vowel? %", "if % %", [], 0, true);
+            // }
+
+            // testAssert(outputLog, vowelExists,
+            //     "There is a 'vowel? %' block.",
+            //     "N/A",
+            //     "Make sure you create and name your block exactly 'vowel? %'.");
+            // testAssert(outputLog, hasIfStatements,
+            //     "There is a 'if % %' block in the definition.",
+            //     "N/A",
+            //     "Try using one of the conditional blocks in the yellow control tab to handle the vowels! What do we need to do about the consonants?");
+
             // multiTestBlock(outputLog, 'vowel? %',
             //     [["p"], ["a"], ["e"], ["i"], ["o"], ["u"], ["y"], ["f"]], //inputs
             //     [false, true, true, true, true, true, false, false], //expected outputs
             //     [-1, -1, -1, -1, -1, -1, -1, -1], //timeouts
             //     [true, true, true, true, true, true, true, true]); //Boolean stuff
 
-            /* Line 50 (recreate forever and repeat until scripts) test in excel doc */
-            // var foreverScriptPresent = function foreverScriptPresent() {
+            // /* Line 50 (recreate forever and repeat until scripts) test in excel doc */
+            // var foreverScriptPresent = function () {
             //     return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"if %b %c else %c","inputs":[{"blockSp":"%s = %s","inputs":[{"blockSp":"%n mod %n","inputs":["direction","60"]},"0"]},[{"blockSp":"set pen size to %n","inputs":["5"]}],[{"blockSp":"set pen size to %n","inputs":["1"]}]]},{"blockSp":"move %n steps","inputs":["1"]},{"blockSp":"turn %clockwise %n degrees","inputs":["1"]}]]}]');
             // }
 
             // testAssert(outputLog, foreverScriptPresent,
             //     "The forever script was found.",
             //     "The forever script was not found. Look at the lab exercise for more guidance.",
-            //     "Look at the diagram given to recreate the exact script.");
+            //     "Please try to match the script exactly as shown in the exercise.");
 
-            // var repeatUntilScriptPresent = function repeatUntilScriptPresent() {
+            // var repeatUntilScriptPresent = function () {
             //     return scriptPresentInSprite('[{"blockSp":"repeat until %b %c","inputs":[{"blockSp":"%s > %s","inputs":["direction","180"]},[{"blockSp":"if %b %c else %c","inputs":[{"blockSp":"%s = %s","inputs":[{"blockSp":"%n mod %n","inputs":["direction","45"]},"0"]},[{"blockSp":"set pen color to %clr","inputs":[]},{"blockSp":"set pen size to %n","inputs":["5"]}],[{"blockSp":"set pen color to %clr","inputs":[]},{"blockSp":"set pen size to %n","inputs":["1"]}]]},{"blockSp":"move %n steps","inputs":["1"]},{"blockSp":"turn %clockwise %n degrees","inputs":["1"]}]]},{"blockSp":"repeat until %b %c","inputs":[{"blockSp":"%s = %s","inputs":["direction","0"]},[{"blockSp":"move %n steps","inputs":["1"]},{"blockSp":"turn %clockwise %n degrees","inputs":["1"]}]]}]');
             // }
 
@@ -643,29 +636,54 @@
             //     "The repeat until script was not found. Please try to match the script exactly as shown in the exercise.",
             //     "Please try to match the script exactly as shown in the exercise.");
 
-            /* Line 61 recreate random polygon drawer */
-            // var randomPolygonPresent = function randomPolygonPresent() {
+            // /* Line 61 recreate random polygon drawer */
+            // var randomPolygonPresent = function () {
             //     return scriptPresentInSprite('[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"script variables %scriptVars","inputs":[]},{"blockSp":"set %var to %s","inputs":["sides",{"blockSp":"pick random %n to %n","inputs":["3","10"]}]},{"blockSp":"clear","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["sides",[{"blockSp":"move %n steps","inputs":["50"]},{"blockSp":"turn %clockwise %n degrees","inputs":[{"blockSp":"%n / %n","inputs":["360","sides"]}]}]]}]');
             // }
 
             // testAssert(outputLog, randomPolygonPresent,
             //     "The random polygon script is present.",
-            //     "The random polygon script is not found on the screen. Look at the exercise image to recreate the exact script.",
-            //     "Look at the exercise image to recreate the exact script.");
+            //     "N/A",
+            //     "Please look at the exercise image to recreate the exact script.");
 
             /* Line 67 create the number-of-divisors */
-            //Number-of-divisors: Make sure you create and name your block exactly 'number-of-divisors %'.
-            // var numberOfDivisorsExists = function numberOfDivisorsExists() {
+            // //Number-of-divisors: Make sure you create and name your block exactly 'number-of-divisors %'.
+            // var funcBody = getCustomBody("number-of-divisors %");
+            // var numberOfDivisorsExists = function () {
             //     var numberOfDivisorsFound = findBlockInPalette("number-of-divisors %");
             //     if (numberOfDivisorsFound !== null) {
             //         return true;
             //     }
             //     return false;
             // }
+
+            // var containsForLoop = function () {
+            //     return scriptContainsBlock(funcBody, "for % = % to % %");
+            // }
+            // var containsMod = function () {
+            //     return scriptContainsBlock(funcBody, "% mod %");
+            // }
+            // var containsScriptVars = function () {
+            //     return scriptContainsBlock(funcBody, "script variables %");
+            // }
+
+
             // testAssert(outputLog, numberOfDivisorsExists,
             //     "There is a 'number-of-divisors %' block.",
             //     "N/A",
             //     "Make sure you create and name your block exactly 'number-of-divisors %'.");
+            // testAssert(outputLog, containsForLoop,
+            //     "There is a for-loop inside the definition.",
+            //     "N/A",
+            //     "If you are stuck on trying to figure out how to check every value, try a for-loop!");
+            // testAssert(outputLog, containsMod,
+            //     "There is a mod block inside the definition.",
+            //     "N/A",
+            //     "If you are stuck on trying to figure out how to check if a given number divides your input, try using the mod block!");
+            // testAssert(outputLog, containsScriptVars,
+            //     "There is a script variables block inside the definition.",
+            //     "N/A",
+            //     "If you are stuck on trying to figure out how to keep a running count of how the total number of divisors, try using a script variable!");
 
             // // Number-of-divisors: Make sure your function works for positive numbers!
             // multiTestBlock(outputLog, 'number-of-divisors %',
@@ -674,38 +692,54 @@
             //     [-1, -1, -1],
             //     [true, true, true]);
 
-            /* Line 68 create the 'digital sum' block */
-            //Digital sum: make sure create and name your block exactly 'digital sum %'
-            // var digitalSumExists = function digitalSumExists() {
+            // /* Line 68 create the 'digital sum' block */
+            // //Digital sum: make sure create and name your block exactly 'digital sum %'
+            // var funcBody = getCustomBody("digital sum %");
+            // var digitalSumExists = function () {
             //     var digitalSumFound = findBlockInPalette("digital sum %");
             //     if (digitalSumFound !== null) {
             //         return true;
             //     }
             //     return false;
             // }
+            // var containsForLoop = function () {
+            //     return scriptContainsBlock(funcBody, "for % = % to % %");
+            // }
+            // var containsScriptVars = function () {
+            //     return scriptContainsBlock(funcBody, "script variables %");
+            // }
             // testAssert(outputLog, digitalSumExists,
             //     "There is a 'digital sum %' block.",
             //     "N/A",
             //     "Make sure you create and name your block exactly 'digital sum %'.");
+            // testAssert(outputLog, containsForLoop,
+            //     "There is a for-loop inside the definition.",
+            //     "N/A",
+            //     "If you are stuck on trying to figure out how to iterate through every digit, try a for-loop!");
+            // testAssert(outputLog, containsScriptVars,
+            //     "There is a script variables block inside the definition.",
+            //     "N/A",
+            //     "If you are stuck on trying to figure out how to keep a running count of the total digital sum, try using a script variable!");
 
-            // //Digital sum: Make sure your function works for positive numbers!
             // multiTestBlock(outputLog, 'digital sum %',
-            //     [[888], [464], [10000302]],
-            //     [24, 14, 6],
+            //     [[55], [123], [1003]],
+            //     [10, 6, 4],
             //     [-1, -1, -1],
             //     [true, true, true]);
 
-            /* Line 69 create the 'multiples of 7 algorithm' block */
-            //Digital sum: make sure create and name your block exactly 'digital sum %'
-            // var multiplesOf7Exists = function multiplesOf7Exists() {
+            
+
+            // /* Line 69 create the 'multiples of 7 algorithm' block */
+            // //multiples of 7 algorithm: make sure create and name your block exactly 'multiples of 7 algorithm %'
+            // var multiplesOf7Exists = function () {
             //     var multiplesOf7Found = findBlockInPalette("multiples of 7 algorithm %");
             //     if (multiplesOf7Found !== null) {
             //         return true;
             //     }
             //     return false;
             // }
-            // var notContainsModBlock = function notContainsModBlock() {
-            //     var multiplesOf7Body = getCustomBody('multiples of 7 algorithm %');
+            // var multiplesOf7Body = getCustomBody('multiples of 7 algorithm %');
+            // var notContainsModBlock = function () {
             //     if (multiplesOf7Body === undefined) {
             //         return false;
             //     }
@@ -714,6 +748,9 @@
             //         return false;
             //     }
             //     return true;
+            // }
+            // var containsScriptVars = function () {
+            //     return scriptContainsBlock(multiplesOf7Body, "script variables %");
             // }
 
             // testAssert(outputLog, multiplesOf7Exists,
@@ -725,31 +762,111 @@
             //     "There is a not '% mod %' block inside the definition of 'multiples of 7 algorithm %'.",
             //     "N/A",
             //     "Try making the function without using a '% mod %' block. A repeat-until block sounds like it could work. Also look at the blocks on the screen in the exercise that we suggest.");
+            // testAssert(outputLog, containsScriptVars,
+            //     "There is a script variables block inside the definition.",
+            //     "N/A",
+            //     "If you are stuck on trying to figure out how to keep track of the digits, try using script variables!");
 
-
-            // //Digital sum: Make sure your function works for numbers greater than 21!
+            // //Make sure your function works for numbers greater than 21!
             // multiTestBlock(outputLog, 'multiples of 7 algorithm %',
             //     [[501298], [28], [23], [35]],
             //     [-14, -14, -4, -7],
             //     [-1, -1, -1, -1],
             //     [true, true, true, true]);
 
-            // //Digital sum: Make sure your function works for 21!
+            // //multiples of 7 algorithm: Make sure your function works for 21!
             // multiTestBlock(outputLog, 'multiples of 7 algorithm %',
             //     [[21]],
             //     [0],
             //     [-1],
             //     [true]);
 
-            // //Digital sum: Make sure your function works for numbers less than 21!
+            // //multiples of 7 algorithm %: Make sure your function works for numbers less than 21!
             // multiTestBlock(outputLog, 'multiples of 7 algorithm %',
             //     [[14], [10], [-4], [-90]],
             //     [14, 10, -4, -90],
             //     [-1, -1, -1, -1],
             //     [true, true, true, true]);
 
+            // /* Line 97 Three-input addition block */
+            // //Three-input add: Make sure you create a function exactly named: '% + % + %'
+            // var add3Exists = function () {
+            //     var add3Found = findBlockInPalette("% + % + %");
+            //     if (add3Found !== null) {
+            //         return true;
+            //     }
+            //     return false;
+            // }
+            // var sumExists = function () {
+            //     var customBody = getCustomBody("% + % + %");
+            //     var sumFound = scriptContainsBlock(customBody, "% + %");
+            //     return sumFound;
+            // }
+            // testAssert(outputLog, add3Exists,
+            //     "There is a three-input add block.",
+            //     "N/A",
+            //     "Please make a block that looks like exercise 1 among the above exercises.");
+            // testAssert(outputLog, sumExists,
+            //     "There is a '% + %' block inside of the body of the three-input add block.",
+            //     "N/A",
+            //     "We need to add three numbers. Try using the '% + % block in composing your function!");
+
+            // //'% + % + %': Make sure your function works for general cases!
+            // multiTestBlock(outputLog, '% + % + %',
+            //     [[10, 2, 5], [-10, -2, 6], [0, 0, 0], [100, -1000, 0]],
+            //     [17, -6, 0, -900],
+            //     [-1, -1, -1, -1],
+            //     [true, true, true, true]);
+
+            // /* Line 98 Sum of two smallest block */
+            // // Sum of two smallest: Make sure you create a function exactly named: 'sum of two smallest % and % and %'
+            // var sumOfTwoSmallestExists = function () {
+            //     var sumOfTwoSmallestFound = findBlockInPalette("sum of two smallest % and % and %");
+            //     if (sumOfTwoSmallestFound !== null) {
+            //         return true;
+            //     }
+            //     return false;
+            // }
+            // var customBody = getCustomBody('sum of two smallest % and % and %');
+            // var useMaxBlock = function () {
+            //     var maxBlockFound = scriptContainsBlock(customBody, "max of % and %");
+            //     return maxBlockFound;
+            // }
+            // var useDifferenceBlock = function () {
+            //     return scriptContainsBlock(customBody, "% − %");
+            // }
+            // var useTripleSumBlock = function () {
+            //     return scriptContainsBlock(customBody, "% + % + %");
+            // }
+            // testAssert(outputLog, sumOfTwoSmallestExists,
+            //     "There is a sum of two smallest block.",
+            //     "N/A",
+            //     "Please make a block that looks like exercise 2 among the above exercises.");
+            // testAssert(outputLog, useMaxBlock,
+            //     "Uses a max block in the definition of the function.",
+            //     "N/A",
+            //     "Try using the max block we made in a previous exercise!");
+            // testAssert(outputLog, useDifferenceBlock,
+            //     "Uses a difference block in the definition of the function.",
+            //     "N/A",
+            //     "One way to approach this problem is thinking about each number as part of a whole. Can we take out something from that whole? What block would be helpful in that?");
+            // testAssert(outputLog, useTripleSumBlock,
+            //     "Uses a triple sum block in the definition of the function.",
+            //     "N/A",
+            //     "One way to approach this problem is thinking about each number as part of a whole. How can we construct that whole using a block we have already made? Which block would be useful that takes in three numbers?");
+
+            // //'sum of two smallest % and % and %': Make sure your function works for general cases!
+            // multiTestBlock(outputLog, 'sum of two smallest % and % and %',
+            //     [[10, 2, 5], [-10, -2, 6], [0, 0, 0], [100, -1000, 0]],
+            //     [7, -12, 0, -1000],
+            //     [-1, -1, -1, -1],
+            //     [true, true, true, true]);
+
+
+
 
             return outputLog;
+
         }
 
         /* Removes the previously saved AG_state. Runs the tests in

@@ -22,7 +22,7 @@ function isEDXurl() {
 function runAGTest(snapWorld, taskID, outputLog) {
     // Create a new gradingLog if none is specified.
     var numAttempts = setNumAttempts(taskID);
-    outputLog = outputLog || new gradingLog(snapWorld, taskID, numAttempts);
+    outputLog = outputLog || new FeedbackLog(snapWorld, taskID, numAttempts);
     // Populate, run, and evaluate the tests specified in AGTest()
     // These tests specified by the Course Designer. 
 
@@ -163,7 +163,7 @@ function AGUpdate(snapWorld, taskID) {
     } else {
         //Restore the AG status bar to a graded state
         var numAttempts = setNumAttempts(taskID);
-        outputLog = new gradingLog(snapWorld, taskID, numAttempts);
+        outputLog = new FeedbackLog(snapWorld, taskID, numAttempts);
         //outputLog = JSON.parse(prev_log);
         //outputLog.snapWorld = snapWorld;
         AG_bar_ungraded(outputLog);
