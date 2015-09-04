@@ -392,7 +392,6 @@ FeedbackLog.prototype.scoreLog = function() {
 			tip.allCorrect = true;
 			//for (var i in tip.test_list) { // for each test
 			for (var i=0; i<tip.test_list.length; i++) {
-				console.log(i);
 				test = tip.test_list[i];
 				if (test.correct) {	// check if test passed,
 					tip.numCorrect += 1;	// update count and points
@@ -419,10 +418,13 @@ FeedbackLog.prototype.scoreLog = function() {
 	this.numAttempts += 1; //increment the number of attempts when grading succeeds.
 	// save the log 
 	this.saveLog();
+	//this.SnapWorld = world;
+	//console.log(this);
 	// Update the Autograder Status Bar
 	/**********/
 	//TODO: UNCOMMENT AGFinish
 	/**********/
+	AGFinish(this);
 	try {
 		AGFinish(this);
 	} catch(e) {
@@ -441,7 +443,7 @@ FeedbackLog.prototype.toDict = function() {
 
 FeedbackLog.prototype.toString = function() {
 	var world_ref = this.snapWorld;
-	this.SnapWorld = null;
+	this.snapWorld = null;
 	//Stringify the object with additional function to prevent cycles
 	//Note: Borrowed from stack overflow
 	//http://stackoverflow.com/questions/9382167/serializing-object-that-contains-cyclic-object-value
@@ -538,7 +540,7 @@ Tip.prototype.newIOTest = function(testClass, blockSpec, input, expOut, timeOut,
 }
 
 Tip.prototype.newAssertTest = function(statement, feedback, text, pos_fb, neg_fb, points) {
-	console.log(statement);
+	//console.log(statement);
 	var new_ass_test = new AssertTest(statement, feedback, text, pos_fb, neg_fb, points);
 	this.addTest(new_ass_test);
 	return new_ass_test
@@ -689,7 +691,8 @@ function infLoopCheck(outputLog, testID) {
 
 /**************** Testing the Feedback Log ************/
 // Create a new feedbackLog
-var fb = new FeedbackLog(null, 'log_for_tests', 'this is a feedback log test', 0);
+
+/*var fb = new FeedbackLog(null, 'log_for_tests', 'this is a feedback log test', 0);
 console.log('fb created');
 // Create a first test chunk
 var test_chunk = fb.newChunk('factorial');
@@ -759,20 +762,9 @@ var ass_test6 = fourth_tip.newAssertTest(
 // console.log('Saved the Log');
 console.log('Initial Log state');
 console.log(fb);
-fb.scoreLog();
+//fb.scoreLog();
 console.log('Log has been scored');
-console.log(fb)
-
-
-var onclick_menu = document.getElementById('onclick-menu');
-var menu_style = window.getComputedStyle(onclick_menu);
-var menu_right = menu_style.getPropertyValue('right');
-
-var button = document.getElementById('autograding_button');
-var button_style = window.getComputedStyle(button);
-var button_right = button_style.getPropertyValue('right');
-
-document.getElementById("toggle-correct-tests").innerHTML = '<div class="toggle-correct isOff" id="toggle-correct">See Correct Tests</div><div id="correct-table-wrapper">';
+console.log(fb);*/
 
 
 

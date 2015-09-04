@@ -30,8 +30,10 @@ function runAGTest(snapWorld, taskID, outputLog) {
 
     var test_log = AGTest(outputLog);
     if(!test_log.runSnapTests()) {
-        outputLog.scoreLog();
+        test_log.scoreLog();
     }
+    test_log.scoreLog();
+    populateFeedback(test_log);
 }
 
 /* After loading the XML, check if the current XML is a known
@@ -68,7 +70,7 @@ function AGStart(snapWorld, taskID) {
         }
         return outputLog;
     }
-    //If the current XML matches the last stored gradingLog
+    //If the current XML matches the last stored 
     if (isSameSnapXML(prev_xml, curr_xml)) {
         //Restore the AG status bar to a graded state
         var outputLog = JSON.parse(sessionStorage.getItem(taskID + "_test_log"));
@@ -132,7 +134,7 @@ function AGUpdate(snapWorld, taskID) {
         console.log('AGUpdate: Thinks this is the "correct" XML.');
         sessionStorage.setItem(taskID + "_test_log", c_prev_log);
         sessionStorage.setItem(taskID + "_test_state", curr_xml);
-        document.getElementById("different-feedback").innerHTML = "";
+        //document.getElementById("different-feedback").innerHTML = "";
 
         //Retrieve the correct test log from sessionStorage
         outputLog = JSON.parse(c_prev_log);
@@ -151,7 +153,7 @@ function AGUpdate(snapWorld, taskID) {
         //Restore the AG status bar to a graded state
         console.log('AGUpdate: Thinks this is just the "last" XML.');
         //Retrieve the previous test log from sessionStorage
-        document.getElementById("different-feedback").innerHTML = "";
+        //document.getElementById("different-feedback").innerHTML = "";
 
         outputLog = JSON.parse(prev_log);
         outputLog.snapWorld = snapWorld;
@@ -161,13 +163,16 @@ function AGUpdate(snapWorld, taskID) {
         }
 
     } else {
+        console.log("AGUpdate: Button should be ungraded");
         //Restore the AG status bar to a graded state
         var numAttempts = setNumAttempts(taskID);
-        outputLog = new FeedbackLog(snapWorld, taskID, numAttempts);
+        outputLog = new FeedbackLog(snapWorld, taskID, "", numAttempts);
+        console.log(outputLog);
         //outputLog = JSON.parse(prev_log);
         //outputLog.snapWorld = snapWorld;
         AG_bar_ungraded(outputLog);
-        document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
+        console.log("button should change");
+        //document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
         if (isEDX) {
             parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "block";
         }
@@ -187,6 +192,7 @@ function AGUpdate(snapWorld, taskID) {
  *  - Should only be called from outputLog.evaluateLog()
  */
 function AGFinish(outputLog) {
+    console.log("yooooooooooooooooooooooooooooooooooooooooooo");
 
     var c_prev_log = JSON.parse(sessionStorage.getItem(outputLog.taskID + "_c_test_log"));
 
@@ -200,21 +206,22 @@ function AGFinish(outputLog) {
         AG_bar_graded(outputLog);
         outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
     } else if ((outputLog.pScore > 0) && ((c_prev_log && outputLog.pScore >= c_prev_log.pScore) || (!c_prev_log))) {
-        
         //if (outputLog.pScore >= c_prev_log.pScore && c_prev_log || !c_prev_log) {
-        AG_bar_semigraded(outputLog);
-        outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
+        console.log("else if");
+        //AG_bar_semigraded(outputLog);
+        //outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
         // Update AG_status_bar to 'graded, but incorrect state
     } else {
         AG_bar_semigraded(outputLog);
     }
+    console.log("whattttttttttttttttttttttt");
     //Save the current XML. Log is saved in gradingLog.scoreLog(...)
     outputLog.saveSnapXML(outputLog.taskID + "_test_state");
     //outputLog.numAttempts += 1;
     if (showFeedback) {
         populateFeedback(outputLog);
     }
-    grayOutButtons(outputLog.snapWorld, outputLog.taskID);
+    //grayOutButtons(outputLog.snapWorld, outputLog.taskID);
     console.log('Autograder test Results:');
     console.log(outputLog);
     //populateFeedback(outputLog);
