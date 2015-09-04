@@ -1,3 +1,12 @@
+/*var onclick_menu = document.getElementById('onclick-menu');
+var menu_style = window.getComputedStyle(onclick_menu);
+var menu_right = menu_style.getPropertyValue('right');
+
+var button = document.getElementById('autograding_button');
+var button_style = window.getComputedStyle(button);
+var button_right = button_style.getPropertyValue('right');*/
+
+
  /*
  * Makes AG status bar reflect the ungraded state of the outputLog.
  */
@@ -147,7 +156,7 @@ function closeResults(){
     overlay.classList.add("is-hidden");
 }
 
-function populateFeedback(outputLog) {
+/*function populateFeedback(outputLog) {
     var taskID = outputLog.taskID;
     //var last_log = sessionStorage.getItem(taskID + "_last_submitted_log");
     var prev_log = sessionStorage.getItem(taskID + "_test_log");
@@ -198,7 +207,7 @@ function populateFeedback(outputLog) {
         edx_caution.innerHTML = "[WARNING: These results differ from your last edX submission.]"
     }*/
 
-    var nonRepTest = 1;
+    /*var nonRepTest = 1;
     var repTest = 1;
     for (i=1; i<=feedback["testCount"]; i++) {
         var test = String(i);
@@ -278,7 +287,7 @@ function populateFeedback(outputLog) {
             }
         }
     }
-}
+}*/
 
 function addBasicHeadings() {
     basicCols = ["Test", "Points", "Feedback"];
@@ -591,6 +600,14 @@ function initializeSnapAdditions(snapWorld, taskID) {
         }
         grayOutButtons(snapWorld, taskID);
         moveAutogradingBar();
+
+        onclick_menu = document.getElementById('onclick-menu');
+        menu_style = window.getComputedStyle(onclick_menu);
+        menu_right = menu_style.getPropertyValue('right');
+
+        button = document.getElementById('autograding_button');
+        button_style = window.getComputedStyle(button);
+        button_right = button_style.getPropertyValue('right');
         
     },500);
 
@@ -611,7 +628,7 @@ var button_listener = function(event) {
     event.stopPropagation();
     // console.log('PROPAGATION SHOULD STOP');
     var numAttempts = setNumAttempts(id);
-    outputLog = new gradingLog(world, id, numAttempts);
+    outputLog = new FeedbackLog(world, id, numAttempts);
     outputLog.numAttempts += 1;
     runAGTest(world, id, outputLog);
 }
@@ -641,6 +658,717 @@ function moveHelp() {
     });
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function appendElement(elem, text, elemClass, selector) {
+    var data = document.createElement(elem);
+    if (text !== null) {
+        var text = document.createTextNode(text);
+        data.appendChild(text);
+    }
+    if (Array.isArray(elemClass)) {
+        DOMTokenList.prototype.add.apply(data.classList, elemClass);
+    } else if (elemClass !== null) {
+        data.classList.add(elemClass);
+    }
+    selector.appendChild(data);
+}
+
+function addReporterHeadings(selector) {
+    var columns = ["Input", "Output", "Expected", "Comment"];
+    var newRow = document.createElement("tr");
+    for (z=0; z<columns.length; z++) {
+        var header = document.createElement("th");
+        var text = document.createTextNode(columns[z]);
+        header.classList.add("titles", "reporter");
+        header.appendChild(text);
+        newRow.appendChild(header);
+    }
+    selector.appendChild(newRow);
+}
+
+function createCollapsibleCorrectSection(selector) {
+    var identifier = "something";
+    var correct_collapse = document.createElement("div");
+    var correct_tip = document.createElement("div");
+    //var correct_tip_text = document.createTextNode("Here are the parts you did correctly!");
+    //correct_tip_section.appendChild(correct_tip_text);
+    correct_tip.id = "correct-tip" + String(identifier);
+    correct_tip.classList.add("correct-tip");
+
+    correct_collapse.innerHTML = '<br><input class="details correct-details" id="correct-expander' + String(identifier) + '" type="checkbox" ><label for="correct-expander' + String(identifier) + '">' + "Here are the parts you did correctly!" + '</label><div id="correct-table-wrapper' + String(identifier) + '">';
+    correct_collapse.innerHTML = '<br><div class="toggle-correct" id="toggle-correct' + String(identifier) + '">Click Here</div><span class="correct-expander correct-expander' + String(identifier) + '">Here are the parts you did correctly!</span><div id="correct-table-wrapper' + String(identifier) + '">';
+    correct_collapse.innerHTML = '<br><div class="toggle-correct" id="toggle-correct' + String(identifier) + '">See Correct Tests</div><div id="correct-table-wrapper' + String(identifier) + '">';
+    //example.nextSibling = correct_tip_section;
+
+    selector.insertBefore(correct_tip, selector.firstChild);
+
+    correct_tip.appendChild(correct_collapse);
+}
+
+function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
+    //document.getElementById("toggle-correct-tests").innerHTML = '<div class="toggle-correct isOff" id="toggle-correct">See Correct Tests</div><div id="correct-table-wrapper">';
+    document.getElementById("toggle-correct-tests").onclick = function() {
+        //console.log(allFeedback);
+        var toggleButton = document.getElementById("toggle-correct");
+        if (toggleButton.classList.contains("isOff")) {
+            toggleButton.classList.remove("isOff");
+            allFeedback = true;
+            toggleButton.innerHTML = "Hide Correct Tests";
+        } else {
+            toggleButton.classList.add("isOff");
+            allFeedback = false;
+            toggleButton.innerHTML = "See Correct Tests";
+        }
+        /*var correct_id = this.id;
+        var numberPattern = /\d+/g;
+        var num = String(correct_id).match(numberPattern)[0];*/
+        //var num = Number(String(correct_id).match(/\d+/)[0]);
+        //console.log(String(this.id).match(/\d+/)[0]);
+        openResults();
+        populateFeedback(feedbackLog, allFeedback);
+        openResults();
+        setTimeout(function() {
+            openResults();
+            //document.getElementById(correct_id).parentNode.parentNode.parentNode.previousSibling.click();
+        }, 100);
+    }
+
+    
+
+    var comment = document.getElementById("comment");
+
+    comment.innerHTML = "";
+    while (comment.nextSibling) {
+        document.getElementById("ag-results").removeChild(comment.nextSibling);
+    }
+
+    var log = feedbackLog;
+    var chunks = log["chunk_list"];
+    var linebreak = document.createElement("br");
+    //var numtips = log["num_errors"];
+    var numtips = 0;
+    var plural = "";
+    if (numtips !== 1) {
+        plural = "s";
+    }
+
+    var chunkHasCorrectTip = false;
+    var tipHasCorrectTest = false;
+
+    /*if (document.getElementById("numtips").innerHTML === "") {
+        var onclick_menu = document.getElementById('onclick-menu');
+        var menu_style = window.getComputedStyle(onclick_menu);
+        var menu_right = menu_style.getPropertyValue('right');
+
+        var button = document.getElementById('autograding_button');
+        var button_style = window.getComputedStyle(button);
+        var button_right = button_style.getPropertyValue('right');
+    }*/
+
+    onclick_menu.style.right = menu_right;
+    button.style.right = button_right;
+    document.getElementById("numtips").innerHTML = String(numtips) + " tip" + plural;
+    var tipwidth = document.getElementById("numtips").offsetWidth;
+
+    onclick_menu.style.right = String(Number(menu_right.slice(0, menu_right.length - 2)) + tipwidth - 2) + "px";
+    
+    button.style.right = String(Number(button_right.slice(0, button_right.length - 2)) + tipwidth - 2) + "px";
+
+    button.style.borderRadius = "0px";
+    /*} else {
+        document.getElementById("numtips").innerHTML = String(numtips) + " tip" + plural;
+    }*/
+    
+    //var feedback_header = document.createElement("p");
+    //var header_text = document.createTextNode("We have " + String(numtips) + " tip" + plural + " for you!");
+    //feedback_header.appendChild(header_text);
+    document.getElementById("comment").innerHTML = "We have " + String(numtips) + " tip" + plural + " for you!";
+    /*if (numtips === 1) {
+        appendElement("p", "We have " + String(numtips) + " tip for you!", "feedback-header", document.getElementById("ag-results"));
+    } else {
+        appendElement("p", "We have " + String(numtips) + " tips for you!", "feedback-header", document.getElementById("ag-results"));
+    }*/
+    //document.getElementById("ag-results").insertBefore(feedback_header, document.getElementById("ag-results").firstChild);
+    //document.getElementById("ag-results").appendChild(feedback_header);
+
+    var correct_section = document.createElement("div");
+    var incorrect_section = document.createElement("div");
+    var correct_section_text = document.createTextNode("Here is what you did well!");
+    var incorrect_section_text = document.createTextNode("Here is what you may want to take a look at again!");
+    correct_section.appendChild(correct_section_text);
+    incorrect_section.appendChild(incorrect_section_text);
+    correct_section.id = "correct-section";
+    incorrect_section.id = "incorrect-section";
+
+    document.getElementById("ag-results").appendChild(correct_section);
+    document.getElementById("ag-results").appendChild(incorrect_section);
+
+    var chunknum = chunknum = typeof chunknum !== 'undefined' ? chunknum : undefined;
+
+    var tipnum = tipnum = typeof tipnum !== 'undefined' ? tipnum : undefined;
+
+    //for (i=1; i<=Object.keys(chunks).length; i++) {
+    for (i=0; i<chunks.length; i++) {
+        var chunk = chunks[i];
+        var tips = chunk["tip_list"];
+        var header = document.createElement("p");
+        header.innerHTML = String(chunk["chunk_title"]) + '<br><br>';
+        //var title = document.createTextNode(chunk["chunk_title"]);
+        //console.log(title);
+        //header.appendChild(title);
+        //header.appendChild(linebreak);
+        
+        header.classList.add("chunk-header", "chunk"+String(i));
+        //document.getElementById("ag-results").parentNode.insertBefore(header, document.getElementById("ag-results").nextSibling);
+        //document.getElementById("ag-results").insertBefore(header, document.getElementById("ag-results").firstChild);
+        //document.getElementById("ag-results").appendChild(header); //Instead of chunk being appended directly to agresults, have two other outside sections (what you did well, what we think you should take a look at)
+        
+        var correct_chunk = header.cloneNode(true);
+        correct_chunk.classList.add("correct-chunk" + String(i));
+        
+        if (chunk["allCorrect"] === true) {
+            document.getElementById("correct-section").style.display = "default";
+            document.getElementById("correct-section").appendChild(correct_chunk);
+
+        } else {
+            var incorrect_chunk = header.cloneNode(true);
+            incorrect_chunk.classList.add("incorrect-chunk" + String(i));
+            //console.log(incorrect_chunk);
+            //console.log(correct_chunk);
+            //document.getElementById("correct-section").appendChild(correct_chunk);
+            document.getElementById("incorrect-section").style.display = "default";
+            document.getElementById("incorrect-section").appendChild(incorrect_chunk);
+        }
+
+        //for (x=1; x<=Object.keys(tips).length; x++) {
+        for (x=0; x<tips.length; x++) {
+            var tip = tips[x];
+            var allFeedback = allFeedback = typeof allFeedback !== 'undefined' ? allFeedback : false;
+            //var tipnum = tipnum = typeof tipnum !== 'undefined' ? tipnum : undefined;
+            //var current_chunk = document.getElementsByClassName("chunk"+String(i))[0];
+            //current_chunk.appendChild(linebreak);
+            //addParagraphText(tip["suggestion"], ["tips", "tip"+String(x)], document.getElementsByClassName("chunk"+String(i))[0]);
+            var div = document.createElement("div");
+            var label_class = "incorrectans";
+            var current_chunk = document.getElementsByClassName("incorrect-chunk"+String(i))[0];
+            if (tip["allCorrect"] === true) {
+                //console.log("if");
+                current_chunk = document.getElementsByClassName("correct-chunk"+String(i))[0];
+                //current_chunk.appendChild(linebreak);
+                label_class = "correctans";
+                //current_chunk.appendChild(div);
+                var suggestion = tip["complement"];
+            } else {
+                //console.log("else");
+                //console.log(i);
+                numtips += 1;
+                var suggestion = tip["suggestion"];
+            }
+
+            
+            //current_chunk.appendChild(div); 
+                /*div.innerHTML = '<input class="details" id="expander' + String(x) + '" type="checkbox" ><label class="correctans" for="expander' + String(x) + '">' + String(tip["suggestion"]) + '</label><div id="table-wrapper' + String(x) + '">';
+            } else {
+                div.innerHTML = '<input class="details" id="expander' + String(x) + '" type="checkbox" ><label class="incorrectans" for="expander' + String(x) + '">' + String(tip["suggestion"]) + '</label><div id="table-wrapper' + String(x) + '">';
+            }*/
+
+            div.innerHTML = '<input class="details" id="expander' + String(i) + String(x) + '" type="checkbox" ><label class="' + label_class + '" for="expander' + String(i) + String(x) + '">' + String(suggestion) + '</label><div id="table-wrapper' + String(i) + String(x) + '">';
+
+            //current_chunk.appendChild(linebreak);
+            //console.log(current_chunk);
+            current_chunk.appendChild(div);
+            var details = document.getElementById("table-wrapper" + String(i) + String(x));
+            //console.log(details.previousSibling);
+            details.previousSibling.click();
+            var allTests = tip["test_list"];
+            //var assertions = tip["ass_list"];
+            //var tests = tip["test_list"];
+            appendElement("p", "", ["inner-titles", "observations" + String(i) +String(x)], details);
+            //console.log(assertions);
+
+            for (j=0; j<allTests.length; j++) {
+                var newRow = document.createElement("tr");
+                var thisTest = allTests[j];
+                if (thisTest["assertion"] !== undefined) {
+                    if (document.getElementsByClassName("observations-section" + String(i) +String(x)[0]) !== []) {
+                        incorrect_assertions = 0;
+                        correct_assertions = 0;
+                        appendElement("div", "", ["results", "observations-section" + String(i) +String(x)], document.getElementsByClassName("observations" + String(i) +String(x))[0]);
+                    }
+
+                    //console.log(tip["allCorrect"]);
+                    //console.log(thisTest["correct"]);
+                    if (tip["allCorrect"] === false && thisTest["correct"] === true) {
+                        tipHasCorrectTest = true;
+                        if (!document.getElementById("correct-tip" + String(i) + String(x))) {
+
+                            /*createCollapsibleCorrectSection(String(i) + String(x), details);
+                            document.getElementById("toggle-correct" + String(i) + String(x)).onclick = function() {
+                                allFeedback = true;
+                                console.log(allFeedback);
+                                var correct_id = this.id;
+                                var numberPattern = /\d+/g;
+                                var num = String(correct_id).match(numberPattern)[0];
+                                //var num = Number(String(correct_id).match(/\d+/)[0]);
+                                //console.log(String(this.id).match(/\d+/)[0]);
+                                openResults();
+                                populateFeedback(feedbackLog, allFeedback, Number(num[0]), Number(num[1]));
+                                openResults();
+                                setTimeout(function() {
+                                    openResults();
+                                    document.getElementById(correct_id).parentNode.parentNode.parentNode.previousSibling.click();
+                                }, 100);
+                            }
+                            var correct_tip_section = document.getElementById("correct-table-wrapper" + String(i) + String(x));*/
+
+                        } 
+
+                    }
+                    
+                    if (thisTest["correct"] === true) {
+                        correct_assertions += 1;
+                        //console.log(tipnum);
+                        if ((allFeedback) || tip["allCorrect"]) {
+                            appendElement("p", "✔", "data", document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
+                            appendElement("p", "Tests Passed! " + thisTest["feedback"], ["data", "assertion"], document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
+                            appendElement("br", null, null, document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
+                        }
+                        
+                    } else {
+                        appendElement("p", "✖", "data", document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
+                        incorrect_assertions += 1;
+                        appendElement("p", "Error Found! " + thisTest["feedback"], ["data", "assertion"], document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
+                        appendElement("br", null, null, document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
+                    }
+
+                } else {
+                    if (document.getElementsByClassName("tests-section" + String(i) +String(x)[0]) !== []) {
+                        incorrect_tests = 0;
+                        correct_tests = 0;
+                        appendElement("div", "", ["results", "tests-section" + String(i) +String(x)], document.getElementsByClassName("observations" + String(i) +String(x))[0]);
+                    }
+                    if (thisTest["correct"] === true && tip["allCorrect"] === false) {
+                        tipHasCorrectTest = true;
+                        if (!document.getElementById("correct-tip" + String(i) + String(x))) {
+
+
+                            /*createCollapsibleCorrectSection(String(i) + String(x), details);
+                            document.getElementById("toggle-correct" + String(i) + String(x)).onclick = function() {
+                                allFeedback = true;
+                                console.log(allFeedback);
+                                var correct_id = this.id;
+                                var numberPattern = /\d+/g;
+                                var num = String(correct_id).match(numberPattern)[0];
+                                //var num = Number(String(correct_id).match(/\d+/)[0]);
+                                //console.log(String(this.id).match(/\d+/)[0]);
+                                openResults();
+                                populateFeedback(feedbackLog, allFeedback, Number(num[0]), Number(num[1]));
+                                openResults();
+                                setTimeout(function() {
+                                    openResults();
+                                    document.getElementById(correct_id).parentNode.parentNode.parentNode.previousSibling.click();
+                                }, 100);
+                            }
+                            var correct_tip_section = document.getElementById("correct-table-wrapper" + String(i) + String(x));*/
+
+                        }
+
+                    }
+
+                    if (thisTest["correct"]) {
+                        correct_tests += 1;
+                    } else {
+                        incorrect_tests += 1;
+                    }
+
+                    var keys = ["input", "output", "expOut", "comment"];
+                    //if (test["correct"] === false || tip["correct"] === true) {
+
+                    if (thisTest["correct"] === true) {
+                        //correct_assertions += 1;
+                        //console.log(tipnum);
+                        if ((allFeedback) || tip["allCorrect"]) {
+                            appendElement("p", "✔", "data", document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
+                            var string_reporter = document.createElement("div");
+                            string_reporter.classList.add("data", "assertion");
+                            string_reporter.innerHTML = '<p class="data assertion">' + thisTest["feedback"] + ": The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion">, returned the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '</p>';
+                            document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
+                            appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
+                        }
+                    } else {
+                        appendElement("p", "✖", "data", document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
+                        incorrect_assertions += 1;
+                        
+
+                        var string_reporter = document.createElement("div");
+                        string_reporter.classList.add("data", "assertion");
+                        string_reporter.innerHTML = '<p class="data assertion">' + thisTest["feedback"] + ": The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion">, did NOT return the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '<p class="data assertion">. Instead it returned ' + '<p class="data assertion bold">the output: ' + thisTest["output"] + '</p>';
+                        document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
+                        appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
+                    }
+                //}
+
+
+                    
+
+                //}
+            //}
+
+            /*if (assertions !== undefined) {
+                //appendElement("p", "Observations", ["inner-titles", "observations"+String(x)], details);//document.getElementsByClassName("tip"+String(x))[0]);
+                //document.getElementsByClassName("observations"+String(x))[0].appendChild(linebreak);
+                //appendElement("br", null, null, document.getElementsByClassName("observations"+String(x))[0]);
+                //appendElement("br", null, null, document.getElementsByClassName("observations"+String(x))[0]);
+                //appendElement("table", "", ["results", "observations-table"+String(x)], document.getElementsByClassName("observations"+String(x))[0]);
+                appendElement("div", "", ["results", "observations-section"+String(x)], document.getElementsByClassName("observations"+String(x))[0]);
+
+                incorrect_assertions = 0;
+                correct_assertions = 0;
+
+                //for (n=1; n<=Object.keys(assertions).length; n++) {
+                for (n=0; n<assertions.length; n++) {
+                    /*if (tipHasCorrectTest || document.getElementById("correct-tip" + String(x))) {
+                        var correct_tip_section = document.createElement("div");
+                        var correct_tip_text = document.createTextNode("Here are the parts you did correctly!");
+                        correct_tip_section.appendChild(correct_tip_text);
+                        correct_tip_section.id = "correct-tip" + String(x);
+                        details.appendChild(correct_tip_section);
+                    }*/
+                    /*var assertion = assertions[n];
+                    var test = tests[n];
+                    var newRow = document.createElement("tr");
+
+
+                    if (tip["correct"] === false && (assertion["correct"] === true || test["correct"] === true)) {
+                        tipHasCorrectTest = true;
+                        if (!document.getElementById("correct-tip" + String(x))) {
+
+                            createCollapsibleCorrectSection(x, details);
+                            document.getElementById("toggle-correct" + String(x)).onclick = function() {
+                                allFeedback = true;
+                                console.log(allFeedback);
+                                var correct_id = this.id;
+                                var num = Number(String(correct_id).match(/\d+/)[0]);
+                                //console.log(String(this.id).match(/\d+/)[0]);
+                                openResults();
+                                populateFeedback(feedbackLog, allFeedback, num);
+                                openResults();
+                                setTimeout(function() {
+                                    openResults();
+                                    document.getElementById(correct_id).parentNode.parentNode.parentNode.previousSibling.click();
+                                }, 100);
+                            }
+                            var correct_tip_section = document.getElementById("correct-table-wrapper" + String(x));
+
+                        } /*if (!document.getElementsByClassName("correct-observations-table"+String(x))[0]) {
+                            //console.log("what.");
+                            appendElement("p", "Observations", ["inner-titles", "correct-inner-titles", "correct-observations"+String(x)], correct_tip_section);
+                            //appendElement("br", null, null, document.getElementsByClassName("correct-observations"+String(x))[0]);
+                            //appendElement("br", null, null, document.getElementsByClassName("correct-observations"+String(x))[0]);
+                            appendElement("table", "", ["results", "correct-observations-table"+String(x)], document.getElementsByClassName("correct-observations"+String(x))[0]);
+                        }*/
+
+                    /*}
+                    //if (assertion["correct"] === false) {
+                        /*if (n % 2 === 0 || tip["correct"] === true) {
+                            addTableCell(assertion["statement"], ["data", "evens"], newRow);
+                        } else {
+                            addTableCell(assertion["statement"], "data", newRow);
+                        }*/
+                    //} else {
+
+                    /*if (assertion["correct"] === true && tip["correct"] === false) {
+                        tipHasCorrectTest = true;
+                        if (!document.getElementById("correct-tip" + String(x))) {
+
+                            createCollapsibleCorrectSection(x, details);
+                            var correct_tip_section = document.getElementById("correct-table-wrapper" + String(x));
+
+                        } if (!document.getElementsByClassName("correct-observations-table"+String(x))[0]) {
+                            //console.log("what.");
+                            appendElement("p", "Observations", ["inner-titles", "correct-inner-titles", "correct-observations"+String(x)], correct_tip_section);
+                            //appendElement("br", null, null, document.getElementsByClassName("correct-observations"+String(x))[0]);
+                            //appendElement("br", null, null, document.getElementsByClassName("correct-observations"+String(x))[0]);
+                            appendElement("table", "", ["results", "correct-observations-table"+String(x)], document.getElementsByClassName("correct-observations"+String(x))[0]);
+                        }
+
+                    }*/
+                    /*if (n % 2 === 0 || tip["correct"] === true) {
+                        addTableCell(assertion["statement"], ["data", "evens"], newRow);
+                    } else {
+                        addTableCell(assertion["statement"], "data", newRow);
+                    }*/
+
+
+                     //else if (tip["correct"] === true) {
+                    /*if (assertion["correct"] === true) {
+                        addTableCell(assertion["statement"], "correctans", newRow);
+                    } else {
+                        addTableCell(assertion["statement"], "incorrectans", newRow);
+                    }*/
+                    //addTableCell(assertion["statement"], "data", newRow);
+                    /*if (assertion["correct"] === true) {
+                        correct_assertions += 1;
+                        console.log(tipnum);
+                        if ((allFeedback && tipnum === x) || tip["correct"]) {
+                            appendElement("p", "✔", "data", document.getElementsByClassName("observations-section"+String(x))[0]);
+                            /*if (n % 2 === 0) {
+                                //addTableCell(assertion["statement"], ["data", "evens", "assertion"], newRow);
+                                appendElement("p", assertion["statement"], ["data", "evens", "assertion"], document.getElementsByClassName("observations-section"+String(x))[0]);
+                            } else {
+                                //addTableCell(assertion["statement"], ["data", "assertion"], newRow);
+                                appendElement("p", assertion["statement"], ["data", "assertion"], document.getElementsByClassName("observations-section"+String(x))[0]);
+                            }*/
+                            //appendElement("p", "Tests Passed! " + assertion["statement"], ["data", "assertion"], document.getElementsByClassName("observations-section"+String(x))[0]);
+                            //addTableCell("✔", "data", newRow);
+                            //appendElement("p", "✔", "data", document.getElementsByClassName("observations-section"+String(x))[0]);
+                            //appendElement("br", null, null, document.getElementsByClassName("observations-section"+String(x))[0]);
+                        //}
+                        
+                        
+                        //document.getElementsByClassName("correct-observations-table"+String(x))[0].appendChild(newRow);
+                        //document.getElementsByClassName("observations-table"+String(x))[0].appendChild(newRow);
+                    /*} else {
+                        appendElement("p", "✖", "data", document.getElementsByClassName("observations-section"+String(x))[0]);
+                        incorrect_assertions += 1;
+                        /*if (n % 2 === 0) {
+                            //addTableCell(assertion["statement"], ["data", "evens"], newRow);
+                            appendElement("p", assertion["statement"], ["data", "evens", "assertion"], document.getElementsByClassName("observations-section"+String(x))[0]);
+                        } else {
+                            //addTableCell(assertion["statement"], "data", newRow);
+                            appendElement("p", assertion["statement"], ["data", "assertion"], document.getElementsByClassName("observations-section"+String(x))[0]);
+                        }*/
+                        //appendElement("p", "Error Found! " + assertion["statement"], ["data", "assertion"], document.getElementsByClassName("observations-section"+String(x))[0]);
+                        //addTableCell("✖", "data", newRow);
+                        //document.getElementsByClassName("observations-table"+String(x))[0].appendChild(newRow);
+                        //appendElement("p", "✖", "data", document.getElementsByClassName("observations-section"+String(x))[0]);
+                        //appendElement("br", null, null, document.getElementsByClassName("observations-section"+String(x))[0]);
+                    //}
+                    //addParagraphText(assertion["statement"], "assertion", document.getElementsByClassName("observations"+String(x))[0]);
+
+                //}
+            //}
+            /*if (tests !== undefined) {
+                //appendElement("p", "Tests", ["inner-titles", "tests"+String(x)], details);//document.getElementsByClassName("tip"+String(x))[0]);
+                //appendElement("br", null, null, document.getElementsByClassName("tests"+String(x))[0]);
+                //appendElement("br", null, null, document.getElementsByClassName("observations"+String(x))[0]);
+                appendElement("div", "", ["results", "tests-section"+String(x)], document.getElementsByClassName("observations"+String(x))[0]);
+                //addReporterHeadings(document.getElementsByClassName("tests-table"+String(x))[0]);
+
+                incorrect_tests = 0;
+                correct_tests = 0;
+
+                //for (k=1; k<=Object.keys(tests).length; k++) {
+                for (k=0; k<tests.length; k++) {
+                    var test = tests[k];
+                    var newRow = document.createElement("tr");
+
+                    if (test["correct"] === true && tip["correct"] === false) {
+                        tipHasCorrectTest = true;
+                        if (!document.getElementById("correct-tip" + String(x))) {
+
+
+                            createCollapsibleCorrectSection(x, details);
+                            document.getElementById("toggle-correct" + String(x)).onclick = function() {
+                                allFeedback = true;
+                                console.log(allFeedback);
+                                var correct_id = this.id;
+                                var num = Number(String(correct_id).match(/\d+/)[0]);
+                                //console.log(String(this.id).match(/\d+/)[0]);
+                                openResults();
+                                populateFeedback(feedbackLog, allFeedback, num);
+                                openResults();
+                                setTimeout(function() {
+                                    openResults();
+                                    document.getElementById(correct_id).parentNode.parentNode.parentNode.previousSibling.click();
+                                }, 100);
+                            }
+                            var correct_tip_section = document.getElementById("correct-table-wrapper" + String(x));
+
+                            //createCollapsibleCorrectSection(x, details);
+                            //var correct_tip_section = document.getElementById("correct-table-wrapper" + String(x));
+
+                        } /*if (!document.getElementsByClassName("correct-tests-table"+String(x))[0]) {
+                            //appendElement("p", "Tests", ["inner-titles", "correct-inner-titles", "correct-tests"+String(x)], correct_tip_section);
+                            //appendElement("br", null, null, document.getElementsByClassName("correct-tests"+String(x))[0]);
+                            //appendElement("br", null, null, document.getElementsByClassName("correct-tests"+String(x))[0]);
+                            appendElement("table", "", ["results", "correct-tests-table"+String(x)], document.getElementsByClassName("correct-observations"+String(x))[0]);
+                            addReporterHeadings(document.getElementsByClassName("correct-tests-table"+String(x))[0]);
+                        }*/
+
+                    /*}
+
+                    if (test["correct"]) {
+                        correct_tests += 1;
+                    } else {
+                        incorrect_tests += 1;
+                    }
+
+                    var keys = ["input", "output", "expOut", "comment"];
+                    //if (test["correct"] === false || tip["correct"] === true) {
+
+                    if (test["correct"] === true) {
+                        correct_assertions += 1;
+                        console.log(tipnum);
+                        if ((allFeedback && tipnum === x) || tip["correct"]) {
+                            appendElement("p", "✔", "data", document.getElementsByClassName("tests-section"+String(x))[0]);
+                            /*if (n % 2 === 0) {
+                                //addTableCell(assertion["statement"], ["data", "evens", "assertion"], newRow);
+                                appendElement("p", test["comment"] + ": The input: " + test["input"] + ", returned the expected value: " + test["expOut"], ["data", "evens", "assertion"], document.getElementsByClassName("tests-section"+String(x))[0]);
+                            } else {
+                                //addTableCell(assertion["statement"], ["data", "assertion"], newRow);
+                                appendElement("p", test["comment"] + ": The input: " + test["input"] + ", returned the expected value: " + test["expOut"], ["data", "assertion"], document.getElementsByClassName("tests-section"+String(x))[0]);
+                            }*/
+                            //var text = test["comment"] + ": The input: " + test["input"] + ", returned the expected value: " + test["expOut"];
+                            /*var string_reporter = document.createElement("div");
+                            string_reporter.classList.add("data", "assertion");
+                            string_reporter.innerHTML = '<p class="data assertion">' + test["comment"] + ": The " + '<p class = "data assertion bold">input: ' + test["input"] + '</p>' + '<p class="data assertion">, returned the </p>' + '<p class="data assertion bold">expected value: ' + test["expOut"] + '</p>';
+                            document.getElementsByClassName("tests-section"+String(x))[0].appendChild(string_reporter);
+                            //appendElement("p", test["comment"] + ": The input: " + test["input"] + ", returned the expected value: " + test["expOut"], ["data", "assertion"], document.getElementsByClassName("tests-section"+String(x))[0]);
+                            appendElement("br", null, null, document.getElementsByClassName("tests-section"+String(x))[0]);
+                            //addTableCell("✔", "data", newRow);
+                            //appendElement("p", "✔", "data", document.getElementsByClassName("tests-section"+String(x))[0]);
+                        }
+                        
+                        
+                        //document.getElementsByClassName("correct-observations-table"+String(x))[0].appendChild(newRow);
+                        //document.getElementsByClassName("observations-table"+String(x))[0].appendChild(newRow);
+                    } else {
+                        appendElement("p", "✖", "data", document.getElementsByClassName("tests-section"+String(x))[0]);
+                        incorrect_assertions += 1;
+                        /*if (n % 2 === 0) {
+                            //addTableCell(assertion["statement"], ["data", "evens"], newRow);
+                            appendElement("p", test["comment"] + ": The input: " + test["input"] + ", did NOT return the expected value: " + test["expOut"] + ". Instead it returned: " + test["output"], ["data", "evens", "assertion"], document.getElementsByClassName("tests-section"+String(x))[0]); //+ ": The input: " + test["input"] + ", did NOT return the expected value: " + test["expOut"] ". Instead it returned: " + test["output"], ["data", "evens", "assertion"], document.getElementsByClassName("tests-section"+String(x))[0]));
+                        } else {
+                            //addTableCell(assertion["statement"], "data", newRow);
+                            appendElement("p", test["comment"] + ": The input: " + test["input"] + ", did NOT return the expected value: " + test["expOut"] + ". Instead it returned: " + test["output"], ["data", "evens", "assertion"], document.getElementsByClassName("tests-section"+String(x))[0]); //+ ": The input: " + test["input"] + ", did NOT return the expected value: " + test["expOut"] ". Instead it returned: " + test["output"], ["data", "assertion"], document.getElementsByClassName("tests-section"+String(x))[0]));
+                        }*/
+                        //var text = test["comment"] + ": The input: " + test["input"] + ", did NOT return the expected value: " + test["expOut"] + ". Instead it returned the output: " + test["output"];
+                        //appendElement("p", test["comment"] + ": The input: " + test["input"] + ", did NOT return the expected value: " + test["expOut"] + ". Instead it returned the output: " + test["output"], ["data", "assertion"], document.getElementsByClassName("tests-section"+String(x))[0]); //+ ": The input: " + test["input"] + ", did NOT return the expected value: " + test["expOut"] ". Instead it returned: " + test["output"], ["data", "assertion"], document.getElementsByClassName("tests-section"+String(x))[0]));
+                        
+
+                        /*var string_reporter = document.createElement("div");
+                        string_reporter.classList.add("data", "assertion");
+                        string_reporter.innerHTML = '<p class="data assertion">' + test["comment"] + ": The " + '<p class = "data assertion bold">input: ' + test["input"] + '</p>' + '<p class="data assertion">, did NOT return the </p>' + '<p class="data assertion bold">expected value: ' + test["expOut"] + '<p class="data assertion">. Instead it returned ' + '<p class="data assertion bold">the output: ' + test["output"] + '</p>';
+                        document.getElementsByClassName("tests-section"+String(x))[0].appendChild(string_reporter);
+                        appendElement("br", null, null, document.getElementsByClassName("tests-section"+String(x))[0]);
+                        //addTableCell("✖", "data", newRow);
+                        //document.getElementsByClassName("observations-table"+String(x))[0].appendChild(newRow);
+                        //appendElement("p", "✖", "data", document.getElementsByClassName("tests-section"+String(x))[0]);
+                    }
+
+
+                        /*for (key=0; key<keys.length; key++) {
+                            if (test["correct"] === true) {
+                                //correct_tests += 1;
+                                if ((allFeedback && tipnum === x) || (tip["correct"])) {
+                                    if (k % 2 === 0) {
+                                        addTableCell(test[keys[key]], ["data", "evens"], newRow);
+                                    } else {
+                                        addTableCell(test[keys[key]], "data", newRow);
+                                    }
+                                }
+                                
+                            } else {
+                                //incorrect_tests += 1;
+                                if (k % 2 === 0) {
+                                    addTableCell(test[keys[key]], ["data", "evens"], newRow);
+                                } else {
+                                    addTableCell(test[keys[key]], "data", newRow);
+                                }
+                            }
+                            /*if (k % 2 === 0) {
+                                addTableCell(test[keys[key]], ["data", "evens"], newRow);
+                            } else {
+                                addTableCell(test[keys[key]], "data", newRow);
+                            }*/
+                        //}
+
+                        /*if (test["correct"]) {
+                            if (allFeedback && tipnum === x) {
+                                addTableCell("✔", "data", newRow);
+                            }
+                        } else {
+                            addTableCell("✖", "data", newRow);
+                        }*/
+                    //} else {
+
+                    //}
+                    
+                    /*if (test["correct"] === true) {
+                        addTableCell(test["comment"], "correctans", newRow);
+                    } else {
+                        addTableCell(test["comment"], "incorrectans", newRow);
+                    }*/
+
+
+                    /*if (test["correct"] === true && tip["correct"] === false && allFeedback === true) {
+                        //document.getElementsByClassName("correct-tests-table"+String(x))[0].appendChild(newRow);
+                        document.getElementsByClassName("tests-table"+String(x))[0].appendChild(newRow);
+                    } else {
+                        document.getElementsByClassName("tests-table"+String(x))[0].appendChild(newRow);
+                    }*/
+
+                    //document.getElementsByClassName("observations-table"+String(x))[0].appendChild(newRow);
+
+                    //document.getElementsByClassName("tests-table"+String(x))[0].appendChild(newRow);
+                }
+            }
+        }
+    }
+    document.getElementsByClassName("incorrectans")[0].click();
+    correct_width = document.getElementById("correct-section").offsetWidth;
+    incorrect_width = document.getElementById("incorrect-section").offsetWidth;
+    popup_width = document.getElementById("ag-results").offsetWidth - 60; //To-do, make the subtracted value work for any padding values
+    document.getElementsByClassName("incorrectans")[0].click();
+    console.log(correct_width);
+    console.log(incorrect_width);
+    console.log(popup_width);
+    if ((correct_width + incorrect_width) <= popup_width) {
+        document.getElementById("correct-section").style.display = "inline-block";
+        document.getElementById("incorrect-section").style.display = "inline-block";
+    } else {
+        document.getElementById("correct-section").style.float = "default";
+        document.getElementById("incorrect-section").style.float = "default";
+    }
+    console.log(feedbackLog);
+
+    if (numtips !== 1) {
+        plural = "s";
+    }
+
+    document.getElementById("comment").innerHTML = "We have " + String(numtips) + " tip" + plural + " for you!";
+
+    onclick_menu.style.right = menu_right;
+    button.style.right = button_right;
+    document.getElementById("numtips").innerHTML = String(numtips) + " tip" + plural;
+    var tipwidth = document.getElementById("numtips").offsetWidth;
+
+    onclick_menu.style.right = String(Number(menu_right.slice(0, menu_right.length - 2)) + tipwidth - 2) + "px";
+    
+    button.style.right = String(Number(button_right.slice(0, button_right.length - 2)) + tipwidth - 2) + "px";
+
+    button.style.borderRadius = "0px";
+}
 
 
 

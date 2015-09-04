@@ -5,13 +5,13 @@ span.message {
 	display: none;
 }
 
-td.correctans {
+.correctans {
 	font-weight: bold;
 	background-color: #B4ECAC;
 	border-bottom:1px solid #333333;
 }
 
-td.incorrectans {
+.incorrectans {
 	font-weight: bold;
 	background-color: #FF9999;
 	border-bottom:1px solid #333333;
@@ -23,11 +23,12 @@ td.tests {
     width: 20px;
 }
 
-td.evens {
+.evens {
     color: #4F5150;
     background-color: #e7e3e3;
     white-space: normal;
-	padding: 3px 20px;
+	padding: 3px 10px;
+	display: inline-block;
 }
 
 table.results {
@@ -39,6 +40,7 @@ table.results {
   table-layout: fixed;
   border-spacing: 0px;
   text-align: center;
+  font-size: 20px;
  }
 
   th.titles {
@@ -49,14 +51,20 @@ table.results {
     /*text-align: center;*/
   }
 
-  td.data {
+  .data {
     color: #4F5150;
     white-space: normal;
-	padding: 3px 20px;
+	padding: 3px 10px;
 	/*font-size:0.7em;*/
+	display: inline-block;
+	max-width: 800px;
+	vertical-align: top;
+	font-weight: normal;
+	margin: 0px;
+
   }
 
-  td.hidden {
+  .hidden {
     white-space: normal;
 	padding: 3px 20px;
 	visibility: hidden;
@@ -88,26 +96,31 @@ table.results {
 
 
 
-.toggle-box {
+.toggle-box, .details {
 	display: none;
 }
 
-.toggle-box + label {
+.toggle-box + label, .details + label {
 	cursor: pointer;
 	display: block;
 	font-weight: bold;
-	width: 75px;
+	width: auto;
 }
 
-.toggle-box + label + div {
+.toggle-box + label + div, .details + label + div {
 	display: none;
 }
 
 
-.toggle-box:checked + label + div {
+.toggle-box:checked + label + div, .details:checked + label + div {
 	display: block;
 	height: auto;
 	width: 100%;
+}
+
+.details + label {
+	font-size: 20px;
+	padding: 10px;
 }
 
 .toggle-box + label:before {
@@ -132,6 +145,26 @@ table.results {
 	content: "\2212";
 }
 
+.details + label:before {
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	color: #4F5150;
+	content: "▶";
+	display: block;
+	float: left;
+	font-weight: bold;
+	height: 20px;
+	line-height: 20px;
+	margin-right: 5px;
+	text-align: center;
+	width: 20px;
+	padding: 4px;
+}
+
+.details:checked + label:before {
+	content: "▼";
+}
 
 span {
   text-transform: initial;
@@ -165,6 +198,114 @@ span {
   -khtml-user-select: none; /* webkit (konqueror) browsers */
   -ms-user-select: none; /* IE10+ */
 }
-		
+
+.inner-titles {
+	margin-left: 40px;
+	font-size: 20px;
+	/*border: 1px solid black;*/
+}	
+
+.chunk-header {
+	font-size: 25px;
+	font-weight: bold;
+	margin-left: 40px;
+}
+
+#comment {
+	font-size: 30px;
+	text-align: center;
+	/*margin: 0px;*/
+}
+
+#numtips {
+	display: inline-block;
+    padding: 1px 3px;
+    border: 1px solid #666666;
+    border-radius: 3px;
+    border-radius: 0px 4px 4px 0px;
+}
+
+.correct-inner-titles {
+    margin-left: 40px;
+}
+
+/*.correct-details + label{
+	margin-left: 40px;
+}*/
+
+#incorrect-section {
+	font-size: 30px;
+	border: 1px solid red;
+	font-weight: bold;
+}
+
+#correct-section {
+	font-size: 30px;
+	border: 1px solid green;
+	font-weight: bold;
+}
+
+.correct-tip {
+	/*margin-left: 40px;
+	border: 1px solid gray;*/
+	display: inline-block;
+	margin-left: 300px;
+}
+
+.assertion {
+	padding: 3px;
+}
+
+.toggle-correct {
+	cursor: pointer;
+	font-size: 20px;
+    border: 1px solid black;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px #888888;
+    padding: 3px;
+}
+
+/*.correct-expander {
+	display: inline-block;
+	cursor: pointer;
+}*/
+
+#ag-results {
+   /*width: 300px;
+   height: 100px;*/
+   position: absolute;
+   left:0; 
+   right:0;
+   /*left: 50%;
+   top: 50%;
+   margin-left: -150px; /* Half of width */
+   /*margin-top: -50px;    /* Half of height */
+}
+
+#correct-section {
+   /*float: left;
+   width: 150px;*/
+   display: default;
+   vertical-align: top;
+   padding: 20px;
+   /*display: none;*/
+}
+
+#incorrect-section {
+   /*float: right;
+   width: 150px;*/
+   display: default;
+   vertical-align: top;
+   padding: 20px;
+   /*display: none;*/
+}
+
+.bold {
+	font-weight: bold;
+}
+
+#toggle-correct-tests {
+	position: absolute;
+}
 
 

@@ -377,21 +377,26 @@ FeedbackLog.prototype.scoreLog = function() {
 
 	// Iterate over all tests and score the FeedbackLog, chunks, and tips.
 	this.allCorrect = true;
+	//this["allCorrect"] = true;
 	var chunk,
 		tip, 
 		test;
-	for (var c in this.chunk_list) { // for each chunk
+	//for (var c in this.chunk_list) { // for each chunk
+	for (var c=0; c<this.chunk_list.length; c++) {
 		chunk = this.chunk_list[c];
 		chunk.allCorrect = true;
-		for (var t in chunk.tip_list) { // for each tip
+		//for (var t in chunk.tip_list) { // for each tip
+		for (var t=0; t<chunk.tip_list.length; t++) {
 
 			tip = chunk.tip_list[t];
 			tip.allCorrect = true;
-			for (var i in tip.test_list) { // for each test
+			//for (var i in tip.test_list) { // for each test
+			for (var i=0; i<tip.test_list.length; i++) {
+				console.log(i);
 				test = tip.test_list[i];
 				if (test.correct) {	// check if test passed,
 					tip.numCorrect += 1;	// update count and points
-					tip.points += test.points
+					tip.points += test.points;
 				} else {
 					tip.allCorrect = false;
 				}
@@ -399,12 +404,14 @@ FeedbackLog.prototype.scoreLog = function() {
 			tip.graded = true;
 			chunk.numCorrect += tip.numCorrect;
 			chunk.points += tip.points;
-			chunk.allCorrect &= tip.allCorrect //like '+='' but with booleans
+			//chunk.allCorrect &= tip.allCorrect //like '+='' but with booleans
+			chunk.allCorrect = chunk.allCorrect && tip.allCorrect
 		}
 		chunk.graded = true;
 		this.numCorrect += chunk.numCorrect;
 		this.points += chunk.points;
-		this.allCorrect &= chunk.allCorrect;
+		//this.allCorrect &= chunk.allCorrect;
+		this.allCorrect = this.allCorrect && chunk.allCorrect;
 	}
 	// Calculate percentage score (for edX partial credit)
 	this.pScore = this.points / this.totalPoints;
@@ -531,6 +538,7 @@ Tip.prototype.newIOTest = function(testClass, blockSpec, input, expOut, timeOut,
 }
 
 Tip.prototype.newAssertTest = function(statement, feedback, text, pos_fb, neg_fb, points) {
+	console.log(statement);
 	var new_ass_test = new AssertTest(statement, feedback, text, pos_fb, neg_fb, points);
 	this.addTest(new_ass_test);
 	return new_ass_test
@@ -707,7 +715,7 @@ var ass_test1 = test_tip.newAssertTest(
 console.log('assertion test created');
 // Add a second test to that first tip
 var ass_test2 = test_tip.newAssertTest(
-	assertion1,
+	assertionBad,
 	'The color should be red',
 	'The color is red!',
 	'The color should always be red.',
@@ -725,10 +733,24 @@ var ass_test3 = second_tip.newAssertTest(
 
 // Create a second chunk
 var second_chunk = fb.newChunk('other stuff');
-var third_tip = second_chunk.newTip('yay you did it!',
-	'Aww you didnt do it.');
+var third_tip = second_chunk.newTip('Aww you didnt do it.', 'yay you did it!');
 var ass_test4 = third_tip.newAssertTest(
 	assertion1,
+	'Bad job',
+	'great job',
+	'do a good job',
+	1);
+
+var third_chunk = fb.newChunk('more example stuff');
+var fourth_tip = third_chunk.newTip('Try Again!', 'Good job!');
+var ass_test5 = fourth_tip.newAssertTest(
+	assertion1,
+	'Bad job',
+	'great job',
+	'do a good job',
+	1);
+var ass_test6 = fourth_tip.newAssertTest(
+	assertionBad,
 	'Bad job',
 	'great job',
 	'do a good job',
@@ -740,6 +762,17 @@ console.log(fb);
 fb.scoreLog();
 console.log('Log has been scored');
 console.log(fb)
+
+
+var onclick_menu = document.getElementById('onclick-menu');
+var menu_style = window.getComputedStyle(onclick_menu);
+var menu_right = menu_style.getPropertyValue('right');
+
+var button = document.getElementById('autograding_button');
+var button_style = window.getComputedStyle(button);
+var button_right = button_style.getPropertyValue('right');
+
+document.getElementById("toggle-correct-tests").innerHTML = '<div class="toggle-correct isOff" id="toggle-correct">See Correct Tests</div><div id="correct-table-wrapper">';
 
 
 

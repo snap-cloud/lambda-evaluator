@@ -7,6 +7,7 @@
     <script src="jschannel.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script type="text/javascript" src="underscore-min.js"></script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
     <script type="text/javascript" src='gradingLog.js'></script>
     <script type="text/javascript" src='spriteEventLog.js'></script>
     <script type="text/javascript" src='scriptAnalysis.js'></script>
@@ -32,7 +33,7 @@
     
     <script type="text/javascript" src="AGAgent.js"></script>
     <script type='text/javascript'>
-        var starter_path = "snapTools.xml";
+        var starter_path = null;
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
         var courseID = "BJC.1x";  // e.g. "BJCx"
@@ -40,7 +41,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_W1_L2_E4";
+        var taskID = "_W2_L2_E1";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -52,21 +53,56 @@
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
-            
-            /*Input an argument value into the given script to create the given picture*/
-            /* Recreate exact squirrel script */
-            var squirrelTest = function squirrelTest() {
-                return scriptPresentInSprite('[{"blockSp":"pen down","inputs":[]},{"blockSp":"for %upvar = %n to %n %cs","inputs":["1","100",[{"blockSp":"move %n steps","inputs":[{"blockSp":"%n × %n","inputs":["2","length"]}]},{"blockSp":"turn %clockwise %n degrees","inputs":["90"]}]]}]');
-            }
-            testAssert(outputLog, squirrelTest,
-                "The squirrel script was found on the screen.",
-                "The squirrel script was not found on the screen. Try checking your inputs and variable names",
-                "Try making sure all of the correct blocks and inputs are in order.");
 
+            /*Make the sprite move around randomly.*/
+            var penDownExists = function penDownExists() {
+                return spriteContainsBlock("pen down", 0);
+            }
+            testAssert(outputLog, penDownExists,
+                "There is a 'pen down' block.",
+                "There is no 'pen down' block in the scripting area.",
+                "Make sure the pen is down.");
+            var loopExists = function loopExists() {
+                return spriteContainsBlock("forever %c", 0) || spriteContainsBlock("repeat %n %c", 0);
+            }
+            testAssert(outputLog, loopExists,
+                "There is a 'repeat' or a 'forever' block.",
+                "There is no 'repeat' or 'forever' block.",
+                "Make sure your sprite will change location continuously!");
+            var moveInLoop = function moveInLoop() {
+                var moveSpec = "move %n steps";
+                var moveInputs = [{"blockSp":"pick random %n to %n","inputs":["",""]}];
+                var repeatSpec = "repeat %n %c";
+                var foreverSpec = "forever %c";
+                return CBlockContainsInSprite(moveSpec, repeatSpec, 0, moveInputs) || CBlockContainsInSprite(moveSpec, foreverSpec, 0, moveInputs);
+            }
+            testAssert(outputLog, moveInLoop,
+                "The 'move' block is within a loop and the 'pick random' block is within the 'move' block.",
+                "The 'move' block is not within a loop or the 'pick random' block is not within the 'move' block.",
+                "Make sure your sprite will move continuously and randomly!");
+            var turnInLoop = function turnInLoop() {
+                var turnSpec = "turn %clockwise %n degrees";
+                var turnInputs = [{"blockSp":"pick random %n to %n","inputs":["",""]}];
+                var repeatSpec = "repeat %n %c";
+                var foreverSpec = "forever %c";
+                return CBlockContainsInSprite(turnSpec, repeatSpec, 0, turnInputs) || CBlockContainsInSprite(turnSpec, foreverSpec, 0, turnInputs);
+            }
+            testAssert(outputLog, turnInLoop,
+                "The 'turn' block is within a loop and the 'pick random' block is within the 'turn' block.",
+                "The 'turn' block is not within a loop or the 'pick random' block is not within the 'turn' block.",
+                "Make sure your sprite will turn continuously!");
+            var moveTurnSameScript = function moveTurnSameScript() {
+                return (blockPrecedesInSprite("turn %clockwise %n degrees", "move %n steps", 0) || blockPrecedesInSprite("move %n steps", "turn %clockwise %n degrees", 0));
+            }
+            testAssert(outputLog, moveTurnSameScript,
+                "The 'move' and 'turn' blocks are in a script together.",
+                "The 'move' and 'turn' blocks are not in a script together.",
+                "Make sure your sprite will both move and turn!");
             /**/
             return outputLog;
         }
     </script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
     <script type="text/javascript" src="AGFormatting.js"></script>
 
     <script type="text/javascript">
