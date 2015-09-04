@@ -33,7 +33,7 @@ var AG_EDX = (function() {
     function getGrade() {
         console.log("getGrade");
         //Grab Snap ide and testLog, null if AGTest() has not been called.
-        var ide = world.children[0];
+        //var ide = world.children[0];
         // console.log("THE ID IS: " + id);
         if (sessionStorage.getItem(id + "_test_log") !== null){
             var glog = JSON.parse(sessionStorage.getItem(id + "_test_log"));
@@ -45,9 +45,10 @@ var AG_EDX = (function() {
             if (glog !== undefined) {
                 //Convert to an AG_state
                 glog["showFeedback"] = showFeedback;
-                var edx_log = AG_log(glog, snapXML);
+                //var edx_log = AG_log(glog, snapXML);
+                var edx_log = glog;
                 edx_log["snapXML"] = snapXML;
-                console.log(JSON.stringify(edx_log));
+                //console.log(JSON.stringify(edx_log));
 
                 //saves correct student answer, as well as state, in case student returns to question
                 //sessionStorage.setItem(id + "_last_submitted_log", sessionStorage.getItem(id + "_test_log"));
@@ -96,7 +97,7 @@ var AG_EDX = (function() {
             output['submit_log'] = submit_log;
             output['submit_state'] = encodeURIComponent(submit_xml);
         }*/
-        console.log(encodeURIComponent(correct_xml));
+        //console.log(encodeURIComponent(correct_xml));
         output = encodeURI(JSON.stringify(output));
         //console.log(output);
         return output;
@@ -131,8 +132,8 @@ var AG_EDX = (function() {
             return;
         } else {
             var last_state = JSON.parse(last_state_string);
-            console.log(last_state);
-            console.log(last_state.out_log)
+            //console.log(last_state);
+            //console.log(last_state.out_log)
             last_state.state = decodeURIComponent(last_state.state);
             sessionStorage.setItem(id + '_test_state', last_state.state);
             sessionStorage.setItem(id + '_test_log', last_state.out_log);

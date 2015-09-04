@@ -7,8 +7,7 @@
     <script src="jschannel.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script type="text/javascript" src="underscore-min.js"></script>
-    <script type="text/javascript" src='feedbackLog.js'></script>
-    <script type="text/javascript" src='gradingLog.js'></script>
+    <!--<script type="text/javascript" src='gradingLog.js'></script>-->
     <script type="text/javascript" src='spriteEventLog.js'></script>
     <script type="text/javascript" src='scriptAnalysis.js'></script>
     <meta charset="utf-8"> 
@@ -32,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="hintstyle.css" />
     
     <script type="text/javascript" src="AGAgent.js"></script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
     <script type='text/javascript'>
         var starter_path = null;
         // The id is to act as a course identifier.
@@ -54,21 +54,20 @@
         // var testLog;
         function AGTest(outputLog) {
 
-            /*Make the sprite move around randomly.*/
             var penDownExists = function penDownExists() {
                 return spriteContainsBlock("pen down", 0);
             }
-            testAssert(outputLog, penDownExists,
+            /*testAssert(outputLog, penDownExists,
                 "There is a 'pen down' block.",
                 "There is no 'pen down' block in the scripting area.",
-                "Make sure the pen is down.");
+                "Make sure the pen is down.");*/
             var loopExists = function loopExists() {
                 return spriteContainsBlock("forever %c", 0) || spriteContainsBlock("repeat %n %c", 0);
             }
-            testAssert(outputLog, loopExists,
+            /*testAssert(outputLog, loopExists,
                 "There is a 'repeat' or a 'forever' block.",
                 "There is no 'repeat' or 'forever' block.",
-                "Make sure your sprite will change location continuously!");
+                "Make sure your sprite will change location continuously!");*/
             var moveInLoop = function moveInLoop() {
                 var moveSpec = "move %n steps";
                 var moveInputs = [{"blockSp":"pick random %n to %n","inputs":["",""]}];
@@ -76,10 +75,10 @@
                 var foreverSpec = "forever %c";
                 return CBlockContainsInSprite(moveSpec, repeatSpec, 0, moveInputs) || CBlockContainsInSprite(moveSpec, foreverSpec, 0, moveInputs);
             }
-            testAssert(outputLog, moveInLoop,
+            /*testAssert(outputLog, moveInLoop,
                 "The 'move' block is within a loop and the 'pick random' block is within the 'move' block.",
                 "The 'move' block is not within a loop or the 'pick random' block is not within the 'move' block.",
-                "Make sure your sprite will move continuously and randomly!");
+                "Make sure your sprite will move continuously and randomly!");*/
             var turnInLoop = function turnInLoop() {
                 var turnSpec = "turn %clockwise %n degrees";
                 var turnInputs = [{"blockSp":"pick random %n to %n","inputs":["",""]}];
@@ -87,19 +86,82 @@
                 var foreverSpec = "forever %c";
                 return CBlockContainsInSprite(turnSpec, repeatSpec, 0, turnInputs) || CBlockContainsInSprite(turnSpec, foreverSpec, 0, turnInputs);
             }
-            testAssert(outputLog, turnInLoop,
+            /*testAssert(outputLog, turnInLoop,
                 "The 'turn' block is within a loop and the 'pick random' block is within the 'turn' block.",
                 "The 'turn' block is not within a loop or the 'pick random' block is not within the 'turn' block.",
-                "Make sure your sprite will turn continuously!");
+                "Make sure your sprite will turn continuously!");*/
             var moveTurnSameScript = function moveTurnSameScript() {
                 return (blockPrecedesInSprite("turn %clockwise %n degrees", "move %n steps", 0) || blockPrecedesInSprite("move %n steps", "turn %clockwise %n degrees", 0));
             }
-            testAssert(outputLog, moveTurnSameScript,
+            /*testAssert(outputLog, moveTurnSameScript,
                 "The 'move' and 'turn' blocks are in a script together.",
                 "The 'move' and 'turn' blocks are not in a script together.",
-                "Make sure your sprite will both move and turn!");
+                "Make sure your sprite will both move and turn!");*/
             /**/
-            return outputLog;
+
+
+            var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
+            fb.snapWorld = world;
+            console.log('fb created');
+            // Create a first test chunk
+            var test_chunk = fb.newChunk('Random Walk');
+            console.log('test chunk created');
+            console.log(test_chunk);
+            // Add a first tip to that first test chunk
+            var test_tip = test_chunk.newTip('Make sure you use a loop so that your sprite moves continuously.',
+                'Great job on the loop!');
+            console.log('test tip created');  
+
+            var ass_test1 = test_tip.newAssertTest( 
+                loopExists, 
+                "There is no 'pen down' block in the scripting area.",
+                "There is a 'pen down' block.",
+                "Make sure the pen is down.",
+                1);  
+
+            var second_tip = test_chunk.newTip('Make sure the sprite is moving and turning.',
+                'Your sprite is moving and turning randomly! Good job!');
+            // Add a test to that second tip
+            var ass_test2 = second_tip.newAssertTest(
+                moveInLoop,
+                "The 'move' block is not within a loop or the 'pick random' block is not within the 'move' block.",
+                "The 'move' block is within a loop and the 'pick random' block is within the 'move' block.",
+                "Make sure your sprite will move continuously and randomly!",
+                1);
+
+            var ass_test3 = second_tip.newAssertTest(
+                turnInLoop,
+                "The 'turn' block is not within a loop or the 'pick random' block is not within the 'turn' block.",
+                "The 'turn' block is within a loop and the 'pick random' block is within the 'turn' block.",
+                "Make sure your sprite will turn continuously!",
+                1);
+
+            var ass_test4 = second_tip.newAssertTest(
+                moveTurnSameScript,
+                "The 'move' and 'turn' blocks are not in a script together.",
+                "The 'move' and 'turn' blocks are in a script together.",
+                "Make sure your sprite will both move and turn!",
+                1);
+
+            var third_tip = test_chunk.newTip('Make sure your sprite is drawing its random walk!',
+                'Your sprite is drawing its random walk. Good job!');
+
+            var ass_test4 = third_tip.newAssertTest(
+                penDownExists,
+                "There is no 'pen down' block in the scripting area.",
+                "There is a 'pen down' block.",
+                "Make sure the pen is down.",
+                1);
+
+            //fb.scoreLog();
+
+
+
+            /*Make the sprite move around randomly.*/
+            
+            //return outputLog;
+            console.log(fb);
+            return fb;
         }
     </script>
     <script type="text/javascript" src='feedbackLog.js'></script>
@@ -119,6 +181,7 @@
             ide.toggleStageSize(true);
 
             initializeSnapAdditions(world, id);
+            
 
             //AUTOGRADER ADDITION - 
             //Forced to use setTimeout() to let the world load before... Maybe not.           
@@ -139,6 +202,7 @@
         }
 
     </script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
     <script type="text/javascript" src="AG_EDX.js"></script>
 </head>
 <body style="margin: 0;">
@@ -151,11 +215,11 @@
         <div class='hover_darken'></div>
       <nav id="navigation" class="site-navigation" role="navigation">
           <ul id="dropdown-closed" class="bubble">
-            <li class="menu-item-sub-menu" id="enabled-button"><a id="feedback-button">View Feedback</a></li>
-            <li class="menu-divider-sub-menu" id='menu-divider'></li>
+            <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="feedback-button">View Feedback</a></li>
+            <li class="menu-divider-sub-menu" id='menu-divider'></li>-->
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Revert To Last Attempt</a></li>
             <li class="menu-item-sub-menu" id="enabled-button"><a id="revert-button">Revert To Best Attempt</a></li>
             <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last edX Submission</a></li>-->
-            <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Revert To Last Attempt</a></li>
             <li class="menu-item-sub-menu" id="enabled-button"><a id="reset-button">Reset</a></li>
             <li class="menu-divider-sub-menu" id='menu-divider'></li>
             <li class="menu-item-sub-menu" id='enabled-button' onclick="openPopup();"><a id="help-button">Help</a></li>
@@ -166,20 +230,17 @@
         <span></span>
         <div class='hover_darken'></div>
     </div>
+    <div id="numtips" style="display:inline-block"></div>
 </div>
 <!-- Snap Autograding Menu -->
 <!-- Autograding Menu Help Button -->
 <div class="overlay is-hidden" id="overlay">
-    <!--<div class="popup-content" id="help-popup">
-        <span class="button-close" onclick="closePopup();">X</span>
-            <img id="example-image" src="edX_snap_example.png">-->
-            <p class="help-text" id="full-screen-arrow">&#8600;</p>
-            <p class="help-text" id="full-screen-help">This full-screen button will pop out the Snap! window.</p>
-            <p class="help-text" id="menu-item-arrow">&#8599;</p>
-            <p class="help-text" id="menu-item-help">The first menu item will display the results from running the autograder.</br></br>The next two menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your best attempt or to your last graded attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
-            <p class="help-text" id="ag-button-arrow">&#8593;</p>
-            <p class="help-text" id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
-    <!--</div>-->
+    <p class="help-text" id="full-screen-arrow">&#8600;</p>
+    <p class="help-text" id="full-screen-help">This full-screen button will pop out the Snap! window.</p>
+    <p class="help-text" id="menu-item-arrow">&#8599;</p>
+    <p class="help-text" id="menu-item-help">The first two menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your last graded attempt or to your best attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
+    <p class="help-text" id="ag-button-arrow">&#8593;</p>
+    <p class="help-text" id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
 </div>
 
 <div style="display:inline-block" class="view-results" id="circle" onclick="openResults();">Results
@@ -187,22 +248,10 @@
 <div class="overlay is-hidden" id="ag-output">
     <div class="popup-content" id="ag-results">
         <span class="button-close" onclick="closeResults();" id="popup">X</span>
-        <p id = "different-feedback"></p>
-        <p id = "edx-submit-different"></p>
+        <!--<p id = "different-feedback"></p>
+        <p id = "edx-submit-different"></p>-->
+        <div id="toggle-correct-tests"></div>
         <p id="comment"></p>
-        <table class="results">
-            <tbody id="table-data">
-                <tr id="table-titles"> 
-                </tr>
-            </tbody>
-        </table>
-        </br>
-        <table class="results">
-            <tbody id="reporter-table-data">
-                <tr id="reporter-table-titles"> 
-                </tr>
-            </tbody>
-        </table>
     </div>
 </div>
     </div>
