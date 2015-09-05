@@ -11,7 +11,7 @@
  * Optional: Include general informational text in 'feedback_text', and
  * specify a numAttempts if this is not the first attempt. Default to 0, otherwise.
  * * * * *
- var fb_log = FeedbackLog(word, 'task_5', 'I am helpful text.', 0);
+ var fb_log = FeedbackLog(world, 'task_5', 'I am helpful text.', 0);
 
  * Next add a TestChunk to the FeedbackLog. This represents a group of tips
  * relevant to a specific block or script. (e.g. factorial, draw square).
