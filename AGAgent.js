@@ -192,7 +192,6 @@ function AGUpdate(snapWorld, taskID) {
  *  - Should only be called from outputLog.evaluateLog()
  */
 function AGFinish(outputLog) {
-    console.log("yooooooooooooooooooooooooooooooooooooooooooo");
 
     var c_prev_log = JSON.parse(sessionStorage.getItem(outputLog.taskID + "_c_test_log"));
 
@@ -214,7 +213,6 @@ function AGFinish(outputLog) {
     } else {
         AG_bar_semigraded(outputLog);
     }
-    console.log("whattttttttttttttttttttttt");
     //Save the current XML. Log is saved in gradingLog.scoreLog(...)
     outputLog.saveSnapXML(outputLog.taskID + "_test_state");
     //outputLog.numAttempts += 1;

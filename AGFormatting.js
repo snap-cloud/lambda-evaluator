@@ -525,7 +525,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
     var grade_button = document.getElementById("autograding_button");
     var world_canvas = document.getElementById('world');
     var snap_menu = document.getElementsByClassName('bubble')[0];
-    var edX_submit_button = parent.document.getElementsByClassName('check-label')[id_problem];
+    //var edX_submit_button = parent.document.getElementsByClassName('check-label')[id_problem];
 
 
     document.addEventListener("click", function() { grayOutButtons(snapWorld, taskID); });
@@ -566,11 +566,11 @@ function initializeSnapAdditions(snapWorld, taskID) {
         moveHelp();
     });
 
-    if (isEDX) {
+    /*if (isEDX) {
         edX_submit_button.onclick = function() {
             sessionStorage.setItem(taskID + "_popupFeedback", "");
         }
-    }
+    }*/
     
 
     if (isEDX) {

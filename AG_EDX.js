@@ -135,6 +135,7 @@ var AG_EDX = (function() {
             //console.log(last_state);
             //console.log(last_state.out_log)
             last_state.state = decodeURIComponent(last_state.state);
+            console.log(last_state.out_log);
             sessionStorage.setItem(id + '_test_state', last_state.state);
             sessionStorage.setItem(id + '_test_log', last_state.out_log);
             if (last_state.c_state && last_state.c_log) {
