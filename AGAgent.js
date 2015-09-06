@@ -63,7 +63,7 @@ function AGStart(snapWorld, taskID) {
         //Restore the AG status bar to a graded state
         var outputLog = JSON.parse(sessionStorage.getItem(taskID + "_c_test_log"));
         outputLog.snapWorld = snapWorld;
-        if (outputLog.pScore === 1) {
+        if (outputLog.allCorrect === true) {
             AG_bar_graded(outputLog);
         } else {
             AG_bar_semigraded(outputLog);
@@ -139,7 +139,7 @@ function AGUpdate(snapWorld, taskID) {
         //Retrieve the correct test log from sessionStorage
         outputLog = JSON.parse(c_prev_log);
         outputLog.snapWorld = snapWorld;
-        if (outputLog.pScore === 1) {
+        if (outputLog.allCorrect === true) {
             AG_bar_graded(outputLog);
         } else {
             AG_bar_semigraded(outputLog);

@@ -566,18 +566,15 @@ function initializeSnapAdditions(snapWorld, taskID) {
         moveHelp();
     });
 
-<<<<<<< HEAD
     /*if (isEDX) {
         edX_submit_button.onclick = function() {
             sessionStorage.setItem(taskID + "_popupFeedback", "");
         }
     }*/
     
-=======
     // edX_submit_button.onclick = function() {
     //     sessionStorage.setItem(taskID + "_popupFeedback", "");
     // }
->>>>>>> upstream/master
 
     if (isEDX) {
 

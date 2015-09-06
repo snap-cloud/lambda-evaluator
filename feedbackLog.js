@@ -377,6 +377,8 @@ FeedbackLog.prototype.scoreLog = function() {
 
 	// Iterate over all tests and score the FeedbackLog, chunks, and tips.
 	this.allCorrect = true;
+	this.points = 0;
+	this.numCorrect = 0;
 	//this["allCorrect"] = true;
 	var chunk,
 		tip, 
@@ -385,11 +387,15 @@ FeedbackLog.prototype.scoreLog = function() {
 	for (var c=0; c<this.chunk_list.length; c++) {
 		chunk = this.chunk_list[c];
 		chunk.allCorrect = true;
+		chunk.points = 0;
+		chunk.numCorrect = 0;
 		//for (var t in chunk.tip_list) { // for each tip
 		for (var t=0; t<chunk.tip_list.length; t++) {
 
 			tip = chunk.tip_list[t];
 			tip.allCorrect = true;
+			tip.points = 0;
+			tip.numCorrect = 0;
 			//for (var i in tip.test_list) { // for each test
 			for (var i=0; i<tip.test_list.length; i++) {
 				test = tip.test_list[i];
@@ -534,12 +540,14 @@ Tip.prototype.updateCounts = function(num_tests, num_points) {
 }
 
 Tip.prototype.newIOTest = function(testClass, blockSpec, input, expOut, timeOut, isolated, points) {
+	points = typeof points !== 'undefined' ? points : 1;
 	var new_io_test = new IOTest(testClass, blockSpec, input, expOut, timeOut, isolated, points);
 	this.addTest(new_io_test);
 	return new_io_test;
 }
 
 Tip.prototype.newAssertTest = function(statement, feedback, text, pos_fb, neg_fb, points) {
+	points = typeof points !== 'undefined' ? points : 1;
 	//console.log(statement);
 	var new_ass_test = new AssertTest(statement, feedback, text, pos_fb, neg_fb, points);
 	this.addTest(new_ass_test);
