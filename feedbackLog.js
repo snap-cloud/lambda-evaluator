@@ -11,7 +11,7 @@
  * Optional: Include general informational text in 'feedback_text', and
  * specify a numAttempts if this is not the first attempt. Default to 0, otherwise.
  * * * * *
- var fb_log = FeedbackLog(word, 'task_5', 'I am helpful text.', 0);
+ var fb_log = FeedbackLog(world, 'task_5', 'I am helpful text.', 0);
 
  * Next add a TestChunk to the FeedbackLog. This represents a group of tips
  * relevant to a specific block or script. (e.g. factorial, draw square).
@@ -564,7 +564,7 @@ function IOTest(testClass, blockSpec, input, expOut, timeOut, isolated, points) 
 	this.expOut = expOut;
 	this.timeOut = timeOut;
 	this.isolated = isolated || false;
-	this.points = points || 0;
+	this.points = points || 1;
 
 	this.output = null;
 	this.correct = false;
@@ -580,7 +580,7 @@ function AssertTest(statement, text, pos_fb, neg_fb, points) {
 	this.text = text;
 	this.pos_fb = pos_fb;
 	this.neg_fb = neg_fb;
-	this.points = points || 0;
+	this.points = points || 1;
 
 	this.correct = statement();
 	if (this.correct) {

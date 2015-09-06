@@ -65,6 +65,15 @@
         /*1: Creating a Script*/
 
             // /*Modify given script to make the sprite follow a square path if clicked enough times.*/
+            // var scriptExists = function() {
+            //     var template = '[{"blockSp":"move %n steps","inputs":["A"]},{"blockSp":"turn %clockwise %n degrees","inputs":["B"]}]';
+            //     var vars = ["A","B"];
+            //     return scriptPresentInSprite(template, 0, vars);
+            // }
+            // testAssert(outputLog, scriptExists,
+            //     "The script is present.",
+            //     "N/A",
+            //     "Make sure to recreate the script!");
             // var moveExists = function() {
             //     return spriteContainsBlock('move %n steps', 0);
             // }
@@ -143,8 +152,7 @@
             //     "N/A",
             //     "Make sure to recreate the given script!");
             // var repeat9 = function() {
-            //     var script = '[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["9",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]';
-            //     return scriptPresentInSprite(script, 0);
+            //     return spriteContainsBlock("repeat %n %c", 0, ["9", []], true);
             // }
             // testAssert(outputLog, repeat9,
             //     "The input to the repeat loop makes a shape with 9 sides.",
@@ -161,6 +169,13 @@
             //     "There are three repeat blocks in a script together.",
             //     "N/A",
             //     "Make sure to nest another repeat!");
+            // var threeMoves = function() {
+            //     return occurancesOfBlockInSprite("move %n steps", 3, 0);
+            // }
+
+            // var threeTurns = function() {
+            //     return occurancesOfBlockInSprite("turn %clockwise %n degrees", 3, 0);
+            // }
 
         /*2: Adding an Input*/
 

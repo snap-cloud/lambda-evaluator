@@ -10,11 +10,7 @@
     <!--<script type="text/javascript" src='gradingLog.js'></script>-->
     <script type="text/javascript" src='spriteEventLog.js'></script>
     <script type="text/javascript" src='scriptAnalysis.js'></script>
-<<<<<<< HEAD
-    <meta charset="utf-8">
-=======
     <meta charset="utf-8"> 
->>>>>>> upstream/master
     <!-- Moved down to the bottom to have var id. -->
     <script type="text/javascript" src="morphic.js"></script>
     <script type="text/javascript" src="widgets.js"></script>
@@ -33,11 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
     <link rel="stylesheet" type="text/css" href="hintstyle.css" />
-<<<<<<< HEAD
-
-=======
     
->>>>>>> upstream/master
     <script type="text/javascript" src="AGAgent.js"></script>
     <script type="text/javascript" src='feedbackLog.js'></script>
     <script type='text/javascript'>
@@ -49,7 +41,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_W1_L1_T4_E3";
+        var taskID = "_W1_L2_T2_E2";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -62,60 +54,58 @@
         // var testLog;
         function AGTest(outputLog) {
 
-            /* Recreate the move/say/move/say script */
-            var largeScriptExists = function () {
-                return scriptPresentInSprite('[{"blockSp":"move %n steps","inputs":["20"]},{"blockSp":"say %s for %n secs","inputs":["Hello!","2"]},{"blockSp":"move %n steps","inputs":["20"]},{"blockSp":"say %s for %n secs","inputs":["You\'ve just made a script!","2"]}]');
+            var threeNestedRepeats = function() {
+                return occurancesOfBlockInSprite("repeat %n %c", 3, 0);
             }
-            // testAssert(outputLog, largeScriptExists,
-            //     "The move/say/move/say script was found on the screen!",
-            //     "N/A",
-            //     "Make sure you have all of the correct inputs and the blocks are in the correct order!", 1);
 
-            /* Recreate the move/turn script */
-            var smallScriptExists = function () {
-                return scriptPresentInSprite('[{"blockSp":"move %n steps","inputs":["10"]},{"blockSp":"turn %clockwise %n degrees","inputs":["15"]}]');
+            var threeMoves = function() {
+                return occurancesOfBlockInSprite("move %n steps", 3, 0);
             }
-            // testAssert(outputLog, smallScriptExists,
-            //     "The move/turn was found on the screen.",
-            //     "N/A",
-            //     "Make sure you have all of the correct inputs and the blocks are in the correct order!", 1);
 
+            var threeTurns = function() {
+                return occurancesOfBlockInSprite("turn %clockwise %n degrees", 3, 0);
+            }
 
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
             console.log('fb created');
             // Create a first test chunk
-            var test_chunk = fb.newChunk('Move and Say');
+            var test_chunk = fb.newChunk('Embed Another Repeat-Move-Turn Loop');
             console.log('test chunk created');
             console.log(test_chunk);
             // Add a first tip to that first test chunk
-            var first_tip = test_chunk.newTip('Check the image of the script for exercise 3 for guidance!',
-                'Great job on the script!');
-            console.log('test tip created');
-
-            first_tip.newAssertTest(
-                largeScriptExists,
-                "Test for exact script matching.",
-                "All of the blocks are in order and have correct inputs.",
-                "Make sure you have all of the correct inputs and the blocks are in the correct order!",
+            var test_tip = test_chunk.newTip('Make sure you embed another repeat loop into the given script.',
+                                       'Well done! You embedded another repeat loop.');
+            console.log('test tip created');  
+            test_tip.newAssertTest( 
+                threeNestedRepeats, 
+                "Testing to see that the given script has a third repeat loop embedded.",
+                "Great job! You embedded another repeat loop into the given script!",
+                "Your script does not contain a third repeat loop!",
+                1);
+            var test_tip2 = test_chunk.newTip('Make sure you add a "move" block inside the nested repeat loop.',
+                                       'Well done! You put a "move" block inside the third embedded repeat loop.');
+            console.log('test tip created');  
+            test_tip2.newAssertTest( 
+                threeMoves, 
+                "Testing to see that the given script has a 'move' block in the nested repeat loop.",
+                "Great job! You put a 'move' block in the nested repeat loop!",
+                "Your script does not contain a third 'move' block!",
+                1);
+            var test_tip3 = test_chunk.newTip('Make sure you add a "turn" block inside the nested repeat loop.',
+                                       'Well done! You put a "turn" block inside the third embedded repeat loop.');
+            console.log('test tip created');  
+            test_tip3.newAssertTest( 
+                threeTurns, 
+                "Testing to see that the given script has a 'turn' block in the nested repeat loop.",
+                "Great job! You put a 'turn' block in the nested repeat loop!",
+                "Your script does not contain a third 'turn' block!",
                 1);
 
-            // Create a second test chunk
-            var second_chunk = fb.newChunk('Move and Turn');
-            console.log('second_chunk created');
-            console.log(second_chunk);
-            // Add a first tip to that first test chunk
-            var second_tip = second_chunk.newTip('Check the image of the script for exercise 5 for guidance!',
-                'Great job on the script!');
-            console.log('test tip created');
-
-            second_tip.newAssertTest(
-                smallScriptExists,
-                "Test for exact script matching.",
-                "All of the blocks are in order and have correct inputs.",
-                "Make sure you have all of the correct inputs and the blocks are in the correct order!",
-                1);
-
+            //fb.scoreLog();
+            
+            //return outputLog;
+            console.log(fb);
             return fb;
         }
     </script>
@@ -136,17 +126,10 @@
             ide.toggleStageSize(true);
 
             initializeSnapAdditions(world, id);
-<<<<<<< HEAD
-
-
-            //AUTOGRADER ADDITION -
-            //Forced to use setTimeout() to let the world load before... Maybe not.
-=======
             
 
             //AUTOGRADER ADDITION - 
             //Forced to use setTimeout() to let the world load before... Maybe not.           
->>>>>>> upstream/master
             //Create a gradingLog and initialize the AG status bar (AGSB).
 
             //Initialize AGSB button.
@@ -156,11 +139,7 @@
             world_canvas.addEventListener("mouseup", update_listener);
             // Start Snap Environment Loop
             setInterval(loop, 1);
-<<<<<<< HEAD
-
-=======
             
->>>>>>> upstream/master
         };
 
         function loop() {
