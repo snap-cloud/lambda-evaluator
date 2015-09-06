@@ -20,7 +20,6 @@ var button_style;
 var button_right;
 
 function AG_bar_ungraded(outputLog) {
-    console.log("yoooooooooooooooooooooooo");
     var button_text = "Get Feedback ";
     var button_elem = $('#autograding_button span');
     var regex = new RegExp(button_text,"g");
@@ -568,7 +567,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
     });
 
     if (isEDX) {
-        sedX_submit_button.onclick = function() {
+        edX_submit_button.onclick = function() {
             sessionStorage.setItem(taskID + "_popupFeedback", "");
         }
     }
