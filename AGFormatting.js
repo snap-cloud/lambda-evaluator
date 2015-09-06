@@ -11,7 +11,7 @@ var button_right = button_style.getPropertyValue('right');*/
  * Makes AG status bar reflect the ungraded state of the outputLog.
  */
 
- var onclick_menu;
+var onclick_menu;
 var menu_style;
 var menu_right;
 
@@ -20,7 +20,8 @@ var button_style;
 var button_right;
 
 function AG_bar_ungraded(outputLog) {
-    var button_text = "Get Feedback";
+    console.log("yoooooooooooooooooooooooo");
+    var button_text = "Get Feedback ";
     var button_elem = $('#autograding_button span');
     var regex = new RegExp(button_text,"g");
     if (button_elem.html().match(regex) !== null) {
@@ -30,7 +31,8 @@ function AG_bar_ungraded(outputLog) {
         button_elem.html(button_text);
         button_elem.slideDown('fast');
         $('#autograding_button').css('background', 'orange');
-    });          
+    }); 
+    //document.getElementById("autograding_button").style.backgroundColor = "orange";         
     $('#autograding_button .hover_darken').show();
     $('#onclick-menu').css('color', 'white');
     if (sessionStorage.getItem(outputLog.taskID + "_test_log")) {
@@ -46,7 +48,7 @@ function AG_bar_ungraded(outputLog) {
  * only occurs when all tests on the outputLog have passed.
  */
 function AG_bar_graded(outputLog) {
-    var button_text = "Get Feedback";
+    var button_text = "Get Feedback  ";
     var button_elem = $('#autograding_button span');
     var regex = new RegExp(button_text,"g");
     if (button_elem.html().match(regex) !== null) {
@@ -565,9 +567,12 @@ function initializeSnapAdditions(snapWorld, taskID) {
         moveHelp();
     });
 
-    edX_submit_button.onclick = function() {
-        sessionStorage.setItem(taskID + "_popupFeedback", "");
+    if (isEDX) {
+        sedX_submit_button.onclick = function() {
+            sessionStorage.setItem(taskID + "_popupFeedback", "");
+        }
     }
+    
 
     if (isEDX) {
         parent.document.getElementsByClassName('check-label')[id_problem].onclick = function () {
@@ -636,7 +641,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
         for(var i=0; i < tip_tests.length; i++){
             tip_tests[i].style.maxWidth = String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px";
         }
-        sessionStorage.setItem(id + "_popupFeedback", "");
+        //sessionStorage.setItem(id + "_popupFeedback", "");
 
 
 
@@ -843,7 +848,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     //var feedback_header = document.createElement("p");
     //var header_text = document.createTextNode("We have " + String(numtips) + " tip" + plural + " for you!");
     //feedback_header.appendChild(header_text);
-    document.getElementById("comment").innerHTML = "We have " + String(numtips) + " tip" + plural + " for you!";
+    //document.getElementById("comment").innerHTML = "We have " + String(numtips) + " tip" + plural + " for you!";
     /*if (numtips === 1) {
         appendElement("p", "We have " + String(numtips) + " tip for you!", "feedback-header", document.getElementById("ag-results"));
     } else {
@@ -1034,11 +1039,17 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             }
         }
     }
-    document.getElementsByClassName("incorrectans")[0].click();
+    if (document.getElementsByClassName("incorrectans")[0] !== undefined) {
+        document.getElementsByClassName("incorrectans")[0].click();
+    }
+    //document.getElementsByClassName("incorrectans")[0].click();
     correct_width = document.getElementById("correct-section").offsetWidth;
     incorrect_width = document.getElementById("incorrect-section").offsetWidth;
     popup_width = document.getElementById("ag-results").offsetWidth - 60; //To-do, make the subtracted value work for any padding values
-    document.getElementsByClassName("incorrectans")[0].click();
+    if (document.getElementsByClassName("incorrectans")[0] !== undefined) {
+        document.getElementsByClassName("incorrectans")[0].click();
+    }
+    //document.getElementsByClassName("incorrectans")[0].click();
     //console.log(correct_width);
     //console.log(incorrect_width);
     //console.log(popup_width);
