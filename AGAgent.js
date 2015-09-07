@@ -1,11 +1,16 @@
-current_iframe = window.frameElement;
-num_iframes = window.parent.document.getElementsByTagName("iframe").length;
-var iframes = window.parent.document.getElementsByTagName("iframe");
+var current_iframe = window.frameElement;
+//num_iframes = window.parent.document.getElementsByTagName("iframe").length;
+var num_iframes = parent.document.getElementsByClassName('problem-header').length;
+var iframes = parent.document.getElementsByTagName("iframe");
+console.log(num_iframes);
+var id_problem = 0;
 for (i = 0; i < num_iframes; i++) {
+    console.log(i);
     if (iframes[i] === current_iframe) {
-        var id_problem = i;
+        id_problem = i;
     }
 }
+console.log(id_problem);
 
 function isEDXurl() {
     var url = window.location.href;
@@ -146,7 +151,10 @@ function AGUpdate(snapWorld, taskID) {
         }
 
         if (isEDX) {
-            parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "none";
+            setTimeout(function() {
+                parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "none";
+            }, 500);
+            
         }
 
     } else if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
@@ -159,7 +167,10 @@ function AGUpdate(snapWorld, taskID) {
         outputLog.snapWorld = snapWorld;
         AG_bar_semigraded(outputLog);
         if (isEDX) {
-            parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "none";
+            setTimeout(function() {
+                parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "none";
+            }, 500);
+            
         }
 
     } else {
@@ -174,7 +185,10 @@ function AGUpdate(snapWorld, taskID) {
         console.log("button should change");
         //document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
         if (isEDX) {
-            parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "block";
+            setTimeout(function() {
+                parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "block";
+            }, 500);
+            
         }
 
     }
@@ -445,7 +459,7 @@ IDE_Morph.prototype.openProjectString = function (name) {
     this.originalOpenProject(name);
     setTimeout(function() {
         AGUpdate(world, id);
-    }, 500);
+    }, 1000);
 }
 
 IDE_Morph.prototype.originalCloudOpenProject = IDE_Morph.prototype.openCloudDataString;
@@ -453,7 +467,7 @@ IDE_Morph.prototype.openCloudDataString = function (name) {
     this.originalCloudOpenProject(name);
     setTimeout(function() {
         AGUpdate(world, id);
-    }, 500);
+    }, 1000);
 }
 
 

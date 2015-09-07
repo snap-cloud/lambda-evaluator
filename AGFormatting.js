@@ -396,12 +396,19 @@ function grayOutButtons(snapWorld, taskID) {
 
 
 function makeOverlayButton() {
+    var grade_button = document.getElementById("autograding_button");
     var overlay_button = parent.document.createElement('button');
     var overlay_button_text = parent.document.createTextNode('Grade');
     overlay_button.appendChild(overlay_button_text);
     overlay_button.classList.add('overlay-button');
     var button = parent.document.getElementsByName('problem_id')[id_problem];
     button.parentNode.insertBefore(overlay_button, button.nextSibling);
+    //var overlay_button = parent.document.getElementsByClassName('overlay-button')[id_problem];
+    //overlay_button.style.display = "block";
+    overlay_button.onclick = function() { 
+        overlay_button.style.display = "none";
+        grade_button.click(); 
+    }
 }
 
 function makeFullScreenButton() {
@@ -578,10 +585,68 @@ function initializeSnapAdditions(snapWorld, taskID) {
 
     if (isEDX) {
 
-        edX_submit_button.onclick = function() {
+        /*edX_submit_button.onclick = function() {
             sessionStorage.setItem(taskID + "_popupFeedback", "");
-        }
-        
+        }*/
+
+        var checkExist = setInterval(function() {
+            console.log("checking...." + id_problem);
+            if (parent.document.getElementsByClassName('check-label')[id_problem]) {
+                console.log("Exists!");
+                clearInterval(checkExist);
+                console.log(parent.document.getElementsByClassName('check-label'));
+                console.log(id_problem);
+                console.log(parent.document.getElementsByClassName('check-label')[id_problem]);
+                parent.document.getElementsByClassName('check-label')[id_problem].onclick = function () {
+                    sessionStorage.setItem(taskID + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
+                }
+
+                var button_text = parent.document.getElementsByClassName('check-label')[id_problem];
+                button_text.innerHTML = "Submit";
+
+                makeOverlayButton();
+                //makeOverlayButton();
+                /*setTimeout(function() {
+                    
+                    /*var overlay_button = parent.document.getElementsByClassName('overlay-button')[id_problem];
+                    //overlay_button.style.display = "block";
+                    overlay_button.onclick = function() { 
+                        overlay_button.style.display = "none";
+                        grade_button.click(); 
+                    } */
+                /*}, 1000);*/
+            }
+
+        }, 100);
+
+
+
+        /*setTimeout(function() {
+            console.log(parent.document.getElementsByClassName('check-label'));
+            console.log(id_problem);
+            console.log(parent.document.getElementsByClassName('check-label')[id_problem]);
+            parent.document.getElementsByClassName('check-label')[id_problem].onclick = function () {
+                sessionStorage.setItem(taskID + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
+            }
+
+            var button_text = parent.document.getElementsByClassName('check-label')[id_problem];
+            button_text.innerHTML = "Submit";
+
+            //makeOverlayButton();
+            setTimeout(function() {
+                makeOverlayButton();
+                /*var overlay_button = parent.document.getElementsByClassName('overlay-button')[id_problem];
+                //overlay_button.style.display = "block";
+                overlay_button.onclick = function() { 
+                    overlay_button.style.display = "none";
+                    grade_button.click(); 
+                } 
+            }, 1000);
+        }, 500);*/
+
+        /*console.log(parent.document.getElementsByClassName('check-label'));
+        console.log(id_problem);
+        console.log(parent.document.getElementsByClassName('check-label')[id_problem]);
         parent.document.getElementsByClassName('check-label')[id_problem].onclick = function () {
             sessionStorage.setItem(taskID + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
         }
@@ -597,7 +662,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
                 overlay_button.style.display = "none";
                 grade_button.click(); 
             } 
-        }, 500);
+        }, 500);*/
         
         makeFullScreenButton();
         var full_screen = document.getElementById('full-screen');
