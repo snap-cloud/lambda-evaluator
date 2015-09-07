@@ -5,12 +5,10 @@ var iframes = parent.document.getElementsByTagName("iframe");
 console.log(num_iframes);
 var id_problem = 0;
 for (i = 0; i < num_iframes; i++) {
-    console.log(i);
     if (iframes[i] === current_iframe) {
         id_problem = i;
     }
 }
-console.log(id_problem);
 
 function isEDXurl() {
     var url = window.location.href;

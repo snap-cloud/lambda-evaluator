@@ -594,9 +594,6 @@ function initializeSnapAdditions(snapWorld, taskID) {
             if (parent.document.getElementsByClassName('check-label')[id_problem]) {
                 console.log("Exists!");
                 clearInterval(checkExist);
-                console.log(parent.document.getElementsByClassName('check-label'));
-                console.log(id_problem);
-                console.log(parent.document.getElementsByClassName('check-label')[id_problem]);
                 parent.document.getElementsByClassName('check-label')[id_problem].onclick = function () {
                     sessionStorage.setItem(taskID + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
                 }
@@ -605,16 +602,6 @@ function initializeSnapAdditions(snapWorld, taskID) {
                 button_text.innerHTML = "Submit";
 
                 makeOverlayButton();
-                //makeOverlayButton();
-                /*setTimeout(function() {
-                    
-                    /*var overlay_button = parent.document.getElementsByClassName('overlay-button')[id_problem];
-                    //overlay_button.style.display = "block";
-                    overlay_button.onclick = function() { 
-                        overlay_button.style.display = "none";
-                        grade_button.click(); 
-                    } */
-                /*}, 1000);*/
             }
 
         }, 100);
