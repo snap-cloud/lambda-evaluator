@@ -113,8 +113,9 @@ function AGUpdate(snapWorld, taskID) {
     //Retrieve previous grade logs (if in sessionStorage). As {String}s
     
     if (!prev_xml || !curr_xml) {
-        console.log(prev_xml);
-        console.log(curr_xml);
+        // console.log(prev_xml);
+        // console.log(curr_xml);
+        console.log('AGUpdate: Either prev_xml or curr_xml do not exist.')
     }
     //menu bar grays out options that are not available 
     //(ex. current state is same as best attempt) and restores the button state
