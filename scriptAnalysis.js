@@ -195,6 +195,9 @@ function reporterHasNoInputs(block) {
  * ]
  */
 function JSONblock(block) {
+	if ((block === undefined) || (block === null)) {
+		throw "block is undefined";
+	}
 	var blockArgs = [];
 	var morph;
 	for (var i = 0; i < block.children.length; i++) {
@@ -254,6 +257,9 @@ function JSONblock(block) {
  * ]}]
  */
 function JSONcustomBlock(block) {
+	if ((block === undefined) || (block === null)) {
+		throw "custom block definition not found."
+	}
 	var resultJSONblock = JSONblock(block);
 	var JSONbody = JSONscript(block.definition.body.expression);
 	var inputs = block.definition.body.inputs;

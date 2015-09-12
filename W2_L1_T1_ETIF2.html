@@ -10,7 +10,7 @@
     <!--<script type="text/javascript" src='gradingLog.js'></script>-->
     <script type="text/javascript" src='spriteEventLog.js'></script>
     <script type="text/javascript" src='scriptAnalysis.js'></script>
-    <meta charset="utf-8"> 
+    <meta charset="utf-8">
     <!-- Moved down to the bottom to have var id. -->
     <script type="text/javascript" src="morphic.js"></script>
     <script type="text/javascript" src="widgets.js"></script>
@@ -29,7 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
     <link rel="stylesheet" type="text/css" href="hintstyle.css" />
-    
+
     <script type="text/javascript" src="AGAgent.js"></script>
     <script type="text/javascript" src='feedbackLog.js'></script>
     <script type='text/javascript'>
@@ -41,7 +41,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_W1_L2_T3_E2_4_5";
+        var taskID = "_W2_L1_T1_ETIF2";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -54,71 +54,64 @@
         // var testLog;
         function AGTest(outputLog) {
 
-            /* Recreate provided forever script */
-            var foreverBlock1 = function () {
-                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
+     /* Create 'draw house' command block */
+            var houseExists;
+            var drawHouseExists = function () {
+                var housefound = findBlockInPalette("draw house");
+                if (housefound !== null) {
+                    houseExists = true;
+                    return true;
+                }
+                houseExists = false;
+                return false;
             }
 
-            var foreverBlock2 = function () {
-                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["mouse x","mouse y"]}]]}]');
-            }
 
-            var foreverBlock3 = function () {
-                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["x position",{"blockSp":"%n + %n","inputs":["y position","30"]}]}]]}]');
+            var realHouseBody = getCustomBody("draw house");
+            var trianglePresent = function () {
+                return  occurancesOfBlockSpec("draw triangle", realHouseBody) === 1;
+            }
+            var squarePresent = function () {
+                return occurancesOfBlockSpec("draw square", realHouseBody) === 1;
+            }
+            var penDownPresent = function () {
+                return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw house", "pen down")) || ((blockPrecedes("pen down", "draw square", realHouseBody)) && (blockPrecedes("pen down", "draw house", realHouseBody)));
             }
 
 
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
-            console.log('fb created');
 
 
             // Create a first test chunk
-            var first_chunk = fb.newChunk('Forever point towards mouse-pointer and move');
-            console.log('test chunk created');
-            console.log(first_chunk);
+            var first_chunk = fb.newChunk('Draw house');
             // Add a first tip to that first test chunk
-            var first_tip = first_chunk.newTip('Make sure you use create the script from exercise 2!',
+            var first_tip = first_chunk.newTip('Make sure you create the draw house block from take it further exercise 2.',
                 'Great job!');
-            console.log('test tip created');
 
             var ass_test1 = first_tip.newAssertTest(
-                foreverBlock1,
-                "Testing if script from exercise 2 is present.",
-                "The script from exercise 2 is present.",
-                "Double check that your script matches the one from exercise 2 above.",
+                drawHouseExists,
+                "Testing if draw house exists",
+                "The draw house block was found.",
+                "Make sure you name your block exactly 'draw house'.",
                 1);
-
-            // Create a first test chunk
-            var second_chunk = fb.newChunk('Forever go to mouse x and mouse y');
-            console.log('test chunk created');
-            console.log(second_chunk);
-            // Add a first tip to that first test chunk
-            var second_tip = second_chunk.newTip('Make sure you match the script from exercise 4!',
-                'Great job on the loop!');
-            console.log('test tip created');
-
-            var ass_test2 = second_tip.newAssertTest(
-                foreverBlock2,
-                "Testing if script from exercise 4 is present.",
-                "The script from exercise 4 is present.",
-                "Double check that your script matches the one from exercise 4 above.",
+            var ass_test2 = first_tip.newAssertTest(
+                trianglePresent,
+                "Testing if block contains a draw house block",
+                "The draw triangle block is inside of the draw house block.",
+                "Try using previously made blocks inside the body of 'draw house' to draw the roof.",
                 1);
-
-            // Create a first test chunk
-            var third_chunk = fb.newChunk('Forever go to x-position and y-position + 30');
-            console.log('test chunk created');
-            console.log(third_chunk);
-            // Add a first tip to that first test chunk
-            var third_tip = third_chunk.newTip('Make sure you match the script from exercise 5.',
-                'Great job on the loop!');
-            console.log('test tip created');
-
-            var ass_test3 = third_tip.newAssertTest(
-                foreverBlock3,
-                "Testing if script from exercise 5 is present.",
-                "The script from exercise 5 is present.",
-                "Make sure to create another script and add in the new go-to block that contains x-position and (y-position + 30) as inputs.",
+            var ass_test3 = first_tip.newAssertTest(
+                squarePresent,
+                "Testing if block contains a correct repeat block",
+                "The draw square block is inside of the draw house block.",
+                "Try using previously made blocks inside the body of 'draw house' to draw the rest of the house.",
+                1);
+            var ass_test4 = first_tip.newAssertTest(
+                penDownPresent,
+                "Testing if pen down is present",
+                "The pen down block is present.",
+                "If the sprite is not drawing anything, it could be because we are missing a certain block. Hint: in the teal pen tab!",
                 1);
 
             return fb;
@@ -141,10 +134,10 @@
             ide.toggleStageSize(true);
 
             initializeSnapAdditions(world, id);
-            
 
-            //AUTOGRADER ADDITION - 
-            //Forced to use setTimeout() to let the world load before... Maybe not.           
+
+            //AUTOGRADER ADDITION -
+            //Forced to use setTimeout() to let the world load before... Maybe not.
             //Create a gradingLog and initialize the AG status bar (AGSB).
 
             //Initialize AGSB button.
@@ -154,7 +147,7 @@
             world_canvas.addEventListener("mouseup", update_listener);
             // Start Snap Environment Loop
             setInterval(loop, 1);
-            
+
         };
 
         function loop() {
