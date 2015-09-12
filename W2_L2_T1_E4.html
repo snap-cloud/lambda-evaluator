@@ -41,7 +41,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_W1_L2_T3_E2_4_5";
+        var taskID = "_W2_L2_T1_E4";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -54,73 +54,113 @@
         // var testLog;
         function AGTest(outputLog) {
 
-            /* Recreate provided forever script */
-            var foreverBlock1 = function () {
-                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
+            var penDownExists = function penDownExists() {
+                return spriteContainsBlock("pen down", 0);
             }
-
-            var foreverBlock2 = function () {
-                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["mouse x","mouse y"]}]]}]');
+            /*testAssert(outputLog, penDownExists,
+                "There is a 'pen down' block.",
+                "There is no 'pen down' block in the scripting area.",
+                "Make sure the pen is down.");*/
+            var loopExists = function loopExists() {
+                return spriteContainsBlock("forever %c", 0) || spriteContainsBlock("repeat %n %c", 0);
             }
-
-            var foreverBlock3 = function () {
-                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["x position",{"blockSp":"%n + %n","inputs":["y position","30"]}]}]]}]');
+            /*testAssert(outputLog, loopExists,
+                "There is a 'repeat' or a 'forever' block.",
+                "There is no 'repeat' or 'forever' block.",
+                "Make sure your sprite will change location continuously!");*/
+            var moveInLoop = function moveInLoop() {
+                var moveSpec = "move %n steps";
+                var moveInputs = [{"blockSp":"pick random %n to %n","inputs":["",""]}];
+                var repeatSpec = "repeat %n %c";
+                var foreverSpec = "forever %c";
+                return CBlockContainsInSprite(moveSpec, repeatSpec, 0, moveInputs) || CBlockContainsInSprite(moveSpec, foreverSpec, 0, moveInputs);
             }
+            /*testAssert(outputLog, moveInLoop,
+                "The 'move' block is within a loop and the 'pick random' block is within the 'move' block.",
+                "The 'move' block is not within a loop or the 'pick random' block is not within the 'move' block.",
+                "Make sure your sprite will move continuously and randomly!");*/
+            var turnInLoop = function turnInLoop() {
+                var turnSpec = "turn %clockwise %n degrees";
+                var turnInputs = [{"blockSp":"pick random %n to %n","inputs":["",""]}];
+                var repeatSpec = "repeat %n %c";
+                var foreverSpec = "forever %c";
+                return CBlockContainsInSprite(turnSpec, repeatSpec, 0, turnInputs) || CBlockContainsInSprite(turnSpec, foreverSpec, 0, turnInputs);
+            }
+            /*testAssert(outputLog, turnInLoop,
+                "The 'turn' block is within a loop and the 'pick random' block is within the 'turn' block.",
+                "The 'turn' block is not within a loop or the 'pick random' block is not within the 'turn' block.",
+                "Make sure your sprite will turn continuously!");*/
+            var moveTurnSameScript = function moveTurnSameScript() {
+                return (blockPrecedesInSprite("turn %clockwise %n degrees", "move %n steps", 0) || blockPrecedesInSprite("move %n steps", "turn %clockwise %n degrees", 0));
+            }
+            /*testAssert(outputLog, moveTurnSameScript,
+                "The 'move' and 'turn' blocks are in a script together.",
+                "The 'move' and 'turn' blocks are not in a script together.",
+                "Make sure your sprite will both move and turn!");*/
+            /**/
 
 
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
             console.log('fb created');
-
-
             // Create a first test chunk
-            var first_chunk = fb.newChunk('Forever point towards mouse-pointer and move');
+            var test_chunk = fb.newChunk('Random Walk');
             console.log('test chunk created');
-            console.log(first_chunk);
+            console.log(test_chunk);
             // Add a first tip to that first test chunk
-            var first_tip = first_chunk.newTip('Make sure you use create the script from exercise 2!',
-                'Great job!');
-            console.log('test tip created');
-
-            var ass_test1 = first_tip.newAssertTest(
-                foreverBlock1,
-                "Testing if script from exercise 2 is present.",
-                "The script from exercise 2 is present.",
-                "Double check that your script matches the one from exercise 2 above.",
-                1);
-
-            // Create a first test chunk
-            var second_chunk = fb.newChunk('Forever go to mouse x and mouse y');
-            console.log('test chunk created');
-            console.log(second_chunk);
-            // Add a first tip to that first test chunk
-            var second_tip = second_chunk.newTip('Make sure you match the script from exercise 4.',
+            var test_tip = test_chunk.newTip('Make sure you use a loop so that your sprite moves continuously.',
                 'Great job on the loop!');
-            console.log('test tip created');
+            console.log('test tip created');  
 
+            var ass_test1 = test_tip.newAssertTest( 
+                loopExists, 
+                "There is no 'pen down' block in the scripting area.",
+                "There is a 'pen down' block.",
+                "Make sure the pen is down.",
+                1);  
+
+            var second_tip = test_chunk.newTip('Make sure the sprite is moving and turning.',
+                'Your sprite is moving and turning randomly! Good job!');
+            // Add a test to that second tip
             var ass_test2 = second_tip.newAssertTest(
-                foreverBlock2,
-                "Testing if script from exercise 4 is present.",
-                "The script from exercise 4 is present.",
-                "Double check that your script matches the one from exercise 4 above.",
+                moveInLoop,
+                "The 'move' block is not within a loop or the 'pick random' block is not within the 'move' block.",
+                "The 'move' block is within a loop and the 'pick random' block is within the 'move' block.",
+                "Make sure your sprite will move continuously and randomly!",
                 1);
 
-            // Create a first test chunk
-            var third_chunk = fb.newChunk('Forever go to x-position and y-position + 30');
-            console.log('test chunk created');
-            console.log(third_chunk);
-            // Add a first tip to that first test chunk
-            var third_tip = third_chunk.newTip('Make sure you match the script from exercise 5.',
-                'Great job on the loop!');
-            console.log('test tip created');
-
-            var ass_test3 = third_tip.newAssertTest(
-                foreverBlock3,
-                "Testing if script from exercise 5 is present.",
-                "The script from exercise 5 is present.",
-                "Make sure to create another script and add in the new go-to block that contains x-position and (y-position + 30) as inputs",
+            var ass_test3 = second_tip.newAssertTest(
+                turnInLoop,
+                "The 'turn' block is not within a loop or the 'pick random' block is not within the 'turn' block.",
+                "The 'turn' block is within a loop and the 'pick random' block is within the 'turn' block.",
+                "Make sure your sprite will turn continuously!",
                 1);
 
+            var ass_test4 = second_tip.newAssertTest(
+                moveTurnSameScript,
+                "The 'move' and 'turn' blocks are not in a script together.",
+                "The 'move' and 'turn' blocks are in a script together.",
+                "Make sure your sprite will both move and turn!",
+                1);
+
+            var third_tip = test_chunk.newTip('Make sure your sprite is drawing its random walk!',
+                'Your sprite is drawing its random walk. Good job!');
+
+            var ass_test4 = third_tip.newAssertTest(
+                penDownExists,
+                "There is no 'pen down' block in the scripting area.",
+                "There is a 'pen down' block.",
+                "Make sure the pen is down.",
+                1);
+
+            //fb.scoreLog();
+
+
+
+            /*Make the sprite move around randomly.*/
+            
+            //return outputLog;
+            console.log(fb);
             return fb;
         }
     </script>
