@@ -113,8 +113,9 @@ function AGUpdate(snapWorld, taskID) {
     //Retrieve previous grade logs (if in sessionStorage). As {String}s
     
     if (!prev_xml || !curr_xml) {
-        console.log(prev_xml);
-        console.log(curr_xml);
+        // console.log(prev_xml);
+        // console.log(curr_xml);
+        console.log('AGUpdate: Either prev_xml or curr_xml do not exist.')
     }
     //menu bar grays out options that are not available 
     //(ex. current state is same as best attempt) and restores the button state
@@ -163,7 +164,7 @@ function AGUpdate(snapWorld, taskID) {
         }
 
     } else {
-        console.log("AGUpdate: Button should be ungraded");
+        // console.log("AGUpdate: Button should be ungraded");
         //Restore the AG status bar to a graded state
         var numAttempts = setNumAttempts(taskID);
         outputLog = new FeedbackLog(snapWorld, taskID, "", numAttempts);
@@ -192,7 +193,7 @@ function AGUpdate(snapWorld, taskID) {
  *  - Should only be called from outputLog.evaluateLog()
  */
 function AGFinish(outputLog) {
-    console.log("yooooooooooooooooooooooooooooooooooooooooooo");
+    
 
     var c_prev_log = JSON.parse(sessionStorage.getItem(outputLog.taskID + "_c_test_log"));
 
@@ -207,14 +208,14 @@ function AGFinish(outputLog) {
         outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
     } else if ((outputLog.pScore > 0) && ((c_prev_log && outputLog.pScore >= c_prev_log.pScore) || (!c_prev_log))) {
         //if (outputLog.pScore >= c_prev_log.pScore && c_prev_log || !c_prev_log) {
-        console.log("else if");
+        // console.log("else if");
         //AG_bar_semigraded(outputLog);
         //outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
         // Update AG_status_bar to 'graded, but incorrect state
     } else {
         AG_bar_semigraded(outputLog);
     }
-    console.log("whattttttttttttttttttttttt");
+    
     //Save the current XML. Log is saved in gradingLog.scoreLog(...)
     outputLog.saveSnapXML(outputLog.taskID + "_test_state");
     //outputLog.numAttempts += 1;
