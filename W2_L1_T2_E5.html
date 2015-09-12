@@ -41,7 +41,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_W1_L2_T3_E2_4_5";
+        var taskID = "_W1_L1_T4_E5_6";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -54,73 +54,36 @@
         // var testLog;
         function AGTest(outputLog) {
 
-            /* Recreate provided forever script */
-            var foreverBlock1 = function () {
-                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
+             var drawSquareHasInput = function() {
+                if (findBlockInPalette("draw square %") !== null) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
-
-            var foreverBlock2 = function () {
-                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["mouse x","mouse y"]}]]}]');
-            }
-
-            var foreverBlock3 = function () {
-                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["x position",{"blockSp":"%n + %n","inputs":["y position","30"]}]}]]}]');
-            }
-
 
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
-            console.log('fb created');
-
 
             // Create a first test chunk
-            var first_chunk = fb.newChunk('Forever point towards mouse-pointer and move');
-            console.log('test chunk created');
-            console.log(first_chunk);
+            var first_chunk = fb.newChunk('Add an input to Draw Square');
             // Add a first tip to that first test chunk
-            var first_tip = first_chunk.newTip('Make sure you use create the script from exercise 2!',
+            var first_tip = first_chunk.newTip('Make sure you add an input to the signature of your Draw Square block.',
                 'Great job!');
-            console.log('test tip created');
 
             var ass_test1 = first_tip.newAssertTest(
-                foreverBlock1,
-                "Testing if script from exercise 2 is present.",
-                "The script from exercise 2 is present.",
-                "Double check that your script matches the one from exercise 2 above.",
+                drawSquareHasInput,
+                "Testing if Draw Square has an input in its signature.",
+                "Draw Square has an input.",
+                "Draw Square does not have an input in its signature.",
                 1);
 
-            // Create a first test chunk
-            var second_chunk = fb.newChunk('Forever go to mouse x and mouse y');
-            console.log('test chunk created');
-            console.log(second_chunk);
-            // Add a first tip to that first test chunk
-            var second_tip = second_chunk.newTip('Make sure you match the script from exercise 4!',
-                'Great job on the loop!');
-            console.log('test tip created');
+            return fb;
 
-            var ass_test2 = second_tip.newAssertTest(
-                foreverBlock2,
-                "Testing if script from exercise 4 is present.",
-                "The script from exercise 4 is present.",
-                "Double check that your script matches the one from exercise 4 above.",
-                1);
-
-            // Create a first test chunk
-            var third_chunk = fb.newChunk('Forever go to x-position and y-position + 30');
-            console.log('test chunk created');
-            console.log(third_chunk);
-            // Add a first tip to that first test chunk
-            var third_tip = third_chunk.newTip('Make sure you match the script from exercise 5.',
-                'Great job on the loop!');
-            console.log('test tip created');
-
-            var ass_test3 = third_tip.newAssertTest(
-                foreverBlock3,
-                "Testing if script from exercise 5 is present.",
-                "The script from exercise 5 is present.",
-                "Make sure to create another script and add in the new go-to block that contains x-position and (y-position + 30) as inputs.",
-                1);
-
+            //fb.scoreLog();
+            
+            //return outputLog;
+            console.log(fb);
             return fb;
         }
     </script>
@@ -217,4 +180,4 @@
     </div>
     <script type="text/javascript" src="AG_status_bar.js" />
 </body>
-</html>
+</html>            
