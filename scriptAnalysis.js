@@ -27,7 +27,7 @@ function getAllScripts(blockSpec, spriteIndex) {
 	var scripts = getScripts(spriteIndex);
 	//If no scripts, throw an exception.
 	if (scripts.length === 0) {
-		throw "No blocks/scripts were found."
+		throw "Block/script not found."
 	}
 
 	//Try to return the first block matching 'blockSpec'.
@@ -195,6 +195,9 @@ function reporterHasNoInputs(block) {
  * ]
  */
 function JSONblock(block) {
+	if ((block === undefined) || (block === null)) {
+		throw "block is undefined";
+	}
 	var blockArgs = [];
 	var morph;
 	for (var i = 0; i < block.children.length; i++) {
@@ -254,6 +257,10 @@ function JSONblock(block) {
  * ]}]
  */
 function JSONcustomBlock(block) {
+	if ((block === undefined) || (block === null)) {
+		throw "Custom block definition not found.";
+		// return null;
+	}
 	var resultJSONblock = JSONblock(block);
 	var JSONbody = JSONscript(block.definition.body.expression);
 	var inputs = block.definition.body.inputs;

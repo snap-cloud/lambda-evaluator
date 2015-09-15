@@ -173,7 +173,7 @@ function AGUpdate(snapWorld, taskID) {
         }*/
 
     } else {
-        console.log("AGUpdate: Button should be ungraded");
+        // console.log("AGUpdate: Button should be ungraded");
         //Restore the AG status bar to a graded state
         var numAttempts = setNumAttempts(taskID);
         outputLog = new FeedbackLog(snapWorld, taskID, "", numAttempts);
@@ -220,12 +220,14 @@ function AGFinish(outputLog) {
     } else if ((outputLog.pScore > 0) && ((c_prev_log && outputLog.pScore >= c_prev_log.pScore) || (!c_prev_log))) {
         //if (outputLog.pScore >= c_prev_log.pScore && c_prev_log || !c_prev_log) {
         //console.log("else if");
+
         //AG_bar_semigraded(outputLog);
         //outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
         // Update AG_status_bar to 'graded, but incorrect state
     } else {
         AG_bar_semigraded(outputLog);
     }
+
     //Save the current XML. Log is saved in gradingLog.scoreLog(...)
     outputLog.saveSnapXML(outputLog.taskID + "_test_state");
     //outputLog.numAttempts += 1;
@@ -239,6 +241,10 @@ function AGFinish(outputLog) {
     if (isEDX) {
         parent.document.getElementsByClassName('check-label')[id_problem].click();
     } 
+    if (!isEDX) {
+        populateFeedback(outputLog, false)
+        openResults();
+    }
     //parent.document.getElementsByClassName('check-label')[0].click();
 }
 /*

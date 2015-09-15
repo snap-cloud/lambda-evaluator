@@ -188,11 +188,6 @@ FeedbackLog.prototype.runSnapTests = function() {
 };
 //NOTE: This function must now pass in a test.
 FeedbackLog.prototype.startSnapTest = function(test) {
-	if (!test || !this.findTest(test)) {
-		throw 'FeedbackLog.startSnapTest: Test not found';
-	} else if (test.testClass !== 'r') {
-		throw 'FeedbackLog.startSnapTest: Test is wrong type';
-	}
 	try {
 		//Retrieve the block from the stage
 		var block = null;
@@ -241,7 +236,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 		test.graded = true;
 		test.proc = null;
 		//Find the next test and run it.
-		runNextTest(test);
+		this.runNextTest(test);
 
 	}
 };
@@ -295,7 +290,7 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 		throw "gradingLog.finishSnapTest: Trying to clear values of block that does not exist.";
 	}
 	// Launch the next test if it exists, scoreLog otherwise.
-	runNextTest(test);
+	this.runNextTest(test);
 
 };
 
@@ -431,11 +426,11 @@ FeedbackLog.prototype.scoreLog = function() {
 	//TODO: UNCOMMENT AGFinish
 	/**********/
 	AGFinish(this);
-	try {
-		AGFinish(this);
-	} catch(e) {
-		console.log("WARNING: FeedbackLog.scoreLog, Can't find AGFinish.");
-	}
+	// try {
+	// 	AGFinish(this);
+	// } catch(e) {
+	// 	console.log("WARNING: FeedbackLog.scoreLog, Can't find AGFinish.");
+	// }
 	return this;
 };
 
@@ -589,11 +584,15 @@ function AssertTest(statement, text, pos_fb, neg_fb, points) {
 	this.pos_fb = pos_fb;
 	this.neg_fb = neg_fb;
 	this.points = points || 1;
-
-	this.correct = statement();
-	if (this.correct) {
-		this.feedback = pos_fb;
-	} else {
+	try {
+		this.correct = statement();
+		if (this.correct) {
+			this.feedback = pos_fb;
+		} else {
+			this.feedback = neg_fb;
+		}
+	} catch(e) {
+		this.correct = false;
 		this.feedback = neg_fb;
 	}
 	this.graded = true;

@@ -53,11 +53,13 @@ function AG_bar_graded(outputLog) {
     if (button_elem.html().match(regex) !== null) {
         return;
     }
-    button_elem.fadeOut('fast', function() {
-        button_elem.html(button_text);
-        button_elem.slideDown('fast');
-        $('#autograding_button').css('background', '#29A629');
-    });
+    // button_elem.fadeOut('fast', function() {
+    //     button_elem.html(button_text);
+    //     button_elem.slideDown('fast');
+    //     $('#autograding_button').css('background', '#29A629');
+    // });
+    button_elem.html(button_text);
+    $('#autograding_button').css('background', '#29A629');
     $('#autograding_button .hover_darken').hide();
     $('#onclick-menu').css('color', 'white');
     $('#feedback-button').html("Review Feedback");
@@ -78,11 +80,13 @@ function AG_bar_semigraded(outputLog) {
     if (button_elem.html().match(regex) !== null) {
         return;
     }
-    button_elem.fadeOut('fast', function() {
-        button_elem.html(button_text);
-        button_elem.slideDown('fast');
-        $('#autograding_button').css('background', 'red');
-    });
+    // button_elem.fadeOut('fast', function() {
+    //     button_elem.html(button_text);
+    //     button_elem.slideDown('fast');
+    //     $('#autograding_button').css('background', 'red');
+    // });
+    button_elem.html(button_text);
+    $('#autograding_button').css('background', 'red');
     $('#autograding_button .hover_darken').show();
     $('#onclick-menu').css('color', 'orange');
 }
@@ -729,7 +733,6 @@ var button_listener = function(event) {
     outputLog.numAttempts += 1;
     runAGTest(world, id, outputLog);
 
-    //openResults();
 
     var tip_tests = document.getElementsByClassName("data");
     //console.log(String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px");
@@ -1080,7 +1083,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             appendElement("p", "✔", "data", document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                             var string_reporter = document.createElement("div");
                             string_reporter.classList.add("data", "assertion");
-                            string_reporter.innerHTML = '<p class="data assertion">' + thisTest["feedback"] + ": The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion">, returned the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '</p>';
+                            string_reporter.innerHTML = '<p class="data assertion">' + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion">, returned the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '</p>';
                             document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
                             appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                         }
@@ -1091,7 +1094,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
 
                         var string_reporter = document.createElement("div");
                         string_reporter.classList.add("data", "assertion");
-                        string_reporter.innerHTML = '<p class="data assertion">' + thisTest["feedback"] + ": The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion">, did NOT return the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '<p class="data assertion">. Instead it returned ' + '<p class="data assertion bold">the output: ' + thisTest["output"] + '</p>';
+                        string_reporter.innerHTML = '<p class="data assertion">' + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion"> did NOT return the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '.<p class="data assertion"> Instead it returned ' + '<p class="data assertion bold">the output: ' + thisTest["output"] + '</p>';
                         document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
                         appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                     }

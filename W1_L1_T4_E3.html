@@ -64,14 +64,14 @@
             //     "N/A",
             //     "Make sure you have all of the correct inputs and the blocks are in the correct order!", 1);
 
-            /* Recreate the move/turn script */
-            var smallScriptExists = function () {
-                return scriptPresentInSprite('[{"blockSp":"move %n steps","inputs":["10"]},{"blockSp":"turn %clockwise %n degrees","inputs":["15"]}]');
-            }
-            // testAssert(outputLog, smallScriptExists,
-            //     "The move/turn was found on the screen.",
-            //     "N/A",
-            //     "Make sure you have all of the correct inputs and the blocks are in the correct order!", 1);
+            // /* Recreate the move/turn script */
+            // var smallScriptExists = function () {
+            //     return scriptPresentInSprite('[{"blockSp":"move %n steps","inputs":["10"]},{"blockSp":"turn %clockwise %n degrees","inputs":["15"]}]');
+            // }
+            // // testAssert(outputLog, smallScriptExists,
+            // //     "The move/turn was found on the screen.",
+            // //     "N/A",
+            // //     "Make sure you have all of the correct inputs and the blocks are in the correct order!", 1);
 
 
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
@@ -93,21 +93,21 @@
                 "Make sure you have all of the correct inputs and the blocks are in the correct order!",
                 1);
 
-            // Create a second test chunk
-            var second_chunk = fb.newChunk('Move and Turn');
-            console.log('second_chunk created');
-            console.log(second_chunk);
-            // Add a first tip to that first test chunk
-            var second_tip = second_chunk.newTip('Check the image of the script for exercise 5 for guidance!',
-                'Great job on the script!');
-            console.log('test tip created');
+            // // Create a second test chunk
+            // var second_chunk = fb.newChunk('Move and Turn');
+            // console.log('second_chunk created');
+            // console.log(second_chunk);
+            // // Add a first tip to that first test chunk
+            // var second_tip = second_chunk.newTip('Check the image of the script for exercise 5 for guidance!',
+            //     'Great job on the script!');
+            // console.log('test tip created');
 
-            second_tip.newAssertTest(
-                smallScriptExists,
-                "Test for exact script matching.",
-                "All of the blocks are in order and have correct inputs.",
-                "Make sure you have all of the correct inputs and the blocks are in the correct order!",
-                1);
+            // second_tip.newAssertTest(
+            //     smallScriptExists,
+            //     "Test for exact script matching.",
+            //     "All of the blocks are in order and have correct inputs.",
+            //     "Make sure you have all of the correct inputs and the blocks are in the correct order!",
+            //     1);
 
             return fb;
         }
