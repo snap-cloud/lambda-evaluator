@@ -598,10 +598,11 @@ function initializeSnapAdditions(snapWorld, taskID) {
                     sessionStorage.setItem(taskID + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
                 }
 
-                var button_text = parent.document.getElementsByClassName('check-label')[id_problem];
-                button_text.innerHTML = "Submit";
+                var button_text = parent.document.getElementsByClassName('check')[id_problem];
+                //button_text.innerHTML = "Submit";
+                button_text.style.display = "none";
 
-                makeOverlayButton();
+                //makeOverlayButton();
             }
 
         }, 100);

@@ -116,8 +116,9 @@ function AGUpdate(snapWorld, taskID) {
     //Retrieve previous grade logs (if in sessionStorage). As {String}s
     
     if (!prev_xml || !curr_xml) {
-        console.log(prev_xml);
-        console.log(curr_xml);
+        //console.log(prev_xml);
+        //console.log(curr_xml);
+        console.log('AGUpdate: Either prev_xml or curr_xml do not exist.');
     }
     //menu bar grays out options that are not available 
     //(ex. current state is same as best attempt) and restores the button state
@@ -148,12 +149,12 @@ function AGUpdate(snapWorld, taskID) {
             AG_bar_semigraded(outputLog);
         }
 
-        if (isEDX) {
+        /*if (isEDX) {
             setTimeout(function() {
                 parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "none";
             }, 500);
             
-        }
+        }*/
 
     } else if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
         //Restore the AG status bar to a graded state
@@ -164,12 +165,12 @@ function AGUpdate(snapWorld, taskID) {
         outputLog = JSON.parse(prev_log);
         outputLog.snapWorld = snapWorld;
         AG_bar_semigraded(outputLog);
-        if (isEDX) {
+        /*if (isEDX) {
             setTimeout(function() {
                 parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "none";
             }, 500);
             
-        }
+        }*/
 
     } else {
         console.log("AGUpdate: Button should be ungraded");
@@ -182,12 +183,12 @@ function AGUpdate(snapWorld, taskID) {
         AG_bar_ungraded(outputLog);
         console.log("button should change");
         //document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
-        if (isEDX) {
+        /*if (isEDX) {
             setTimeout(function() {
                 parent.document.getElementsByClassName('overlay-button')[id_problem].style.display = "block";
             }, 500);
             
-        }
+        }*/
 
     }
     //populateFeedback(outputLog);
@@ -218,7 +219,7 @@ function AGFinish(outputLog) {
         outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
     } else if ((outputLog.pScore > 0) && ((c_prev_log && outputLog.pScore >= c_prev_log.pScore) || (!c_prev_log))) {
         //if (outputLog.pScore >= c_prev_log.pScore && c_prev_log || !c_prev_log) {
-        console.log("else if");
+        //console.log("else if");
         //AG_bar_semigraded(outputLog);
         //outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
         // Update AG_status_bar to 'graded, but incorrect state
