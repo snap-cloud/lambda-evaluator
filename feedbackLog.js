@@ -188,11 +188,6 @@ FeedbackLog.prototype.runSnapTests = function() {
 };
 //NOTE: This function must now pass in a test.
 FeedbackLog.prototype.startSnapTest = function(test) {
-	if (!test || !this.findTest(test)) {
-		throw 'FeedbackLog.startSnapTest: Test not found';
-	} else if (test.testClass !== 'r') {
-		throw 'FeedbackLog.startSnapTest: Test is wrong type';
-	}
 	try {
 		//Retrieve the block from the stage
 		var block = null;
@@ -241,7 +236,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 		test.graded = true;
 		test.proc = null;
 		//Find the next test and run it.
-		runNextTest(test);
+		this.runNextTest(test);
 
 	}
 };
@@ -295,7 +290,7 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 		throw "gradingLog.finishSnapTest: Trying to clear values of block that does not exist.";
 	}
 	// Launch the next test if it exists, scoreLog otherwise.
-	runNextTest(test);
+	this.runNextTest(test);
 
 };
 

@@ -229,6 +229,10 @@ function AGFinish(outputLog) {
     if (isEDX) {
         parent.document.getElementsByClassName('check-label')[id_problem].click();
     } 
+    if (!isEDX) {
+        populateFeedback(outputLog, false)
+        openResults();
+    }
     //parent.document.getElementsByClassName('check-label')[0].click();
 }
 /*

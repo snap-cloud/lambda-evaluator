@@ -80,20 +80,35 @@
                 "Make sure you name your block exactly 'is % divisible by % ?'.",
                 1);
 
-             var io_test = first_tip.newIOTest('r',  //change?
-                'is % divisible by % ?',   //blockSpec
-                [[1, 4], [3, 6], [6, 3], [6, 6], [4, 1], [7, 4], [-5, 5], [0, 3], [8, 5]], //input
-                [false, false, true, true, true, false, true, true, false], //expOut
-                [-1, -1, -1, -1, -1, -1, -1, -1, -1], //timeOut
-                [false, false, false, false, false, false, false, false, false], //isolated, defaults to false
-                1); //points
+             first_tip.newIOTest('r',  //testClass
+                'is % divisible by % ?',  //blockSpec
+                [1,4],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+             first_tip.newIOTest('r',
+                'is % divisible by % ?',
+                [3,6],
+                false,
+                -1,
+                false,
+                1);
+             first_tip.newIOTest('r',
+                'is % divisible by % ?',
+                [6,3],
+                true,
+                -1,
+                false,
+                1);
+             first_tip.newIOTest('r',
+                'is % divisible by % ?',
+                [17,17],
+                true,
+                -1,
+                false,
+                1);
 
-            return fb;
-
-            //fb.scoreLog();
-            
-            //return outputLog;
-            console.log(fb);
             return fb;
         }
     </script>

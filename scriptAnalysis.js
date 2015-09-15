@@ -27,7 +27,7 @@ function getAllScripts(blockSpec, spriteIndex) {
 	var scripts = getScripts(spriteIndex);
 	//If no scripts, throw an exception.
 	if (scripts.length === 0) {
-		throw "No blocks/scripts were found."
+		throw "Block/script not found."
 	}
 
 	//Try to return the first block matching 'blockSpec'.
