@@ -576,11 +576,15 @@ function AssertTest(statement, text, pos_fb, neg_fb, points) {
 	this.pos_fb = pos_fb;
 	this.neg_fb = neg_fb;
 	this.points = points || 1;
-
-	this.correct = statement();
-	if (this.correct) {
-		this.feedback = pos_fb;
-	} else {
+	try {
+		this.correct = statement();
+		if (this.correct) {
+			this.feedback = pos_fb;
+		} else {
+			this.feedback = neg_fb;
+		}
+	} catch(e) {
+		this.correct = false;
 		this.feedback = neg_fb;
 	}
 	this.graded = true;

@@ -258,7 +258,8 @@ function JSONblock(block) {
  */
 function JSONcustomBlock(block) {
 	if ((block === undefined) || (block === null)) {
-		throw "custom block definition not found."
+		throw "Custom block definition not found.";
+		// return null;
 	}
 	var resultJSONblock = JSONblock(block);
 	var JSONbody = JSONscript(block.definition.body.expression);
