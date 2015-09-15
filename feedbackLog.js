@@ -420,11 +420,11 @@ FeedbackLog.prototype.scoreLog = function() {
 	//TODO: UNCOMMENT AGFinish
 	/**********/
 	AGFinish(this);
-	try {
-		AGFinish(this);
-	} catch(e) {
-		console.log("WARNING: FeedbackLog.scoreLog, Can't find AGFinish.");
-	}
+	// try {
+	// 	AGFinish(this);
+	// } catch(e) {
+	// 	console.log("WARNING: FeedbackLog.scoreLog, Can't find AGFinish.");
+	// }
 	return this;
 };
 
