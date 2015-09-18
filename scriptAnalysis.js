@@ -504,7 +504,7 @@ function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex, 
  * The following 8 blocks are considered C-shaped:
  *  -repeat, repeat until, warp, forever, for loop, if, if else, for each
  */
-function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2) {
+function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2, softMatch) {
 	if (Object.prototype.toString.call(script) !== '[object Array]') {
 		return false;
 	}
@@ -513,6 +513,9 @@ function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2) {
 	}
 	if (argArray2 === undefined) {
 		argArray2 = [];
+	}
+	if (softMatch === undefined) {
+		softMatch = false;
 	}
     var morph1, type1, CblockSpecs;
     CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
@@ -538,23 +541,23 @@ function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2) {
         if ((type1 === "string")) {
             continue;
         } else if (Object.prototype.toString.call(morph1) === '[object Array]') { 
-            if (CBlockContains(block1Spec, block2Spec, morph1, argArray1, argArray2)) {
+            if (CBlockContains(block1Spec, block2Spec, morph1, argArray1, argArray2, softMatch)) {
                 return true;
             }
         } else if (blockSpecMatch(morph1.blockSp, block2Spec) && checkArgArrays(argArray2, morph1.inputs)) {
-            if (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 1], block1Spec, argArray1)) {
+            if (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 1], block1Spec, argArray1, softMatch)) {
                 return true;
             }
             if ((morph1.blockSp === "if %b %c else %c")
-                && (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 2], block1Spec, argArray1))) {
+                && (scriptContainsBlock(morph1.inputs[morph1.inputs.length - 2], block1Spec, argArray1, softMatch))) {
                 return true;
             }
         } else if (CblockSpecs.indexOf(morph1.blockSp) >= 0) {
-            if (CBlockContains(block1Spec, block2Spec, morph1.inputs[morph1.inputs.length - 1], argArray1, argArray2)) {
+            if (CBlockContains(block1Spec, block2Spec, morph1.inputs[morph1.inputs.length - 1], argArray1, argArray2, softMatch)) {
                 return true;
             }
             if ((morph1.blockSp === "if %b %c else %c")
-                && (CBlockContains(block1Spec, block2Spec, morph1.inputs[morph1.inputs.length - 2], argArray1, argArray2))) {
+                && (CBlockContains(block1Spec, block2Spec, morph1.inputs[morph1.inputs.length - 2], argArray1, argArray2, softMatch))) {
                 return true;
             }
         }
@@ -571,12 +574,15 @@ function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2) {
  *
  * JSONscript(...)
  */
-function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArray2) {
+function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArray2, softMatch) {
         if (argArray1 === undefined) {
             argArray1 = [];
         }
         if (argArray2 === undefined) {
             argArray2 = [];
+        }
+        if (softMatch === undefined) {
+        	softMatch = false;
         }
         var nicknameDict = {
             "repeat" : "repeat %n %c",
@@ -592,7 +598,7 @@ function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
             throw "The given C-block nickname is invalid.";
         }
         var block2Spec = nicknameDict[block2Name];
-        return CBlockContains(blockSpec1, block2Spec, script, argArray1, argArray2);
+        return CBlockContains(blockSpec1, block2Spec, script, argArray1, argArray2, softMatch);
 }
 
 /* Takes in two blockspecs and two argument arrays (representing a block and 
@@ -602,10 +608,13 @@ function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
 * the Scripts tab of the given sprite. See documentation of CBlockContains for 
 * details of what blocks are considered C-shaped.
 */
-function CBlockContainsInSprite(block1Spec, block2Spec, spriteIndex, argArray1, argArray2) {
+function CBlockContainsInSprite(block1Spec, block2Spec, spriteIndex, argArray1, argArray2, softMatch) {
     //Populate optional parameters
     if (spriteIndex === undefined) {
         spriteIndex = 0;
+    }
+    if (softMatch === undefined) {
+    	softMatch = false;
     }
     try {
         var JSONtarget;
@@ -613,7 +622,7 @@ function CBlockContainsInSprite(block1Spec, block2Spec, spriteIndex, argArray1, 
         var scriptsOnScreen = getScripts(spriteIndex);
         for (var i = 0; i < scriptsOnScreen.length; i++) {
             JSONtarget = JSONscript(scriptsOnScreen[i]);
-            doesContain = CBlockContains(block1Spec, block2Spec, JSONtarget, argArray1, argArray2);
+            doesContain = CBlockContains(block1Spec, block2Spec, JSONtarget, argArray1, argArray2, softMatch);
             if (doesContain) {
                 return true;
             }
