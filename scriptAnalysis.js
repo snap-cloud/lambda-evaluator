@@ -209,7 +209,7 @@ function JSONblock(block) {
 		} else if (morph instanceof InputSlotMorph) {
 			blockArgs.push(morph.children[0].text);
 		} else if (morph instanceof CSlotMorph) {
-			if (morph.children.length == 0) {
+			if (morph.children.length === 0) {
 				blockArgs.push([]);
 			} else {
 				blockArgs.push(JSONscript(morph.children[0]));
@@ -234,7 +234,7 @@ function JSONblock(block) {
  * with a body like this:
  *
  * factorial (n) {
- *     if (n == 0) {
+ *     if (n === 0) {
  *         return 1;
  *     }
  *     else {
@@ -347,14 +347,17 @@ function getGlobalVar(varToGet, globalVars) {
 /* Takes in string CUSTOMBLOCKSPEC, the strings BLOCKSPEC1 (any block)
  * and BLOCKSPEC2 (a conditional block), and their respective
  * optional arg arrays ARGARRAY1 and ARGARRAY2. Returns true if BLOCKSPEC1 is
- * inside of the block represented by BLOCKSPEC2.
+ * inside of the block represented by BLOCKSPEC2. Also has a SOFTMATCH input.
  */
-function CBlockContainsInCustom(customBlockSpec, blockSpec1, blockSpec2, argArray1, argArray2) {
+function CBlockContainsInCustom(customBlockSpec, blockSpec1, blockSpec2, argArray1, argArray2, softMatch) {
 	if (argArray1 === undefined) {
 		argArray1 = [];
 	}
 	if (argArray2 === undefined) {
 		argArray2 = [];
+	}
+	if (softMatch === undefined) {
+		softMatch = false;
 	}
 	try {
 		var script = getCustomBody(customBlockSpec);
@@ -362,8 +365,7 @@ function CBlockContainsInCustom(customBlockSpec, blockSpec1, blockSpec2, argArra
 	catch(e) {
 		return false;
 	}
-	return CBlockContains(blockSpec1, blockSpec2, script, argArray1, argArray2);
-
+	return CBlockContains(blockSpec1, blockSpec2, script, argArray1, argArray2, softMatch);
 }
 
 /* Takes in a SCRIPT and checks recursively if it contains
@@ -390,7 +392,6 @@ function scriptContainsBlock(script, blockSpec, argArray, softMatch) {
 	if (softMatch === undefined) {
 		softMatch = false;
 	}
-
 	var morph1, type1;
 	for (var i = 0; i < script.length; i++) {
 		morph1 = script[i];
@@ -404,7 +405,7 @@ function scriptContainsBlock(script, blockSpec, argArray, softMatch) {
 			}
 		} else {
 			if (blockSpecMatch(morph1.blockSp, blockSpec)) {
-				if (argArray.length == 0 || ((argArray.length == 1 ) && (argArray[0] === ""))) {
+				if (argArray.length === 0 || ((argArray.length === 1 ) && (argArray[0] === ""))) {
 					return true;
 				} else if ((argArray.length > 0) && _.isEqual(morph1.inputs, argArray)) {
 					return true;
@@ -438,6 +439,16 @@ function checkArgArrays(template, actual) {
 		if ((currArg === "")
 			|| (Object.prototype.toString.call(currArg) === '[object Array]' && currArg.length === 0)) {
 			continue;
+		} else if (Object.prototype.toString.call(currArg) === '[object Object]') {
+			try {
+				if (blockSpecMatch(actual[i].blockSp, currArg.blockSp)) {
+					return checkArgArrays(currArg.inputs, actual[i].inputs);
+				} else {
+					return false;
+				}
+			} catch(e) {
+				return false;
+			}
 		} else if (!_.isEqual(currArg, actual[i])) {
 			return false;
 		}
@@ -496,8 +507,9 @@ function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex, 
 /* Takes in BLOCK1SPEC (any block) and BLOCK2SPEC (a C-block), 
  * a script, and respective inputs ARGARRAY1 and ARGARRAY2.
  * Returns true if the block represented by block1 occurs inside 
- * the C-shaped block represented by block2. SCRIPT can be
- * obtained by calling:
+ * the C-shaped block represented by block2. SOFTMATCH is used in 
+ * the call to scriptContainsBlock so that checkArgArrays will be 
+ * called. SCRIPT can be obtained by calling:
  *
  * JSONscript(...)
  *
@@ -515,8 +527,8 @@ function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2, so
 		argArray2 = [];
 	}
 	if (softMatch === undefined) {
-		softMatch = false;
-	}
+    	softMatch = false;
+    }
     var morph1, type1, CblockSpecs;
     CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
     CblockSpecs = CblockSpecs.concat(["repeat until %b %c", "if %b %c", "if %b %c else %c"]);
@@ -569,7 +581,8 @@ function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2, so
 /* Takes in a blockSpec BLOCKSPEC1, a nickname BLOCK2NAME, a javascript object SCRIPT,
  * and optional arguments ARGARRAY1 and ARGARRAY2.
  * Returns true if the block represented by BLOCKSPEC1 occurs inside 
- * the C-shaped block represented by BLOCK2NAME. Matches BLOCK2NAME to a blockspec.
+ * the C-shaped block represented by BLOCK2NAME. Matches BLOCK2NAME to a blockspec. 
+ * Also has a SOFTMATCH input to pass into CBlockContains.
  * SCRIPT can be obtained by calling:
  *
  * JSONscript(...)
@@ -582,8 +595,8 @@ function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
             argArray2 = [];
         }
         if (softMatch === undefined) {
-        	softMatch = false;
-        }
+    		softMatch = false;
+    	}
         var nicknameDict = {
             "repeat" : "repeat %n %c",
             "warp" : "warp %c",

@@ -11,7 +11,7 @@ var button_right = button_style.getPropertyValue('right');*/
  * Makes AG status bar reflect the ungraded state of the outputLog.
  */
 
- var onclick_menu;
+var onclick_menu;
 var menu_style;
 var menu_right;
 
@@ -20,19 +20,18 @@ var button_style;
 var button_right;
 
 function AG_bar_ungraded(outputLog) {
-    var button_text = "Get Feedback";
+    var button_text = "Get Feedback ";
     var button_elem = $('#autograding_button span');
     var regex = new RegExp(button_text,"g");
     if (button_elem.html().match(regex) !== null) {
         return;
     }
-    // button_elem.fadeOut('fast', function() {
-    //     button_elem.html(button_text);
-    //     button_elem.slideDown('fast');
-    //     $('#autograding_button').css('background', 'orange');
-    // });      
-    button_elem.html(button_text);    
-    $('#autograding_button').css('background', 'orange');
+    button_elem.fadeOut('fast', function() {
+        button_elem.html(button_text);
+        button_elem.slideDown('fast');
+        $('#autograding_button').css('background', 'orange');
+    }); 
+    //document.getElementById("autograding_button").style.backgroundColor = "orange";         
     $('#autograding_button .hover_darken').show();
     $('#onclick-menu').css('color', 'white');
     if (sessionStorage.getItem(outputLog.taskID + "_test_log")) {
@@ -48,7 +47,7 @@ function AG_bar_ungraded(outputLog) {
  * only occurs when all tests on the outputLog have passed.
  */
 function AG_bar_graded(outputLog) {
-    var button_text = "Get Feedback";
+    var button_text = "Get Feedback  ";
     var button_elem = $('#autograding_button span');
     var regex = new RegExp(button_text,"g");
     if (button_elem.html().match(regex) !== null) {
@@ -401,12 +400,19 @@ function grayOutButtons(snapWorld, taskID) {
 
 
 function makeOverlayButton() {
+    var grade_button = document.getElementById("autograding_button");
     var overlay_button = parent.document.createElement('button');
     var overlay_button_text = parent.document.createTextNode('Grade');
     overlay_button.appendChild(overlay_button_text);
     overlay_button.classList.add('overlay-button');
     var button = parent.document.getElementsByName('problem_id')[id_problem];
     button.parentNode.insertBefore(overlay_button, button.nextSibling);
+    //var overlay_button = parent.document.getElementsByClassName('overlay-button')[id_problem];
+    //overlay_button.style.display = "block";
+    overlay_button.onclick = function() { 
+        overlay_button.style.display = "none";
+        grade_button.click(); 
+    }
 }
 
 function makeFullScreenButton() {
@@ -530,7 +536,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
     var grade_button = document.getElementById("autograding_button");
     var world_canvas = document.getElementById('world');
     var snap_menu = document.getElementsByClassName('bubble')[0];
-    var edX_submit_button = parent.document.getElementsByClassName('check-label')[id_problem];
+    //var edX_submit_button = parent.document.getElementsByClassName('check-label')[id_problem];
 
 
     document.addEventListener("click", function() { grayOutButtons(snapWorld, taskID); });
@@ -571,16 +577,68 @@ function initializeSnapAdditions(snapWorld, taskID) {
         moveHelp();
     });
 
+    /*if (isEDX) {
+        edX_submit_button.onclick = function() {
+            sessionStorage.setItem(taskID + "_popupFeedback", "");
+        }
+    }*/
+    
     // edX_submit_button.onclick = function() {
     //     sessionStorage.setItem(taskID + "_popupFeedback", "");
     // }
 
     if (isEDX) {
 
-        edX_submit_button.onclick = function() {
+        /*edX_submit_button.onclick = function() {
             sessionStorage.setItem(taskID + "_popupFeedback", "");
-        }
-        
+        }*/
+
+        var checkExist = setInterval(function() {
+            console.log("checking...." + id_problem);
+            if (parent.document.getElementsByClassName('check-label')[id_problem]) {
+                console.log("Exists!");
+                clearInterval(checkExist);
+                parent.document.getElementsByClassName('check-label')[id_problem].onclick = function () {
+                    sessionStorage.setItem(taskID + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
+                }
+
+                var button_text = parent.document.getElementsByClassName('check')[id_problem];
+                //button_text.innerHTML = "Submit";
+                button_text.style.display = "none";
+
+                //makeOverlayButton();
+            }
+
+        }, 100);
+
+
+
+        /*setTimeout(function() {
+            console.log(parent.document.getElementsByClassName('check-label'));
+            console.log(id_problem);
+            console.log(parent.document.getElementsByClassName('check-label')[id_problem]);
+            parent.document.getElementsByClassName('check-label')[id_problem].onclick = function () {
+                sessionStorage.setItem(taskID + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
+            }
+
+            var button_text = parent.document.getElementsByClassName('check-label')[id_problem];
+            button_text.innerHTML = "Submit";
+
+            //makeOverlayButton();
+            setTimeout(function() {
+                makeOverlayButton();
+                /*var overlay_button = parent.document.getElementsByClassName('overlay-button')[id_problem];
+                //overlay_button.style.display = "block";
+                overlay_button.onclick = function() { 
+                    overlay_button.style.display = "none";
+                    grade_button.click(); 
+                } 
+            }, 1000);
+        }, 500);*/
+
+        /*console.log(parent.document.getElementsByClassName('check-label'));
+        console.log(id_problem);
+        console.log(parent.document.getElementsByClassName('check-label')[id_problem]);
         parent.document.getElementsByClassName('check-label')[id_problem].onclick = function () {
             sessionStorage.setItem(taskID + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
         }
@@ -596,7 +654,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
                 overlay_button.style.display = "none";
                 grade_button.click(); 
             } 
-        }, 500);
+        }, 500);*/
         
         makeFullScreenButton();
         var full_screen = document.getElementById('full-screen');
@@ -647,7 +705,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
         for(var i=0; i < tip_tests.length; i++){
             tip_tests[i].style.maxWidth = String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px";
         }
-        sessionStorage.setItem(id + "_popupFeedback", "");
+        //sessionStorage.setItem(id + "_popupFeedback", "");
 
 
 
@@ -853,7 +911,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     //var feedback_header = document.createElement("p");
     //var header_text = document.createTextNode("We have " + String(numtips) + " tip" + plural + " for you!");
     //feedback_header.appendChild(header_text);
-    document.getElementById("comment").innerHTML = "We have " + String(numtips) + " tip" + plural + " for you!";
+    //document.getElementById("comment").innerHTML = "We have " + String(numtips) + " tip" + plural + " for you!";
     /*if (numtips === 1) {
         appendElement("p", "We have " + String(numtips) + " tip for you!", "feedback-header", document.getElementById("ag-results"));
     } else {
@@ -1044,11 +1102,17 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             }
         }
     }
-    // document.getElementsByClassName("incorrectans")[0].click();
+    if (document.getElementsByClassName("incorrectans")[0] !== undefined) {
+        document.getElementsByClassName("incorrectans")[0].click();
+    }
+    //document.getElementsByClassName("incorrectans")[0].click();
     correct_width = document.getElementById("correct-section").offsetWidth;
     incorrect_width = document.getElementById("incorrect-section").offsetWidth;
     popup_width = document.getElementById("ag-results").offsetWidth - 60; //To-do, make the subtracted value work for any padding values
-    // document.getElementsByClassName("incorrectans")[0].click();
+    if (document.getElementsByClassName("incorrectans")[0] !== undefined) {
+        document.getElementsByClassName("incorrectans")[0].click();
+    }
+    //document.getElementsByClassName("incorrectans")[0].click();
     //console.log(correct_width);
     //console.log(incorrect_width);
     //console.log(popup_width);
