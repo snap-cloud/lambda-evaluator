@@ -65,21 +65,14 @@
             }
 
             var multiplyExists = function() {
-                    return spriteContainsBlock("%n × %n", 0);
+                    return customBlockContains("% !", "%n × %n");
             }
 
             var repeatExists = function() {
-                return spriteContainsBlock("repeat %n %c", 0) || 
-                    spriteContainsBlock("repeat until %b %c", 0) ||
-                    spriteContainsBlock("for %upvar = %n to %n %cs", 0);
+                return customBlockContains("% !", "repeat %n %c") || 
+                    customBlockContains("% !", "repeat until %b %c") ||
+                    customBlockContains("% !", "for %upvar = %n to %n %cs");
             }
-            // multiTestBlock(outputLog, 
-            //     "% !", 
-            //     [[0], [1], [2], [3], [4], [5]],
-            //     [1, 1, 2, 6, 24, 120],
-            //     [-1, -1, -1, -1, -1, -1],
-            //     [true, true, true, true, true, true],
-            //     1);
 
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
@@ -94,7 +87,7 @@
                 factorialExists,
                 "Testing if there is a factorial block in the scripting area.",
                 "There is a factorial block in the scripting area.",
-                "Make sure you name your block exactly factorial.",
+                "Make sure your '% !' block is in the scripting area.",
                 1);
 
             var second_tip = first_chunk.newTip('Make sure to look at the definition of factorial to see what operations/blocks are necessary.',
@@ -102,65 +95,68 @@
 
             var ass_test2 = second_tip.newAssertTest(
                 multiplyExists,
-                "Testing if there is a multiplication block in the scripting area.",
-                "There is a multiplication block in the scripting area.",
-                "Make sure you multiply in your recursive call.",
+                "Testing if there is a multiplication block in the factorial block.",
+                "There is a multiplication block in the factorial block.",
+                "Make sure you use the multiplication block in your factorial block.",
                 1);
 
             var ass_test3 = second_tip.newAssertTest(
                 repeatExists,
-                "Testing if there is a loop in the scripting area.",
-                "There is a loop block in the scripting area.",
-                "Make sure you use a loop block.",
+                "Testing if there is a loop in the factorial block.",
+                "There is a loop block in the factorial block.",
+                "Make sure you use a loop block in the factorial block.",
                 1);
 
-             second_tip.newIOTest('r',  //testClass
-                'plural %',  //blockSpec
+            var third_tip = first_chunk.newTip('Make sure it works on edge cases!',
+                'Great job!');
+
+             third_tip.newIOTest('r',  //testClass
+                '% !',  //blockSpec
                 [0],  //input
                 1,  //output
                 -1,  //timeout
                 false,  //isolated
                 1);  //points
 
-             second_tip.newIOTest('r',  //testClass
-                'plural %',  //blockSpec
+             var fourth_tip = first_chunk.newTip('Make sure it works on basic inputs.',
+                'Great job!');
+
+             fourth_tip.newIOTest('r',  //testClass
+                '% !',  //blockSpec
                 [1],  //input
+                1,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             fourth_tip.newIOTest('r',  //testClass
+                '% !',  //blockSpec
+                [2],  //input
                 2,  //output
                 -1,  //timeout
                 false,  //isolated
                 1);  //points
 
-             third_tip.newIOTest('r',  //testClass
-                'plural %',  //blockSpec
-                ["boss"],  //input
-                "bosses",  //output
-                -1,  //timeout
-                false,  //isolated
-                1);  //points
-
-             third_tip.newIOTest('r',  //testClass
-                'plural %',  //blockSpec
-                ["dress"],  //input
-                "dresses",  //output
-                -1,  //timeout
-                false,  //isolated
-                1);  //points
-
-             var fourth_tip = first_chunk.newTip('Make sure your block works when the singular word ends in "x".',
-                'Great job!');
-
              fourth_tip.newIOTest('r',  //testClass
-                'plural %',  //blockSpec
-                ["fox"],  //input
-                "foxes",  //output
+                '% !',  //blockSpec
+                [3],  //input
+                6,  //output
                 -1,  //timeout
                 false,  //isolated
                 1);  //points
 
              fourth_tip.newIOTest('r',  //testClass
-                'plural %',  //blockSpec
-                ["box"],  //input
-                "boxes",  //output
+                '% !',  //blockSpec
+                [4],  //input
+                24,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             fourth_tip.newIOTest('r',  //testClass
+                '% !',  //blockSpec
+                [5],  //input
+                120,  //output
                 -1,  //timeout
                 false,  //isolated
                 1);  //points
