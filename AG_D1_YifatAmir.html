@@ -512,16 +512,16 @@
             //     "N/A",
             //     "Make sure you name your block exactly '% !'.");
             // var multiplyExists = function() {
-            //         return spriteContainsBlock("%n × %n", 0);
+            //         return customBlockContains("% !", "%n × %n");
             // }
             // testAssert(outputLog, multiplyExists,
             //     "The multiplication block is present.",
             //     "N/A",
             //     "Make sure to look at the definition of factorial.");
             // var repeatExists = function() {
-            //     return spriteContainsBlock("repeat %n %c", 0) || 
-            //         spriteContainsBlock("repeat until %b %c", 0) ||
-            //         spriteContainsBlock("for %upvar = %n to %n %cs", 0);
+            //     return customBlockContains("% !", "repeat %n %c") || 
+            //         customBlockContains("% !", "repeat until %b %c") ||
+            //         customBlockContains("% !", "for %upvar = %n to %n %cs");
             // }
             // testAssert(outputLog, repeatExists,
             //     "There is a 'repeat' block.",
@@ -536,22 +536,15 @@
             //     1);
 
             // /*Create a triangular number block.*/
-            // var exists;
             // var triangularNumberExists = function() {
-            //     exists = findBlockInPalette("triangular number %");
-            //     if (exists !== null) {
-            //         exists = true;
-            //     } else {
-            //         exists = false;
-            //     }
-            //     return exists;
+            //     return spriteContainsBlock("triangular number %");
             // }
             // testAssert(outputLog, triangularNumberExists,
             //     "There is a 'triangular number %' block.",
             //     "N/A",
             //     "Make sure you name your block exactly 'triangular number %'.");
             // var addExists = function() {
-            //         return spriteContainsBlock("%n + %n", 0);
+            //         return customBlockContains("triangular number %", "%n + %n") || customBlockContains("triangular number %", "change %var by %n") || customBlockContains("triangular number %", "set %var to %s");
             // }
             // testAssert(outputLog, addExists,
             //     "The addition block is present.",
