@@ -60,44 +60,130 @@
             // All getter/setter functions inside anonymous Assert functions.
             // Thanks for all your work :D
 
-            var triangularNumberExists = function() {
+            // var triangularNumberExists = function() {
+            //     return spriteContainsBlock("triangular number %");
+            // }
+            
+            // var addExists = function() {
+            //         return customBlockContains("triangular number %", "%n + %n") || customBlockContains("triangular number %", "change %var by %n") || customBlockContains("triangular number %", "set %var to %s");
+            // }
+
+            // var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
+            // fb.snapWorld = world;
+
+            // // Create a first test chunk
+            // var first_chunk = fb.newChunk('Make the triangular number block.');
+            // // Add a first tip to that first test chunk
+            // var first_tip = first_chunk.newTip('Make sure you name your block exactly "triangular number %".',
+            //     'Great job!');
+
+            // var ass_test1 = first_tip.newAssertTest(
+            //     triangularNumberExists,
+            //     "Testing if there is a triangular number block in the scripting area.",
+            //     "There is a triangular number block in the scripting area.",
+            //     "Make sure your 'triangular number %' is in the scripting area.",
+            //     1);
+
+            // var second_tip = first_chunk.newTip('Make sure to look at the definition of triangular number to see what operations/blocks are necessary.',
+            //     'Great job!');
+
+            // var ass_test2 = second_tip.newAssertTest(
+            //     addExists,
+            //     "Testing if there is an addition block in the triangular number block.",
+            //     "There is an addition block in the triangular number block.",
+            //     "Make sure you perform some form of addition in your triangular number block.",
+            //     1);
+
+            //  var third_tip = first_chunk.newTip('Make sure it works on basic inputs.',
+            //     'Great job!');
+
+            //  third_tip.newIOTest('r',  //testClass
+            //     'triangular number %',  //blockSpec
+            //     [0],  //input
+            //     0,  //output
+            //     -1,  //timeout
+            //     false,  //isolated
+            //     1);  //points
+
+            //  third_tip.newIOTest('r',  //testClass
+            //     'triangular number %',  //blockSpec
+            //     [1],  //input
+            //     1,  //output
+            //     -1,  //timeout
+            //     false,  //isolated
+            //     1);  //points
+
+            //  third_tip.newIOTest('r',  //testClass
+            //     'triangular number %',  //blockSpec
+            //     [2],  //input
+            //     3,  //output
+            //     -1,  //timeout
+            //     false,  //isolated
+            //     1);  //points
+
+            //  third_tip.newIOTest('r',  //testClass
+            //     'triangular number %',  //blockSpec
+            //     [3],  //input
+            //     6,  //output
+            //     -1,  //timeout
+            //     false,  //isolated
+            //     1);  //points
+
+            //  third_tip.newIOTest('r',  //testClass
+            //     'triangular number %',  //blockSpec
+            //     [4],  //input
+            //     10,  //output
+            //     -1,  //timeout
+            //     false,  //isolated
+            //     1);  //points
+
+            //  third_tip.newIOTest('r',  //testClass
+            //     'triangular number %',  //blockSpec
+            //     [5],  //input
+            //     15,  //output
+            //     -1,  //timeout
+            //     false,  //isolated
+            //     1);  //points
+
+
+            /* Adding chunk_8 for exercise 8: triangular number */
+            // Create a first test chunk
+            var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
+            fb.snapWorld = world;
+            var chunk_8 = fb.newChunk('Make the triangular number block.');
+
+            var triangularNumberExists_8 = function() {
                 return spriteContainsBlock("triangular number %");
             }
             
-            var addExists = function() {
+            var addExists_8 = function() {
                     return customBlockContains("triangular number %", "%n + %n") || customBlockContains("triangular number %", "change %var by %n") || customBlockContains("triangular number %", "set %var to %s");
             }
-
-            var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
-            fb.snapWorld = world;
-
-            // Create a first test chunk
-            var first_chunk = fb.newChunk('Make the triangular number block.');
             // Add a first tip to that first test chunk
-            var first_tip = first_chunk.newTip('Make sure you name your block exactly "triangular number %".',
+            var tip_8_1 = chunk_8.newTip('Make sure you name your block exactly "triangular number %".',
                 'Great job!');
 
-            var ass_test1 = first_tip.newAssertTest(
-                triangularNumberExists,
+            tip_8_1.newAssertTest(
+                triangularNumberExists_8,
                 "Testing if there is a triangular number block in the scripting area.",
                 "There is a triangular number block in the scripting area.",
                 "Make sure your 'triangular number %' is in the scripting area.",
                 1);
 
-            var second_tip = first_chunk.newTip('Make sure to look at the definition of triangular number to see what operations/blocks are necessary.',
+            var tip_8_2 = chunk_8.newTip('Make sure to look at the definition of triangular number to see what operations/blocks are necessary.',
                 'Great job!');
 
-            var ass_test2 = second_tip.newAssertTest(
-                addExists,
+            tip_8_2.newAssertTest(
+                addExists_8,
                 "Testing if there is an addition block in the triangular number block.",
                 "There is an addition block in the triangular number block.",
                 "Make sure you perform some form of addition in your triangular number block.",
                 1);
 
-             var third_tip = first_chunk.newTip('Make sure it works on basic inputs.',
+             var tip_8_3 = chunk_8.newTip('Make sure it works on basic inputs.',
                 'Great job!');
 
-             third_tip.newIOTest('r',  //testClass
+             tip_8_3.newIOTest('r',  //testClass
                 'triangular number %',  //blockSpec
                 [0],  //input
                 0,  //output
@@ -105,7 +191,7 @@
                 false,  //isolated
                 1);  //points
 
-             third_tip.newIOTest('r',  //testClass
+             tip_8_3.newIOTest('r',  //testClass
                 'triangular number %',  //blockSpec
                 [1],  //input
                 1,  //output
@@ -113,7 +199,7 @@
                 false,  //isolated
                 1);  //points
 
-             third_tip.newIOTest('r',  //testClass
+             tip_8_3.newIOTest('r',  //testClass
                 'triangular number %',  //blockSpec
                 [2],  //input
                 3,  //output
@@ -121,7 +207,7 @@
                 false,  //isolated
                 1);  //points
 
-             third_tip.newIOTest('r',  //testClass
+             tip_8_3.newIOTest('r',  //testClass
                 'triangular number %',  //blockSpec
                 [3],  //input
                 6,  //output
@@ -129,7 +215,7 @@
                 false,  //isolated
                 1);  //points
 
-             third_tip.newIOTest('r',  //testClass
+             tip_8_3.newIOTest('r',  //testClass
                 'triangular number %',  //blockSpec
                 [4],  //input
                 10,  //output
@@ -137,7 +223,7 @@
                 false,  //isolated
                 1);  //points
 
-             third_tip.newIOTest('r',  //testClass
+             tip_8_3.newIOTest('r',  //testClass
                 'triangular number %',  //blockSpec
                 [5],  //input
                 15,  //output

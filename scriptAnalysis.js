@@ -499,6 +499,9 @@ function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex, 
 	if (spriteIndex === undefined) {
 		spriteIndex = 0;
 	}
+	if (softMatch === undefined) {
+		softMatch = false;
+	}
 	var customBody = JSONcustomBlock(findBlockInPalette(customBlockSpec)).body;
 	var hasFound = scriptContainsBlock(customBody, blockSpec, argArray, softMatch);
 	return hasFound;
