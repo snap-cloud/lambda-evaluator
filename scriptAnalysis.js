@@ -449,7 +449,7 @@ function checkArgArrays(template, actual) {
 			} catch(e) {
 				return false;
 			}
-		} else if (!_.isEqual(currArg, actual[i])) {
+		} else if (!_.isEqual(currArg, actual[i])) { //maybe don't need _.isEqual, can just do basic comparison?
 			return false;
 		}
 	}
