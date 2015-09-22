@@ -420,6 +420,282 @@
 
 
 
+<<<<<<< HEAD
+=======
+
+        /* Chunk 5 for the between? exercise in exercise 5 */
+            var betweenExists_5 = function() {
+                return spriteContainsBlock("% between? % and %");
+            }
+
+            var predicate_5 = function() {
+                var customBody = getCustomBody("% between? % and %");
+                return ((customBlockContains("% between? % and %", "report %", ["true"]) &&
+                    customBlockContains("% between? % and %", "report %", ["false"])) ||
+                    (blockPrecedes("report %", "% and %", customBody)));
+                    //assuming they are reporting the AND block --> boolean value
+            }
+
+            var usesAnd_5 = function() {
+                return customBlockContains("% between? % and %", "% and %");
+            }
+
+
+            // Create a first test chunk
+            var chunk_5 = fb.newChunk('Make the "between" block.');
+            // Add a first tip to that first test chunk
+            var tip_5_1 = chunk_5.newTip('Make sure you name your block exactly "% between? % and %" and place it in the scripting area.',
+                'Great job!');
+
+            tip_5_1.newAssertTest(
+                betweenExists_5,
+                "Testing if there is a '% between? % and %' block in the scripting area.",
+                "There is a '% between? % and %' block in the scripting area.",
+                "Make sure you name your block exactly '% between? % and %' and place it in the scripting area.",
+                1);
+
+            var tip_5_2 = chunk_5.newTip('Make sure your block is a predicate: it returns true/false values.',
+                'Great job!');
+
+            tip_5_2.newAssertTest(
+                predicate_5,
+                "Testing to see if the '% between? % and %' block returns a boolean value.",
+                "The '% between? % and %' block returns a boolean value.",
+                "Make sure your '% between? % and %' block returns a boolean value.",
+                1);
+
+            var tip_5_3 = chunk_5.newTip('Try using the "and" block in your solution.',
+                'Great job!');
+
+            tip_5_3.newAssertTest(
+                usesAnd_5,
+                "Testing to see if the '% between? % and %' block uses the 'and' block in its defintion.",
+                "The '% between? % and %' block uses the 'and' block in its defintion.",
+                "Try using the 'and' block in your solution.",
+                1);
+
+            var tip_5_4 = chunk_5.newTip('Make sure your block works on basic inputs.',
+                'Great job!');
+
+            tip_5_4.newIOTest('r',  //testClass
+                '% between? % and %',  //blockSpec
+                [2, 3, 4],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_5_4.newIOTest('r',  //testClass
+                '% between? % and %',  //blockSpec
+                [2.55, 2, 3],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_5_4.newIOTest('r',  //testClass
+                '% between? % and %',  //blockSpec
+                [-5, 0, -6],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_5_4.newIOTest('r',  //testClass
+                '% between? % and %',  //blockSpec
+                [0, 7, 2],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+
+
+
+
+        /* Chunk 6 for the weekend? block in exercise 6 */
+            var weekendExists_6 = function() {
+                return spriteContainsBlock("weekend? %");
+            }
+
+            var predicate_6 = function() {
+                var customBody = getCustomBody("weekend? %");
+                return ((customBlockContains("weekend? %", "report %", ["true"]) &&
+                    customBlockContains("weekend? %", "report %", ["false"])) ||
+                    (blockPrecedes("report %", "% or %", customBody)));
+                    //assuming they are reporting the OR block --> boolean value
+            }
+
+            var usesOr_6 = function() {
+                return customBlockContains("weekend? %", "% or %");
+            }
+
+            var chunk_6 = fb.newChunk('Make the "weekend" block.');
+            // Add a first tip to that first test chunk
+            var tip_6_1 = chunk_6.newTip('Make sure you name your block exactly "weekend? %" and place it in the scripting area.',
+                'Great job!');
+
+            tip_6_1.newAssertTest(
+                weekendExists_6,
+                "Testing if there is a 'weekend? %' block in the scripting area.",
+                "There is a 'weekend? %' block in the scripting area.",
+                "Make sure you name your block exactly 'weekend? %' and place it in the scripting area.",
+                1);
+
+            var tip_6_2 = chunk_6.newTip('Make sure your block is a predicate: it returns true/false values.',
+                'Great job!');
+
+            tip_6_2.newAssertTest(
+                predicate_6,
+                "Testing to see if the 'weekend? %' block returns a boolean value.",
+                "The 'weekend? %' block returns a boolean value.",
+                "Make sure your 'weekend? %' block returns a boolean value.",
+                1);
+
+            var tip_6_3 = chunk_6.newTip('Try using the "or" block in your solution.',
+                'Great job!');
+
+            tip_6_3.newAssertTest(
+                usesOr_6,
+                "Testing to see if the 'weekend? %' block uses the 'or' block in its defintion.",
+                "The 'weekend? %' block uses the 'or' block in its defintion.",
+                "Try using the 'or' block in your solution.",
+                1);
+
+            var tip_6_4 = chunk_6.newTip('Make sure your block works on basic inputs.',
+                'Great job!');
+
+            tip_6_4.newIOTest('r',  //testClass
+                'weekend? %',  //blockSpec
+                ["Saturday"],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_6_4.newIOTest('r',  //testClass
+                'weekend? %',  //blockSpec
+                ["Sunday"],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_6_4.newIOTest('r',  //testClass
+                'weekend? %',  //blockSpec
+                ["Monday"],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_6_4.newIOTest('r',  //testClass
+                'weekend? %',  //blockSpec
+                ["Tuesday"],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+
+
+
+
+
+        /* Chunk 7 for the weekday? block in exercise 7 */
+            var chunk_7 = fb.newChunk('Make the weekday? block.');
+
+            //Make sure you name your block "weekday? %"!
+            var weekdayExists_7 = function() {
+                return spriteContainsBlock("weekday? %");
+            }
+
+            //Make sure your block is a predicate: it returns true/false values.
+            var predicate_7 = function() {
+                var customBody = getCustomBody("weekday? %");
+                return ((customBlockContains("weekday? %", "report %", ["true"]) &&
+                    customBlockContains("weekday? %", "report %", ["false"])) ||
+                    (blockPrecedes("report %", "not %", customBody)));
+                    //assuming they are reporting the NOT block --> boolean value
+            }
+
+            //Try using the "weekend? %" block in your solution!
+            var usesWeekend_7 = function() {
+                return customBlockContains("weekday? %", "weekend? %");
+            }
+
+
+            // Add a first tip to that first test chunk
+            var tip_7_1 = chunk_7.newTip('Make sure you name your block exactly "weekday? %".',
+                'Great job!');
+
+            tip_7_1.newAssertTest(
+                weekdayExists_7,
+                "Testing if there is a 'weekday? %' block has been found. in the scripting area.",
+                "A 'weekday? %' block has been found. in the scripting area.",
+                "Make sure you name your block exactly 'weekday? %'. and place it in the scripting area.",
+                1);
+
+            var tip_7_2 = chunk_7.newTip('Make sure your block returns true or false values.',
+                'Great job!');
+
+            tip_7_2.newAssertTest(
+                predicate_7,
+                "Testing if the 'weekday? %' block returns a boolean value.",
+                "The 'weekday? %' block returns a boolean value.",
+                "Make sure your block returns the true/false booleans!",
+                1);
+
+            var tip_7_3 = chunk_7.newTip('Make sure your block uses the weekend? block',
+                'Great job!');
+
+            tip_7_3.newAssertTest(
+                usesWeekend_7,
+                "Testing if the 'weekday? %' block uses the 'weekend? %' block in its defintion.",
+                "The 'weekday? %' block uses the 'weekend? %' block in its defintion.",
+                "Try using the 'weekend? %' block in your solution.",
+                1);
+
+
+
+             var tip_7_4 = chunk_7.newTip('Make sure you block works on basic inputs!',
+                'Great job!');
+
+             tip_7_4.newIOTest('r',  //testClass
+                'weekday? %',  //blockSpec
+                ["Saturday"],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_7_4.newIOTest('r',  //testClass
+                'weekday? %',  //blockSpec
+                ["Sunday"],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_7_4.newIOTest('r',  //testClass
+                'weekday? %',  //blockSpec
+                ["Monday"],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_7_4.newIOTest('r',  //testClass
+                'weekday? %',  //blockSpec
+                ["Tuesday"],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+
+
+>>>>>>> b93e2cd9774f8aa581da88f599f8df25d627d0ec
             return fb;
         }
     </script>

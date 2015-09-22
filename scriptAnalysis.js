@@ -449,7 +449,7 @@ function checkArgArrays(template, actual) {
 			} catch(e) {
 				return false;
 			}
-		} else if (!_.isEqual(currArg, actual[i])) {
+		} else if (!_.isEqual(currArg, actual[i])) { //maybe don't need _.isEqual, can just do basic comparison?
 			return false;
 		}
 	}
@@ -498,6 +498,9 @@ function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex, 
 	}
 	if (spriteIndex === undefined) {
 		spriteIndex = 0;
+	}
+	if (softMatch === undefined) {
+		softMatch = false;
 	}
 	var customBody = JSONcustomBlock(findBlockInPalette(customBlockSpec)).body;
 	var hasFound = scriptContainsBlock(customBody, blockSpec, argArray, softMatch);
