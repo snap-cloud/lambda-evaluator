@@ -35,8 +35,8 @@ function runAGTest(snapWorld, taskID, outputLog) {
     if(!test_log.runSnapTests()) {
         test_log.scoreLog();
     }
-    test_log.scoreLog();
-    populateFeedback(test_log);
+    // test_log.scoreLog();
+    // populateFeedback(test_log);
 }
 
 /* After loading the XML, check if the current XML is a known

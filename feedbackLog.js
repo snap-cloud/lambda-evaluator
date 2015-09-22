@@ -244,7 +244,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 FeedbackLog.prototype.finishSnapTest = function(test, output) {
 
 	// Check that output is being returned
-	if (!output) {
+	if (output == undefined) {
 		test.output = null;
 	} else {
 		// If the output is a list, reformat it for comparision
@@ -290,6 +290,7 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 		throw "gradingLog.finishSnapTest: Trying to clear values of block that does not exist.";
 	}
 	// Launch the next test if it exists, scoreLog otherwise.
+	// console.log(this.allIOTests());
 	this.runNextTest(test);
 
 };
@@ -308,39 +309,34 @@ FeedbackLog.prototype.runNextTest = function(test) {
 	}
 	// if it exists, launch it with a timeout
 };
-//NOTE: May have an error if a tip has no test.
+
 FeedbackLog.prototype.nextTest = function(test) {
-	var this_tip = this.tipOf(test);
-	// Find the position of the test in the tip_list
-	var test_index = this_tip.test_list.indexOf(test);
-	// Find the next reporter test in the list and run it
-	if ((this_tip.test_list.length - test_index) > 1) { //not last test
-		return this_tip.test_list[test_index + 1];
+
+	all_tests = this.allIOTests();
+	// console.log(all_tests);
+	var test_index = all_tests.indexOf(test);
+	if ((all_tests.length - test_index) > 1) {
+		return all_tests[test_index + 1];
+	} else {
+		return false;
 	}
-	// If it is the last test in the tip, find the next tip
-	var this_chunk = this.chunkOf(this_tip);
-	var tip_index = this_chunk.tip_list.indexOf(this_tip);
-	if ((this_chunk.tip_list.length - tip_index) > 1) { //not last tip
+}
 
-		var next_tip = this_chunk.tip_list[tip_index + 1];
-
-		if (next_tip.test_list.length > 0) { //only if next_tip has tests
-			return next_tip.test_list[0];
+FeedbackLog.prototype.allIOTests = function() {
+	all_tests = [];
+	for (c in this.chunk_list) {
+		chunk = this.chunk_list[c];
+		for (p in chunk.tip_list) {
+			tip = chunk.tip_list[p];
+			for (t in tip.test_list) {
+				test = tip.test_list[t];
+				if (test.testClass === 'r') {
+					all_tests.push(test);
+				}
+			}
 		}
 	}
-	// If this is the last tip, find the next chunk
-	var chunk_index = this.chunk_list.indexOf(this_chunk);
-	if ((this.chunk_list.length - chunk_index) > 1) {
-
-		var next_chunk = this.chunk_list[chunk_index + 1];
-
-		if (next_chunk.tip_list.length > 0 &&
-			next_chunk.tip_list[0].test_list.length > 0) {
-			var next_test = next_chunk.tip_list[0].test_list[0];
-			return next_test;
-		}
-	}
-	return false;
+	return all_tests;
 }
 
 FeedbackLog.prototype.firstTest = function() {
@@ -360,15 +356,26 @@ FeedbackLog.prototype.scoreLog = function() {
 		throw 'FeedbackLog.scoreLog: Attempted to score empty FeedbackLog';
 	}
 	// Ensure that all tests have been graded.
-	var test = this.firstTest();
-	for (var i=0; i<this.testCount; i++) {
-		if (!test.graded) {
-			console.log('FeedbackLog.scoreLog: The log is not yet complete');
-			return this;
-		}
-		//Continue to the next test otherwise
-		test = this.nextTest(test);
-	}
+	// var test = this.firstTest();
+	// var all_tests = this.allIOTests();
+	// console.log(all_tests);
+	// for (test in all_tests) {
+	// 	if (!test.graded) {
+	// 		console.log('FeedbackLog.scoreLog: The log is not yet complete');
+	// 		console.log(test);
+	// 		return this;
+	// 	}
+	// }
+	// for (var i=0; i<this.testCount; i++) {
+	// 	if (!test.graded) {
+	// 		console.log('FeedbackLog.scoreLog: The log is not yet complete');
+
+	// 		console.log(test);
+	// 		return this;
+	// 	}
+	// 	//Continue to the next test otherwise
+	// 	test = this.nextTest(test);
+	// }
 
 	// Iterate over all tests and score the FeedbackLog, chunks, and tips.
 	this.allCorrect = true;
