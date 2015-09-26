@@ -244,7 +244,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 FeedbackLog.prototype.finishSnapTest = function(test, output) {
 
 	// Check that output is being returned
-	if (!output) {
+	if (output == undefined) {
 		test.output = null;
 	} else {
 		// If the output is a list, reformat it for comparision
@@ -290,7 +290,7 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 		throw "gradingLog.finishSnapTest: Trying to clear values of block that does not exist.";
 	}
 	// Launch the next test if it exists, scoreLog otherwise.
-	console.log(this.allIOTests());
+	// console.log(this.allIOTests());
 	this.runNextTest(test);
 
 };
@@ -313,7 +313,7 @@ FeedbackLog.prototype.runNextTest = function(test) {
 FeedbackLog.prototype.nextTest = function(test) {
 
 	all_tests = this.allIOTests();
-	console.log(all_tests);
+	// console.log(all_tests);
 	var test_index = all_tests.indexOf(test);
 	if ((all_tests.length - test_index) > 1) {
 		return all_tests[test_index + 1];
@@ -329,7 +329,7 @@ FeedbackLog.prototype.allIOTests = function() {
 		for (p in chunk.tip_list) {
 			tip = chunk.tip_list[p];
 			for (t in tip.test_list) {
-				test = tip.test_list[t]
+				test = tip.test_list[t];
 				if (test.testClass === 'r') {
 					all_tests.push(test);
 				}
