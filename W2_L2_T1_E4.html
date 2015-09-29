@@ -67,7 +67,7 @@
                 var moveInputs = [{"blockSp":"pick random %n to %n","inputs":["",""]}];
                 var repeatSpec = "repeat %n %c";
                 var foreverSpec = "forever %c";
-                return CBlockContainsInSprite(moveSpec, repeatSpec, 0, moveInputs) || CBlockContainsInSprite(moveSpec, foreverSpec, 0, moveInputs);
+                return CBlockContainsInSprite(moveSpec, repeatSpec, 0, moveInputs, ["", ""], true) || CBlockContainsInSprite(moveSpec, foreverSpec, 0, moveInputs, [""], true);
             }
 
             
@@ -76,7 +76,7 @@
                 var turnInputs = [{"blockSp":"pick random %n to %n","inputs":["",""]}];
                 var repeatSpec = "repeat %n %c";
                 var foreverSpec = "forever %c";
-                return CBlockContainsInSprite(turnSpec, repeatSpec, 0, turnInputs) || CBlockContainsInSprite(turnSpec, foreverSpec, 0, turnInputs);
+                return CBlockContainsInSprite(turnSpec, repeatSpec, 0, turnInputs, ["", ""], true) || CBlockContainsInSprite(turnSpec, foreverSpec, 0, turnInputs, [""], true);
             }
             
             var moveTurnSameScript = function() {
@@ -118,9 +118,9 @@
 
             var ass_test22 = first_tip2.newAssertTest(
                 turnInLoop,
-                "Testing to see if the 'turn' block is within a loop and the 'pick random' block is within the 'turn' block.",
-                "The 'turn' block is within a loop and the 'pick random' block is within the 'turn' block.",
-                "Either the 'turn' block is not within a loop or the 'pick random' block is not within the 'turn' block.",
+                "Testing to see if the 'turn clockwise' block is within a loop and the 'pick random' block is within the 'turn' block.",
+                "The 'turn clockwise' block is within a loop and the 'pick random' block is within the 'turn' block.",
+                "Either the 'turn clockwise' block is not within a loop or the 'pick random' block is not within the 'turn clockwise' block.",
                 1);
 
             var ass_test23 = first_tip2.newAssertTest(

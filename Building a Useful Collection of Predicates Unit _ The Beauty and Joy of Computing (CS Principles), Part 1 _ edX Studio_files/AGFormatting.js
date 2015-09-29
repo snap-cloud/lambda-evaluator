@@ -53,13 +53,11 @@ function AG_bar_graded(outputLog) {
     if (button_elem.html().match(regex) !== null) {
         return;
     }
-    // button_elem.fadeOut('fast', function() {
-    //     button_elem.html(button_text);
-    //     button_elem.slideDown('fast');
-    //     $('#autograding_button').css('background', '#29A629');
-    // });
-    button_elem.html(button_text);
-    $('#autograding_button').css('background', '#29A629');
+    button_elem.fadeOut('fast', function() {
+        button_elem.html(button_text);
+        button_elem.slideDown('fast');
+        $('#autograding_button').css('background', '#29A629');
+    });
     $('#autograding_button .hover_darken').hide();
     $('#onclick-menu').css('color', 'white');
     $('#feedback-button').html("Review Feedback");
@@ -80,13 +78,11 @@ function AG_bar_semigraded(outputLog) {
     if (button_elem.html().match(regex) !== null) {
         return;
     }
-    // button_elem.fadeOut('fast', function() {
-    //     button_elem.html(button_text);
-    //     button_elem.slideDown('fast');
-    //     $('#autograding_button').css('background', 'red');
-    // });
-    button_elem.html(button_text);
-    $('#autograding_button').css('background', 'red');
+    button_elem.fadeOut('fast', function() {
+        button_elem.html(button_text);
+        button_elem.slideDown('fast');
+        $('#autograding_button').css('background', 'red');
+    });
     $('#autograding_button .hover_darken').show();
     $('#onclick-menu').css('color', 'orange');
 }
@@ -478,7 +474,6 @@ function moveAutogradingBar() {
 
 
 function initializeSnapAdditions(snapWorld, taskID) {
-    current_iframe.parentNode.parentNode.parentNode.style.width = "100%";
 
     var pageLocation = JSON.parse(sessionStorage.getItem(taskID + "pageLocation"));
     if (pageLocation) {
@@ -594,32 +589,20 @@ function initializeSnapAdditions(snapWorld, taskID) {
             sessionStorage.setItem(taskID + "_popupFeedback", "");
         }*/
 
-        var timesChecked = 0;
-
         var checkExist = setInterval(function() {
-            timesChecked += 1;
             console.log("checking...." + id_problem);
             if (parent.document.getElementsByClassName('check-label')[id_problem]) {
-            //if (edX_check_button) {
                 console.log("Exists!");
                 clearInterval(checkExist);
-                edX_check_button = current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.nextElementSibling.children[1];
-
-                edX_check_button.onclick = function () {
-                //edX_check_button.onclick = function() {
+                parent.document.getElementsByClassName('check-label')[id_problem].onclick = function () {
                     sessionStorage.setItem(taskID + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
                 }
 
-                //var button_text = parent.document.getElementsByClassName('check')[id_problem];
+                var button_text = parent.document.getElementsByClassName('check')[id_problem];
                 //button_text.innerHTML = "Submit";
-                //button_text.style.display = "none";
-                edX_check_button.style.display = "none";
+                button_text.style.display = "none";
 
                 //makeOverlayButton();
-            }
-            if (timesChecked == 10) {
-                isEDX = false;
-                clearInterval(checkExist);
             }
 
         }, 100);
@@ -687,7 +670,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
         if (!graded) {return;}
 
 
-    },1000);
+    },500);
 
     setTimeout(function() {
         onclick_menu = document.getElementById('onclick-menu');
@@ -743,10 +726,10 @@ var button_listener = function(event) {
     // console.log('PROPAGATION SHOULD STOP');
     var numAttempts = setNumAttempts(id);
     outputLog = new FeedbackLog(world, id, numAttempts);
-    console.log(outputLog);
     outputLog.numAttempts += 1;
     runAGTest(world, id, outputLog);
 
+    //openResults();
 
     var tip_tests = document.getElementsByClassName("data");
     //console.log(String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px");
@@ -1097,7 +1080,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             appendElement("p", "✔", "data", document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                             var string_reporter = document.createElement("div");
                             string_reporter.classList.add("data", "assertion");
-                            string_reporter.innerHTML = '<p class="data assertion">' + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion">, returned the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '</p>';
+                            string_reporter.innerHTML = '<p class="data assertion">' + thisTest["feedback"] + ": The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion">, returned the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '</p>';
                             document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
                             appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                         }
@@ -1108,7 +1091,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
 
                         var string_reporter = document.createElement("div");
                         string_reporter.classList.add("data", "assertion");
-                        string_reporter.innerHTML = '<p class="data assertion">' + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion"> did NOT return the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '.<p class="data assertion"> Instead it returned ' + '<p class="data assertion bold">the output: ' + thisTest["output"] + '</p>';
+                        string_reporter.innerHTML = '<p class="data assertion">' + thisTest["feedback"] + ": The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion">, did NOT return the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '<p class="data assertion">. Instead it returned ' + '<p class="data assertion bold">the output: ' + thisTest["output"] + '</p>';
                         document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
                         appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                     }
@@ -1189,13 +1172,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     for(var i=0; i < tip_tests.length; i++){
         tip_tests[i].style.maxWidth = String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px";
     }*/
-    if (!isEDX) {
-        var noCreditWarning = document.createElement("p");
-        var noCreditText = document.createTextNode("Please note you won't receive a score from edX for attempting this problem.");
-        noCreditWarning.appendChild(noCreditText);
-        document.getElementById("comment").appendChild(noCreditWarning);
-    }
-   
 
 }
 

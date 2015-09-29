@@ -7,11 +7,8 @@ var id_problem = 0;
 for (i = 0; i < num_iframes; i++) {
     if (iframes[i] === current_iframe) {
         id_problem = i;
-        //problem_iframe = iframes[i];
     }
 }
-
-
 
 function isEDXurl() {
     var url = window.location.href;
@@ -21,12 +18,6 @@ function isEDXurl() {
         return false;
     }
 }
-
-/*if (isEDX) {
-    console.log(current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.nextElementSibling.children[1]);
-    var edX_check_button = current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.nextElementSibling.children[1];
-    current_iframe.parentNode.parentNode.parentNode.style.width = "100%";
-}*/
 /* Removes the previously saved AG_state. Runs the tests in
  * AGTest().
  * Called by 'click' event on autograder_button.
@@ -39,7 +30,7 @@ function runAGTest(snapWorld, taskID, outputLog) {
     // These tests specified by the Course Designer. 
 
     //outputLog.numAttempts += 1;
-    console.log(outputLog);
+
     var test_log = AGTest(outputLog);
     if(!test_log.runSnapTests()) {
         test_log.scoreLog();
@@ -182,7 +173,7 @@ function AGUpdate(snapWorld, taskID) {
         }*/
 
     } else {
-        // console.log("AGUpdate: Button should be ungraded");
+        console.log("AGUpdate: Button should be ungraded");
         //Restore the AG status bar to a graded state
         var numAttempts = setNumAttempts(taskID);
         outputLog = new FeedbackLog(snapWorld, taskID, "", numAttempts);
@@ -228,6 +219,7 @@ function AGFinish(outputLog) {
         outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
     } else if ((outputLog.pScore > 0) && ((c_prev_log && outputLog.pScore >= c_prev_log.pScore) || (!c_prev_log))) {
         //if (outputLog.pScore >= c_prev_log.pScore && c_prev_log || !c_prev_log) {
+        //console.log("else if");
         //AG_bar_semigraded(outputLog);
         //outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
         // Update AG_status_bar to 'graded, but incorrect state
@@ -245,13 +237,8 @@ function AGFinish(outputLog) {
     console.log(outputLog);
     //populateFeedback(outputLog);
     if (isEDX) {
-        //parent.document.getElementsByClassName('check-label')[id_problem].click();
-        edX_check_button.click();
+        parent.document.getElementsByClassName('check-label')[id_problem].click();
     } 
-    if (!isEDX) {
-        populateFeedback(outputLog, false)
-        openResults();
-    }
     //parent.document.getElementsByClassName('check-label')[0].click();
 }
 /*

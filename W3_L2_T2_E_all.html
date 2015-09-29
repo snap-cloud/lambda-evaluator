@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Snap! Build Your Own Blocks. Beta</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <script src="jschannel.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript" src="underscore-min.js"></script>
+    <!--<script type="text/javascript" src='gradingLog.js'></script>-->
+    <script type="text/javascript" src='spriteEventLog.js'></script>
+    <script type="text/javascript" src='scriptAnalysis.js'></script>
+    <meta charset="utf-8">
+    <!-- Moved down to the bottom to have var id. -->
+    <script type="text/javascript" src="morphic.js"></script>
+    <script type="text/javascript" src="widgets.js"></script>
+    <script type="text/javascript" src="blocks.js"></script>
+    <script type="text/javascript" src="threads.js"></script>
+    <script type="text/javascript" src="objects.js"></script>
+    <script type="text/javascript" src="gui.js"></script>
+    <script type="text/javascript" src="paint.js"></script>
+    <script type="text/javascript" src="lists.js"></script>
+    <script type="text/javascript" src="byob.js"></script>
+    <script type="text/javascript" src="xml.js"></script>
+    <script type="text/javascript" src="store.js"></script>
+    <script type="text/javascript" src="locale.js"></script>
+    <script type="text/javascript" src="cloud.js"></script>
+    <script type="text/javascript" src="sha512.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
+    <link rel="stylesheet" type="text/css" href="hintstyle.css" />
+
+    <script type="text/javascript" src="AGAgent.js"></script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type='text/javascript'>
+        var starter_path = null;
+        // The id is to act as a course identifier.
+        // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
+        var courseID = "BJC.1x";  // e.g. "BJCx"
+        // Specify a prerequisite task id, should be null if no such requirement.
+        var preReqTaskID = null;
+        var preReqID = courseID + preReqTaskID;
+        // taskID uniquely identifies the task for saving in browser sessionStorage.
+        var taskID = "_W3_L2_T2_E_all";
+        var id = courseID + taskID;
+        var isEDX = isEDXurl();
+        // if this question is not meant to be graded, change this flag to false
+        var graded = true;
+        // to hide feedback for this problem, change this flag to false
+        var showFeedback = true;
+        // to allow for the ability to regrade certain tests, change this flag to true
+        var regradeOn = false;
+        // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
+        // var testLog;
+        function AGTest(outputLog) {
+
+            //NOTES TO YIFAT AND PATRICK:
+            // No IO tests should be isolated. Which means that you have to check that the block
+            // is on screen.
+            // All getter/setter functions inside anonymous Assert functions.
+            // Thanks for all your work :D
+            //
+            //
+            //
+            //
+            // NAMING CONVENTIONS:
+            //
+            // **** VARIABLES ****
+            // If you are going to make a variable like this:
+            //
+            // var turnExists = function() {
+            //     return spriteContainsBlock("% !");
+            // }
+            //
+            // please instead append a "_n" to the end, where the "n" is the chunk number associated
+            // with the given function. So, if the "turnExists" function above were from chunk 2,
+            // then please name it: "turnExists_2" and NOT JUST "turnExists" because if more than
+            // one chunk has the same function called "turnExists", then bad things will happen bro.
+            // **THE ONE EXCEPTION IS THE FEEDBACK LOG and WORLD** -- PLEASE HAVE THESE TWO LINES
+            // AT THE TOP OF YOUR AGTEST() FUNCTION BODY:
+            //
+            // var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
+            // fb.snapWorld = world;
+            //
+            //
+            //
+            //
+            // **** CHUNKS ****
+            // please name chunks according to the exercise number they correspond to. For
+            // example, if I am writing a chunk for exercise 3, name the chunk like this:
+            //
+            // chunk_3 = fb.newChunk('Make the block that exercise 3 is asking');
+            //
+            // so clarify it is "chunk_n" where 'n' is the number of the exercise.
+            //
+            //
+            //
+            //
+            // **** TIPS ****
+            // please name tips according to their chunk and which tip within that chunk
+            // they are. So for example, if I am writing the second tip for chunk 4, then
+            // please write it as:
+            //
+            // tip_4_2 = chunk_4.newTip("Make sure you name your block exactly...");
+            //
+            // to clarify, it is "tip_j_k" where "j" is the chunk number and "k" is
+            // the tip number.
+            //
+            //
+            //
+            //
+            // **** ASSERT TESTS ****
+            // please do not assign these function calls to variables names. it is
+            // uncessary and will result in more confusion. So for example, to create
+            // a new ASSERT TEST, just do the following:
+            //
+            // tip_1_2.newAssertTest(
+            //    multiplyExists_1,
+            //    "Testing if there is a multiplication block in the factorial block.",
+            //    "There is a multiplication block in the factorial block.",
+            //    "Make sure you use the multiplication block in your factorial block.",
+            //    1);
+            //
+            //
+            //
+            //
+            // **** IO TESTS ****
+            // same as the assert tests above. To create a new IO TEST, please don't
+            // assign it a variable, just do the following:
+            //
+            // tip_1_4.newIOTest('r',  //testClass
+            //     '% !',  //blockSpec
+            //     [5],  //input
+            //     120,  //output
+            //     -1,  //timeout
+            //     false,  //isolated
+            //     1);  //points
+
+
+            var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
+            fb.snapWorld = world;
+
+
+        /* Create chunk_1 for the exercise 1 : factorial */
+            var chunk_1 = fb.newChunk('Make the even? block.');
+
+            var evenExists_1 = function() {
+                return spriteContainsBlock("even? %");
+            }
+            var predicate_1 = function() {
+                var customBody = getCustomBody("even? %");
+                return ((customBlockContains("even? %", "report %", ["true"]) &&
+                    customBlockContains("even? %", "report %", ["false"])) ||
+                    (blockPrecedes("report %", "% = %", customBody)));
+                    //assuming they are reporting the equals block --> boolean value
+            }
+            var usesMod_1 = function() {
+                return customBlockContains("even? %", "% mod %");
+            }
+
+
+            // Add a first tip to that first test chunk
+            var tip_1_1 = chunk_1.newTip('Make sure you name your even block exactly "even? %".',
+                'Great job!');
+
+            tip_1_1.newAssertTest(
+                evenExists_1,
+                "Testing if there is an 'even? %' block in the scripting area.",
+                "A 'even? %' block has been found in the scripting area.",
+                "Make sure you name your block exactly 'even? %' and place it in the scripting area.",
+                1);
+
+            var tip_1_2 = chunk_1.newTip('Make sure you even block is a predicate.',
+                'Great job!');
+
+            tip_1_2.newAssertTest(
+                predicate_1,
+                "Testing if the 'even? %' block returns a boolean value.",
+                "The 'even? %' block returns a boolean value.",
+                "Make sure your even block returns the true/false booleans!",
+                1);
+
+            var tip_1_3 = chunk_1.newTip('Make sure you use the mod block in your even block.',
+                'Great job!');
+
+            tip_1_3.newAssertTest(
+                usesMod_1,
+                "Testing if the 'even? %' block uses the 'mod' block in its defintion.",
+                "The 'even? %' block uses the 'mod' block in its defintion.",
+                "Try using the 'mod' block in your solution.",
+                1);
+
+            var tip_1_4 = chunk_1.newTip('Make sure your even block works for zero.',
+                'Great job!');
+
+
+             tip_1_4.newIOTest('r',  //testClass
+                'even? %',  //blockSpec
+                [0],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             var tip_1_5 = chunk_1.newTip('Make sure your even block works for basic inputs.',
+                'Great job!');
+
+             tip_1_5.newIOTest('r',  //testClass
+                'even? %',  //blockSpec
+                [2],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_1_5.newIOTest('r',  //testClass
+                'even? %',  //blockSpec
+                [3],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_1_5.newIOTest('r',  //testClass
+                'even? %',  //blockSpec
+                [645361],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+
+
+
+
+        /* Create chunk 2 for the >= block in exercise 2. */
+            var chunk_2 = fb.newChunk('Make the >= block.');
+
+            //Make sure you name your block "% >= %"!
+            var gtoetExists_2 = function() {
+                return spriteContainsBlock("% >= %");
+            }
+
+            //Try using the "or" block in your solution!
+            var usesOrNot_2 = function() {
+                return customBlockContains("% >= %", "% or %") ||
+                        customBlockContains("% >= %", "not %");
+            }
+
+            //Make sure your block is a predicate: it returns true/false values.
+            var predicate_2 = function() {
+                var customBody = getCustomBody("% >= %");
+                return ((customBlockContains("% >= %", "report %", ["true"]) &&
+                    customBlockContains("% >= %", "report %", ["false"])) ||
+                    (blockPrecedes("report %", "% or %", customBody)) ||
+                    (blockPrecedes("report %", "not %", customBody)));
+                    //assuming they are reporting the OR or NOT block --> boolean value
+            }
+
+
+            // Add a first tip to that first test chunk
+            var tip_2_1 = chunk_2.newTip('Make sure you name your block exactly "% >= %".',
+                'Great job!');
+
+            tip_2_1.newAssertTest(
+                gtoetExists_2,
+                "Testing if there is a '% >= %' block has been found. in the scripting area.",
+                "A '% >= %' block has been found. in the scripting area.",
+                "Make sure you name your block exactly '% >= %'. and place it in the scripting area.",
+                1);
+
+            var tip_2_2 = chunk_2.newTip('Make sure your block is a predicate.',
+                'Great job!');
+
+            tip_2_2.newAssertTest(
+                predicate_2,
+                "Testing if the '% >= %' block returns a boolean value.",
+                "The '% >= %' block returns a boolean value.",
+                "Make sure your block returns the true/false booleans!",
+                1);
+
+            var tip_2_3 = chunk_2.newTip('Make sure you use the the "or" block or the "not" block in your block.',
+                'Great job!');
+
+            tip_2_3.newAssertTest(
+                usesOrNot_2,
+                "Testing if the '% >= %' block uses either the 'or' block or the 'not' block in its defintion.",
+                "The '% >= %' block uses either the 'or' block or the 'not' block in its defintion.",
+                "Try using the 'or' block or the 'not' block in your solution.",
+                1);
+
+            var tip_2_4 = chunk_2.newTip('Make sure your block works for basic inputs.',
+                'Great job!');
+
+
+             tip_2_4.newIOTest('r',  //testClass
+                '% >= %',  //blockSpec
+                [2, 3],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_2_4.newIOTest('r',  //testClass
+                '% >= %',  //blockSpec
+                [3, 2],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_2_4.newIOTest('r',  //testClass
+                '% >= %',  //blockSpec
+                [645361, -645361],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_2_4.newIOTest('r',  //testClass
+                '% >= %',  //blockSpec
+                [3, -3],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+
+
+
+        /* Create chunk 3 for the integer? block in exercise 3. */
+
+            var chunk_3 = fb.newChunk('Make the integer? block.');
+
+            //Try using the "round" block or the "mod" block in your solution!
+            var usesRoundMod_3 = function() {
+                return (customBlockContains("integer? %", "round %") ||
+                        customBlockContains("integer? %", "% mod %"));
+            }
+
+            //Make sure your block is a predicate: it returns true/false values.
+            var predicate_3 = function() {
+                var customBody = getCustomBody("integer? %");
+                return ((customBlockContains("integer? %", "report %", ["true"]) &&
+                    customBlockContains("integer? %", "report %", ["false"])) ||
+                    (blockPrecedes("report %", "% = %", customBody)));
+                    //assuming they are reporting the equals block --> boolean value
+            }
+
+            //Make sure you name your block "integer? %"!
+            var integerExists_3 = function() {
+                return spriteContainsBlock("integer? %");
+            }
+
+            // Add a first tip to that first test chunk
+            var tip_3_1 = chunk_3.newTip('Make sure you name your block exactly "integer? %".',
+                'Great job!');
+
+            tip_3_1.newAssertTest(
+                integerExists_3,
+                "Testing if there is a 'integer? %' block has been found. in the scripting area.",
+                "A 'integer? %' block has been found. in the scripting area.",
+                "Make sure you name your block exactly 'integer? %'. and place it in the scripting area.",
+                1);
+
+            var tip_3_2 = chunk_3.newTip('Make sure you name your block returns a boolean value.',
+                'Great job!');
+
+            tip_3_2.newAssertTest(
+                predicate_3,
+                "Testing if there the 'integer? %' block returns a boolean value.",
+                "The 'integer? %' block returns a boolean value.",
+                "Make sure your block returns the true/false booleans.",
+                1);
+
+            var tip_3_3 = chunk_3.newTip('Make sure you name your block uses either the "round" block or the "mod" block.',
+                'Great job!');
+
+            tip_3_3.newAssertTest(
+                usesRoundMod_3,
+                "Testing if the 'integer? %' block uses either the 'round' block or the 'mod' block in its defintion.",
+                "The 'integer? %' block uses either the 'round' block or the 'mod' block in its defintion.",
+                "ry using the 'round' block or the 'mod' block in your solution.",
+                1);
+
+            var tip_3_4 = chunk_3.newTip('Make sure you block works on basic inputs!',
+                'Great job!');
+
+             tip_3_4.newIOTest('r',  //testClass
+                'integer? %',  //blockSpec
+                [2],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_3_4.newIOTest('r',  //testClass
+                'integer? %',  //blockSpec
+                [2.55],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_3_4.newIOTest('r',  //testClass
+                'integer? %',  //blockSpec
+                [-6453],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_3_4.newIOTest('r',  //testClass
+                'integer? %',  //blockSpec
+                [0],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+
+
+
+        /* Chunk 5 for the between? exercise in exercise 5 */
+            var betweenExists_5 = function() {
+                return spriteContainsBlock("% between? % and %");
+            }
+
+            var predicate_5 = function() {
+                var customBody = getCustomBody("% between? % and %");
+                return ((customBlockContains("% between? % and %", "report %", ["true"]) &&
+                    customBlockContains("% between? % and %", "report %", ["false"])) ||
+                    (blockPrecedes("report %", "% and %", customBody)));
+                    //assuming they are reporting the AND block --> boolean value
+            }
+
+            var usesAnd_5 = function() {
+                return customBlockContains("% between? % and %", "% and %");
+            }
+
+
+            // Create a first test chunk
+            var chunk_5 = fb.newChunk('Make the "between" block.');
+            // Add a first tip to that first test chunk
+            var tip_5_1 = chunk_5.newTip('Make sure you name your block exactly "% between? % and %" and place it in the scripting area.',
+                'Great job!');
+
+            tip_5_1.newAssertTest(
+                betweenExists_5,
+                "Testing if there is a '% between? % and %' block in the scripting area.",
+                "There is a '% between? % and %' block in the scripting area.",
+                "Make sure you name your block exactly '% between? % and %' and place it in the scripting area.",
+                1);
+
+            var tip_5_2 = chunk_5.newTip('Make sure your block is a predicate: it returns true/false values.',
+                'Great job!');
+
+            tip_5_2.newAssertTest(
+                predicate_5,
+                "Testing to see if the '% between? % and %' block returns a boolean value.",
+                "The '% between? % and %' block returns a boolean value.",
+                "Make sure your '% between? % and %' block returns a boolean value.",
+                1);
+
+            var tip_5_3 = chunk_5.newTip('Try using the "and" block in your solution.',
+                'Great job!');
+
+            tip_5_3.newAssertTest(
+                usesAnd_5,
+                "Testing to see if the '% between? % and %' block uses the 'and' block in its defintion.",
+                "The '% between? % and %' block uses the 'and' block in its defintion.",
+                "Try using the 'and' block in your solution.",
+                1);
+
+            var tip_5_4 = chunk_5.newTip('Make sure your block works on basic inputs.',
+                'Great job!');
+
+            tip_5_4.newIOTest('r',  //testClass
+                '% between? % and %',  //blockSpec
+                [2, 3, 4],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_5_4.newIOTest('r',  //testClass
+                '% between? % and %',  //blockSpec
+                [2.55, 2, 3],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_5_4.newIOTest('r',  //testClass
+                '% between? % and %',  //blockSpec
+                [-5, 0, -6],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_5_4.newIOTest('r',  //testClass
+                '% between? % and %',  //blockSpec
+                [0, 7, 2],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+
+
+
+
+        /* Chunk 6 for the weekend? block in exercise 6 */
+            var weekendExists_6 = function() {
+                return spriteContainsBlock("weekend? %");
+            }
+
+            var predicate_6 = function() {
+                var customBody = getCustomBody("weekend? %");
+                return ((customBlockContains("weekend? %", "report %", ["true"]) &&
+                    customBlockContains("weekend? %", "report %", ["false"])) ||
+                    (blockPrecedes("report %", "% or %", customBody)));
+                    //assuming they are reporting the OR block --> boolean value
+            }
+
+            var usesOr_6 = function() {
+                return customBlockContains("weekend? %", "% or %");
+            }
+
+            var chunk_6 = fb.newChunk('Make the "weekend" block.');
+            // Add a first tip to that first test chunk
+            var tip_6_1 = chunk_6.newTip('Make sure you name your block exactly "weekend? %" and place it in the scripting area.',
+                'Great job!');
+
+            tip_6_1.newAssertTest(
+                weekendExists_6,
+                "Testing if there is a 'weekend? %' block in the scripting area.",
+                "There is a 'weekend? %' block in the scripting area.",
+                "Make sure you name your block exactly 'weekend? %' and place it in the scripting area.",
+                1);
+
+            var tip_6_2 = chunk_6.newTip('Make sure your block is a predicate: it returns true/false values.',
+                'Great job!');
+
+            tip_6_2.newAssertTest(
+                predicate_6,
+                "Testing to see if the 'weekend? %' block returns a boolean value.",
+                "The 'weekend? %' block returns a boolean value.",
+                "Make sure your 'weekend? %' block returns a boolean value.",
+                1);
+
+            var tip_6_3 = chunk_6.newTip('Try using the "or" block in your solution.',
+                'Great job!');
+
+            tip_6_3.newAssertTest(
+                usesOr_6,
+                "Testing to see if the 'weekend? %' block uses the 'or' block in its defintion.",
+                "The 'weekend? %' block uses the 'or' block in its defintion.",
+                "Try using the 'or' block in your solution.",
+                1);
+
+            var tip_6_4 = chunk_6.newTip('Make sure your block works on basic inputs.',
+                'Great job!');
+
+            tip_6_4.newIOTest('r',  //testClass
+                'weekend? %',  //blockSpec
+                ["Saturday"],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_6_4.newIOTest('r',  //testClass
+                'weekend? %',  //blockSpec
+                ["Sunday"],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_6_4.newIOTest('r',  //testClass
+                'weekend? %',  //blockSpec
+                ["Monday"],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_6_4.newIOTest('r',  //testClass
+                'weekend? %',  //blockSpec
+                ["Tuesday"],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+
+
+
+
+
+        /* Chunk 7 for the weekday? block in exercise 7 */
+            var chunk_7 = fb.newChunk('Make the weekday? block.');
+
+            //Make sure you name your block "weekday? %"!
+            var weekdayExists_7 = function() {
+                return spriteContainsBlock("weekday? %");
+            }
+
+            //Make sure your block is a predicate: it returns true/false values.
+            var predicate_7 = function() {
+                var customBody = getCustomBody("weekday? %");
+                return ((customBlockContains("weekday? %", "report %", ["true"]) &&
+                    customBlockContains("weekday? %", "report %", ["false"])) ||
+                    (blockPrecedes("report %", "not %", customBody)));
+                    //assuming they are reporting the NOT block --> boolean value
+            }
+
+            //Try using the "weekend? %" block in your solution!
+            var usesWeekend_7 = function() {
+                return customBlockContains("weekday? %", "weekend? %");
+            }
+
+
+            // Add a first tip to that first test chunk
+            var tip_7_1 = chunk_7.newTip('Make sure you name your block exactly "weekday? %".',
+                'Great job!');
+
+            tip_7_1.newAssertTest(
+                weekdayExists_7,
+                "Testing if there is a 'weekday? %' block has been found. in the scripting area.",
+                "A 'weekday? %' block has been found. in the scripting area.",
+                "Make sure you name your block exactly 'weekday? %'. and place it in the scripting area.",
+                1);
+
+            var tip_7_2 = chunk_7.newTip('Make sure your block returns true or false values.',
+                'Great job!');
+
+            tip_7_2.newAssertTest(
+                predicate_7,
+                "Testing if the 'weekday? %' block returns a boolean value.",
+                "The 'weekday? %' block returns a boolean value.",
+                "Make sure your block returns the true/false booleans!",
+                1);
+
+            var tip_7_3 = chunk_7.newTip('Make sure your block uses the weekend? block',
+                'Great job!');
+
+            tip_7_3.newAssertTest(
+                usesWeekend_7,
+                "Testing if the 'weekday? %' block uses the 'weekend? %' block in its defintion.",
+                "The 'weekday? %' block uses the 'weekend? %' block in its defintion.",
+                "Try using the 'weekend? %' block in your solution.",
+                1);
+
+
+
+             var tip_7_4 = chunk_7.newTip('Make sure you block works on basic inputs!',
+                'Great job!');
+
+             tip_7_4.newIOTest('r',  //testClass
+                'weekday? %',  //blockSpec
+                ["Saturday"],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_7_4.newIOTest('r',  //testClass
+                'weekday? %',  //blockSpec
+                ["Sunday"],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_7_4.newIOTest('r',  //testClass
+                'weekday? %',  //blockSpec
+                ["Monday"],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_7_4.newIOTest('r',  //testClass
+                'weekday? %',  //blockSpec
+                ["Tuesday"],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+
+
+            return fb;
+        }
+    </script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type="text/javascript" src="AGFormatting.js"></script>
+
+    <script type="text/javascript">
+
+        var world;
+        window.onload = function () {
+
+            //INITIALIZE UP SNAP
+            world = new WorldMorph(document.getElementById('world'));
+            new IDE_Morph().openIn(world);
+            var ide = world.children[0];
+
+            //Reduce Stage Size on initialization
+            ide.toggleStageSize(true);
+
+            initializeSnapAdditions(world, id);
+
+
+            //AUTOGRADER ADDITION -
+            //Forced to use setTimeout() to let the world load before... Maybe not.
+            //Create a gradingLog and initialize the AG status bar (AGSB).
+
+            //Initialize AGSB button.
+            var grade_button = document.getElementById("autograding_button");
+            grade_button.addEventListener('click', button_listener);
+            var world_canvas = document.getElementById('world');
+            world_canvas.addEventListener("mouseup", update_listener);
+            // Start Snap Environment Loop
+            setInterval(loop, 1);
+
+        };
+
+        function loop() {
+            world.doOneCycle();
+        }
+
+    </script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type="text/javascript" src="AG_EDX.js"></script>
+</head>
+<body style="margin: 0;">
+    <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
+
+<!-- Snap Autograding Button -->
+<div id="autograding_bar">
+    <div tabindex="0" class="onclick-menu" id='onclick-menu' style="display:inline-block">
+        <span title="Menu">&#9776;</span>
+        <div class='hover_darken'></div>
+      <nav id="navigation" class="site-navigation" role="navigation">
+          <ul id="dropdown-closed" class="bubble">
+            <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="feedback-button">View Feedback</a></li>
+            <li class="menu-divider-sub-menu" id='menu-divider'></li>-->
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Revert To Last Attempt</a></li>
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="revert-button">Revert To Best Attempt</a></li>
+            <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last edX Submission</a></li>-->
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="reset-button">Reset</a></li>
+            <li class="menu-divider-sub-menu" id='menu-divider'></li>
+            <li class="menu-item-sub-menu" id='enabled-button' onclick="openPopup();"><a id="help-button">Help</a></li>
+          </ul>
+    </nav>
+    </div>
+    <div id="autograding_button" style="display:inline-block;">
+        <span></span>
+        <div class='hover_darken'></div>
+    </div>
+    <div id="numtips" style="display:inline-block"></div>
+</div>
+<!-- Snap Autograding Menu -->
+<!-- Autograding Menu Help Button -->
+<div class="overlay is-hidden" id="overlay">
+    <p class="help-text" id="full-screen-arrow">&#8600;</p>
+    <p class="help-text" id="full-screen-help">This full-screen button will pop out the Snap! window.</p>
+    <p class="help-text" id="menu-item-arrow">&#8599;</p>
+    <p class="help-text" id="menu-item-help">The first two menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your last graded attempt or to your best attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
+    <p class="help-text" id="ag-button-arrow">&#8593;</p>
+    <p class="help-text" id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
+</div>
+
+<div style="display:inline-block" class="view-results" id="circle" onclick="openResults();">Results
+</div>
+<div class="overlay is-hidden" id="ag-output">
+    <div class="popup-content" id="ag-results">
+        <span class="button-close" onclick="closeResults();" id="popup">X</span>
+        <!--<p id = "different-feedback"></p>
+        <p id = "edx-submit-different"></p>-->
+        <div id="toggle-correct-tests"></div>
+        <p id="comment"></p>
+    </div>
+</div>
+    </div>
+    <script type="text/javascript" src="AG_status_bar.js" />
+</body>
+</html>

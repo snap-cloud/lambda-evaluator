@@ -242,6 +242,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 };
 
 FeedbackLog.prototype.finishSnapTest = function(test, output) {
+
 	// Check that output is being returned
 	if (!output) {
 		test.output = null;
@@ -456,7 +457,7 @@ FeedbackLog.prototype.toString = function() {
 	//http://stackoverflow.com/questions/9382167/serializing-object-that-contains-cyclic-object-value
 	seen = [];
 	var log_string = JSON.stringify(this, function(key, val) {
-	   if (val !== null && typeof val === "object") {
+	   if (val != null && typeof val == "object") {
 	        if (seen.indexOf(val) >= 0) {
 	            return;
 	        }
