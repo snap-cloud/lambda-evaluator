@@ -41,7 +41,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_W4_L1_T5_E_all";
+        var taskID = "_hw1";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -141,190 +141,257 @@
             fb.snapWorld = world;
 
 
-        /* Create chunk_1 for the exercise 1 : three input sum */
-            var chunk_1 = fb.newChunk('Make the three-input addition block.');
+        /* Create chunk_1 for the correct guess? block */
+            var chunk_1 = fb.newChunk('Make the "correct guess?" block.');
 
-            var add3Exists_1 = function () {
-                return spriteContainsBlock("% + % + %");
-            }
-            var sumExists_1 = function () {
-                var customBody = getCustomBody("% + % + %");
-                var sumFound = scriptContainsBlock(customBody, "% + %");
-                return sumFound;
+            var correctGuessExists_1 = function () {
+                return spriteContainsBlock("correct guess? % %");
             }
 
 
             // Add a first tip to that first test chunk
-            var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly "% + % + %".',
+            var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly "correct guess? % %".',
                 'Great job!');
 
             tip_1_1.newAssertTest(
-                add3Exists_1,
-                "Testing if there is a three-input add block in the scripting area.",
-                "There is a three-input add block in the scripting area.",
-                "Make sure you name your block exactly '% + % + %' and place it in the scripting area.",
+                correctGuessExists_1,
+                "Testing if there is a correct guess? block in the scripting area.",
+                "There is a correct guess? block in the scripting area.",
+                "Make sure you name your block exactly 'correct guess? % %' and place it in the scripting area.",
                 1);
 
 
-            var tip_1_2 = chunk_1.newTip('Make sure your block contains a sum block.',
-                'Great job!');
-
-            tip_1_2.newAssertTest(
-                sumExists_1,
-                "Testing if there is a '% + %' block inside of the body of the three-input add block.",
-                "There is a '% + %' block inside of the body of the three-input add block.",
-                "Make sure there is a '% + %' block inside of the body of the three-input add block.",
-                1);
-
-            var tip_1_3 = chunk_1.newTip('Make sure your block works for general cases.',
+            var tip_1_2 = chunk_1.newTip('Make sure your block works for general cases.',
                 'Great job!');
 
 
-             tip_1_3.newIOTest('r',  //testClass
-                '% + % + %',  //blockSpec
-                [10, 2, 5],  //input
-                17,  //output
+             tip_1_2.newIOTest('r',  //testClass
+                'correct guess? % %',  //blockSpec
+                ["cat", "cat"],  //input
+                true,  //output
                 -1,  //timeout
                 false,  //isolated
                 1);  //points
 
-             tip_1_3.newIOTest('r',  //testClass
-                '% + % + %',  //blockSpec
-                [-10, -2, 6],  //input
-                -6,  //output
+             tip_1_2.newIOTest('r',  //testClass
+                'correct guess? % %',  //blockSpec
+                ["cat", "dog"],  //input
+                false,  //output
                 -1,  //timeout
                 false,  //isolated
                 1);  //points
 
-             tip_1_3.newIOTest('r',  //testClass
-                '% + % + %',  //blockSpec
-                [0, 0, 0],  //input
-                0,  //output
+             tip_1_2.newIOTest('r',  //testClass
+                'correct guess? % %',  //blockSpec
+                ["dog", "cat"],  //input
+                false,  //output
                 -1,  //timeout
                 false,  //isolated
                 1);  //points
 
-             tip_1_3.newIOTest('r',  //testClass
-                '% + % + %',  //blockSpec
-                [100, -1000, 0],  //input
-                -900,  //output
+             tip_1_2.newIOTest('r',  //testClass
+                'correct guess? % %',  //blockSpec
+                ["dog", "dog"],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_1_2.newIOTest('r',  //testClass
+                'correct guess? % %',  //blockSpec
+                ["treehouse", "treehouse"],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_1_2.newIOTest('r',  //testClass
+                'correct guess? % %',  //blockSpec
+                ["", ""],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_1_2.newIOTest('r',  //testClass
+                'correct guess? % %',  //blockSpec
+                ["", "stuff"],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_1_2.newIOTest('r',  //testClass
+                'correct guess? % %',  //blockSpec
+                ["stuff", ""],  //input
+                false,  //output
                 -1,  //timeout
                 false,  //isolated
                 1);  //points
 
 
+        /* Create chunk_2 for the same length? block */
+            var chunk_2 = fb.newChunk('Make the "same length?" block.');
 
-
-
-
-        /* Create chunk_2 for the exercise 2 : Make sure you create a function exactly named: 'sum of two smallest % and % and % */
-            var chunk_2 = fb.newChunk('Make the sum of two smallest block.');
-
-
-            /* Line 98 Sum of two smallest block */
-            // Sum of two smallest: Make sure you create a function exactly named: 'sum of two smallest % and % and %'
-            var sumOfTwoSmallestExists_2 = function () {
-                return spriteContainsBlock("sum of two smallest % and % and %");
+            var sameLengthExists_2 = function () {
+                return spriteContainsBlock("same length? % %");
             }
-
-            var useMaxBlock_2 = function () {
-                var customBody = getCustomBody('sum of two smallest % and % and %');
-                var maxBlockFound = scriptContainsBlock(customBody, "max of % and %");
-                return maxBlockFound;
-            }
-            var useDifferenceBlock_2 = function () {
-                var customBody = getCustomBody('sum of two smallest % and % and %');
-                return scriptContainsBlock(customBody, "% − %");
-            }
-            var useTripleSumBlock_2 = function () {
-                var customBody = getCustomBody('sum of two smallest % and % and %');
-                return scriptContainsBlock(customBody, "% + % + %");
-            }
-
-
-
-
-
-
 
 
             // Add a first tip to that first test chunk
-            var tip_2_1 = chunk_2.newTip('Make sure you name your block exactly "sum of two smallest % and % and %".',
+            var tip_2_1 = chunk_2.newTip('Make sure you name your block exactly "same length? % %".',
                 'Great job!');
 
             tip_2_1.newAssertTest(
-                sumOfTwoSmallestExists_2,
-                "Testing if there is a sum of two smallest block in the scripting area.",
-                "There is a sum of two smallest block in the scripting area.",
-                "Make sure you name your block exactly 'sum of two smallest % and % and %' and place it in the scripting area.",
+                sameLengthExists_2,
+                "Testing if there is a same length? block in the scripting area.",
+                "There is a same length? block in the scripting area.",
+                "Make sure you name your block exactly 'same length? % %' and place it in the scripting area.",
                 1);
 
-            var tip_2_2 = chunk_2.newTip('Try using a max block.',
-                'Great job!');
 
-            tip_2_2.newAssertTest(
-                useMaxBlock_2,
-                "Testing if function uses a max block in the definition.",
-                "Uses a max block in the definition of the function.",
-                "Try using the max block we made in a previous exercise!",
-                1);
-
-            var tip_2_3 = chunk_2.newTip('Try using a difference block.',
-                'Great job!');
-
-            tip_2_3.newAssertTest(
-                useDifferenceBlock_2,
-                "Testing if function uses a difference block in the definition.",
-                "Uses a difference block in the definition of the function.",
-                "One way to approach this problem is thinking about each number as part of a whole. Can we take out something from that whole? What block would be helpful in that?",
-                1);
-
-            var tip_2_4 = chunk_2.newTip('Try using a three-input addition block".',
-                'Great job!');
-
-            tip_2_4.newAssertTest(
-                useTripleSumBlock_2,
-                "Testing if function uses a triple sum block in the definition of the function.",
-                "Uses a triple sum block in the definition of the function.",
-                "One way to approach this problem is thinking about each number as part of a whole. How can we construct that whole using a block we have already made? Which block would be useful that takes in three numbers?",
-                1);
-
-            var tip_2_5 = chunk_2.newTip('Make sure your block works for basic inputs.',
+            var tip_2_2 = chunk_2.newTip('Make sure your block works for general cases.',
                 'Great job!');
 
 
-
-             tip_2_5.newIOTest('r',  //testClass
-                'sum of two smallest % and % and %',  //blockSpec
-                [10, 2, 5],  //input
-                7,  //output
+             tip_2_2.newIOTest('r',  //testClass
+                'same length? % %',  //blockSpec
+                ["dog", "cat"],  //input
+                true,  //output
                 -1,  //timeout
                 false,  //isolated
                 1);  //points
 
-             tip_2_5.newIOTest('r',  //testClass
-                'sum of two smallest % and % and %',  //blockSpec
-                [-10, -2, 6],  //input
-                -12,  //output
+             tip_2_2.newIOTest('r',  //testClass
+                'same length? % %',  //blockSpec
+                ["dog", "cats"],  //input
+                false,  //output
                 -1,  //timeout
                 false,  //isolated
                 1);  //points
 
-             tip_2_5.newIOTest('r',  //testClass
-                'sum of two smallest % and % and %',  //blockSpec
-                [0, 0, 0],  //input
+             tip_2_2.newIOTest('r',  //testClass
+                'same length? % %',  //blockSpec
+                ["dogs", "cat"],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_2_2.newIOTest('r',  //testClass
+                'same length? % %',  //blockSpec
+                ["", "cat"],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_2_2.newIOTest('r',  //testClass
+                'same length? % %',  //blockSpec
+                ["", ""],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_2_2.newIOTest('r',  //testClass
+                'same length? % %',  //blockSpec
+                ["stuff", ""],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_2_2.newIOTest('r',  //testClass
+                'same length? % %',  //blockSpec
+                ["treehouse", "treehouse"],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+        /* Create chunk_3 for the count matching block */
+            var chunk_3 = fb.newChunk('Make the "count matching" block.');
+
+            var countMatchingExists_3 = function () {
+                return spriteContainsBlock("count matching %s %s");
+            }
+
+
+            // Add a first tip to that first test chunk
+            var tip_3_1 = chunk_3.newTip('Make sure you name your block exactly "count matching %s %s".',
+                'Great job!');
+
+            tip_3_1.newAssertTest(
+                countMatchingExists_3,
+                "Testing if there is a count matching block in the scripting area.",
+                "There is a count matching block in the scripting area.",
+                "Make sure you name your block exactly 'count matching %s %s' and place it in the scripting area.",
+                1);
+
+
+            var tip_3_2 = chunk_3.newTip('Make sure your block works for general cases.',
+                'Great job!');
+
+
+             tip_3_2.newIOTest('r',  //testClass
+                'count matching %s %s',  //blockSpec
+                ["dog", "cat"],  //input
                 0,  //output
                 -1,  //timeout
                 false,  //isolated
                 1);  //points
 
-             tip_2_5.newIOTest('r',  //testClass
-                'sum of two smallest % and % and %',  //blockSpec
-                [100, -1000, 0],  //input
-                -1000,  //output
+             tip_3_2.newIOTest('r',  //testClass
+                'count matching %s %s',  //blockSpec
+                ["dog", "fog"],  //input
+                2,  //output
                 -1,  //timeout
                 false,  //isolated
                 1);  //points
+
+             tip_3_2.newIOTest('r',  //testClass
+                'count matching %s %s',  //blockSpec
+                ["trees", "heats"],  //input
+                1,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_3_2.newIOTest('r',  //testClass
+                'count matching %s %s',  //blockSpec
+                ["pool", "wool"],  //input
+                3,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_3_2.newIOTest('r',  //testClass
+                'count matching %s %s',  //blockSpec
+                ["a", "b"],  //input
+                0,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_3_2.newIOTest('r',  //testClass
+                'count matching %s %s',  //blockSpec
+                ["", ""],  //input
+                0,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_3_2.newIOTest('r',  //testClass
+                'count matching %s %s',  //blockSpec
+                ["racecars", "superman"],  //input
+                1,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+
+
 
 
 
