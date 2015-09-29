@@ -78,14 +78,14 @@
                 "Make sure there is a 'valid key? %' block in the scripting area.",
                 1);
 
-            var second_tip = first_chunk.newTip("Make sure 'valid key? %' doesn't give false positives.",
+            var second_tip = first_chunk.newTip("Make sure 'valid key? %' doesn't give false positives. (-2 points)",
                 'Great job!');
 
             second_tip.newIOTest('r',  //testClass
                 "valid key? %",  //blockSpec
                 ["hors eee"],  //input
                 false,  //output
-                -1,  //timeout
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
 
@@ -93,7 +93,7 @@
                 "valid key? %",  //blockSpec
                 ["h0rs3"],  //input
                 false,  //output
-                -1,  //timeout
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
 
@@ -101,7 +101,7 @@
                 "valid key? %",  //blockSpec
                 ["horse!"],  //input
                 false,  //output
-                -1,  //timeout
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
 
@@ -109,18 +109,18 @@
                 "valid key? %",  //blockSpec
                 [" "],  //input
                 false,  //output
-                -1,  //timeout
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
 
-            var third_tip = first_chunk.newTip("Make sure 'valid key? %' doesn't give false negatives.",
+            var third_tip = first_chunk.newTip("Make sure 'valid key? %' doesn't give false negatives. (-2 points)",
                 'Great job!');
 
             third_tip.newIOTest('r',  //testClass
                 "valid key? %",  //blockSpec
                 ["horse"],  //input
                 true,  //output
-                -1,  //timeout
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points 
 
@@ -128,7 +128,7 @@
                 "valid key? %",  //blockSpec
                 ["HoRsE"],  //input
                 true,  //output
-                -1,  //timeout
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points 
 
@@ -136,7 +136,7 @@
                 "valid key? %",  //blockSpec
                 ["horsesROCK"],  //input
                 true,  //output
-                -1,  //timeout
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
 
@@ -156,41 +156,33 @@
                 "Make sure there is a 'encrypt phrase % using key %' block in the scripting area.",
                 1);
 
-            var second_tip2 = second_chunk.newTip("Make sure 'encrypt phrase % using key %' correctly encrypts the given phrase (basic inputs).",
+            var second_tip2 = second_chunk.newTip("Make sure 'encrypt phrase % using key %' correctly encrypts the given phrase (alphabetical characters only) (-3 points).",
                 'Great job!');
 
             second_tip2.newIOTest('r',  //testClass
                 "encrypt phrase % using key %",  //blockSpec
-                ["the wolf sniffed happily", "ajk"],  //input
-                "wif zrog vqlggfe ibssloj",  //output
-                -1,  //timeout
+                ["thewolfsniffedhappily", "ajk"],  //input
+                "wifzrogvqlggfeibssloj",  //output
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
 
             second_tip2.newIOTest('r',  //testClass
                 "encrypt phrase % using key %",  //blockSpec
-                ["I am the True King of the wolves", "horse"],  //input
-                "k ap yjf ywzf mkqi tg yjf otnhfx",  //output
-                -1,  //timeout
+                ["HellomynameISJOSHHUG", "zyz"],  //input
+                "hellomynameisjoshhug",  //output
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
 
-            second_tip2.newIOTest('r',  //testClass
-                "encrypt phrase % using key %",  //blockSpec
-                ["Hello my name IS JOSH HUG", "zyz"],  //input
-                "hello my name is josh hug",  //output
-                -1,  //timeout
-                false,  //isolated
-                1);  //points
-
-            var third_tip2 = second_chunk.newTip("Make sure 'encrypt phrase % using key %' filters out weird characters from the given phrase when encrypting.",
+            var third_tip2 = second_chunk.newTip("Make sure 'encrypt phrase % using key %' filters out weird characters from the given phrase when encrypting. (-1 point)",
                 'Great job!');
 
             third_tip2.newIOTest('r',  //testClass
                 "encrypt phrase % using key %",  //blockSpec
                 ["The WOLF sniffed,,;;;;;5555 hapPily.", "ajk"],  //input
                 "wif zrog vqlggfe ibssloj",  //output
-                -1,  //timeout
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
 
@@ -198,9 +190,21 @@
                 "encrypt phrase % using key %",  //blockSpec
                 ["H.e.l.l.o., m!y! n~a~m~e~ I^S^ J*O*S*H* H(U)G.", "zyz"],  //input
                 "hello my name is josh hug",  //output
-                -1,  //timeout
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
+
+            var fourth_tip2 = second_chunk.newTip("Make sure 'encrypt phrase % using key %' keeps spaces when encrypting. (-0.5 points)",
+                'Great job!');
+
+            fourth_tip2.newIOTest('r',  //testClass
+                "encrypt phrase % using key %",  //blockSpec
+                ["I am the True King of the wolves", "horse"],  //input
+                "k ap yjf ywzf mkqi tg yjf otnhfx",  //output
+                5000000,  //timeout
+                false,  //isolated
+                1);  //points
+
 
             var createCiphertextExists = function() {
                     return spriteContainsBlock("create ciphertext alphabet from key %", 0);
@@ -218,14 +222,14 @@
                 "Make sure there is a 'create ciphertext alphabet from key %' block in the scripting area.",
                 1);
 
-            var second_tip3 = third_chunk.newTip("Make sure 'create ciphertext alphabet from key %' correctly creates a cipheralphabet.",
+            var second_tip3 = third_chunk.newTip("Make sure 'create ciphertext alphabet from key %' correctly creates a cipheralphabet. (-4 points) (partial credit...?)",
                 'Great job!');
 
             second_tip3.newIOTest('r',  //testClass
                 "create ciphertext alphabet from key %",  //blockSpec
                 ["ajk"],  //input
                 ["b", "c", "d", "e", "f", "g", "h", "i", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "a", "j", "k"],  //output
-                -1,  //timeout
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
 
@@ -233,7 +237,7 @@
                 "create ciphertext alphabet from key %",  //blockSpec
                 ["horse"],  //input
                 ["a", "b", "c", "d", "f", "g", "i", "j", "k", "l", "m", "n", "p", "q", "t", "u", "v", "w", "x", "y", "z", "h", "o", "r", "s", "e"],  //output
-                -1,  //timeout
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
 
@@ -241,7 +245,7 @@
                 "create ciphertext alphabet from key %",  //blockSpec
                 ["ajka"],  //input
                 ["b", "c", "d", "e", "f", "g", "h", "i", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "j", "k", "a"],  //output
-                -1,  //timeout
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
 
@@ -262,33 +266,52 @@
                 "Make sure there is a 'decrypt phrase % using key %' block in the scripting area.",
                 1);
 
-            var second_tip4 = fourth_chunk.newTip("Make sure 'decrypt phrase % using key %' correctly decrypts the given phrase (basic inputs).",
+            var second_tip4 = fourth_chunk.newTip("Make sure 'decrypt phrase % using key %' correctly decrypts the given phrase (alphabetical characters only) (-2 points).",
                 'Great job!');
 
             second_tip4.newIOTest('r',  //testClass
                 "decrypt phrase % using key %",  //blockSpec
                 ["wif", "ajk"],  //input
                 "the",  //output
-                -1,  //timeout
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
 
             second_tip4.newIOTest('r',  //testClass
                 "decrypt phrase % using key %",  //blockSpec
-                ["w i f", "ajk"],  //input
-                "t h e",  //output
-                -1,  //timeout
+                ["wifzrogvqlggfeibssloj", "ajk"],  //input
+                "thewolfsniffedhappily",  //output
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
 
-            var third_tip4 = fourth_chunk.newTip("Make sure 'decrypt phrase % using key %' filters out weird characters from the given phrase when decrypting.",
+            var third_tip4 = fourth_chunk.newTip("Make sure 'decrypt phrase % using key %' filters out weird characters from the given phrase when decrypting. (-1 point)",
                 'Great job!');
 
             third_tip4.newIOTest('r',  //testClass
                 "decrypt phrase % using key %",  //blockSpec
                 ["w.i,f!", "ajk"],  //input
                 "the",  //output
-                -1,  //timeout
+                5000000,  //timeout
+                false,  //isolated
+                1);  //points
+
+            third_tip4.newIOTest('r',  //testClass
+                "decrypt phrase % using key %",  //blockSpec
+                ["wif... zrog vq***lggfe ibss[[loj", "ajk"],  //input
+                "the wolf sniffed happily",  //output
+                5000000,  //timeout
+                false,  //isolated
+                1);  //points
+
+            var fourth_tip4 = fourth_chunk.newTip("Make sure 'decrypt phrase % using key %' keeps spaces when decrypting. (-0.5 points)",
+                'Great job!');
+
+            fourth_tip4.newIOTest('r',  //testClass
+                "decrypt phrase % using key %",  //blockSpec
+                ["w i f", "ajk"],  //input
+                "t h e",  //output
+                5000000,  //timeout
                 false,  //isolated
                 1);  //points
 
