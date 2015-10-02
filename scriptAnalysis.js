@@ -1081,3 +1081,9 @@ function checkTemplate(template, script, templateVariables) {
 	var softMatch = true;
 	return scriptsMatch(template, script, softMatch, vars, templateVariables);
 }
+
+/* Takes in a BLOCKSPEC and returns its type (reporter, predicate, command).
+*/
+function blockType(blockSpec) {
+	return blockSpec.definition.type
+}
