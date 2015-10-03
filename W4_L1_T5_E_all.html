@@ -327,6 +327,91 @@
                 1);  //points
 
 
+             /*Create chunk 3: "Are any equal? % and % and %" predicate block.*/
+            var chunk_3 = fb.newChunk('Make the "Are any equal?" block.');
+
+            
+            //Make sure you name your block "Are any equal? % and % and %"!
+            var anyEqualExists = function() {
+                return spriteContainsBlock("Are any equal? % and % and %");
+            }
+
+            var tip_3_1 = chunk_3.newTip('Make sure you name your block exactly "Are any equal? % and % and %".',
+                'Great job!');
+
+            tip_3_1.newAssertTest(
+                anyEqualExists,
+                "Testing if there is an 'Are any equal?' block in the scripting area.",
+                "There is an 'Are any equal?' block in the scripting area.",
+                "Make sure you name your block exactly 'Are any equal? % and % and %' and place it in the scripting area.",
+                1);
+
+            var predicate = function() {
+                var customBody = getCustomBody("Are any equal? % and % and %");
+                return ((customBlockContains("Are any equal? % and % and %", "report %", ["true"]) && 
+                    customBlockContains("Are any equal? % and % and %", "report %", ["false"])) || 
+                    (blockPrecedes("report %", "% or %", customBody))); 
+                    //assuming they are reporting the OR block --> boolean value
+            }
+
+            var tip_3_2 = chunk_3.newTip("Make sure your block is a predicate: it returns true/false values.",
+                'Great job!');
+
+            tip_3_2.newAssertTest(
+                predicate,
+                "Testing to see if the block returns a boolean true/false value.",
+                "The block returns a boolean true/false value.",
+                "Make sure your block is a predicate: it returns true/false values.", 
+                1);
+
+            var usesOr2 = function() {
+                return customBlockContains("Are any equal? % and % and %", "% or %");
+            }
+
+            var tip_3_3 = chunk_3.newTip("Try using the '% or %' block in your solution!",
+                "Great job!");
+
+            tip_3_3.newAssertTest(
+                usesOr2,
+                "Testing to see that the block uses the OR block in its definition",
+                "The block uses the OR block in its definition",
+                "Try using the '% or %' block in your solution!",
+                1);
+
+            var tip_3_4 = chunk_3.newTip('Make sure your block works for basic inputs.',
+                'Great job!');
+
+            tip_3_4.newIOTest('r',  //testClass
+                "Are any equal? % and % and %",  //blockSpec
+                [2, 3, 4],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_3_4.newIOTest('r',  //testClass
+                "Are any equal? % and % and %",  //blockSpec
+                [-2, 0, 2],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_3_4.newIOTest('r',  //testClass
+                "Are any equal? % and % and %",  //blockSpec
+                [6, 3, 6],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_3_4.newIOTest('r',  //testClass
+                "Are any equal? % and % and %",  //blockSpec
+                [1, 2, 2],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
 
 
             return fb;
