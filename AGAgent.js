@@ -11,6 +11,10 @@ for (i = 0; i < num_iframes; i++) {
     }
 }
 
+var showPoints = false;
+
+console.log(showPoints);
+
 
 
 function isEDXurl() {

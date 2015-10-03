@@ -441,3 +441,22 @@ div {
     box-shadow: 5px 5px 20px black;
     border: 5px solid rgba(41, 41, 41, 0.74);
 }
+
+.help-text {
+    color: black;
+    background-color: white;
+    padding: 10px;
+    border-radius: 15px;
+    box-shadow: 5px 5px 20px black;
+    border: 5px solid rgba(41, 41, 41, 0.74);
+}
+
+#hamburger-menu-arrow {
+    color: white;
+    font-size: 1.2em;
+}
+
+#hamburger-menu-help {
+    width: 20%;
+    font-size: 0.7em;
+}
