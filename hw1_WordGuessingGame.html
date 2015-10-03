@@ -33,7 +33,9 @@
     <script type="text/javascript" src="AGAgent.js"></script>
     <script type="text/javascript" src='feedbackLog.js'></script>
     <script type='text/javascript'>
-        var starter_path = null;
+        var starter_path = "hw1_starter_file.xml";
+
+
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
         var courseID = "BJC.1x";  // e.g. "BJCx"
@@ -410,6 +412,94 @@
 
 
 
+
+
+        /* Create chunk_4 for the respond to block */
+            var chunk_4 = fb.newChunk('Make the "respond to" block.');
+
+            var respondToExists_4 = function () {
+                return spriteContainsBlock("respond to % % %");
+            }
+
+
+            // Add a first tip to that first test chunk
+            var tip_4_1 = chunk_1.newTip('Make sure you name your block exactly "respond to % % %".',
+                'Great job!');
+
+            tip_4_1.newAssertTest(
+                respondToExists_4,
+                "Testing if there is a respond to block in the scripting area.",
+                "There is a respond to block in the scripting area.",
+                "Make sure you name your block exactly 'respond to % % %' and place it in the scripting area.",
+                1);
+
+
+
+            var tip_4_2 = chunk_4.newTip('Make sure your block works for when you get the guess correct.',
+                'Great job!');
+
+
+             tip_4_2.newIOTest('r',  //testClass
+                'respond to % % %',  //blockSpec
+                ["batman", "batman", 6],  //input
+                "Great job! You guessed the word in 6 guess(es)!",  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_4_2.newIOTest('r',  //testClass
+                'respond to % % %',  //blockSpec
+                ["superlongword", "superlongword", 1],  //input
+                "Great job! You guessed the word in 1 guess(es)!",  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             var tip_4_3 = chunk_4.newTip('Make sure your block works for when you guess a word with the wrong length.',
+                'Great job!');
+
+             tip_4_3.newIOTest('r',  //testClass
+                'respond to % % %',  //blockSpec
+                ["cheese", "building", 1],  //input
+                "Nope! The secret word has 8 letter(s).",  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_4_3.newIOTest('r',  //testClass
+                'respond to % % %',  //blockSpec
+                ["superlongword", "low", 1],  //input
+                "Nope! The secret word has 3 letter(s).",  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             var tip_4_4 = chunk_4.newTip('Make sure your block works for when your guess has the correct length but is still wrong.',
+                'Great job!');
+
+             tip_4_4.newIOTest('r',  //testClass
+                'respond to % % %',  //blockSpec
+                ["fires", "wires", 1],  //input
+                "You got 4 letter(s) correct.",  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_4_4.newIOTest('r',  //testClass
+                'respond to % % %',  //blockSpec
+                ["heroes", "tigers", 1],  //input
+                "You got 1 letter(s) correct.",  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_4_4.newIOTest('r',  //testClass
+                'respond to % % %',  //blockSpec
+                ["lion", "dogs", 1],  //input
+                "You got 0 letter(s) correct.",  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
 
 
             return fb;
