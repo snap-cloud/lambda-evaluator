@@ -1049,9 +1049,9 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         var string_reporter = document.createElement("div");
                         string_reporter.classList.add("data", "assertion");
                         if (thisTest["output"] === null) {
-                            string_reporter.innerHTML = '<p class="data assertion">' + testPoints + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion"> did NOT return the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '.<p class="data assertion"> Instead it returned no output.</p>';
+                            string_reporter.innerHTML = '<p class="data assertion">' + testPoints + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion"> did NOT return the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + ' <p class="data assertion"> Instead it returned no output.</p>';
                         } else {
-                            string_reporter.innerHTML = '<p class="data assertion">' + testPoints + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion"> did NOT return the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '.<p class="data assertion"> Instead it returned the ' + '<p class="data assertion bold">output: ' + thisTest["output"] + '</p>';
+                            string_reporter.innerHTML = '<p class="data assertion">' + testPoints + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion"> did NOT return the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + ' <p class="data assertion"> Instead it returned the ' + '<p class="data assertion bold">output: ' + thisTest["output"] + '</p>';
                         }
                         document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
                         appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
