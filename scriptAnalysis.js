@@ -289,7 +289,7 @@ function getCustomBody(blockSpec, spriteIndex) {
 	}
 }
 
-/* Takes in all scripts for a single Sprite in chronological order
+/* Takes in all blocks in a single script for a single Sprite in chronological order
  * and converts it into JSON format. You would need to run something like
  * var script = world.children[0].sprites.contents[0].scripts.children[0];
  * in the browser to get the first clone. For example, if we have consecutive
@@ -308,6 +308,10 @@ function getCustomBody(blockSpec, spriteIndex) {
  *
  */
 function JSONscript(blocks) {
+	if (blocks.__proto__.constructor.name === "CommentMorph") {
+		return [{blockSp: "_Comment_",
+				 inputs: []}];
+	}
 	var currBlock = blocks;
 	var scriptArr = [];
 	var currJSONblock = JSONblock(currBlock);
@@ -1082,8 +1086,9 @@ function checkTemplate(template, script, templateVariables) {
 	return scriptsMatch(template, script, softMatch, vars, templateVariables);
 }
 
-/* Takes in a BLOCKSPEC and returns its type (reporter, predicate, command).
+/* Takes in a string blockspec and returns its type (reporter, predicate, command).
+ * This only works for blocks IN THE PALETTE. NOT COMMENTS.
 */
 function blockType(blockSpec) {
-	return blockSpec.definition.type
+	return findBlockInPalette(blockSpec).__proto__.constructor.name;
 }
