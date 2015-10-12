@@ -600,7 +600,8 @@ function initializeSnapAdditions(snapWorld, taskID) {
 
                 //makeOverlayButton();
             }
-            if (timesChecked == 10) {
+            if (timesChecked === 5) {
+                isEDX = false;
                 checkButtonExists = false;
                 clearInterval(checkExist);
             }
@@ -735,7 +736,17 @@ var button_listener = function(event) {
     for(var i=0; i < tip_tests.length; i++){
         tip_tests[i].style.maxWidth = String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px";
     }
+    /*if (checkButtonExists) {
+        sessionStorage.setItem(id + "_popupFeedback", "");
+    }*/
     sessionStorage.setItem(id + "_popupFeedback", "");
+
+    /*if (!checkButtonExists) {
+        populateFeedback();
+        openResults();
+    } else {
+        sessionStorage.setItem(id + "_popupFeedback", "");
+    }*/
 }
 
 function moveHelp() {

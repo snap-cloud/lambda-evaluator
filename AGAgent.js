@@ -43,8 +43,9 @@ function runAGTest(snapWorld, taskID, outputLog) {
     // These tests specified by the Course Designer. 
 
     //outputLog.numAttempts += 1;
-    console.log(outputLog);
+    //console.log(outputLog);
     var test_log = AGTest(outputLog);
+    console.log(test_log);
     if(!test_log.runSnapTests()) {
         test_log.scoreLog();
     }
@@ -218,7 +219,6 @@ function AGUpdate(snapWorld, taskID) {
  *  - Should only be called from outputLog.evaluateLog()
  */
 function AGFinish(outputLog) {
-
     var c_prev_log = JSON.parse(sessionStorage.getItem(outputLog.taskID + "_c_test_log"));
 
     if (!graded) {
