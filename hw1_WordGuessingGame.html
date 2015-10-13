@@ -33,7 +33,9 @@
     <script type="text/javascript" src="AGAgent.js"></script>
     <script type="text/javascript" src='feedbackLog.js'></script>
     <script type='text/javascript'>
-        var starter_path = null;
+        var starter_path = "hw1_starter_file.xml";
+
+
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
         var courseID = "BJC.1x";  // e.g. "BJCx"
@@ -145,20 +147,20 @@
             var chunk_1 = fb.newChunk('Make the "correct guess?" block.');
 
             var correctGuessExists_1 = function () {
-                return spriteContainsBlock("correct guess? % %");
+                return spriteContainsBlock("is guess % correct for secret % ?");
             }
 
 
             // Add a first tip to that first test chunk
-            var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly "correct guess? % %".',
+            var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly "is guess % correct for secret % ?".',
                 'Great job!');
 
             tip_1_1.newAssertTest(
                 correctGuessExists_1,
                 "Testing if there is a correct guess? block in the scripting area.",
                 "There is a correct guess? block in the scripting area.",
-                "Make sure you name your block exactly 'correct guess? % %' and place it in the scripting area.",
-                1);
+                "Make sure you name your block exactly 'is guess % correct for secret % ?' and place it in the scripting area.",
+                0);
 
 
             var tip_1_2 = chunk_1.newTip('Make sure your block works for general cases.',
@@ -166,7 +168,7 @@
 
 
              tip_1_2.newIOTest('r',  //testClass
-                'correct guess? % %',  //blockSpec
+                'is guess % correct for secret % ?',  //blockSpec
                 ["cat", "cat"],  //input
                 true,  //output
                 -1,  //timeout
@@ -174,7 +176,7 @@
                 0.125);  //points
 
              tip_1_2.newIOTest('r',  //testClass
-                'correct guess? % %',  //blockSpec
+                'is guess % correct for secret % ?',  //blockSpec
                 ["cat", "dog"],  //input
                 false,  //output
                 -1,  //timeout
@@ -182,7 +184,7 @@
                 0.125);  //points
 
              tip_1_2.newIOTest('r',  //testClass
-                'correct guess? % %',  //blockSpec
+                'is guess % correct for secret % ?',  //blockSpec
                 ["dog", "cat"],  //input
                 false,  //output
                 -1,  //timeout
@@ -190,7 +192,7 @@
                 0.125);  //points
 
              tip_1_2.newIOTest('r',  //testClass
-                'correct guess? % %',  //blockSpec
+                'is guess % correct for secret % ?',  //blockSpec
                 ["dog", "dog"],  //input
                 true,  //output
                 -1,  //timeout
@@ -198,7 +200,7 @@
                 0.125);  //points
 
              tip_1_2.newIOTest('r',  //testClass
-                'correct guess? % %',  //blockSpec
+                'is guess % correct for secret % ?',  //blockSpec
                 ["treehouse", "treehouse"],  //input
                 true,  //output
                 -1,  //timeout
@@ -206,7 +208,7 @@
                 0.125);  //points
 
              tip_1_2.newIOTest('r',  //testClass
-                'correct guess? % %',  //blockSpec
+                'is guess % correct for secret % ?',  //blockSpec
                 ["", ""],  //input
                 true,  //output
                 -1,  //timeout
@@ -214,7 +216,7 @@
                 0.125);  //points
 
              tip_1_2.newIOTest('r',  //testClass
-                'correct guess? % %',  //blockSpec
+                'is guess % correct for secret % ?',  //blockSpec
                 ["", "stuff"],  //input
                 false,  //output
                 -1,  //timeout
@@ -222,7 +224,7 @@
                 0.125);  //points
 
              tip_1_2.newIOTest('r',  //testClass
-                'correct guess? % %',  //blockSpec
+                'is guess % correct for secret % ?',  //blockSpec
                 ["stuff", ""],  //input
                 false,  //output
                 -1,  //timeout
@@ -234,20 +236,20 @@
             var chunk_2 = fb.newChunk('Make the "same length?" block.');
 
             var sameLengthExists_2 = function () {
-                return spriteContainsBlock("same length? % %");
+                return spriteContainsBlock("is % same length as % ?");
             }
 
 
             // Add a first tip to that first test chunk
-            var tip_2_1 = chunk_2.newTip('Make sure you name your block exactly "same length? % %".',
+            var tip_2_1 = chunk_2.newTip('Make sure you name your block exactly "is % same length as % ?".',
                 'Great job!');
 
             tip_2_1.newAssertTest(
                 sameLengthExists_2,
                 "Testing if there is a same length? block in the scripting area.",
                 "There is a same length? block in the scripting area.",
-                "Make sure you name your block exactly 'same length? % %' and place it in the scripting area.",
-                1);
+                "Make sure you name your block exactly 'is % same length as % ?' and place it in the scripting area.",
+                0);
 
 
             var tip_2_2 = chunk_2.newTip('Make sure your block works for general cases.',
@@ -255,7 +257,7 @@
 
 
              tip_2_2.newIOTest('r',  //testClass
-                'same length? % %',  //blockSpec
+                'is % same length as % ?',  //blockSpec
                 ["dog", "cat"],  //input
                 true,  //output
                 -1,  //timeout
@@ -263,7 +265,7 @@
                 0.125);  //points
 
              tip_2_2.newIOTest('r',  //testClass
-                'same length? % %',  //blockSpec
+                'is % same length as % ?',  //blockSpec
                 ["dog", "cats"],  //input
                 false,  //output
                 -1,  //timeout
@@ -271,7 +273,7 @@
                 0.125);  //points
 
              tip_2_2.newIOTest('r',  //testClass
-                'same length? % %',  //blockSpec
+                'is % same length as % ?',  //blockSpec
                 ["dogs", "cat"],  //input
                 false,  //output
                 -1,  //timeout
@@ -279,7 +281,7 @@
                 0.125);  //points
 
              tip_2_2.newIOTest('r',  //testClass
-                'same length? % %',  //blockSpec
+                'is % same length as % ?',  //blockSpec
                 ["", "cat"],  //input
                 false,  //output
                 -1,  //timeout
@@ -287,7 +289,7 @@
                 0.125);  //points
 
              tip_2_2.newIOTest('r',  //testClass
-                'same length? % %',  //blockSpec
+                'is % same length as % ?',  //blockSpec
                 ["", ""],  //input
                 true,  //output
                 -1,  //timeout
@@ -295,7 +297,7 @@
                 0.125);  //points
 
              tip_2_2.newIOTest('r',  //testClass
-                'same length? % %',  //blockSpec
+                'is % same length as % ?',  //blockSpec
                 ["stuff", ""],  //input
                 false,  //output
                 -1,  //timeout
@@ -303,7 +305,7 @@
                 0.125);  //points
 
              tip_2_2.newIOTest('r',  //testClass
-                'same length? % %',  //blockSpec
+                'is % same length as % ?',  //blockSpec
                 ["treehouse", "treehouse"],  //input
                 true,  //output
                 -1,  //timeout
@@ -311,7 +313,7 @@
                 0.125);  //points
 
              tip_2_2.newIOTest('r',  //testClass
-                'same length? % %',  //blockSpec
+                'is % same length as % ?',  //blockSpec
                 ["treehouses", "treehouses"],  //input
                 true,  //output
                 -1,  //timeout
@@ -322,20 +324,20 @@
             var chunk_3 = fb.newChunk('Make the "count matching" block.');
 
             var countMatchingExists_3 = function () {
-                return spriteContainsBlock("count matching %s %s");
+                return spriteContainsBlock("count matching letters in guess % and secret %");
             }
 
 
             // Add a first tip to that first test chunk
-            var tip_3_1 = chunk_3.newTip('Make sure you name your block exactly "count matching %s %s".',
+            var tip_3_1 = chunk_3.newTip('Make sure you name your block exactly "count matching letters in guess % and secret %".',
                 'Great job!');
 
             tip_3_1.newAssertTest(
                 countMatchingExists_3,
                 "Testing if there is a count matching block in the scripting area.",
                 "There is a count matching block in the scripting area.",
-                "Make sure you name your block exactly 'count matching %s %s' and place it in the scripting area.",
-                1);
+                "Make sure you name your block exactly 'count matching letters in guess % and secret %' and place it in the scripting area.",
+                0);
 
 
             var tip_3_2 = chunk_3.newTip('Make sure your block works for general cases.',
@@ -343,73 +345,169 @@
 
 
              tip_3_2.newIOTest('r',  //testClass
-                'count matching %s %s',  //blockSpec
+                'count matching letters in guess % and secret %',  //blockSpec
                 ["dog", "cat"],  //input
                 0,  //output
                 -1,  //timeout
                 false,  //isolated
-                0.125);  //points
+                0.5);  //points
 
              tip_3_2.newIOTest('r',  //testClass
-                'count matching %s %s',  //blockSpec
+                'count matching letters in guess % and secret %',  //blockSpec
                 ["dog", "fog"],  //input
                 2,  //output
                 -1,  //timeout
                 false,  //isolated
-                0.125);  //points
+                0.5);  //points
 
              tip_3_2.newIOTest('r',  //testClass
-                'count matching %s %s',  //blockSpec
+                'count matching letters in guess % and secret %',  //blockSpec
                 ["trees", "heats"],  //input
                 1,  //output
                 -1,  //timeout
                 false,  //isolated
-                0.125);  //points
+                0.5);  //points
 
              tip_3_2.newIOTest('r',  //testClass
-                'count matching %s %s',  //blockSpec
+                'count matching letters in guess % and secret %',  //blockSpec
                 ["pool", "wool"],  //input
                 3,  //output
                 -1,  //timeout
                 false,  //isolated
-                0.125);  //points
+                0.5);  //points
 
              tip_3_2.newIOTest('r',  //testClass
-                'count matching %s %s',  //blockSpec
+                'count matching letters in guess % and secret %',  //blockSpec
                 ["a", "b"],  //input
                 0,  //output
                 -1,  //timeout
                 false,  //isolated
-                0.125);  //points
+                0.5);  //points
 
              tip_3_2.newIOTest('r',  //testClass
-                'count matching %s %s',  //blockSpec
+                'count matching letters in guess % and secret %',  //blockSpec
                 ["", ""],  //input
                 0,  //output
                 -1,  //timeout
                 false,  //isolated
-                0.125);  //points
+                0.5);  //points
 
              tip_3_2.newIOTest('r',  //testClass
-                'count matching %s %s',  //blockSpec
+                'count matching letters in guess % and secret %',  //blockSpec
                 ["racecars", "superman"],  //input
                 1,  //output
                 -1,  //timeout
                 false,  //isolated
-                0.125);  //points
+                0.5);  //points
 
              tip_3_2.newIOTest('r',  //testClass
-                'count matching %s %s',  //blockSpec
+                'count matching letters in guess % and secret %',  //blockSpec
                 ["racecars", "racecarr"],  //input
                 7,  //output
                 -1,  //timeout
                 false,  //isolated
-                0.125);  //points
+                0.5);  //points
 
 
 
 
 
+
+
+        /* Create chunk_4 for the respond to block */
+            var chunk_4 = fb.newChunk('Make the "respond to" block.');
+
+            var respondToExists_4 = function () {
+                return spriteContainsBlock("create response for guess % secret % after %");
+            }
+
+
+            // Add a first tip to that first test chunk
+            var tip_4_1 = chunk_4.newTip('Make sure you name your block exactly "create response for guess % secret % after %".',
+                'Great job!');
+
+            tip_4_1.newAssertTest(
+                respondToExists_4,
+                "Testing if there is a respond to block in the scripting area.",
+                "There is a respond to block in the scripting area.",
+                "Make sure you name your block exactly 'create response for guess % secret % after %' and place it in the scripting area.",
+                0);
+
+
+
+            var tip_4_2 = chunk_4.newTip('Make sure your block works for when you get the guess correct.',
+                'Great job!');
+
+
+             tip_4_2.newIOTest('r',  //testClass
+                'create response for guess % secret % after %',  //blockSpec
+                ["batman", "batman", 6],  //input
+                "Great job! You got the word in 6 guess(es)",  //output
+                -1,  //timeout
+                false,  //isolated
+                0.5);  //points
+
+             tip_4_2.newIOTest('r',  //testClass
+                'create response for guess % secret % after %',  //blockSpec
+                ["superlongword", "superlongword", 1],  //input
+                "Great job! You got the word in 1 guess(es)",  //output
+                -1,  //timeout
+                false,  //isolated
+                0.5);  //points
+
+             var tip_4_3 = chunk_4.newTip('Make sure your block works for when you guess a word with the wrong length.',
+                'Great job!');
+
+             tip_4_3.newIOTest('r',  //testClass
+                'create response for guess % secret % after %',  //blockSpec
+                ["cheese", "building", 1],  //input
+                "Nope! The secret word has 8 letter(s)",  //output
+                -1,  //timeout
+                false,  //isolated
+                0.5);  //points
+
+             tip_4_3.newIOTest('r',  //testClass
+                'create response for guess % secret % after %',  //blockSpec
+                ["superlongword", "low", 1],  //input
+                "Nope! The secret word has 3 letter(s)",  //output
+                -1,  //timeout
+                false,  //isolated
+                0.5);  //points
+
+             var tip_4_4 = chunk_4.newTip('Make sure your block works for when your guess has the correct length but is still wrong.',
+                'Great job!');
+
+             tip_4_4.newIOTest('r',  //testClass
+                'create response for guess % secret % after %',  //blockSpec
+                ["fires", "wires", 1],  //input
+                "You got 4 letter(s) correct.",  //output
+                -1,  //timeout
+                false,  //isolated
+                0.5);  //points
+
+             tip_4_4.newIOTest('r',  //testClass
+                'create response for guess % secret % after %',  //blockSpec
+                ["heroes", "tigers", 1],  //input
+                "You got 1 letter(s) correct.",  //output
+                -1,  //timeout
+                false,  //isolated
+                0.5);  //points
+
+             tip_4_4.newIOTest('r',  //testClass
+                'create response for guess % secret % after %',  //blockSpec
+                ["lion", "dogs", 1],  //input
+                "You got 0 letter(s) correct.",  //output
+                -1,  //timeout
+                false,  //isolated
+                0.5);  //points
+
+             tip_4_4.newIOTest('r',  //testClass
+                'create response for guess % secret % after %',  //blockSpec
+                ["fun", "sun", 1],  //input
+                "You got 2 letter(s) correct.",  //output
+                -1,  //timeout
+                false,  //isolated
+                0.5);  //points
 
 
             return fb;
