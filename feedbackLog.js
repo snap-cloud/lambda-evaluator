@@ -254,6 +254,9 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 			test.output = output;
 		}
 	}
+	// Addison's Code Here
+
+
 	var expOut = test.expOut;
 	if (expOut instanceof Function) {
 		//NOTE: This may not work if output is of 'bad' type
