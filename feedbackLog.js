@@ -242,7 +242,6 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 };
 
 FeedbackLog.prototype.finishSnapTest = function(test, output) {
-
 	// Check that output is being returned
 	if (output == undefined) {
 		test.output = null;
@@ -460,7 +459,7 @@ FeedbackLog.prototype.toString = function() {
 	//http://stackoverflow.com/questions/9382167/serializing-object-that-contains-cyclic-object-value
 	seen = [];
 	var log_string = JSON.stringify(this, function(key, val) {
-	   if (val != null && typeof val == "object") {
+	   if (val !== null && typeof val === "object") {
 	        if (seen.indexOf(val) >= 0) {
 	            return;
 	        }
@@ -577,7 +576,8 @@ function IOTest(testClass, blockSpec, input, expOut, timeOut, isolated, points) 
 	this.expOut = expOut;
 	this.timeOut = timeOut;
 	this.isolated = isolated || false;
-	this.points = points || 1;
+	//this.points = points || 1;
+	this.points = points;
 
 	this.output = null;
 	this.correct = false;
@@ -593,7 +593,8 @@ function AssertTest(statement, text, pos_fb, neg_fb, points) {
 	this.text = text;
 	this.pos_fb = pos_fb;
 	this.neg_fb = neg_fb;
-	this.points = points || 1;
+	//this.points = points || 1;
+	this.points = points;
 	try {
 		this.correct = statement();
 		if (this.correct) {
