@@ -142,7 +142,7 @@
 
 
         /* Create chunk_1 for the exercise 1 : three input sum */
-            var chunk_1 = fb.newChunk('Make the three-input addition block.');
+            var chunk_1 = fb.newChunk('Make the (list test %) block.');
 
             var add3Exists_1 = function () {
                 return spriteContainsBlock("list test %");
@@ -155,7 +155,7 @@
             tip_1_1.newAssertTest(
                 add3Exists_1,
                 "Testing if there is a three-input add block in the scripting area.",
-                "There is a three-input add block in the scripting area.",
+                "There is a (list test %) block in the scripting area.",
                 "Make sure you name your block exactly 'list test %' and place it in the scripting area.",
                 1);
 
@@ -194,12 +194,6 @@
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
-
-
-
-
-
-
 
             return fb;
         }
