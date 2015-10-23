@@ -192,8 +192,8 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 		//Retrieve the block from the stage
 		var block = null;
 		if (test.isolated) {
-			test.sprite = addInvisibleSprite(this.snapWorld);
 			block = findBlockInPalette(test.blockSpec, this.snapWorld);
+			test.sprite = addInvisibleSprite(this.snapWorld);
 			addBlockToSprite(test.sprite, block);
 		} else {
 			block = getScript(test.blockSpec);
@@ -252,7 +252,6 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 
 FeedbackLog.prototype.finishSnapTest = function(test, output) {
 	// Check that output is being returned
-	console.log("Finishing snap test");
 	if (output == undefined) {
 		test.output = null;
 	} else {
@@ -289,8 +288,6 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 	// Clear the input values
 	try {
 		if (test.isolated) {
-			console.log("Removing test sprite.");
-			console.log(test.sprite);
 			test.sprite.remove();
 			test.sprite = null;
 			var focus = this.snapWorld.children[0].sprites.contents[0];
@@ -303,7 +300,6 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 		throw "gradingLog.finishSnapTest: Trying to clear values of block that does not exist.";
 	}
 	// Launch the next test if it exists, scoreLog otherwise.
-	// console.log(this.allIOTests());
 	this.runNextTest(test);
 
 };
@@ -534,7 +530,6 @@ Tip.prototype.newIOTest = function(testClass, blockSpec, input, expOut, timeOut,
 
 Tip.prototype.newAssertTest = function(statement, feedback, text, pos_fb, neg_fb, points) {
 	points = typeof points !== 'undefined' ? points : 1;
-	//console.log(statement);
 	var new_ass_test = new AssertTest(statement, feedback, text, pos_fb, neg_fb, points);
 	this.addTest(new_ass_test);
 	return new_ass_test
@@ -610,11 +605,9 @@ function checkArrayForList(a) {
 //David added in a way to populate a list in the
 //set values. Does not yet work for variables!
 function setValues(block, values) {
-	console.log("Set Values");
 	if (!(values instanceof Array)) {
 		values = [values];
 	}
-	// console.log(values);
 	var valIndex = 0,
 		morphIndex = 0;
 
@@ -662,7 +655,6 @@ function setNewListToArg(values, block, i) {
 		block.fixLayout();
 		block.changed();	
 	}
-	console.log("added list param");
 
 }
 
@@ -704,6 +696,30 @@ function setUpIsolatedTest(blockSpec, log, test) {
 	return block;
 }
 
+/* To compare the blockSpecs we use blockSpecMatch()
+ * simplifySpec(palette[i].blockSpec) === simplifySpec(blockSpec)
+ */
+function findBlockInPalette(blockSpec, workingWorld) {
+	var thisWorld = workingWorld || world,
+		palette = null,
+		i = 0,
+		pList = ["motion", "variables", "looks", "sound", "pen", "control", "sensing", "operators"];
+
+	for (var item of pList) {
+		palette = getPaletteScripts(item, workingWorld);
+		i = 0;
+
+		while (i < palette.length) {
+			if (palette[i].blockSpec && blockSpecMatch(palette[i].blockSpec, blockSpec)) {
+				return palette[i].fullCopy();
+			}
+			i++;
+		}
+	}
+	throw "Custom block: (" + blockSpec + ") not found in palette.";
+	// return null
+}
+
 function addBlockToSprite(sprite, block) {
 	sprite.scripts.add(block);
 	sprite.scripts.cleanUp();
@@ -720,7 +736,6 @@ function populateList(list, args) {
 
 	while (multiArg.children.length > 2) {
 		multiArg.removeInput();
-		console.log(list.children.length);
 	}
 	for (var i = 0; i < args.length; i++) {
 		if (args[i] === 0) {

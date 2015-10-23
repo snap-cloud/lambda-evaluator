@@ -807,30 +807,6 @@ function simplifySpec(blockSpec) {
 	return newSpec;
 }
 
-/* To compare the blockSpecs we use blockSpecMatch()
- * simplifySpec(palette[i].blockSpec) === simplifySpec(blockSpec)
- */
-function findBlockInPalette(blockSpec, workingWorld) {
-	var thisWorld = workingWorld || world,
-		palette = null,
-		i = 0,
-		pList = ["motion", "variables", "looks", "sound", "pen", "control", "sensing", "operators"];
-
-	for (var item of pList) {
-		palette = getPaletteScripts(item, workingWorld);
-		i = 0;
-
-		while (i < palette.length) {
-			if (palette[i].blockSpec && blockSpecMatch(palette[i].blockSpec, blockSpec)) {
-				return palette[i].fullCopy();
-			}
-			i++;
-		}
-	}
-	// throw "Custom block: " + blockSpec + " not found in palette.";
-	return null
-}
-
 
 
 

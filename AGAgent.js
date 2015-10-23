@@ -2,7 +2,7 @@ var current_iframe = window.frameElement;
 //num_iframes = window.parent.document.getElementsByTagName("iframe").length;
 var num_iframes = parent.document.getElementsByClassName('problem-header').length;
 var iframes = parent.document.getElementsByTagName("iframe");
-console.log(num_iframes);
+
 var id_problem = 0;
 for (i = 0; i < num_iframes; i++) {
     if (iframes[i] === current_iframe) {
@@ -12,8 +12,7 @@ for (i = 0; i < num_iframes; i++) {
 }
 
 var showPoints = false;
-
-console.log(showPoints);
+// console.log(showPoints);
 
 
 
@@ -45,7 +44,6 @@ function runAGTest(snapWorld, taskID, outputLog) {
     //outputLog.numAttempts += 1;
     //console.log(outputLog);
     var test_log = AGTest(outputLog);
-    console.log(test_log);
     if(!test_log.runSnapTests()) {
         test_log.scoreLog();
     }

@@ -724,10 +724,8 @@ var update_listener = function() {
 };
 var button_listener = function(event) {
     event.stopPropagation();
-    // console.log('PROPAGATION SHOULD STOP');
     var numAttempts = setNumAttempts(id);
     outputLog = new FeedbackLog(world, id, numAttempts);
-    console.log(outputLog);
     outputLog.numAttempts += 1;
     runAGTest(world, id, outputLog);
 
