@@ -717,7 +717,6 @@ function findBlockInPalette(blockSpec, workingWorld) {
 		}
 	}
 	throw "Custom block: (" + blockSpec + ") not found in palette.";
-	// return null
 }
 
 function addBlockToSprite(sprite, block) {
