@@ -41,7 +41,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_W4_L1_T5_E_all";
+        var taskID = "_AG_listreporter_test";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -163,36 +163,36 @@
                 'Great job!');
 
 
-             tip_1_3.newIOTest('r',  //testClass
+             tip_1_2.newIOTest('r',  //testClass
                 'list test %',  //blockSpec
                 [[10, 2, 5]],  //input
-                17,  //output
+                [10, 2, 5],  //output
                 -1,  //timeout
-                false,  //isolated
+                true,  //isolated
                 1);  //points
 
-             tip_1_3.newIOTest('r',  //testClass
+             tip_1_2.newIOTest('r',  //testClass
                 'list test %',  //blockSpec
                 [[-10, -2, 6]],  //input
-                -6,  //output
+                [-10, -2, 6],  //output
                 -1,  //timeout
-                false,  //isolated
+                true,  //isolated
                 1);  //points
 
-             tip_1_3.newIOTest('r',  //testClass
+             tip_1_2.newIOTest('r',  //testClass
                 'list test %',  //blockSpec
                 [[0, 0, 0]],  //input
-                0,  //output
+                [0, 0, 0],  //output
                 -1,  //timeout
-                false,  //isolated
+                true,  //isolated
                 1);  //points
 
-             tip_1_3.newIOTest('r',  //testClass
+             tip_1_2.newIOTest('r',  //testClass
                 'list test %',  //blockSpec
                 [[100, -1000, 0]],  //input
-                -900,  //output
+                [100, -1000, 0],  //output
                 -1,  //timeout
-                false,  //isolated
+                true,  //isolated
                 1);  //points
 
 

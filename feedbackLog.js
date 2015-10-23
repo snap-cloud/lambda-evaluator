@@ -192,8 +192,9 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 		//Retrieve the block from the stage
 		var block = null;
 		if (test.isolated) {
-			//TODO: Fix setUpIsolatedTest to remove testID
-			block = setUpIsolatedTest(test.blockSpec, this, test)
+			test.sprite = addInvisibleSprite(this.snapWorld);
+			block = findBlockInPalette(test.blockSpec, this.snapWorld);
+			addBlockToSprite(test.sprite, block);
 		} else {
 			block = getScript(test.blockSpec);
 		}
@@ -225,7 +226,15 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 				test.feedback = "Test Timeout Occurred.";
 			}
 			test.output = "INVALID";
-			stage.threads.stopProcess(getScript(test.blockSpec), test.sprite);
+			stage.threads.stopProcess(block);
+			// if (test.isolated) {
+			// 	//TODO: Remove bad sprite
+			// 	console.log("removing sprite with error");	
+			// 	test.sprite.remove();
+			// 	test.sprite = null;
+			// 	var focus = this.snapWorld.children[0].sprites.contents[0];
+			// 	this.snapWorld.children[0].selectSprite(focus);
+			// }
 		}, timeout);
 		this.currentTimeout = timeout_id;
 		return this;
@@ -243,6 +252,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 
 FeedbackLog.prototype.finishSnapTest = function(test, output) {
 	// Check that output is being returned
+	console.log("Finishing snap test");
 	if (output == undefined) {
 		test.output = null;
 	} else {
@@ -254,7 +264,6 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 		}
 	}
 	// Addison's Code Here
-
 
 	var expOut = test.expOut;
 	if (expOut instanceof Function) {
@@ -280,6 +289,8 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 	// Clear the input values
 	try {
 		if (test.isolated) {
+			console.log("Removing test sprite.");
+			console.log(test.sprite);
 			test.sprite.remove();
 			test.sprite = null;
 			var focus = this.snapWorld.children[0].sprites.contents[0];
@@ -357,27 +368,6 @@ FeedbackLog.prototype.scoreLog = function() {
 	if (this.testCount === 0) {
 		throw 'FeedbackLog.scoreLog: Attempted to score empty FeedbackLog';
 	}
-	// Ensure that all tests have been graded.
-	// var test = this.firstTest();
-	// var all_tests = this.allIOTests();
-	// console.log(all_tests);
-	// for (test in all_tests) {
-	// 	if (!test.graded) {
-	// 		console.log('FeedbackLog.scoreLog: The log is not yet complete');
-	// 		console.log(test);
-	// 		return this;
-	// 	}
-	// }
-	// for (var i=0; i<this.testCount; i++) {
-	// 	if (!test.graded) {
-	// 		console.log('FeedbackLog.scoreLog: The log is not yet complete');
-
-	// 		console.log(test);
-	// 		return this;
-	// 	}
-	// 	//Continue to the next test otherwise
-	// 	test = this.nextTest(test);
-	// }
 
 	// Iterate over all tests and score the FeedbackLog, chunks, and tips.
 	this.allCorrect = true;
@@ -431,15 +421,7 @@ FeedbackLog.prototype.scoreLog = function() {
 	//this.SnapWorld = world;
 	//console.log(this);
 	// Update the Autograder Status Bar
-	/**********/
-	//TODO: UNCOMMENT AGFinish
-	/**********/
 	AGFinish(this);
-	// try {
-	// 	AGFinish(this);
-	// } catch(e) {
-	// 	console.log("WARNING: FeedbackLog.scoreLog, Can't find AGFinish.");
-	// }
 	return this;
 };
 
@@ -574,7 +556,7 @@ function IOTest(testClass, blockSpec, input, expOut, timeOut, isolated, points) 
 	this.blockSpec = blockSpec;
 	this.input = input;
 	this.expOut = expOut;
-	this.timeOut = timeOut;
+	this.timeOut = timeOut || -1;
 	this.isolated = isolated || false;
 	//this.points = points || 1;
 	this.points = points || 1;
@@ -628,9 +610,11 @@ function checkArrayForList(a) {
 //David added in a way to populate a list in the
 //set values. Does not yet work for variables!
 function setValues(block, values) {
+	console.log("Set Values");
 	if (!(values instanceof Array)) {
 		values = [values];
 	}
+	// console.log(values);
 	var valIndex = 0,
 		morphIndex = 0;
 
@@ -659,6 +643,107 @@ function setValues(block, values) {
 		//TODO: THROW ERROR FOR INVALID BLOCK DEFINITION
 	}
 }
+
+//sets (in a very hacky way) a list to an ArgMorph of list type
+//sets the first one it sees then exits!!!
+function setNewListToArg(values, block, i) {
+
+	morph = block.children[i];
+	morph_type = morph.constructor.name;
+
+	if ((morph.blockSpec === "list %exp") 
+		&& (morph_type === "ReporterBlockMorph")) {
+			populateList(morph,values);
+	} else if ((morph_type === "ArgMorph") || (morph_type === "InputSlotMorph")) {
+		var newList = cloneListReporter();
+		populateList(newList, values);
+		block.children[i] = newList;
+		block.children[i].parent = block;
+		block.fixLayout();
+		block.changed();	
+	}
+	console.log("added list param");
+
+}
+
+//Creates a semi invisable sprite for testing purposes
+//Adds the sprite to the stage but no where else!
+//returns the new sprite
+//@param ide - the working snap IDE
+function addInvisibleSprite(world) {
+	var ide = world.children[0]
+	var sprite = new SpriteMorph(ide.globalVariables),
+        rnd = Process.prototype.reportRandom;
+
+    //sprite.name = ide.newSpriteName(sprite.name);
+    sprite.name = "Testing...";
+
+    sprite.setCenter(ide.stage.center());
+   	ide.stage.add(sprite);
+    // randomize sprite properties
+    sprite.setHue(rnd.call(ide, 0, 100));
+    sprite.setBrightness(rnd.call(ide, 50, 100));
+    sprite.turn(rnd.call(ide, 1, 360));
+    sprite.setXPosition(rnd.call(ide, -220, 220));
+    sprite.setYPosition(rnd.call(ide, -160, 160));
+
+    ide.sprites.add(sprite);
+    ide.corral.addSprite(sprite);
+    // this.selectSprite(sprite);
+
+   return sprite;
+ }
+
+function setUpIsolatedTest(blockSpec, log, test) {
+	var block = findBlockInPalette(blockSpec, log.snapWorld);
+	if (!block) { 
+		throw blockSpec + " not found in Palette!";
+	}
+	var sprite = createTestSprite(log, test);
+	addBlockToSprite(sprite, block);
+	return block;
+}
+
+function addBlockToSprite(sprite, block) {
+	sprite.scripts.add(block);
+	sprite.scripts.cleanUp();
+}
+
+//  list.setContents([1,2,3])
+// MultiArgMorph.addInput('5')
+// getScript('list %exp') -> returns the snap list object reference
+// world.children[0].sprites.contents[0].scripts.children[0].children[1] -> gets the MultiArgMorph
+
+//populates a list reporter block with the given arguments
+function populateList(list, args) {
+	var multiArg = list.children[list.children.length - 1];
+
+	while (multiArg.children.length > 2) {
+		multiArg.removeInput();
+		console.log(list.children.length);
+	}
+	for (var i = 0; i < args.length; i++) {
+		if (args[i] === 0) {
+			args[i] = "0";
+		}
+		multiArg.addInput(args[i]);
+	}
+}
+
+function cloneListReporter() {
+	var palette = getPaletteScripts("variables");
+	var block = null;
+	var i = 0;
+	while (i < palette.length) {
+		if (palette[i].blockSpec && palette[i].blockSpec === "list %exp") {
+			block = palette[i].fullCopy();
+			i = palette.length;
+		}
+		i++;
+	}
+	return block;
+}
+
 
 function evalReporter(block, outputLog, testID) {
 	var stage = world.children[0].stage;
