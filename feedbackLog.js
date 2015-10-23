@@ -577,7 +577,7 @@ function IOTest(testClass, blockSpec, input, expOut, timeOut, isolated, points) 
 	this.timeOut = timeOut;
 	this.isolated = isolated || false;
 	//this.points = points || 1;
-	this.points = points;
+	this.points = points || 1;
 
 	this.output = null;
 	this.correct = false;
