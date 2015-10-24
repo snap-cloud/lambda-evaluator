@@ -2,13 +2,19 @@ var current_iframe = window.frameElement;
 //num_iframes = window.parent.document.getElementsByTagName("iframe").length;
 var num_iframes = parent.document.getElementsByClassName('problem-header').length;
 var iframes = parent.document.getElementsByTagName("iframe");
-console.log(num_iframes);
+
 var id_problem = 0;
 for (i = 0; i < num_iframes; i++) {
     if (iframes[i] === current_iframe) {
         id_problem = i;
+        //problem_iframe = iframes[i];
     }
 }
+
+var showPoints = false;
+// console.log(showPoints);
+
+
 
 function isEDXurl() {
     var url = window.location.href;
@@ -18,6 +24,12 @@ function isEDXurl() {
         return false;
     }
 }
+
+/*if (isEDX) {
+    console.log(current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.nextElementSibling.children[1]);
+    var edX_check_button = current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.nextElementSibling.children[1];
+    current_iframe.parentNode.parentNode.parentNode.style.width = "100%";
+}*/
 /* Removes the previously saved AG_state. Runs the tests in
  * AGTest().
  * Called by 'click' event on autograder_button.
@@ -30,7 +42,7 @@ function runAGTest(snapWorld, taskID, outputLog) {
     // These tests specified by the Course Designer. 
 
     //outputLog.numAttempts += 1;
-
+    //console.log(outputLog);
     var test_log = AGTest(outputLog);
     if(!test_log.runSnapTests()) {
         test_log.scoreLog();
@@ -205,7 +217,6 @@ function AGUpdate(snapWorld, taskID) {
  *  - Should only be called from outputLog.evaluateLog()
  */
 function AGFinish(outputLog) {
-
     var c_prev_log = JSON.parse(sessionStorage.getItem(outputLog.taskID + "_c_test_log"));
 
     if (!graded) {
@@ -236,7 +247,8 @@ function AGFinish(outputLog) {
     console.log(outputLog);
     //populateFeedback(outputLog);
     if (isEDX) {
-        parent.document.getElementsByClassName('check-label')[id_problem].click();
+        //parent.document.getElementsByClassName('check-label')[id_problem].click();
+        edX_check_button.click();
     } 
     if (!isEDX) {
         populateFeedback(outputLog, false)

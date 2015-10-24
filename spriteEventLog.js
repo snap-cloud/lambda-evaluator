@@ -790,51 +790,9 @@ function getPaletteScripts(pal, whichWorld) {
 	return whichWorld.children[0].sprites.contents[0].palette(pal).children[0].children;
 }
 
-function cloneListReporter() {
-	var palette = getPaletteScripts("variables");
-	var block = null;
-	var i = 0;
-	while (i < palette.length) {
-		if (palette[i].blockSpec && palette[i].blockSpec === "list %exp") {
-			block = palette[i].fullCopy();
-			i = palette.length;
-		}
-		i++;
-	}
-	return block;
-}
 
-//  list.setContents([1,2,3])
-// MultiArgMorph.addInput('5')
-// getScript('list %exp') -> returns the snap list object reference
-// world.children[0].sprites.contents[0].scripts.children[0].children[1] -> gets the MultiArgMorph
 
-//populates a list reporter block with the given arguments
-function populateList(list, args) {
-	var multiArg = list.children[list.children.length - 1];
 
-	while (multiArg.children.length > 2) {
-		multiArg.removeInput();
-		console.log(list.children.length);
-	}
-	for (var i = 0; i < args.length; i++) {
-		multiArg.addInput(args[i]);
-	}
-}
-
-//sets (in a very hacky way) a list to an ArgMorph of list type
-//sets the first one it sees then exits!!!
-function setNewListToArg(values, block, i) {
-	var newList = cloneListReporter();
-
-	populateList(newList, values);
-	block.children[i] = newList;
-	block.children[i].parent = block;
-	block.fixLayout();
-	block.changed();
-	console.log("added list param");
-
-}
 
 function simplifySpec(blockSpec) {
 	var spec = blockSpec.split(" ");
@@ -849,73 +807,16 @@ function simplifySpec(blockSpec) {
 	return newSpec;
 }
 
-/* To compare the blockSpecs we use blockSpecMatch()
- * simplifySpec(palette[i].blockSpec) === simplifySpec(blockSpec)
- */
-function findBlockInPalette(blockSpec, workingWorld) {
-	var thisWorld = workingWorld || world,
-		palette = null,
-		i = 0,
-		pList = ["motion", "variables", "looks", "sound", "pen", "control", "sensing", "operators"];
 
-	for (var item of pList) {
-		palette = getPaletteScripts(item, workingWorld);
-		i = 0;
 
-		while (i < palette.length) {
-			if (palette[i].blockSpec && blockSpecMatch(palette[i].blockSpec, blockSpec)) {
-				return palette[i].fullCopy();
-			}
-			i++;
-		}
-	}
-	// throw "Custom block: " + blockSpec + " not found in palette.";
-	return null
-}
 
-function addBlockToSprite(sprite, block) {
-	sprite.scripts.add(block);
-	sprite.scripts.cleanUp();
-}
 
-function createTestSprite(log, testID) {
-	var ide = log.snapWorld.children[0];
-	var sprite = addInvisibleSprite(ide);
-	log[testID].sprite = sprite;
-	return sprite;
-}
-
-//Creates a semi invisable sprite for testing purposes
-//Adds the sprite to the stage but no where else!
-//returns the new sprite
-//@param ide - the working snap IDE
-function addInvisibleSprite(ide) {
-	var sprite = new SpriteMorph(ide.globalVariables),
-        rnd = Process.prototype.reportRandom;
-
-    sprite.name = ide.newSpriteName(sprite.name);
-
-    sprite.setCenter(ide.stage.center());
-   	ide.stage.add(sprite);
-    // randomize sprite properties
-    sprite.setHue(rnd.call(ide, 0, 100));
-    sprite.setBrightness(rnd.call(ide, 50, 100));
-    sprite.turn(rnd.call(ide, 1, 360));
-    sprite.setXPosition(rnd.call(ide, -220, 220));
-    sprite.setYPosition(rnd.call(ide, -160, 160));
-
-   return sprite;
- }
-
-function setUpIsolatedTest(blockSpec, log, testID) {
-	var block = findBlockInPalette(blockSpec, log.snapWorld);
-	if (!block) { 
-		throw blockSpec + " not found in Palette!";
-	}
-	var sprite = createTestSprite(log, testID);
-	addBlockToSprite(sprite, block);
-	return block;
-}
+// function createTestSprite(log, test) {
+//	var ide = log.snapWorld.children[0];
+//	var sprite = addInvisibleSprite(ide);
+//	log[testID].sprite = sprite;
+//	return sprite;
+//}
 
 function waitForAsk(gradingLogTest, timeout, callback) {
 	var gLog = gradingLogTest,

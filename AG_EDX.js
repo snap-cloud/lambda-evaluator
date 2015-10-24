@@ -135,13 +135,14 @@ var AG_EDX = (function() {
             //console.log(last_state);
             //console.log(last_state.out_log)
             last_state.state = decodeURIComponent(last_state.state);
-            console.log(last_state.out_log);
+            //console.log(last_state.out_log);
             sessionStorage.setItem(id + '_test_state', last_state.state);
             sessionStorage.setItem(id + '_test_log', last_state.out_log);
             if (last_state.c_state && last_state.c_log) {
                 sessionStorage.setItem(id + '_c_test_state', decodeURIComponent(last_state.c_state));
                 sessionStorage.setItem(id + '_c_test_log', last_state.c_log);
             }
+            console.log("submitted...");
             /*if (last_state.submit_state && last_state.submit_log) {
                 sessionStorage.setItem(id + '_last_submitted_state', decodeURIComponent(last_state.submit_state));
                 sessionStorage.setItem(id + '_last_submitted_log', last_state.submit_log);
@@ -171,7 +172,6 @@ var AG_EDX = (function() {
 
 
     }
-
     return {
         getState: getState,
         setState: setState,
