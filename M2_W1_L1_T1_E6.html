@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Snap! Build Your Own Blocks. Beta</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <script src="jschannel.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript" src="underscore-min.js"></script>
+    <!--<script type="text/javascript" src='gradingLog.js'></script>-->
+    <script type="text/javascript" src='spriteEventLog.js'></script>
+    <script type="text/javascript" src='scriptAnalysis.js'></script>
+    <meta charset="utf-8"> 
+    <!-- Moved down to the bottom to have var id. -->
+    <script type="text/javascript" src="morphic.js"></script>
+    <script type="text/javascript" src="widgets.js"></script>
+    <script type="text/javascript" src="blocks.js"></script>
+    <script type="text/javascript" src="threads.js"></script>
+    <script type="text/javascript" src="objects.js"></script>
+    <script type="text/javascript" src="gui.js"></script>
+    <script type="text/javascript" src="paint.js"></script>
+    <script type="text/javascript" src="lists.js"></script>
+    <script type="text/javascript" src="byob.js"></script>
+    <script type="text/javascript" src="xml.js"></script>
+    <script type="text/javascript" src="store.js"></script>
+    <script type="text/javascript" src="locale.js"></script>
+    <script type="text/javascript" src="cloud.js"></script>
+    <script type="text/javascript" src="sha512.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
+    <link rel="stylesheet" type="text/css" href="hintstyle.css" />
+    
+    <script type="text/javascript" src="AGAgent.js"></script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type='text/javascript'>
+        var starter_path = null;
+        // The id is to act as a course identifier.
+        // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
+        var courseID = "BJC.2x";  // e.g. "BJCx"
+        // Specify a prerequisite task id, should be null if no such requirement.
+        var preReqTaskID = null;
+        var preReqID = courseID + preReqTaskID;
+        // taskID uniquely identifies the task for saving in browser sessionStorage.
+        var taskID = "_M2_W1_L1_T1_E6";
+        var id = courseID + taskID;
+        var isEDX = isEDXurl();
+        // if this question is not meant to be graded, change this flag to false
+        var graded = true;
+        // to hide feedback for this problem, change this flag to false
+        var showFeedback = true;
+        // to allow for the ability to regrade certain tests, change this flag to true
+        var regradeOn = false;
+        // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
+        // var testLog;
+        function AGTest(outputLog) {
+
+            //NOTES TO YIFAT AND PATRICK:
+            // No IO tests should be isolated. Which means that you have to check that the block
+            // is on screen.
+            // All getter/setter functions inside anonymous Assert functions.
+            // Thanks for all your work :D
+
+            var countdownExists = function() {
+                return spriteContainsBlock("countdown %");
+            }
+
+            var containsLoop = function() {
+                var body = getCustomBody("countdown %");
+                return scriptContainsBlock(body, "repeat %n %c") ||
+                    scriptContainsBlock(body, "for %upvar = %n to %n %cs") ||
+                    scriptContainsBlock(body, "repeat until %b %c") ||
+                    scriptContainsBlock(body, "for each %upvar of %l %cs");
+            }
+
+            var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
+            fb.snapWorld = world;
+
+            // Create a first test chunk
+            var first_chunk = fb.newChunk('Make the countdown block.');
+            // Add a first tip to that first test chunk
+            var first_tip = first_chunk.newTip('Make sure you name your block exactly "countdown %".',
+                'Great job!');
+
+            var ass_test1 = first_tip.newAssertTest(
+                countdownExists,
+                "Testing if there is a 'countdown %' block in the scripting area.",
+                "There is a 'countdown %' block in the scripting area.",
+                "Make sure you name your block exactly 'countdown %'.",
+                1);
+
+            var first2_tip = first_chunk.newTip('Use a loop when building the countdown block.',
+                'Great job!');
+
+            var ass_test2 = first2_tip.newAssertTest(
+                containsLoop,
+                "Testing if there is a loop block in the body of 'countdown %'.",
+                "There is a loop block in the 'countdown %' block.",
+                "Try using a loop block in building your 'countdown %' block.",
+                1);
+
+            var second_tip = first_chunk.newTip("Make sure you've fixed the given script so that the coundown block works properly.",
+                'Great job!');
+
+             second_tip.newIOTest('r',  //testClass
+                'countdown %',  //blockSpec
+                [10],  //input
+                [10, 9, 8, 7, 6, 5, 4, 3, 2, 1],  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+             second_tip.newIOTest('r',  //testClass
+                'countdown %',  //blockSpec
+                [5],  //input
+                [5, 4, 3, 2, 1],  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+             second_tip.newIOTest('r',  //testClass
+                'countdown %',  //blockSpec
+                [1],  //input
+                [1],  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+
+            return fb;
+        }
+    </script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type="text/javascript" src="AGFormatting.js"></script>
+
+    <script type="text/javascript">
+
+        var world;
+        window.onload = function () {
+
+            //INITIALIZE UP SNAP
+            world = new WorldMorph(document.getElementById('world'));
+            new IDE_Morph().openIn(world);
+            var ide = world.children[0];
+
+            //Reduce Stage Size on initialization
+            ide.toggleStageSize(true);
+
+            initializeSnapAdditions(world, id);
+            
+
+            //AUTOGRADER ADDITION - 
+            //Forced to use setTimeout() to let the world load before... Maybe not.           
+            //Create a gradingLog and initialize the AG status bar (AGSB).
+
+            //Initialize AGSB button.
+            var grade_button = document.getElementById("autograding_button");
+            grade_button.addEventListener('click', button_listener);
+            var world_canvas = document.getElementById('world');
+            world_canvas.addEventListener("mouseup", update_listener);
+            // Start Snap Environment Loop
+            setInterval(loop, 1);
+            
+        };
+
+        function loop() {
+            world.doOneCycle();
+        }
+
+    </script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type="text/javascript" src="AG_EDX.js"></script>
+</head>
+<body style="margin: 0;">
+    <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
+
+<!-- Snap Autograding Button -->
+<div id="autograding_bar">
+    <div tabindex="0" class="onclick-menu" id='onclick-menu' style="display:inline-block">
+        <span title="Menu">&#9776;</span>
+        <div class='hover_darken'></div>
+      <nav id="navigation" class="site-navigation" role="navigation">
+          <ul id="dropdown-closed" class="bubble">
+            <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="feedback-button">View Feedback</a></li>
+            <li class="menu-divider-sub-menu" id='menu-divider'></li>-->
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Revert To Last Attempt</a></li>
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="revert-button">Revert To Best Attempt</a></li>
+            <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last edX Submission</a></li>-->
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="reset-button">Reset</a></li>
+            <li class="menu-divider-sub-menu" id='menu-divider'></li>
+            <li class="menu-item-sub-menu" id='enabled-button' onclick="openPopup();"><a id="help-button">Help</a></li>
+          </ul>
+    </nav>
+    </div>
+    <div id="autograding_button" style="display:inline-block;">
+        <span></span>
+        <div class='hover_darken'></div>
+    </div>
+    <div id="numtips" style="display:inline-block"></div>
+</div>
+<!-- Snap Autograding Menu -->
+<!-- Autograding Menu Help Button -->
+<div class="overlay is-hidden" id="overlay">
+    <p class="help-text" id="full-screen-arrow">&#8600;</p>
+    <p class="help-text" id="full-screen-help">This full-screen button will pop out the Snap! window.</p>
+    <p class="help-text" id="menu-item-arrow">&#8599;</p>
+    <p class="help-text" id="menu-item-help">The first two menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your last graded attempt or to your best attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
+    <p class="help-text" id="ag-button-arrow">&#8593;</p>
+    <p class="help-text" id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
+</div>
+
+<div style="display:inline-block" class="view-results" id="circle" onclick="openResults();">Results
+</div>
+<div class="overlay is-hidden" id="ag-output">
+    <div class="popup-content" id="ag-results">
+        <span class="button-close" onclick="closeResults();" id="popup">X</span>
+        <!--<p id = "different-feedback"></p>
+        <p id = "edx-submit-different"></p>-->
+        <div id="toggle-correct-tests"></div>
+        <p id="comment"></p>
+    </div>
+</div>
+    </div>
+    <script type="text/javascript" src="AG_status_bar.js" />
+</body>
+</html>            
