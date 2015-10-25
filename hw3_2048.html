@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Snap! Build Your Own Blocks. Beta</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <script src="jschannel.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript" src="underscore-min.js"></script>
+    <!--<script type="text/javascript" src='gradingLog.js'></script>-->
+    <script type="text/javascript" src='spriteEventLog.js'></script>
+    <script type="text/javascript" src='scriptAnalysis.js'></script>
+    <meta charset="utf-8"> 
+    <!-- Moved down to the bottom to have var id. -->
+    <script type="text/javascript" src="morphic.js"></script>
+    <script type="text/javascript" src="widgets.js"></script>
+    <script type="text/javascript" src="blocks.js"></script>
+    <script type="text/javascript" src="threads.js"></script>
+    <script type="text/javascript" src="objects.js"></script>
+    <script type="text/javascript" src="gui.js"></script>
+    <script type="text/javascript" src="paint.js"></script>
+    <script type="text/javascript" src="lists.js"></script>
+    <script type="text/javascript" src="byob.js"></script>
+    <script type="text/javascript" src="xml.js"></script>
+    <script type="text/javascript" src="store.js"></script>
+    <script type="text/javascript" src="locale.js"></script>
+    <script type="text/javascript" src="cloud.js"></script>
+    <script type="text/javascript" src="sha512.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
+    <link rel="stylesheet" type="text/css" href="hintstyle.css" />
+    
+    <script type="text/javascript" src="AGAgent.js"></script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type='text/javascript'>
+        var starter_path = null;
+        // The id is to act as a course identifier.
+        // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
+        var courseID = "CS10";  // e.g. "BJCx"
+        // Specify a prerequisite task id, should be null if no such requirement.
+        var preReqTaskID = null;
+        var preReqID = courseID + preReqTaskID;
+        // taskID uniquely identifies the task for saving in browser sessionStorage.
+        var taskID = "_hw3_2048";
+        var id = courseID + taskID;
+        var isEDX = isEDXurl();
+        // if this question is not meant to be graded, change this flag to false
+        var graded = true;
+        // to hide feedback for this problem, change this flag to false
+        var showFeedback = true;
+        // to allow for the ability to regrade certain tests, change this flag to true
+        var regradeOn = false;
+        // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
+        // var testLog;
+        function AGTest(outputLog) {
+
+            //NOTES FOR CS10 Readers:
+            // If there are comments in the scripting area, some tests will fail. Delete comments before clicking "Get Feedback."
+            // Make sure all of the blocks being tested are present in the scripting area for the first (original) sprite.
+            
+            var mergeUpExists = function() {
+                return spriteContainsBlock("merge up %", 0);
+            }
+
+            var noMovesExists = function() {
+                return spriteContainsBlock("no moves left for % ?", 0);
+            }
+
+            var rotateExists = function() {
+                return spriteContainsBlock("rotate % clockwise", 0);
+            }
+
+            var scoreExists = function() {
+                return spriteContainsBlock("score of %", 0);
+            }
+
+            // var usesScoreTile = function() {
+            //     return customBlockContains("score of %", "score of tile value %");
+            // }
+
+            // var add2or4Exists = function() {
+            //         return spriteContainsBlock("add 2 or 4 to %", 0);
+            // }
+
+            var mergeColumnExists = function() {
+                return spriteContainsBlock("merge column % of % up", 0);
+            }
+
+            var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
+            fb.snapWorld = world;
+
+            // Create a first test chunk
+            var second_chunk = fb.newChunk('Make the "rotate % clockwise" block.');
+            // Add a first tip to that first test chunk
+            var first_tip2 = second_chunk.newTip('Make sure to name your block exactly "rotate % clockwise", and place it in the scripting area.',
+                'Great job!');
+
+            var ass_test2 = first_tip2.newAssertTest(
+                rotateExists,
+                "Testing to see if a 'rotate % clockwise' block is in the scripting area.",
+                "There is a 'rotate % clockwise' block in the scripting area.",
+                "Make sure there is a 'rotate % clockwise' block in the scripting area.",
+                1);
+
+            var second_tip2 = second_chunk.newTip("The block works fully (+5 points); Minor error (-1 point); rotates counterclockwise instead (+2 points).",
+                'Great job! The block works fully. (+5)');
+
+            second_tip2.newIOTest('r',  //testClass
+                "rotate % clockwise",  //blockSpec
+                [[0, 0, 0, 0, 2, 0, 0, 0, 4, 0, 0, 16, 0, 0, 0, 2]],  //input
+                [0, 4, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 16, 0, 0],  //output
+                5000000,  //timeout
+                true,  //isolated
+                1);  //points
+
+            second_tip2.newIOTest('r',  //testClass
+                "rotate % clockwise",  //blockSpec
+                [[0, 4, 0, 0, 2, 32, 0, 0, 4, 0, 4, 16, 0, 0, 0, 0]],  //input
+                [0, 4, 2, 0, 0, 0, 32, 4, 0, 4, 0, 0, 0, 16, 0, 0],  //output
+                5000000,  //timeout
+                true,  //isolated
+                1);  //points
+
+            //_______________________________________________________________________
+
+            // Create a first test chunk
+            var first_chunk = fb.newChunk('Make the "merge up %" block.');
+            // Add a first tip to that first test chunk
+            var first_tip = first_chunk.newTip('Make sure to name your block exactly "merge up %", and place it in the scripting area.',
+                'Great job!');
+
+            var ass_test1 = first_tip.newAssertTest(
+                mergeUpExists,
+                "Testing to see if a 'merge up %' block is in the scripting area.",
+                "There is a 'merge up %' block in the scripting area.",
+                "Make sure there is a 'merge up %' block in the scripting area.",
+                1);
+
+            var second_tip = first_chunk.newTip("Merge up works when a tile hits the edge of the board. (+2 points)",
+                'Great job! Merge up works when a tile hits the edge of the board. (+2)');
+
+            second_tip.newIOTest('r',  //testClass
+                "merge up %",  //blockSpec
+                [[0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],  //input
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  //output
+                5000000,  //timeout
+                true,  //isolated
+                1);  //points
+
+            var third_tip = first_chunk.newTip("Merge up works when a tile hits a tile with no merge. (+2 points)",
+                'Great job! Merge up works when a tile hits a tile with no merge. (+2)');
+
+            third_tip.newIOTest('r',  //testClass
+                "merge up %",  //blockSpec
+                [[4, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0]],  //input
+                [4, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  //output
+                5000000,  //timeout
+                true,  //isolated
+                1);  //points
+
+            var fourth_tip = first_chunk.newTip("Merge up works when a tile hits a tile with a merge. (+2 points)",
+                'Great job! Merge up works when a tile hits a tile with a merge. (+2)');
+
+            fourth_tip.newIOTest('r',  //testClass
+                "merge up %",  //blockSpec
+                [[2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0]],  //input
+                [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  //output
+                5000000,  //timeout
+                true,  //isolated
+                1);  //points
+
+            var fifth_tip = first_chunk.newTip("Merge up works when a tile hits a tile of the same value but with no merge. (+3 points)",
+                'Great job! Merge up works when a tile hits a tile of the same value but with no merge. (+3)');
+
+            fifth_tip.newIOTest('r',  //testClass
+                "merge up %",  //blockSpec
+                [[4, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0]],  //input
+                [4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  //output
+                5000000,  //timeout
+                true,  //isolated
+                1);  //points
+
+            //_______________________________________________________________________
+
+            // Create a first test chunk
+            var third_chunk = fb.newChunk('Make the "no moves left for % ?" block.');
+            // Add a first tip to that first test chunk
+            var first_tip3 = third_chunk.newTip('Make sure to name your block exactly "no moves left for % ?", and place it in the scripting area.',
+                'Great job!');
+
+            var ass_test3 = first_tip3.newAssertTest(
+                noMovesExists,
+                "Testing to see if a 'no moves left for % ?' block is in the scripting area.",
+                "There is a 'no moves left for % ?' block in the scripting area.",
+                "Make sure there is a 'no moves left for % ?' block in the scripting area.",
+                1);
+
+            var second_tip3 = third_chunk.newTip("No moves left block works fully (+5 points); -1 For each bug; -1 Doesn’t check the corner OR only merged in 2 directions.",
+                'Great job! No moves left block works fully (+5)');
+
+            second_tip3.newIOTest('r',  //testClass
+                "no moves left for % ?",  //blockSpec
+                [[0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],  //input
+                false,  //output
+                5000000,  //timeout
+                true,  //isolated
+                1);  //points
+
+            second_tip3.newIOTest('r',  //testClass
+                "no moves left for % ?",  //blockSpec
+                [[2, 4, 2, 4, 16, 16, 2, 4, 2, 4, 2, 4, 4, 2, 4, 2]],  //input
+                false,  //output
+                5000000,  //timeout
+                true,  //isolated
+                1);  //points
+
+            second_tip3.newIOTest('r',  //testClass
+                "no moves left for % ?",  //blockSpec
+                [[2, 4, 2, 4, 4, 2, 4, 2, 2, 4, 2, 4, 4, 2, 4, 2]],  //input
+                true,  //output
+                5000000,  //timeout
+                true,  //isolated
+                1);  //points
+
+            //_______________________________________________________________________
+
+            // Create a first test chunk
+            var fourth_chunk = fb.newChunk('Make the "score of %" block.');
+            // Add a first tip to that first test chunk
+            var first_tip4 = fourth_chunk.newTip('Make sure to name your block exactly "score of %", and place it in the scripting area.',
+                'Great job!');
+
+            var ass_test4 = first_tip4.newAssertTest(
+                scoreExists,
+                "Testing to see if a 'score of %' block is in the scripting area.",
+                "There is a 'score of %' block in the scripting area.",
+                "Make sure there is a 'score of %' block in the scripting area.",
+                1);
+
+            var second_tip4 = fourth_chunk.newTip("Score of Board: Sums all tiles. (+1)",
+                'Great job! Score of Board: Sums all tiles. (+1)');
+
+            second_tip4.newIOTest('r',  //testClass
+                "score of %",  //blockSpec
+                [[0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],  //input
+                4,  //output
+                5000000,  //timeout
+                true,  //isolated
+                1);  //points
+
+            second_tip4.newIOTest('r',  //testClass
+                "score of %",  //blockSpec
+                [[2, 4, 2, 4, 4, 2, 4, 2, 2, 4, 2, 4, 4, 2, 4, 2]],  //input
+                160,  //output
+                5000000,  //timeout
+                true,  //isolated
+                1);  //points
+
+            second_tip4.newIOTest('r',  //testClass
+                "score of %",  //blockSpec
+                [[0, 4, 0, 0, 2, 32, 0, 0, 4, 0, 4, 16, 0, 0, 0, 0]],  //input
+                1332,  //output
+                5000000,  //timeout
+                true,  //isolated
+                1);  //points
+
+            // var third_tip4 = fourth_chunk.newTip('Make sure to use the "score of tile value %" block in the body of your "score of %" block. (+1 point)',
+            //     'Great job! You use "score of tile value %" in the body of your "score of %" block. (+1)');
+
+            // var ass_test4_1 = third_tip4.newAssertTest(
+            //     usesScoreTile,
+            //     "Testing to see if you use the 'score of tile value %' block in the body of your 'score of %' block.",
+            //     "You use the 'score of tile value %' block in the body of your 'score of %' block.",
+            //     "Make sure you use the 'score of tile value %' block in the body of your 'score of %' block.",
+            //     1);
+
+            return fb;
+        }
+    </script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type="text/javascript" src="AGFormatting.js"></script>
+
+    <script type="text/javascript">
+
+        var world;
+        window.onload = function () {
+
+            //INITIALIZE UP SNAP
+            world = new WorldMorph(document.getElementById('world'));
+            new IDE_Morph().openIn(world);
+            var ide = world.children[0];
+
+            //Reduce Stage Size on initialization
+            ide.toggleStageSize(true);
+
+            initializeSnapAdditions(world, id);
+            
+
+            //AUTOGRADER ADDITION - 
+            //Forced to use setTimeout() to let the world load before... Maybe not.           
+            //Create a gradingLog and initialize the AG status bar (AGSB).
+
+            //Initialize AGSB button.
+            var grade_button = document.getElementById("autograding_button");
+            grade_button.addEventListener('click', button_listener);
+            var world_canvas = document.getElementById('world');
+            world_canvas.addEventListener("mouseup", update_listener);
+            // Start Snap Environment Loop
+            setInterval(loop, 1);
+            
+        };
+
+        function loop() {
+            world.doOneCycle();
+        }
+
+    </script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type="text/javascript" src="AG_EDX.js"></script>
+</head>
+<body style="margin: 0;">
+    <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
+
+<!-- Snap Autograding Button -->
+<div id="autograding_bar">
+    <div tabindex="0" class="onclick-menu" id='onclick-menu' style="display:inline-block">
+        <span title="Menu">&#9776;</span>
+        <div class='hover_darken'></div>
+      <nav id="navigation" class="site-navigation" role="navigation">
+          <ul id="dropdown-closed" class="bubble">
+            <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="feedback-button">View Feedback</a></li>
+            <li class="menu-divider-sub-menu" id='menu-divider'></li>-->
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Revert To Last Attempt</a></li>
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="revert-button">Revert To Best Attempt</a></li>
+            <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last edX Submission</a></li>-->
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="reset-button">Reset</a></li>
+            <li class="menu-divider-sub-menu" id='menu-divider'></li>
+            <li class="menu-item-sub-menu" id='enabled-button' onclick="openPopup();"><a id="help-button">Help</a></li>
+          </ul>
+    </nav>
+    </div>
+    <div id="autograding_button" style="display:inline-block;">
+        <span></span>
+        <div class='hover_darken'></div>
+    </div>
+    <div id="numtips" style="display:inline-block"></div>
+</div>
+<!-- Snap Autograding Menu -->
+<!-- Autograding Menu Help Button -->
+<div class="overlay is-hidden" id="overlay">
+    <p class="help-text" id="full-screen-arrow">&#8600;</p>
+    <p class="help-text" id="full-screen-help">This full-screen button will pop out the Snap! window.</p>
+    <p class="help-text" id="menu-item-arrow">&#8599;</p>
+    <p class="help-text" id="menu-item-help">The first two menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your last graded attempt or to your best attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
+    <p class="help-text" id="ag-button-arrow">&#8593;</p>
+    <p class="help-text" id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
+</div>
+
+<div style="display:inline-block" class="view-results" id="circle" onclick="openResults();">Results
+</div>
+<div class="overlay is-hidden" id="ag-output">
+    <div class="popup-content" id="ag-results">
+        <span class="button-close" onclick="closeResults();" id="popup">X</span>
+        <!--<p id = "different-feedback"></p>
+        <p id = "edx-submit-different"></p>-->
+        <div id="toggle-correct-tests"></div>
+        <p id="comment"></p>
+    </div>
+</div>
+    </div>
+    <script type="text/javascript" src="AG_status_bar.js" />
+</body>
+</html>            
