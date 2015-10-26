@@ -170,6 +170,11 @@ function closeResults(){
     overlay.classList.add("is-hidden");
 }
 
+function closeInitialHelp() {
+    var initial_overlay = document.getElementById("initial-help");
+    initial_overlay.classList.add("is-hidden");
+}
+
 /*function populateFeedback(outputLog) {
     var taskID = outputLog.taskID;
     //var last_log = sessionStorage.getItem(taskID + "_last_submitted_log");
@@ -644,6 +649,11 @@ function initializeSnapAdditions(snapWorld, taskID) {
         moveHelp();
     });
 
+    if (isInitial) {
+        var initial_overlay = document.getElementById('initial-help');
+        initial_overlay.onclick = function(e) { closeInitialHelp(); }
+    }
+
     checkButtonExists = false;
     if (isEDX) {
 
@@ -775,6 +785,31 @@ function initializeSnapAdditions(snapWorld, taskID) {
         }
         //sessionStorage.setItem(id + "_popupFeedback", "");
 
+        StageHandleMorph.prototype.originalFixLayout = StageHandleMorph.prototype.fixLayout;
+        StageHandleMorph.prototype.fixLayout = function() {
+            this.originalFixLayout();
+            console.log(this.target.right());
+            console.log(this.target.width());
+            if (this.target.width() > 225) {
+                if (this.target.width() > 390) {
+                    $('#autograding_bar').css({
+                        right: 150,
+                        left: 'auto',
+                    });
+                } else {
+                /*if (this.target.left() < 950) {
+                    $('#autograding_bar').css({
+                        left:  1075,
+                    });
+                } else {*/
+                    $('#autograding_bar').css({
+                        left:  this.target.left() - 140,
+                    });
+                }
+                
+            }
+            
+        }
 
 
     }, 1000);
