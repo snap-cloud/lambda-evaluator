@@ -170,6 +170,11 @@ function closeResults(){
     overlay.classList.add("is-hidden");
 }
 
+function closeInitialHelp() {
+    var initial_overlay = document.getElementById("initial-help");
+    initial_overlay.classList.add("is-hidden");
+}
+
 /*function populateFeedback(outputLog) {
     var taskID = outputLog.taskID;
     //var last_log = sessionStorage.getItem(taskID + "_last_submitted_log");
@@ -477,7 +482,78 @@ function moveAutogradingBar() {
 }
 
 
+function createInitialHelp() {
+    initial_help = document.createElement("div");
+    initial_help.classList.add("overlay");
+    initial_help.id = "initial-help";
+
+    $(initial_help).insertAfter("#overlay")
+
+
+    hamburger_help = document.createElement("p");
+    hamburger_text = document.createTextNode("Click this button to access helpful auto-feedback functions.");
+    hamburger_help.appendChild(hamburger_text);
+    hamburger_help.id = "hamburger-menu-help";
+    hamburger_help.classList.add("help-text");
+
+    hamburger_help_arrow = document.createElement("p");
+    hamburger_help_arrow_text = document.createTextNode("â†‘");
+    hamburger_help_arrow.appendChild(hamburger_help_arrow_text);
+    hamburger_help_arrow.id = "hamburger-menu-arrow";
+
+
+    document.getElementById("initial-help").appendChild(hamburger_help);
+    document.getElementById("initial-help").appendChild(hamburger_help_arrow);
+    $("#full-screen-arrow").clone().appendTo("#initial-help");
+    $("#full-screen-help").clone().appendTo("#initial-help");
+
+    var arrow = document.getElementById("ag-button-arrow"), 
+        arrow_clone = arrow.cloneNode(true);
+    var help = document.getElementById("ag-button-help"), 
+        help_clone = help.cloneNode(true);
+
+    arrow_clone.id = "initial-ag-button-arrow";
+    help_clone.id = "initial-ag-button-help";
+
+    document.getElementById("initial-help").appendChild(arrow_clone);
+    document.getElementById("initial-help").appendChild(help_clone);
+    /*$("#ag-button-arrow").clone().appendTo("#initial-help");
+    $("#ag-button-help").clone().appendTo("#initial-help");*/
+
+}
+
+function previousFeedbackButton() {
+    var prev_feedback = document.createElement("li");
+    prev_feedback.classList.add("menu-item-sub-menu");
+    prev_feedback.id = "enabled-button";
+
+    var prev_feedback_link = document.createElement("a");
+    var prev_feedback_text = document.createTextNode("View Previous Feedback");
+    prev_feedback_link.appendChild(prev_feedback_text);
+    prev_feedback_link.id = "feedback-button";
+
+    prev_feedback.appendChild(prev_feedback_link);
+
+    var menu_divider = document.createElement("li");
+    menu_divider.classList.add("menu-item-sub-menu");
+    menu_divider.id = "menu-divider";
+
+
+    $(".bubble").prepend(menu_divider);
+    $(".bubble").prepend(prev_feedback);
+}
+
+
 function initializeSnapAdditions(snapWorld, taskID) {
+
+    var isInitial = false;
+    if (!sessionStorage.getItem(taskID + "_test_state")) {
+        isInitial = true;
+        createInitialHelp();
+        moveHelp();
+        //previousFeedbackButton();
+        //openPopup();
+    }
     if (isEDX) {
         current_iframe.parentNode.parentNode.parentNode.style.width = "100%";
     }
@@ -572,6 +648,11 @@ function initializeSnapAdditions(snapWorld, taskID) {
     $(".bubble").mouseover(function() {
         moveHelp();
     });
+
+    if (isInitial) {
+        var initial_overlay = document.getElementById('initial-help');
+        initial_overlay.onclick = function(e) { closeInitialHelp(); }
+    }
 
     checkButtonExists = false;
     if (isEDX) {
@@ -704,6 +785,31 @@ function initializeSnapAdditions(snapWorld, taskID) {
         }
         //sessionStorage.setItem(id + "_popupFeedback", "");
 
+        StageHandleMorph.prototype.originalFixLayout = StageHandleMorph.prototype.fixLayout;
+        StageHandleMorph.prototype.fixLayout = function() {
+            this.originalFixLayout();
+            console.log(this.target.right());
+            console.log(this.target.width());
+            if (this.target.width() > 225) {
+                if (this.target.width() > 390) {
+                    $('#autograding_bar').css({
+                        right: 150,
+                        left: 'auto',
+                    });
+                } else {
+                /*if (this.target.left() < 950) {
+                    $('#autograding_bar').css({
+                        left:  1075,
+                    });
+                } else {*/
+                    $('#autograding_bar').css({
+                        left:  this.target.left() - 140,
+                    });
+                }
+                
+            }
+            
+        }
 
 
     }, 1000);
@@ -749,6 +855,7 @@ var button_listener = function(event) {
 
 function moveHelp() {
     var pos = $(".bubble").offset();
+    var menu_pos = $("#onclick-menu").offset();
 
     $("#menu-item-help").css({
         position: "absolute",
@@ -770,8 +877,33 @@ function moveHelp() {
         top: pos.top - 30 + "px",
         left: pos.left + 270 + "px"
     });
-}
 
+
+
+
+    $("#initial-ag-button-help").css({
+        position: "absolute",
+        top: pos.top + "px",
+        left: pos.left + 200 + "px"
+    });
+    $("#initial-ag-button-arrow").css({
+        position: "absolute",
+        top: pos.top - 33 + "px",
+        left: pos.left + 200 + "px"
+    });
+
+
+    $("#hamburger-menu-help").css({
+        position: "absolute",
+        top: menu_pos.top + 40 + "px",
+        left: menu_pos.left - 100 + "px"
+    });
+    $("#hamburger-menu-arrow").css({
+        position: "absolute",
+        top: menu_pos.top + 5 + "px",
+        left: menu_pos.left + 5 + "px"
+    });
+}
 
 
 
@@ -989,11 +1121,12 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                 }
                 if (thisTest["testClass"] !== "r") {
 
-                    
-                    if (document.getElementsByClassName("observations-section" + String(i) +String(x)[0]) !== []) {
+                    console.log(document.getElementsByClassName("observations-section" + String(i) +String(x)[0]).length);
+                    if (document.getElementsByClassName("observations-section" + String(i) +String(x)[0]).length === 0) {
                         incorrect_assertions = 0;
                         correct_assertions = 0;
                         appendElement("div", "", ["results", "observations-section" + String(i) +String(x)], document.getElementsByClassName("observations" + String(i) +String(x))[0]);
+                        //appendElement("p", thisTest.pic, "data", document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
                     }
 
                     if (tip["allCorrect"] === false && thisTest["correct"] === true) {
@@ -1009,6 +1142,12 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         if ((allFeedback) || tip["allCorrect"]) {
                             appendElement("p", "✔", "data", document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
                             appendElement("p", testPoints + "Tests Passed! " + thisTest["feedback"], ["data", "assertion"], document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
+
+                            //console.log("should append picture");
+
+                            /*var className = ".observations-section" + String(i) +String(x)[0];
+                            $(className).append(thisTest.picture);*/
+                            
                             appendElement("br", null, null, document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
                         }
                         
@@ -1016,12 +1155,16 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         appendElement("p", "✖", "data", document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
                         incorrect_assertions += 1;
                         appendElement("p", testPoints + "Error Found! " + thisTest["feedback"], ["data", "assertion"], document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
+                        
+                        /*var className = ".observations-section" + String(i) +String(x)[0];
+                        $(className).append(thisTest.picture);*/
+                        
                         appendElement("br", null, null, document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
                     }
 
                 } else {
 
-                    if (document.getElementsByClassName("tests-section" + String(i) +String(x)[0]) !== []) {
+                    if (document.getElementsByClassName("tests-section" + String(i) +String(x)[0]).length === 0) {
                         incorrect_tests = 0;
                         correct_tests = 0;
                         appendElement("div", "", ["results", "tests-section" + String(i) +String(x)], document.getElementsByClassName("observations" + String(i) +String(x))[0]);
@@ -1049,11 +1192,15 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             string_reporter.classList.add("data", "assertion");
                             string_reporter.innerHTML = '<p class="data assertion">' + testPoints + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion">, returned the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '</p>';
                             document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
+
+                            var className = "tests-section" + String(i) +String(x)[0];
+                            $("." + className).append(thisTest.picture);
+
                             appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                         }
                     } else {
                         appendElement("p", "✖", "data", document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
-                        
+                    
 
                         var string_reporter = document.createElement("div");
                         string_reporter.classList.add("data", "assertion");
@@ -1063,6 +1210,10 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             string_reporter.innerHTML = '<p class="data assertion">' + testPoints + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion"> did NOT return the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + ' <p class="data assertion"> Instead it returned the ' + '<p class="data assertion bold">output: ' + thisTest["output"] + '</p>';
                         }
                         document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
+
+                        var className = "tests-section" + String(i) +String(x)[0];
+                        $("." + className).append(thisTest.picture);
+
                         appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                     }
                 }
