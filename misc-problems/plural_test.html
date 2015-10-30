@@ -26,18 +26,66 @@
     <script type="text/javascript" src="locale.js"></script>
     <script type="text/javascript" src="cloud.js"></script>
     <script type="text/javascript" src="sha512.js"></script>
-<script type="text/javascript" src="snap-edx-overrides.js"></script>
+    <script type="text/javascript" src="snap-edx-overrides.js"></script>
 
     <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
     <link rel="stylesheet" type="text/css" href="hintstyle.css" />
     
     <script type="text/javascript" src="AGAgent.js"></script>
-    <script type="text/javascript" src="AG_Sandbox.js"></script>
+    <script type='text/javascript'>
+        var starter_path = null;
+        // The id is to act as a course identifier.
+        // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
+        var courseID = "BJC.1x";  // e.g. "BJCx"
+        // Specify a prerequisite task id, should be null if no such requirement.
+        var preReqTaskID = null;
+        var preReqID = courseID + preReqTaskID;
+        // taskID uniquely identifies the task for saving in browser sessionStorage.
+        var taskID = "_plural_test";
+        var id = courseID + taskID;
+        var isEDX = isEDXurl();
+        // if this question is not meant to be graded, change this flag to false
+        var graded = true;
+        // to hide feedback for this problem, change this flag to false
+        var showFeedback = true;
+        // to allow for the ability to regrade certain tests, change this flag to true
+        var regradeOn = false;
+        // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
+        // var testLog;
+        function AGTest(outputLog) {
+            
+            var exists;
+            var pluralExists = function pluralExists() {
+                exists = findBlockInPalette("plural %s");
+                if (exists !== null) {
+                    exists = true;
+                } else {
+                    exists = false;
+                }
+                return exists;
+            }
+            testAssert(outputLog, pluralExists,
+                "There is a 'plural %' block.",
+                "There is no 'plural %' block.",
+                "Make sure you name your block exactly 'plural %'.");
+            if (exists) {
+                multiTestBlock(outputLog, 
+                    "plural %s",
+                    ["day", "boss", "medicine", "box", "cat"],
+                    ["days", "bosses", "medicines", "boxes", "cats"],
+                    [-1, -1, -1, -1, -1],
+                    [false, false, false, false, false],
+                    1);
+            }
+
+            return outputLog;
+        }
+    </script>
     <script type="text/javascript" src="AGFormatting.js"></script>
 
     <script type="text/javascript">
 
-        var world_AG_Sandbox;
+        var world;
         window.onload = function () {
 
             //INITIALIZE UP SNAP

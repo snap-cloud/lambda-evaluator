@@ -26,6 +26,7 @@
     <script type="text/javascript" src="locale.js"></script>
     <script type="text/javascript" src="cloud.js"></script>
     <script type="text/javascript" src="sha512.js"></script>
+<script type="text/javascript" src="snap-edx-overrides.js"></script>
 
     <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
     <link rel="stylesheet" type="text/css" href="hintstyle.css" />
@@ -142,7 +143,7 @@
 
 
         /* Create chunk_1 for the exercise 1 : copy script */
-            var chunk_1 = fb.newChunk("Modify Alphie's Script Using the 'For Each' Block");
+            var chunk_1 = fb.newChunk("Modify Alphie's script");
 
             var scriptExists_1 = function () {
                 var answer = '[{"blockSp":"clear","inputs":[]},{"blockSp":"pen up","inputs":[]},{"blockSp":"go to x: %n y: %n","inputs":[{"blockSp":"item %idx of %l","inputs":["1",{"blockSp":"item %idx of %l","inputs":["4","coordinates"]}]},{"blockSp":"item %idx of %l","inputs":["2",{"blockSp":"item %idx of %l","inputs":["1","coordinates"]}]}]},{"blockSp":"pen down","inputs":[]},{"blockSp":"for each %upvar of %l %cs","inputs":["coordinates",[{"blockSp":"glide %n secs to x: %n y: %n","inputs":["1",{"blockSp":"item %idx of %l","inputs":["1","item"]},{"blockSp":"item %idx of %l","inputs":["2","item"]}]}]]}]'

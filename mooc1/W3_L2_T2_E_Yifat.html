@@ -37,12 +37,12 @@
         var starter_path = null;
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
-        var courseID = "BJC.2x";  // e.g. "BJCx"
+        var courseID = "BJC.1x";  // e.g. "BJCx"
         // Specify a prerequisite task id, should be null if no such requirement.
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_M2_W1_L2_T1_E1_2_3_4";
+        var taskID = "_W3_L2_T2_E_Yifat";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -61,194 +61,176 @@
             // All getter/setter functions inside anonymous Assert functions.
             // Thanks for all your work :D
 
-            var everyOtherExists = function() {
-                if (findBlockInPalette("every other %") == null) {
-                    return false;
-                }
-                return true;
+            var betweenExists = function() {
+                return spriteContainsBlock("% between? % and %");
             }
 
-            var everyThirdExists = function() {
-                if (findBlockInPalette("every third %") == null) {
-                    return false;
-                }
-                return true;
+            var predicate = function() {
+                var customBody = getCustomBody("% between? % and %");
+                return ((customBlockContains("% between? % and %", "report %", ["true"]) && 
+                    customBlockContains("% between? % and %", "report %", ["false"])) || 
+                    (blockPrecedes("report %", "% and %", customBody))); 
+                    //assuming they are reporting the AND block --> boolean value
             }
 
-            var reverseExists = function() {
-                if (findBlockInPalette("reverse %") == null) {
-                    return false;
-                }
-                return true;
-            }
-
-            var lettersBetweenExists = function() {
-                if (findBlockInPalette("letters between % and %") == null) {
-                    return false;
-                }
-                return true;
+            var usesAnd = function() {
+                return customBlockContains("% between? % and %", "% and %");
             }
 
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
 
             // Create a first test chunk
-            var first_chunk = fb.newChunk('Make the "every other %" block.');
+            var chunk_5 = fb.newChunk('Make the "between" block.');
             // Add a first tip to that first test chunk
-            var first_tip = first_chunk.newTip('Make sure you name your block exactly "every other %".',
+            var tip_5_1 = chunk_5.newTip('Make sure you name your block exactly "% between? % and %" and place it in the scripting area.',
                 'Great job!');
 
-            var ass_test1 = first_tip.newAssertTest(
-                everyOtherExists,
-                "Testing if there exists an 'every other %' block.",
-                "There exists an 'every other %' block.",
-                "Make sure you name your block exactly 'every other %' and place it in the scripting area.",
+            tip_5_1.newAssertTest(
+                betweenExists,
+                "Testing if there is a '% between? % and %' block in the scripting area.",
+                "There is a '% between? % and %' block in the scripting area.",
+                "Make sure you name your block exactly '% between? % and %' and place it in the scripting area.",
                 1);
 
-            var second_tip = first_chunk.newTip("Make sure your block works on basic inputs and make sure it's in the scripting area.",
+            var tip_5_2 = chunk_5.newTip('Make sure your block is a predicate: it returns true/false values.',
                 'Great job!');
 
-             second_tip.newIOTest('r',  //testClass
-                'every other %',  //blockSpec
-                ["I love cats."],  //input
-                ["I", "l", "v", " ", "a", "s"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip.newIOTest('r',  //testClass
-                'every other %',  //blockSpec
-                ["a b c."],  //input
-                ["a", "b", "c"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip.newIOTest('r',  //testClass
-                'every other %',  //blockSpec
-                ["."],  //input
-                ["."],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-            var second_chunk = fb.newChunk('Make the "every third %" block.');
-            // Add a first tip to that first test chunk
-            var first_tip2 = second_chunk.newTip('Make sure you name your block exactly "every third %".',
-                'Great job!');
-
-            var ass_test2 = first_tip2.newAssertTest(
-                everyThirdExists,
-                "Testing if there exists an 'every third %' block.",
-                "There exists an 'every third %' block.",
-                "Make sure you name your block exactly 'every third %' and place it in the scripting area.",
+            tip_5_2.newAssertTest(
+                predicate,
+                "Testing to see if the '% between? % and %' block returns a boolean value.",
+                "The '% between? % and %' block returns a boolean value.",
+                "Make sure your '% between? % and %' block returns a boolean value.",
                 1);
 
-            var second_tip2 = second_chunk.newTip("Make sure your block works on basic inputs and make sure it's in the scripting area.",
+            var tip_5_3 = chunk_5.newTip('Try using the "and" block in your solution.',
                 'Great job!');
 
-             second_tip2.newIOTest('r',  //testClass
-                'every third %',  //blockSpec
-                ["I love cats."],  //input
-                ["I", "o", " ", "t"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip2.newIOTest('r',  //testClass
-                'every third %',  //blockSpec
-                ["a b c."],  //input
-                ["a", " "],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip2.newIOTest('r',  //testClass
-                'every third %',  //blockSpec
-                ["."],  //input
-                ["."],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-            var third_chunk = fb.newChunk('Make the "reverse %" block.');
-            // Add a first tip to that first test chunk
-            var first_tip3 = third_chunk.newTip('Make sure you name your block exactly "reverse %".',
-                'Great job!');
-
-            var ass_test3 = first_tip3.newAssertTest(
-                reverseExists,
-                "Testing if there exists a 'reverse %' block.",
-                "There exists a 'reverse %' block.",
-                "Make sure you name your block exactly 'reverse %' and place it in the scripting area.",
+            tip_5_3.newAssertTest(
+                usesAnd,
+                "Testing to see if the '% between? % and %' block uses the 'and' block in its defintion.",
+                "The '% between? % and %' block uses the 'and' block in its defintion.",
+                "Try using the 'and' block in your solution.",
                 1);
 
-            var second_tip3 = third_chunk.newTip("Make sure your block works on basic inputs and make sure it's in the scripting area.",
+            var tip_5_4 = chunk_5.newTip('Make sure your block works on basic inputs.',
                 'Great job!');
 
-             second_tip3.newIOTest('r',  //testClass
-                'reverse %',  //blockSpec
-                ["I love cats."],  //input
-                [".", "s", "t", "a", "c", " ", "e", "v", "o", "l", " ", "I"],  //output
+            tip_5_4.newIOTest('r',  //testClass
+                '% between? % and %',  //blockSpec
+                [2, 3, 4],  //input
+                false,  //output
                 -1,  //timeout
-                true,  //isolated
+                false,  //isolated
                 1);  //points
 
-             second_tip3.newIOTest('r',  //testClass
-                'reverse %',  //blockSpec
-                ["a b c."],  //input
-                [".", "c", " ", "b", " ", "a"],  //output
+            tip_5_4.newIOTest('r',  //testClass
+                '% between? % and %',  //blockSpec
+                [2.55, 2, 3],  //input
+                true,  //output
                 -1,  //timeout
-                true,  //isolated
+                false,  //isolated
                 1);  //points
 
-             second_tip3.newIOTest('r',  //testClass
-                'reverse %',  //blockSpec
-                ["."],  //input
-                ["."],  //output
+            tip_5_4.newIOTest('r',  //testClass
+                '% between? % and %',  //blockSpec
+                [-5, 0, -6],  //input
+                true,  //output
                 -1,  //timeout
-                true,  //isolated
+                false,  //isolated
                 1);  //points
 
-            var fourth_chunk = fb.newChunk('Make the "letters between % and %" block.');
+            tip_5_4.newIOTest('r',  //testClass
+                '% between? % and %',  //blockSpec
+                [0, 7, 2],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points   
+
+
+            var weekendExists = function() {
+                return spriteContainsBlock("weekend? %");
+            }
+
+            var predicate2 = function() {
+                var customBody = getCustomBody("weekend? %");
+                return ((customBlockContains("weekend? %", "report %", ["true"]) && 
+                    customBlockContains("weekend? %", "report %", ["false"])) || 
+                    (blockPrecedes("report %", "% or %", customBody))); 
+                    //assuming they are reporting the OR block --> boolean value
+            }
+
+            var usesOr = function() {
+                return customBlockContains("weekend? %", "% or %");
+            }
+
+            var chunk_6 = fb.newChunk('Make the "weekend" block.');
             // Add a first tip to that first test chunk
-            var first_tip4 = fourth_chunk.newTip('Make sure you name your block exactly "letters between % and %".',
+            var tip_6_1 = chunk_6.newTip('Make sure you name your block exactly "weekend? %" and place it in the scripting area.',
                 'Great job!');
 
-            var ass_test4 = first_tip4.newAssertTest(
-                lettersBetweenExists,
-                "Testing if there exists a 'letters between % and %' block.",
-                "There exists a 'letters between % and %' block.",
-                "Make sure you name your block exactly 'letters between % and %' and place it in the scripting area.",
+            tip_6_1.newAssertTest(
+                weekendExists,
+                "Testing if there is a 'weekend? %' block in the scripting area.",
+                "There is a 'weekend? %' block in the scripting area.",
+                "Make sure you name your block exactly 'weekend? %' and place it in the scripting area.",
                 1);
 
-            var second_tip4 = fourth_chunk.newTip("Make sure your block works on basic inputs and make sure it's in the scripting area.",
+            var tip_6_2 = chunk_6.newTip('Make sure your block is a predicate: it returns true/false values.',
                 'Great job!');
 
-             second_tip4.newIOTest('r',  //testClass
-                'letters between % and %',  //blockSpec
-                ["a", "e"],  //input
-                ["a", "b", "c", "d", "e"],  //output
+            tip_6_2.newAssertTest(
+                predicate2,
+                "Testing to see if the 'weekend? %' block returns a boolean value.",
+                "The 'weekend? %' block returns a boolean value.",
+                "Make sure your 'weekend? %' block returns a boolean value.",
+                1);
+
+            var tip_6_3 = chunk_6.newTip('Try using the "or" block in your solution.',
+                'Great job!');
+
+            tip_6_3.newAssertTest(
+                usesOr,
+                "Testing to see if the 'weekend? %' block uses the 'or' block in its defintion.",
+                "The 'weekend? %' block uses the 'or' block in its defintion.",
+                "Try using the 'or' block in your solution.",
+                1);
+
+            var tip_6_4 = chunk_6.newTip('Make sure your block works on basic inputs.',
+                'Great job!');
+
+            tip_6_4.newIOTest('r',  //testClass
+                'weekend? %',  //blockSpec
+                ["Saturday"],  //input
+                true,  //output
                 -1,  //timeout
-                true,  //isolated
+                false,  //isolated
                 1);  //points
 
-             second_tip4.newIOTest('r',  //testClass
-                'letters between % and %',  //blockSpec
-                ["a", "a"],  //input
-                ["a"],  //output
+            tip_6_4.newIOTest('r',  //testClass
+                'weekend? %',  //blockSpec
+                ["Sunday"],  //input
+                true,  //output
                 -1,  //timeout
-                true,  //isolated
+                false,  //isolated
                 1);  //points
 
-             second_tip4.newIOTest('r',  //testClass
-                'letters between % and %',  //blockSpec
-                ["x", "z"],  //input
-                ["x", "y", "z"],  //output
+            tip_6_4.newIOTest('r',  //testClass
+                'weekend? %',  //blockSpec
+                ["Monday"],  //input
+                false,  //output
                 -1,  //timeout
-                true,  //isolated
+                false,  //isolated
                 1);  //points
-            
+
+            tip_6_4.newIOTest('r',  //testClass
+                'weekend? %',  //blockSpec
+                ["Tuesday"],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
 
             return fb;
         }

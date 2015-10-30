@@ -42,7 +42,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_AG_listreporter_test";
+        var taskID = "_W2_L1_T3_E1";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -55,146 +55,127 @@
         // var testLog;
         function AGTest(outputLog) {
 
-            //NOTES TO YIFAT AND PATRICK:
-            // No IO tests should be isolated. Which means that you have to check that the block
-            // is on screen.
-            // All getter/setter functions inside anonymous Assert functions.
-            // Thanks for all your work :D
-            //
-            //
-            //
-            //
-            // NAMING CONVENTIONS:
-            //
-            // **** VARIABLES ****
-            // If you are going to make a variable like this:
-            //
-            // var turnExists = function() {
-            //     return spriteContainsBlock("% !");
+ /* Create "draw square-petal flower with % petals of size %" motion command block */
+            var drawFlowerExists = function () {
+                var flowerFound = findBlockInPalette("draw square-petal flower with % petals of size %");
+                if (flowerFound !== null) {
+                    return true;
+                }
+                return false;
+            }
+
+            // var realFlowerBody = getCustomBody("draw square-petal flower with % petals of size %");
+            // var realFlowerParameters = JSONcustomBlock(findBlockInPalette("draw square-petal flower with % petals of size %")).variables;
+            var containsRepeat = function () {
+                var realFlowerBody = getCustomBody("draw square-petal flower with % petals of size %");
+                return scriptContainsBlock(realFlowerBody, "repeat % %");
+            }
+            var containsCorrectRepeat = function () {
+                var realFlowerBody = getCustomBody("draw square-petal flower with % petals of size %");
+                var realFlowerParameters = JSONcustomBlock(findBlockInPalette("draw square-petal flower with % petals of size %")).variables;
+                return scriptContainsBlock(realFlowerBody, "repeat % %", [realFlowerParameters[0], []], true);
+            }
+            var containsDrawSquare = function () {
+                var realFlowerBody = getCustomBody("draw square-petal flower with % petals of size %");
+                return simpleCBlockContains(realFlowerBody, "draw square %", "repeat");
+            }
+            var containsCorrectDrawSquare = function () {
+                var realFlowerBody = getCustomBody("draw square-petal flower with % petals of size %");
+                var realFlowerParameters = JSONcustomBlock(findBlockInPalette("draw square-petal flower with % petals of size %")).variables;
+                return simpleCBlockContains(realFlowerBody, "draw square %", "repeat", [realFlowerParameters[1]]);
+            }
+            var containsTurn = function () {
+                var realFlowerBody = getCustomBody("draw square-petal flower with % petals of size %");
+                return simpleCBlockContains(realFlowerBody, "turn %counterclockwise % degrees", "repeat")
+                    || simpleCBlockContains(realFlowerBody, "turn %clockwise % degrees", "repeat");
+            }
+            // var containsCorrectTurn = function () {
+            //     // var realFlowerBody = getCustomBody("draw square-petal flower with % petals of size %");
+            //     var realFlowerParameters = JSONcustomBlock(findBlockInPalette("draw square-petal flower with % petals of size %")).variables;
+            //     console.log(realFlowerParameters);
+            //     // var turnDegree = (360 / parseInt(realFlowerParameters[0])).toString();
+            //     var par1 = (realFlowerParameters[0]).toString();
+            //     // console.log(turnDegree);
+            //     console.log(par1);
+            //     return 
+            //         simpleCBlockContains(realFlowerBody, "turn %counterclockwise % degrees", "repeat", [turnDegree]) ||
+            //         simpleCBlockContains(realFlowerBody, "turn %clockwise % degrees", "repeat", [turnDegree]) ||
+            //         simpleCBlockContains(realFlowerBody, "turn %clockwise % degrees", "repeat", [{"blockSp":"%n / %n","inputs":["360", par1]}]) ||
+            //         simpleCBlockContains(realFlowerBody, "turn %counterclockwise % degrees", "repeat", [{"blockSp":"%n / %n","inputs":["360", par1]}]) ||
+            //         scriptContainsBlock(realFlowerBody, "%n / %n", ["360", par1]) ||
+            //         customBlockContains("draw square-petal flower with % petals of size %", "%n / %n", ["360", par1], 0, true);
             // }
-            //
-            // please instead append a "_n" to the end, where the "n" is the chunk number associated
-            // with the given function. So, if the "turnExists" function above were from chunk 2,
-            // then please name it: "turnExists_2" and NOT JUST "turnExists" because if more than
-            // one chunk has the same function called "turnExists", then bad things will happen bro.
-            // **THE ONE EXCEPTION IS THE FEEDBACK LOG and WORLD** -- PLEASE HAVE THESE TWO LINES
-            // AT THE TOP OF YOUR AGTEST() FUNCTION BODY:
-            //
-            // var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
-            // fb.snapWorld = world;
-            //
-            //
-            //
-            //
-            // **** CHUNKS ****
-            // please name chunks according to the exercise number they correspond to. For
-            // example, if I am writing a chunk for exercise 3, name the chunk like this:
-            //
-            // chunk_3 = fb.newChunk('Make the block that exercise 3 is asking');
-            //
-            // so clarify it is "chunk_n" where 'n' is the number of the exercise.
-            //
-            //
-            //
-            //
-            // **** TIPS ****
-            // please name tips according to their chunk and which tip within that chunk
-            // they are. So for example, if I am writing the second tip for chunk 4, then
-            // please write it as:
-            //
-            // tip_4_2 = chunk_4.newTip("Make sure you name your block exactly...");
-            //
-            // to clarify, it is "tip_j_k" where "j" is the chunk number and "k" is
-            // the tip number.
-            //
-            //
-            //
-            //
-            // **** ASSERT TESTS ****
-            // please do not assign these function calls to variables names. it is
-            // uncessary and will result in more confusion. So for example, to create
-            // a new ASSERT TEST, just do the following:
-            //
-            // tip_1_2.newAssertTest(
-            //    multiplyExists_1,
-            //    "Testing if there is a multiplication block in the factorial block.",
-            //    "There is a multiplication block in the factorial block.",
-            //    "Make sure you use the multiplication block in your factorial block.",
-            //    1);
-            //
-            //
-            //
-            //
-            // **** IO TESTS ****
-            // same as the assert tests above. To create a new IO TEST, please don't
-            // assign it a variable, just do the following:
-            //
-            // tip_1_4.newIOTest('r',  //testClass
-            //     '% !',  //blockSpec
-            //     [5],  //input
-            //     120,  //output
-            //     -1,  //timeout
-            //     false,  //isolated
-            //     1);  //points
+            var penDownPresent = function () {
+                var realFlowerBody = getCustomBody("draw square-petal flower with % petals of size %");
+                return spriteContainsBlock("pen down") 
+                    || blockPrecedesInSprite("pen down", "draw square-petal flower with % petals of size %")
+                    || blockPrecedes("pen down", "repeat % %", realFlowerBody);
+            }
 
 
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
 
 
-        /* Create chunk_1 for the exercise 1 : three input sum */
-            var chunk_1 = fb.newChunk('Make the (list test %) block.');
-
-            var add3Exists_1 = function () {
-                return spriteContainsBlock("list test %");
-            }
-
+            // Create a first test chunk
+            var first_chunk = fb.newChunk('Draw flower');
             // Add a first tip to that first test chunk
-            var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly "list test %".',
+
+            var zero_tip = first_chunk.newTip("Make the 'draw square-petal flower with % petals of size %' block.",
                 'Great job!');
 
-            tip_1_1.newAssertTest(
-                add3Exists_1,
-                "Testing if there is a three-input add block in the scripting area.",
-                "There is a (list test %) block in the scripting area.",
-                "Make sure you name your block exactly 'list test %' and place it in the scripting area.",
+
+            var first_tip = first_chunk.newTip("Make the 'draw square-petal flower with % petals of size %' block.",
+                'Great job!');
+
+            var ass_test1 = zero_tip.newAssertTest(
+                drawFlowerExists,
+                "Testing if draw flower block exists.",
+                "There is a 'draw square-petal flower with % petals of size %' block.",
+                "Make sure you name your block exactly 'draw square-petal flower with % petals of size %'.",
                 1);
-
-            var tip_1_2 = chunk_1.newTip('Make sure your block works for general cases.',
-                'Great job!');
-
-
-             tip_1_2.newIOTest('r',  //testClass
-                'list test %',  //blockSpec
-                [[10, 2, 5]],  //input
-                [10, 2, 5],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             tip_1_2.newIOTest('r',  //testClass
-                'list test %',  //blockSpec
-                [[-10, -2, 6]],  //input
-                [-10, -2, 6],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             tip_1_2.newIOTest('r',  //testClass
-                'list test %',  //blockSpec
-                [[0, 0, 0]],  //input
-                [0, 0, 0],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             tip_1_2.newIOTest('r',  //testClass
-                'list test %',  //blockSpec
-                [[100, -1000, 0]],  //input
-                [100, -1000, 0],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
+            var ass_test2 = first_tip.newAssertTest(
+                containsRepeat,
+                "Testing if block contains a repeat block",
+                "The 'repeat' block is found inside 'draw square-petal flower with % petals of size %'.",
+                "If you are stuck try using a repeat inside of 'draw square-petal flower with % petals of size %'",
+                1);
+            var ass_test3 = first_tip.newAssertTest(
+                containsCorrectRepeat,
+                "Testing if block contains a correct repeat block",
+                "The 'repeat' block has a counter of the number of petals.",
+                "How many times should we repeat to draw a flower?",
+                1);
+            var ass_test4 = first_tip.newAssertTest(
+                containsDrawSquare,
+                "Testing if block contains draw square block",
+                "The 'draw square-petal flower with % petals of size %' block contains 'draw square %' inside of the repeat loop.",
+                "What blocks helps move the sprite?",
+                1);
+            var ass_test5 = first_tip.newAssertTest(
+                containsTurn,
+                "Testing if block contains a turn block",
+                "The 'draw square-petal flower with % petals of size %' block contains a turn block.",
+                "We need to draw petals at different angles. What block should we use to do this?",
+                1);
+            var ass_test5 = first_tip.newAssertTest(
+                containsCorrectDrawSquare,
+                "Testing if block contains a correct draw square block",
+                "The 'draw square-petal flower with % petals of size %' block contains the correct 'draw square %' inside of the repeat loop.",
+                "How big are the petals supposed to be supposed to be?",
+                1);
+            // var ass_test7 = first_tip.newAssertTest(
+            //     containsCorrectTurn,
+            //     "Testing if block contains a correct turn block",
+            //     "The 'draw square-petal flower with % petals of size %' block contains turn block with 360/numberOfPetals degrees.",
+            //     "Try using a turn block. How many degrees should we turn?",
+            //     1);
+            var ass_test8 = first_tip.newAssertTest(
+                penDownPresent,
+                "Testing if pen down is present",
+                "The pen down block is present.",
+                "If the sprite is not drawing anything, it could be because we are missing a certain block. Hint: in the teal pen tab!",
+                1);
 
             return fb;
         }
@@ -290,5 +271,6 @@
     </div>
 </div>
     </div>
+    <script type="text/javascript" src="AG_status_bar.js" />
 </body>
 </html>

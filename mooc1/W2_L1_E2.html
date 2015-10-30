@@ -32,12 +32,63 @@
     <link rel="stylesheet" type="text/css" href="hintstyle.css" />
     
     <script type="text/javascript" src="AGAgent.js"></script>
-    <script type="text/javascript" src="AG_Sandbox.js"></script>
+    <script type='text/javascript'>
+        var starter_path = null;
+        // The id is to act as a course identifier.
+        // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
+        var courseID = "BJC.1x";  // e.g. "BJCx"
+        // Specify a prerequisite task id, should be null if no such requirement.
+        var preReqTaskID = "_W2_L1_E1";
+        var preReqID = courseID + preReqTaskID;
+        // taskID uniquely identifies the task for saving in browser sessionStorage.
+        var taskID = "_W2_L1_E2";
+        var id = courseID + taskID;
+        var isEDX = isEDXurl();
+        // if this question is not meant to be graded, change this flag to false
+        var graded = true;
+        // to hide feedback for this problem, change this flag to false
+        var showFeedback = true;
+        // to allow for the ability to regrade certain tests, change this flag to true
+        var regradeOn = false;
+        // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
+        // var testLog;
+        function AGTest(outputLog) {
+
+            /*Add an input to the draw square block.*/
+            var drawSquareHasInput = function drawSquareHasInput() {
+                return spriteContainsBlock("draw square %", 0);
+            }
+            testAssert(outputLog,  drawSquareHasInput,
+                "There is a 'draw square' block with a parameter.",
+                "There is no 'draw square' block with a parameter.",
+                "Make sure to give your 'draw square' block a parameter.");
+
+            /*Add an input to the draw triangle block.*/
+            var drawTriangleHasInput = function drawTriangleHasInput() {
+                return spriteContainsBlock("draw triangle %", 0);
+            }
+            testAssert(outputLog,  drawTriangleHasInput,
+                "There is a 'draw triangle' block with a parameter.",
+                "There is no 'draw triangle' block with a parameter.",
+                "Make sure to give your 'draw triangle' block a parameter.");
+
+            /*Add an input to the draw house block.*/
+            var drawHouseHasInput = function drawHouseHasInput() {
+                return spriteContainsBlock("draw house %", 0);
+            }
+            testAssert(outputLog,  drawHouseHasInput,
+                "There is a 'draw house' block with a parameter.",
+                "There is no 'draw house' block with a parameter.",
+                "Make sure to give your 'draw house' block a parameter.");
+            /**/
+            return outputLog;
+        }
+    </script>
     <script type="text/javascript" src="AGFormatting.js"></script>
 
     <script type="text/javascript">
 
-        var world_AG_Sandbox;
+        var world;
         window.onload = function () {
 
             //INITIALIZE UP SNAP
