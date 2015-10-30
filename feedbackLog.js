@@ -192,9 +192,8 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 		//Retrieve the block from the stage
 		var block = null;
 		if (test.isolated) {
-			block = findBlockInPalette(test.blockSpec, this.snapWorld);
-			test.sprite = addInvisibleSprite(this.snapWorld);
-			addBlockToSprite(test.sprite, block);
+			//TODO: Fix setUpIsolatedTest to remove testID
+			block = setUpIsolatedTest(test.blockSpec, this, test)
 		} else {
 			block = getScript(test.blockSpec);
 		}
@@ -226,15 +225,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 				test.feedback = "Test Timeout Occurred.";
 			}
 			test.output = "INVALID";
-			stage.threads.stopProcess(block);
-			// if (test.isolated) {
-			// 	//TODO: Remove bad sprite
-			// 	console.log("removing sprite with error");	
-			// 	test.sprite.remove();
-			// 	test.sprite = null;
-			// 	var focus = this.snapWorld.children[0].sprites.contents[0];
-			// 	this.snapWorld.children[0].selectSprite(focus);
-			// }
+			stage.threads.stopProcess(getScript(test.blockSpec), test.sprite);
 		}, timeout);
 		this.currentTimeout = timeout_id;
 		return this;
@@ -251,6 +242,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 };
 
 FeedbackLog.prototype.finishSnapTest = function(test, output) {
+
 	// Check that output is being returned
 	if (output == undefined) {
 		test.output = null;
@@ -263,6 +255,106 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 		}
 	}
 	// Addison's Code Here
+	SyntaxElementMorph.prototype.returnBubble = function (value, exportPic) {
+	    var bubble,
+	        txt,
+	        img,
+	        morphToShow,
+	        isClickable = false,
+	        sf = this.parentThatIsA(ScrollFrameMorph),
+	        wrrld = this.world();
+
+	    if ((value === undefined) || !wrrld) {
+	        return null;
+	    }
+	    if (value instanceof ListWatcherMorph) {
+	        morphToShow = value;
+	        morphToShow.update(true);
+	        morphToShow.step = value.update;
+	        morphToShow.isDraggable = false;
+	        isClickable = true;
+	    } else if (value instanceof Morph) {
+	        img = value.fullImage();
+	        morphToShow = new Morph();
+	        morphToShow.silentSetWidth(img.width);
+	        morphToShow.silentSetHeight(img.height);
+	        morphToShow.image = img;
+	    } else if (value instanceof Costume) {
+	        img = value.thumbnail(new Point(40, 40));
+	        morphToShow = new Morph();
+	        morphToShow.silentSetWidth(img.width);
+	        morphToShow.silentSetHeight(img.height);
+	        morphToShow.image = img;
+	    } else if (value instanceof Context) {
+	        img = value.image();
+	        morphToShow = new Morph();
+	        morphToShow.silentSetWidth(img.width);
+	        morphToShow.silentSetHeight(img.height);
+	        morphToShow.image = img;
+	    } else if (typeof value === 'boolean') {
+	        morphToShow = SpriteMorph.prototype.booleanMorph.call(
+	            null,
+	            value
+	        );
+	    } else if (isString(value)) {
+	        txt  = value.length > 500 ? value.slice(0, 500) + '...' : value;
+	        morphToShow = new TextMorph(
+	            txt,
+	            this.fontSize
+	        );
+	    } else if (value === null) {
+	        morphToShow = new TextMorph(
+	            '',
+	            this.fontSize
+	        );
+	    } else if (value === 0) {
+	        morphToShow = new TextMorph(
+	            '0',
+	            this.fontSize
+	        );
+	    } else if (value.toString) {
+	        morphToShow = new TextMorph(
+	            value.toString(),
+	            this.fontSize
+	        );
+	    }
+	    bubble = new SpeechBubbleMorph(
+	        morphToShow,
+	        null,
+	        Math.max(this.rounding - 2, 6),
+	        0
+	    );
+	    bubble.popUp(
+	        wrrld,
+	        this.rightCenter().add(new Point(2, 0)),
+	        isClickable
+	    );
+	    if (exportPic) {
+	        return this.returnPictureWithResult(bubble);
+	    }
+	    if (sf) {
+	        bubble.keepWithin(sf);
+	    }
+	};
+
+	SyntaxElementMorph.prototype.returnPictureWithResult = function (aBubble) {
+	    var scr = this.fullImage(),
+	        bub = aBubble.fullImageClassic(),
+	        taller = Math.max(0, bub.height - scr.height),
+	        pic = newCanvas(new Point(
+	            scr.width + bub.width + 2,
+	            scr.height + taller
+	        )),
+	        ctx = pic.getContext('2d');
+	    ctx.drawImage(scr, 0, pic.height - scr.height);
+	    ctx.drawImage(bub, scr.width + 2, 0);
+	    return pic
+	};
+	var myscript = getScript(test.blockSpec);
+	var pic = myscript.returnBubble(output, true);
+	console.log(pic);
+	test.picture = pic;
+	//End of Addison's Section
 
 	var expOut = test.expOut;
 	if (expOut instanceof Function) {
@@ -300,6 +392,7 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 		throw "gradingLog.finishSnapTest: Trying to clear values of block that does not exist.";
 	}
 	// Launch the next test if it exists, scoreLog otherwise.
+	// console.log(this.allIOTests());
 	this.runNextTest(test);
 
 };
@@ -364,6 +457,27 @@ FeedbackLog.prototype.scoreLog = function() {
 	if (this.testCount === 0) {
 		throw 'FeedbackLog.scoreLog: Attempted to score empty FeedbackLog';
 	}
+	// Ensure that all tests have been graded.
+	// var test = this.firstTest();
+	// var all_tests = this.allIOTests();
+	// console.log(all_tests);
+	// for (test in all_tests) {
+	// 	if (!test.graded) {
+	// 		console.log('FeedbackLog.scoreLog: The log is not yet complete');
+	// 		console.log(test);
+	// 		return this;
+	// 	}
+	// }
+	// for (var i=0; i<this.testCount; i++) {
+	// 	if (!test.graded) {
+	// 		console.log('FeedbackLog.scoreLog: The log is not yet complete');
+
+	// 		console.log(test);
+	// 		return this;
+	// 	}
+	// 	//Continue to the next test otherwise
+	// 	test = this.nextTest(test);
+	// }
 
 	// Iterate over all tests and score the FeedbackLog, chunks, and tips.
 	this.allCorrect = true;
@@ -417,7 +531,15 @@ FeedbackLog.prototype.scoreLog = function() {
 	//this.SnapWorld = world;
 	//console.log(this);
 	// Update the Autograder Status Bar
+	/**********/
+	//TODO: UNCOMMENT AGFinish
+	/**********/
 	AGFinish(this);
+	// try {
+	// 	AGFinish(this);
+	// } catch(e) {
+	// 	console.log("WARNING: FeedbackLog.scoreLog, Can't find AGFinish.");
+	// }
 	return this;
 };
 
@@ -437,7 +559,7 @@ FeedbackLog.prototype.toString = function() {
 	//http://stackoverflow.com/questions/9382167/serializing-object-that-contains-cyclic-object-value
 	seen = [];
 	var log_string = JSON.stringify(this, function(key, val) {
-	   if (val !== null && typeof val === "object") {
+	   if (val != null && typeof val == "object") {
 	        if (seen.indexOf(val) >= 0) {
 	            return;
 	        }
@@ -530,6 +652,7 @@ Tip.prototype.newIOTest = function(testClass, blockSpec, input, expOut, timeOut,
 
 Tip.prototype.newAssertTest = function(statement, feedback, text, pos_fb, neg_fb, points) {
 	points = typeof points !== 'undefined' ? points : 1;
+	//console.log(statement);
 	var new_ass_test = new AssertTest(statement, feedback, text, pos_fb, neg_fb, points);
 	this.addTest(new_ass_test);
 	return new_ass_test
@@ -551,9 +674,8 @@ function IOTest(testClass, blockSpec, input, expOut, timeOut, isolated, points) 
 	this.blockSpec = blockSpec;
 	this.input = input;
 	this.expOut = expOut;
-	this.timeOut = timeOut || -1;
+	this.timeOut = timeOut;
 	this.isolated = isolated || false;
-	//this.points = points || 1;
 	this.points = points || 1;
 
 	this.output = null;
@@ -570,8 +692,7 @@ function AssertTest(statement, text, pos_fb, neg_fb, points) {
 	this.text = text;
 	this.pos_fb = pos_fb;
 	this.neg_fb = neg_fb;
-	//this.points = points || 1;
-	this.points = points;
+	this.points = points || 1;
 	try {
 		this.correct = statement();
 		if (this.correct) {
@@ -636,128 +757,6 @@ function setValues(block, values) {
 		//TODO: THROW ERROR FOR INVALID BLOCK DEFINITION
 	}
 }
-
-//sets (in a very hacky way) a list to an ArgMorph of list type
-//sets the first one it sees then exits!!!
-function setNewListToArg(values, block, i) {
-
-	morph = block.children[i];
-	morph_type = morph.constructor.name;
-
-	if ((morph.blockSpec === "list %exp") 
-		&& (morph_type === "ReporterBlockMorph")) {
-			populateList(morph,values);
-	} else if ((morph_type === "ArgMorph") || (morph_type === "InputSlotMorph")) {
-		var newList = cloneListReporter();
-		populateList(newList, values);
-		block.children[i] = newList;
-		block.children[i].parent = block;
-		block.fixLayout();
-		block.changed();	
-	}
-
-}
-
-//Creates a semi invisable sprite for testing purposes
-//Adds the sprite to the stage but no where else!
-//returns the new sprite
-//@param ide - the working snap IDE
-function addInvisibleSprite(world) {
-	var ide = world.children[0]
-	var sprite = new SpriteMorph(ide.globalVariables),
-        rnd = Process.prototype.reportRandom;
-
-    //sprite.name = ide.newSpriteName(sprite.name);
-    sprite.name = "Testing...";
-
-    sprite.setCenter(ide.stage.center());
-   	ide.stage.add(sprite);
-    // randomize sprite properties
-    sprite.setHue(rnd.call(ide, 0, 100));
-    sprite.setBrightness(rnd.call(ide, 50, 100));
-    sprite.turn(rnd.call(ide, 1, 360));
-    sprite.setXPosition(rnd.call(ide, -220, 220));
-    sprite.setYPosition(rnd.call(ide, -160, 160));
-
-    ide.sprites.add(sprite);
-    ide.corral.addSprite(sprite);
-    // this.selectSprite(sprite);
-
-   return sprite;
- }
-
-function setUpIsolatedTest(blockSpec, log, test) {
-	var block = findBlockInPalette(blockSpec, log.snapWorld);
-	if (!block) { 
-		throw blockSpec + " not found in Palette!";
-	}
-	var sprite = createTestSprite(log, test);
-	addBlockToSprite(sprite, block);
-	return block;
-}
-
-/* To compare the blockSpecs we use blockSpecMatch()
- * simplifySpec(palette[i].blockSpec) === simplifySpec(blockSpec)
- */
-function findBlockInPalette(blockSpec, workingWorld) {
-	var thisWorld = workingWorld || world,
-		palette = null,
-		i = 0,
-		pList = ["motion", "variables", "looks", "sound", "pen", "control", "sensing", "operators"];
-
-	for (var item of pList) {
-		palette = getPaletteScripts(item, workingWorld);
-		i = 0;
-
-		while (i < palette.length) {
-			if (palette[i].blockSpec && blockSpecMatch(palette[i].blockSpec, blockSpec)) {
-				return palette[i].fullCopy();
-			}
-			i++;
-		}
-	}
-	throw "Custom block: (" + blockSpec + ") not found in palette.";
-}
-
-function addBlockToSprite(sprite, block) {
-	sprite.scripts.add(block);
-	sprite.scripts.cleanUp();
-}
-
-//  list.setContents([1,2,3])
-// MultiArgMorph.addInput('5')
-// getScript('list %exp') -> returns the snap list object reference
-// world.children[0].sprites.contents[0].scripts.children[0].children[1] -> gets the MultiArgMorph
-
-//populates a list reporter block with the given arguments
-function populateList(list, args) {
-	var multiArg = list.children[list.children.length - 1];
-
-	while (multiArg.children.length > 2) {
-		multiArg.removeInput();
-	}
-	for (var i = 0; i < args.length; i++) {
-		if (args[i] === 0) {
-			args[i] = "0";
-		}
-		multiArg.addInput(args[i]);
-	}
-}
-
-function cloneListReporter() {
-	var palette = getPaletteScripts("variables");
-	var block = null;
-	var i = 0;
-	while (i < palette.length) {
-		if (palette[i].blockSpec && palette[i].blockSpec === "list %exp") {
-			block = palette[i].fullCopy();
-			i = palette.length;
-		}
-		i++;
-	}
-	return block;
-}
-
 
 function evalReporter(block, outputLog, testID) {
 	var stage = world.children[0].stage;
@@ -882,7 +881,6 @@ console.log(fb);
 //fb.scoreLog();
 console.log('Log has been scored');
 console.log(fb);*/
-
 
 
 
