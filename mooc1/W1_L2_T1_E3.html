@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Snap! Build Your Own Blocks. Beta</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <script src="jschannel.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript" src="underscore-min.js"></script>
+    <!--<script type="text/javascript" src='gradingLog.js'></script>-->
+    <script type="text/javascript" src='spriteEventLog.js'></script>
+    <script type="text/javascript" src='scriptAnalysis.js'></script>
+    <meta charset="utf-8"> 
+    <!-- Moved down to the bottom to have var id. -->
+    <script type="text/javascript" src="morphic.js"></script>
+    <script type="text/javascript" src="widgets.js"></script>
+    <script type="text/javascript" src="blocks.js"></script>
+    <script type="text/javascript" src="threads.js"></script>
+    <script type="text/javascript" src="objects.js"></script>
+    <script type="text/javascript" src="gui.js"></script>
+    <script type="text/javascript" src="paint.js"></script>
+    <script type="text/javascript" src="lists.js"></script>
+    <script type="text/javascript" src="byob.js"></script>
+    <script type="text/javascript" src="xml.js"></script>
+    <script type="text/javascript" src="store.js"></script>
+    <script type="text/javascript" src="locale.js"></script>
+    <script type="text/javascript" src="cloud.js"></script>
+    <script type="text/javascript" src="sha512.js"></script>
+<script type="text/javascript" src="snap-edx-overrides.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
+    <link rel="stylesheet" type="text/css" href="hintstyle.css" />
+    
+    <script type="text/javascript" src="AGAgent.js"></script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type='text/javascript'>
+        var starter_path = null;
+        // The id is to act as a course identifier.
+        // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
+        var courseID = "BJC.1x";  // e.g. "BJCx"
+        // Specify a prerequisite task id, should be null if no such requirement.
+        var preReqTaskID = null;
+        var preReqID = courseID + preReqTaskID;
+        // taskID uniquely identifies the task for saving in browser sessionStorage.
+        var taskID = "_W1_L2_T1_E3";
+        var id = courseID + taskID;
+        var isEDX = isEDXurl();
+        // if this question is not meant to be graded, change this flag to false
+        var graded = true;
+        // to hide feedback for this problem, change this flag to false
+        var showFeedback = true;
+        // to allow for the ability to regrade certain tests, change this flag to true
+        var regradeOn = false;
+        // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
+        // var testLog;
+        function AGTest(outputLog) {
+
+            /* Draw triangle, pentagon, hexagon, octagon scripts (The Polygons)*/
+            var repeatSpec = "repeat % %";
+            var turnClockwiseSpec = "turn %clockwise % degrees";
+            var turnCounterClockwiseSpec = "turn %counterclockwise % degrees";
+            var emptyInputs = [];
+
+            var triangleRepeatInputs = ["3", []];
+            var triangleTurnInputs = ["120"];
+
+            var pentagonRepeatInputs = ["5", []];
+            var pentagonTurnInputs = ["72"];
+
+            var hexagonRepeatInputs = ["6", []];
+            var hexagonTurnInputs = ["60"];
+
+            var octagonRepeatInputs = ["8", []];
+            var octagonTurnInputs = ["45"];
+
+            //Begin triangle
+            var trianglePresent = false;
+            var triangleHasCorrectRepeat = function () {
+                var result = spriteContainsBlock("repeat % %", 0, triangleRepeatInputs, true);
+                if (result) {
+                    trianglePresent = true;
+                }
+                return result;
+            }
+            var triangleHasTurn = function () {
+                var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, emptyInputs, triangleRepeatInputs);
+                var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, emptyInputs, triangleRepeatInputs);
+                return withClockwise || withCounterClockwise;
+            }
+            var triangleHasMove = function () {
+                var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, emptyInputs, triangleRepeatInputs);
+                var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, emptyInputs, triangleRepeatInputs);
+                return withClockwise || withCounterClockwise;
+            }
+            var triangleHasCorrectTurn = function () {
+                var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, triangleTurnInputs, triangleRepeatInputs);
+                var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, triangleTurnInputs, triangleRepeatInputs);
+                return withClockwise || withCounterClockwise;
+            }
+
+            var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
+            fb.snapWorld = world;
+            console.log('fb created');
+
+            // Create a triangle chunk
+            var triangle_chunk = fb.newChunk('Equilateral Triangle');
+            console.log('test chunk created');
+            console.log(triangle_chunk);
+            // Add a first tip to that first test chunk
+            var tri_tip_1 = triangle_chunk.newTip('Make sure your repeat counter is correct.',
+                'Repeat has correct counter.');
+            console.log('test tip created');
+
+            tri_tip_1.newAssertTest(
+                triangleHasCorrectRepeat,
+                "Test for correct repeat counter.",
+                "The script for the triangle has the correct counter 3 for the repeat loop",
+                "Try thinking about how we can use the repeat loop. How many times should the commands in the body of the repeat block be repeated?",
+                1);
+            // Add a second tip to that first test chunk
+            var tri_tip_2 = triangle_chunk.newTip('Make sure your sprite changes direction when drawing.',
+                'Contains turn block.');
+            console.log('test tip created');
+
+            tri_tip_2.newAssertTest(
+                triangleHasTurn,
+                "Test for turn block.",
+                "The script for drawing a triangle has a turn block.",
+                "Which block can we use to help the sprite change direction?",
+                1);
+            // Add a second tip to that first test chunk
+            var tri_tip_3 = triangle_chunk.newTip('Make sure your sprite turns the correct amount when drawing.',
+                'Correct turn degree.');
+            console.log('test tip created');
+
+            tri_tip_3.newAssertTest(
+                triangleHasCorrectTurn,
+                "Test for turn block.",
+                "The script for drawing a triangle has a correct turn block.",
+                "What turning degree can we use to help the sprite change direction?",
+                1);
+
+
+
+            // Begin pentagon
+            var pentagonPresent = false;
+            var pentagonHasCorrectRepeat = function () {
+                var result = spriteContainsBlock("repeat % %", 0, pentagonRepeatInputs, true);
+                if (result) {
+                    pentagonPresent = true;
+                }
+                return result;
+            }
+            var pentagonHasTurn = function () {
+                var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, emptyInputs, pentagonRepeatInputs);
+                var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, emptyInputs, pentagonRepeatInputs);
+                return withClockwise || withCounterClockwise;
+            }
+            var pentagonHasCorrectTurn = function () {
+                var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, pentagonTurnInputs, pentagonRepeatInputs);
+                var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, pentagonTurnInputs, pentagonRepeatInputs);
+                return withClockwise || withCounterClockwise;
+            }
+            //Begin pentagon chunk
+            var pentagon_chunk = fb.newChunk('Pentagon');
+            console.log('test chunk created');
+            console.log(pentagon_chunk);
+            // Add a first tip to that first test chunk
+            var pent_tip_1 = pentagon_chunk.newTip('Make sure your repeat counter is correct.',
+                'Repeat has correct counter.');
+            console.log('test tip created');
+
+            pent_tip_1.newAssertTest(
+                pentagonHasCorrectRepeat,
+                "Test for correct repeat counter.",
+                "The script for the pentagon has the correct counter 3 for the repeat loop",
+                "Try thinking about how we can use the repeat loop. How many times should the commands in the body of the repeat block be repeated?",
+                1);
+            // Add a second tip to that first test chunk
+            var pent_tip_2 = pentagon_chunk.newTip('Make sure your sprite changes direction when drawing.',
+                'Contains turn block.');
+            console.log('test tip created');
+
+            pent_tip_2.newAssertTest(
+                pentagonHasTurn,
+                "Test for turn block.",
+                "The script for drawing a pentagon has a turn block.",
+                "Which block can we use to help the sprite change direction?",
+                1);
+            // Add a second tip to that first test chunk
+            var pent_tip_3 = pentagon_chunk.newTip('Make sure your sprite turns the correct amount when drawing.',
+                'Correct turn degree.');
+            console.log('test tip created');
+
+            pent_tip_3.newAssertTest(
+                pentagonHasCorrectTurn,
+                "Test for turn block.",
+                "The script for drawing a pentagon has a correct turn block.",
+                "What turning degree can we use to help the sprite change direction?",
+                1);
+
+
+
+
+            // Begin hexagon
+            var hexagonPresent = false;
+            var hexagonHasCorrectRepeat = function () {
+                var result = spriteContainsBlock("repeat % %", 0, hexagonRepeatInputs, true);
+                if (result) {
+                    hexagonPresent = true;
+                }
+                return result;
+            }
+            var hexagonHasTurn = function () {
+                var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, emptyInputs, hexagonRepeatInputs);
+                var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, emptyInputs, hexagonRepeatInputs);
+                return withClockwise || withCounterClockwise;
+            }
+            var hexagonHasCorrectTurn = function () {
+                var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, hexagonTurnInputs, hexagonRepeatInputs);
+                var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, hexagonTurnInputs, hexagonRepeatInputs);
+                return withClockwise || withCounterClockwise;
+            }
+            //Begin hexagon chunk
+            var hexagon_chunk = fb.newChunk('Hexagon');
+            console.log('test chunk created');
+            console.log(hexagon_chunk);
+            // Add a first tip to that first test chunk
+            var hex_tip_1 = hexagon_chunk.newTip('Make sure your repeat counter is correct.',
+                'Repeat has correct counter.');
+            console.log('test tip created');
+
+            hex_tip_1.newAssertTest(
+                hexagonHasCorrectRepeat,
+                "Test for correct repeat counter.",
+                "The script for the hexagon has the correct counter 3 for the repeat loop",
+                "Try thinking about how we can use the repeat loop. How many times should the commands in the body of the repeat block be repeated?",
+                1);
+            // Add a second tip to that first test chunk
+            var hex_tip_2 = hexagon_chunk.newTip('Make sure your sprite changes direction when drawing.',
+                'Contains turn block.');
+            console.log('test tip created');
+
+            hex_tip_2.newAssertTest(
+                hexagonHasTurn,
+                "Test for turn block.",
+                "The script for drawing a hexagon has a turn block.",
+                "Which block can we use to help the sprite change direction?",
+                1);
+            // Add a second tip to that first test chunk
+            var hex_tip_3 = hexagon_chunk.newTip('Make sure your sprite turns the correct amount when drawing.',
+                'Correct turn degree.');
+            console.log('test tip created');
+
+            hex_tip_3.newAssertTest(
+                hexagonHasCorrectTurn,
+                "Test for turn block.",
+                "The script for drawing a hexagon has a correct turn block.",
+                "What turning degree can we use to help the sprite change direction?",
+                1);
+
+
+
+
+            // Begin octagon
+            var octagonPresent = false;
+            var octagonHasCorrectRepeat = function () {
+                var result = spriteContainsBlock("repeat % %", 0, octagonRepeatInputs, true);
+                if (result) {
+                    octagonPresent = true;
+                }
+                return result;
+            }
+            var octagonHasTurn = function () {
+                var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, emptyInputs, octagonRepeatInputs);
+                var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, emptyInputs, octagonRepeatInputs);
+                return withClockwise || withCounterClockwise;
+            }
+            var octagonHasCorrectTurn = function () {
+                var withClockwise = CBlockContainsInSprite(turnClockwiseSpec, repeatSpec, 0, octagonTurnInputs, octagonRepeatInputs);
+                var withCounterClockwise = CBlockContainsInSprite(turnCounterClockwiseSpec, repeatSpec, 0, octagonTurnInputs, octagonRepeatInputs);
+                return withClockwise || withCounterClockwise;
+            }
+            //Begin octagon chunk
+            var octagon_chunk = fb.newChunk('Octagon');
+            console.log('test chunk created');
+            console.log(octagon_chunk);
+            // Add a first tip to that first test chunk
+            var oct_tip_1 = octagon_chunk.newTip('Make sure your repeat counter is correct.',
+                'Repeat has correct counter.');
+            console.log('test tip created');
+
+            oct_tip_1.newAssertTest(
+                octagonHasCorrectRepeat,
+                "Test for correct repeat counter.",
+                "The script for the octagon has the correct counter 3 for the repeat loop",
+                "Try thinking about how we can use the repeat loop. How many times should the commands in the body of the repeat block be repeated?",
+                1);
+            // Add a second tip to that first test chunk
+            var oct_tip_2 = octagon_chunk.newTip('Make sure your sprite changes direction when drawing.',
+                'Contains turn block.');
+            console.log('test tip created');
+
+            oct_tip_2.newAssertTest(
+                octagonHasTurn,
+                "Test for turn block.",
+                "The script for drawing a octagon has a turn block.",
+                "Which block can we use to help the sprite change direction?",
+                1);
+            // Add a second tip to that first test chunk
+            var oct_tip_3 = octagon_chunk.newTip('Make sure your sprite turns the correct amount when drawing.',
+                'Correct turn degree.');
+            console.log('test tip created');
+
+            oct_tip_3.newAssertTest(
+                octagonHasCorrectTurn,
+                "Test for turn block.",
+                "The script for drawing a octagon has a correct turn block.",
+                "What turning degree can we use to help the sprite change direction?",
+                1);
+
+
+            return fb;
+        }
+    </script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type="text/javascript" src="AGFormatting.js"></script>
+
+    <script type="text/javascript">
+
+        var world;
+        window.onload = function () {
+
+            //INITIALIZE UP SNAP
+            world = new WorldMorph(document.getElementById('world'));
+            new IDE_Morph().openIn(world);
+            var ide = world.children[0];
+
+            //Reduce Stage Size on initialization
+            ide.toggleStageSize(true);
+
+            initializeSnapAdditions(world, id);
+            
+
+            //AUTOGRADER ADDITION - 
+            //Forced to use setTimeout() to let the world load before... Maybe not.           
+            //Create a gradingLog and initialize the AG status bar (AGSB).
+
+            //Initialize AGSB button.
+            var grade_button = document.getElementById("autograding_button");
+            grade_button.addEventListener('click', button_listener);
+            var world_canvas = document.getElementById('world');
+            world_canvas.addEventListener("mouseup", update_listener);
+            // Start Snap Environment Loop
+            setInterval(loop, 1);
+            
+        };
+
+        function loop() {
+            world.doOneCycle();
+        }
+
+    </script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type="text/javascript" src="AG_EDX.js"></script>
+</head>
+<body style="margin: 0;">
+    <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
+
+<!-- Snap Autograding Button -->
+<div id="autograding_bar">
+    <div tabindex="0" class="onclick-menu" id='onclick-menu' style="display:inline-block">
+        <span title="Menu">&#9776;</span>
+        <div class='hover_darken'></div>
+      <nav id="navigation" class="site-navigation" role="navigation">
+          <ul id="dropdown-closed" class="bubble">
+            <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="feedback-button">View Feedback</a></li>
+            <li class="menu-divider-sub-menu" id='menu-divider'></li>-->
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Revert To Last Attempt</a></li>
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="revert-button">Revert To Best Attempt</a></li>
+            <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last edX Submission</a></li>-->
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="reset-button">Reset</a></li>
+            <li class="menu-divider-sub-menu" id='menu-divider'></li>
+            <li class="menu-item-sub-menu" id='enabled-button' onclick="openPopup();"><a id="help-button">Help</a></li>
+          </ul>
+    </nav>
+    </div>
+    <div id="autograding_button" style="display:inline-block;">
+        <span></span>
+        <div class='hover_darken'></div>
+    </div>
+    <div id="numtips" style="display:inline-block"></div>
+</div>
+<!-- Snap Autograding Menu -->
+<!-- Autograding Menu Help Button -->
+<div class="overlay is-hidden" id="overlay">
+    <p class="help-text" id="full-screen-arrow">&#8600;</p>
+    <p class="help-text" id="full-screen-help">This full-screen button will pop out the Snap! window.</p>
+    <p class="help-text" id="menu-item-arrow">&#8599;</p>
+    <p class="help-text" id="menu-item-help">The first two menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your last graded attempt or to your best attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
+    <p class="help-text" id="ag-button-arrow">&#8593;</p>
+    <p class="help-text" id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
+</div>
+
+<div style="display:inline-block" class="view-results" id="circle" onclick="openResults();">Results
+</div>
+<div class="overlay is-hidden" id="ag-output">
+    <div class="popup-content" id="ag-results">
+        <span class="button-close" onclick="closeResults();" id="popup">X</span>
+        <!--<p id = "different-feedback"></p>
+        <p id = "edx-submit-different"></p>-->
+        <div id="toggle-correct-tests"></div>
+        <p id="comment"></p>
+    </div>
+</div>
+    </div>
+    <script type="text/javascript" src="AG_status_bar.js" />
+</body>
+</html>

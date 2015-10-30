@@ -32,12 +32,56 @@
     <link rel="stylesheet" type="text/css" href="hintstyle.css" />
     
     <script type="text/javascript" src="AGAgent.js"></script>
-    <script type="text/javascript" src="AG_Sandbox.js"></script>
+    <script type='text/javascript'>
+        var starter_path = null;
+        // The id is to act as a course identifier.
+        // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
+        var courseID = "BJC.1x";  // e.g. "BJCx"
+        // Specify a prerequisite task id, should be null if no such requirement.
+        var preReqTaskID = null;
+        var preReqID = courseID + preReqTaskID;
+        // taskID uniquely identifies the task for saving in browser sessionStorage.
+        var taskID = "_W1_L2_E1";
+        var id = courseID + taskID;
+        var isEDX = isEDXurl();
+        // if this question is not meant to be graded, change this flag to false
+        var graded = true;
+        // to hide feedback for this problem, change this flag to false
+        var showFeedback = true;
+        // to allow for the ability to regrade certain tests, change this flag to true
+        var regradeOn = false;
+        // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
+        // var testLog;
+        function AGTest(outputLog) {
+            
+            /*Input an argument value into the given script to create the given picture*/
+            var scriptExists = function scriptExists() {
+                var template = '[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["A",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]';
+                var vars = ["A"];
+                return scriptPresentInSprite(template, 0, vars);
+            }
+            testAssert(outputLog, scriptExists,
+                "The given script has been recreated exactly.",
+                "The given script has not been recreated exactly.",
+                "Make sure to recreate the given script!");
+            var repeat9 = function repeat9() {
+                var script = '[{"blockSp":"when %greenflag clicked","inputs":[]},{"blockSp":"pen down","inputs":[]},{"blockSp":"repeat %n %c","inputs":["9",[{"blockSp":"move %n steps","inputs":["100"]},{"blockSp":"turn %clockwise %n degrees","inputs":["80"]}]]}]';
+                return scriptPresentInSprite(script, 0);
+            }
+            testAssert(outputLog, repeat9,
+                "The input to the repeat loop is 9.",
+                "The input to the repeat loop is incorrect.",
+                "Try checking how many sides the given shape has!");
+
+            /**/
+            return outputLog;
+        }
+    </script>
     <script type="text/javascript" src="AGFormatting.js"></script>
 
     <script type="text/javascript">
 
-        var world_AG_Sandbox;
+        var world;
         window.onload = function () {
 
             //INITIALIZE UP SNAP

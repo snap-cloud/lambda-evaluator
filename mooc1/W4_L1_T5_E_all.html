@@ -37,12 +37,12 @@
         var starter_path = null;
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
-        var courseID = "BJC.2x";  // e.g. "BJCx"
+        var courseID = "BJC.1x";  // e.g. "BJCx"
         // Specify a prerequisite task id, should be null if no such requirement.
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_M2_W1_L3_T2_E1_2";
+        var taskID = "_W4_L1_T5_E_all";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -141,50 +141,277 @@
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
 
-        /* Create chunk_1 for the exercise 1 : nounPhrase */
-            var chunk_1 = fb.newChunk('Make the add 1 block.');
 
-            var nounPhraseExists_1 = function () {
-                return spriteContainsBlock("add 1 to %");
+        /* Create chunk_1 for the exercise 1 : three input sum */
+            var chunk_1 = fb.newChunk('Make the three-input addition block.');
+
+            var add3Exists_1 = function () {
+                return spriteContainsBlock("% + % + %");
+            }
+            var sumExists_1 = function () {
+                var customBody = getCustomBody("% + % + %");
+                var sumFound = scriptContainsBlock(customBody, "% + %");
+                return sumFound;
             }
 
+
             // Add a first tip to that first test chunk
-            var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly "add 1 to %".',
+            var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly "% + % + %".',
                 'Great job!');
 
             tip_1_1.newAssertTest(
-                nounPhraseExists_1,
-                "Testing if there is a add 1 to block in the scripting area.",
-                "There is a add 1 to block in the scripting area.",
-                "Make sure you name your block exactly 'add 1 to %' and place it in the scripting area.",
+                add3Exists_1,
+                "Testing if there is a three-input add block in the scripting area.",
+                "There is a three-input add block in the scripting area.",
+                "Make sure you name your block exactly '% + % + %' and place it in the scripting area.",
                 1);
-        
-            var tip_1_2 = chunk_1.newTip('Make sure your block works for general cases.',
+
+
+            var tip_1_2 = chunk_1.newTip('Make sure your block contains a sum block.',
+                'Great job!');
+
+            tip_1_2.newAssertTest(
+                sumExists_1,
+                "Testing if there is a '% + %' block inside of the body of the three-input add block.",
+                "There is a '% + %' block inside of the body of the three-input add block.",
+                "Make sure there is a '% + %' block inside of the body of the three-input add block.",
+                1);
+
+            var tip_1_3 = chunk_1.newTip('Make sure your block works for general cases.',
                 'Great job!');
 
 
-             tip_1_2.newIOTest('r',  //testClass
-                'add 1 to %',  //blockSpec
-                [[10, 2, 5]],  //input
-                [11, 3, 6],  //output
+             tip_1_3.newIOTest('r',  //testClass
+                '% + % + %',  //blockSpec
+                [10, 2, 5],  //input
+                17,  //output
                 -1,  //timeout
-                true,  //isolated
+                false,  //isolated
                 1);  //points
 
-             tip_1_2.newIOTest('r',  //testClass
-                'add 1 to %',  //blockSpec
-                [[-5, 0, -1]],  //input
-                [-4, 1, 0],  //output
+             tip_1_3.newIOTest('r',  //testClass
+                '% + % + %',  //blockSpec
+                [-10, -2, 6],  //input
+                -6,  //output
                 -1,  //timeout
-                true,  //isolated
+                false,  //isolated
                 1);  //points
 
-             tip_1_2.newIOTest('r',  //testClass
-                'add 1 to %',  //blockSpec
-                [[22, 22, 22]],  //input
-                [23, 23, 23],  //output
+             tip_1_3.newIOTest('r',  //testClass
+                '% + % + %',  //blockSpec
+                [0, 0, 0],  //input
+                0,  //output
                 -1,  //timeout
-                true,  //isolated
+                false,  //isolated
+                1);  //points
+
+             tip_1_3.newIOTest('r',  //testClass
+                '% + % + %',  //blockSpec
+                [100, -1000, 0],  //input
+                -900,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+
+
+
+
+
+        /* Create chunk_2 for the exercise 2 : Make sure you create a function exactly named: 'sum of two smallest % and % and % */
+            var chunk_2 = fb.newChunk('Make the sum of two smallest block.');
+
+
+            /* Line 98 Sum of two smallest block */
+            // Sum of two smallest: Make sure you create a function exactly named: 'sum of two smallest % and % and %'
+            var sumOfTwoSmallestExists_2 = function () {
+                return spriteContainsBlock("sum of two smallest % and % and %");
+            }
+
+            var useMaxBlock_2 = function () {
+                var customBody = getCustomBody('sum of two smallest % and % and %');
+                var maxBlockFound = scriptContainsBlock(customBody, "max of % and %");
+                return maxBlockFound;
+            }
+            var useDifferenceBlock_2 = function () {
+                var customBody = getCustomBody('sum of two smallest % and % and %');
+                return scriptContainsBlock(customBody, "% − %");
+            }
+            var useTripleSumBlock_2 = function () {
+                var customBody = getCustomBody('sum of two smallest % and % and %');
+                return scriptContainsBlock(customBody, "% + % + %");
+            }
+
+
+
+
+
+
+
+
+            // Add a first tip to that first test chunk
+            var tip_2_1 = chunk_2.newTip('Make sure you name your block exactly "sum of two smallest % and % and %".',
+                'Great job!');
+
+            tip_2_1.newAssertTest(
+                sumOfTwoSmallestExists_2,
+                "Testing if there is a sum of two smallest block in the scripting area.",
+                "There is a sum of two smallest block in the scripting area.",
+                "Make sure you name your block exactly 'sum of two smallest % and % and %' and place it in the scripting area.",
+                1);
+
+            var tip_2_2 = chunk_2.newTip('Try using a max block.',
+                'Great job!');
+
+            tip_2_2.newAssertTest(
+                useMaxBlock_2,
+                "Testing if function uses a max block in the definition.",
+                "Uses a max block in the definition of the function.",
+                "Try using the max block we made in a previous exercise!",
+                1);
+
+            var tip_2_3 = chunk_2.newTip('Try using a difference block.',
+                'Great job!');
+
+            tip_2_3.newAssertTest(
+                useDifferenceBlock_2,
+                "Testing if function uses a difference block in the definition.",
+                "Uses a difference block in the definition of the function.",
+                "One way to approach this problem is thinking about each number as part of a whole. Can we take out something from that whole? What block would be helpful in that?",
+                1);
+
+            var tip_2_4 = chunk_2.newTip('Try using a three-input addition block".',
+                'Great job!');
+
+            tip_2_4.newAssertTest(
+                useTripleSumBlock_2,
+                "Testing if function uses a triple sum block in the definition of the function.",
+                "Uses a triple sum block in the definition of the function.",
+                "One way to approach this problem is thinking about each number as part of a whole. How can we construct that whole using a block we have already made? Which block would be useful that takes in three numbers?",
+                1);
+
+            var tip_2_5 = chunk_2.newTip('Make sure your block works for basic inputs.',
+                'Great job!');
+
+
+
+             tip_2_5.newIOTest('r',  //testClass
+                'sum of two smallest % and % and %',  //blockSpec
+                [10, 2, 5],  //input
+                7,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_2_5.newIOTest('r',  //testClass
+                'sum of two smallest % and % and %',  //blockSpec
+                [-10, -2, 6],  //input
+                -12,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_2_5.newIOTest('r',  //testClass
+                'sum of two smallest % and % and %',  //blockSpec
+                [0, 0, 0],  //input
+                0,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+             tip_2_5.newIOTest('r',  //testClass
+                'sum of two smallest % and % and %',  //blockSpec
+                [100, -1000, 0],  //input
+                -1000,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+
+             /*Create chunk 3: "Are any equal? % and % and %" predicate block.*/
+            var chunk_3 = fb.newChunk('Make the "Are any equal?" block.');
+
+            
+            //Make sure you name your block "Are any equal? % and % and %"!
+            var anyEqualExists = function() {
+                return spriteContainsBlock("Are any equal? % and % and %");
+            }
+
+            var tip_3_1 = chunk_3.newTip('Make sure you name your block exactly "Are any equal? % and % and %".',
+                'Great job!');
+
+            tip_3_1.newAssertTest(
+                anyEqualExists,
+                "Testing if there is an 'Are any equal?' block in the scripting area.",
+                "There is an 'Are any equal?' block in the scripting area.",
+                "Make sure you name your block exactly 'Are any equal? % and % and %' and place it in the scripting area.",
+                1);
+
+            var predicate = function() {
+                var customBody = getCustomBody("Are any equal? % and % and %");
+                return ((customBlockContains("Are any equal? % and % and %", "report %", ["true"]) && 
+                    customBlockContains("Are any equal? % and % and %", "report %", ["false"])) || 
+                    (blockPrecedes("report %", "% or %", customBody))); 
+                    //assuming they are reporting the OR block --> boolean value
+            }
+
+            var tip_3_2 = chunk_3.newTip("Make sure your block is a predicate: it returns true/false values.",
+                'Great job!');
+
+            tip_3_2.newAssertTest(
+                predicate,
+                "Testing to see if the block returns a boolean true/false value.",
+                "The block returns a boolean true/false value.",
+                "Make sure your block is a predicate: it returns true/false values.", 
+                1);
+
+            var usesOr2 = function() {
+                return customBlockContains("Are any equal? % and % and %", "% or %");
+            }
+
+            var tip_3_3 = chunk_3.newTip("Try using the '% or %' block in your solution!",
+                "Great job!");
+
+            tip_3_3.newAssertTest(
+                usesOr2,
+                "Testing to see that the block uses the OR block in its definition",
+                "The block uses the OR block in its definition",
+                "Try using the '% or %' block in your solution!",
+                1);
+
+            var tip_3_4 = chunk_3.newTip('Make sure your block works for basic inputs.',
+                'Great job!');
+
+            tip_3_4.newIOTest('r',  //testClass
+                "Are any equal? % and % and %",  //blockSpec
+                [2, 3, 4],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_3_4.newIOTest('r',  //testClass
+                "Are any equal? % and % and %",  //blockSpec
+                [-2, 0, 2],  //input
+                false,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_3_4.newIOTest('r',  //testClass
+                "Are any equal? % and % and %",  //blockSpec
+                [6, 3, 6],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
+                1);  //points
+
+            tip_3_4.newIOTest('r',  //testClass
+                "Are any equal? % and % and %",  //blockSpec
+                [1, 2, 2],  //input
+                true,  //output
+                -1,  //timeout
+                false,  //isolated
                 1);  //points
 
 
@@ -282,5 +509,6 @@
     </div>
 </div>
     </div>
+    <script type="text/javascript" src="AG_status_bar.js" />
 </body>
 </html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Snap! Build Your Own Blocks. Beta</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <script src="jschannel.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript" src="underscore-min.js"></script>
+    <script type="text/javascript" src='gradingLog.js'></script>
+    <script type="text/javascript" src='spriteEventLog.js'></script>
+    <script type="text/javascript" src='scriptAnalysis.js'></script>
+    <meta charset="utf-8"> 
+    <!-- Moved down to the bottom to have var id. -->
+    <script type="text/javascript" src="morphic.js"></script>
+    <script type="text/javascript" src="widgets.js"></script>
+    <script type="text/javascript" src="blocks.js"></script>
+    <script type="text/javascript" src="threads.js"></script>
+    <script type="text/javascript" src="objects.js"></script>
+    <script type="text/javascript" src="gui.js"></script>
+    <script type="text/javascript" src="paint.js"></script>
+    <script type="text/javascript" src="lists.js"></script>
+    <script type="text/javascript" src="byob.js"></script>
+    <script type="text/javascript" src="xml.js"></script>
+    <script type="text/javascript" src="store.js"></script>
+    <script type="text/javascript" src="locale.js"></script>
+    <script type="text/javascript" src="cloud.js"></script>
+    <script type="text/javascript" src="sha512.js"></script>
+<script type="text/javascript" src="snap-edx-overrides.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
+    <link rel="stylesheet" type="text/css" href="hintstyle.css" />
+    
+    <script type="text/javascript" src="AGAgent.js"></script>
+    <script type='text/javascript'>
+        var starter_path = null;
+        // The id is to act as a course identifier.
+        // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
+        var courseID = "BJC.1x";  // e.g. "BJCx"
+        // Specify a prerequisite task id, should be null if no such requirement.
+        var preReqTaskID = "_W2_L1_E2";
+        var preReqID = courseID + preReqTaskID;
+        // taskID uniquely identifies the task for saving in browser sessionStorage.
+        var taskID = "_W2_L1_E3";
+        var id = courseID + taskID;
+        var isEDX = isEDXurl();
+        // if this question is not meant to be graded, change this flag to false
+        var graded = true;
+        // to hide feedback for this problem, change this flag to false
+        var showFeedback = true;
+        // to allow for the ability to regrade certain tests, change this flag to true
+        var regradeOn = false;
+        // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
+        // var testLog;
+        function AGTest(outputLog) {
+
+            /* Create "draw square-petal flower with % petals of size %" motion command block */
+
+            var realFlowerBody = getCustomBody("draw square-petal flower with % petals of size %");
+            var realFlowerParameters = JSONcustomBlock(findBlockInPalette("draw square-petal flower with % petals of size %")).variables;
+            var flowerPresent = function flowerPresent() {
+                return spriteContainsBlock("draw square-petal flower with % petals of size %");
+            }
+            var containsRepeat = function containsRepeat() {
+                return scriptContainsBlock(realFlowerBody, "repeat % %");
+            }
+            var containsCorrectRepeat = function containsCorrectRepeat() {
+                return scriptContainsBlock(realFlowerBody, "repeat % %", [realFlowerParameters[0], []], true);
+            }
+            var containsDrawSquare = function containsDrawSquare() {
+                return simpleCBlockContains(realFlowerBody, "draw square %", "repeat");
+            }
+            var containsCorrectDrawSquare = function containsCorrectDrawSquare() {
+                return simpleCBlockContains(realFlowerBody, "draw square %", "repeat", [realFlowerParameters[1]]);
+            }
+            var containsTurn = function containsTurn() {
+                return simpleCBlockContains(realFlowerBody, "turn %counterclockwise % degrees", "repeat")
+                    || simpleCBlockContains(realFlowerBody, "turn %clockwise % degrees", "repeat");
+            }
+            var containsCorrectTurn = function containsCorrectTurn() {
+                var turnDegree = (360 / parseInt(realFlowerParameters[0])).toString();
+                console.log(turnDegree);
+                return simpleCBlockContains(realFlowerBody, "turn %counterclockwise % degrees", "repeat", [turnDegree])
+                    || simpleCBlockContains(realFlowerBody, "turn %clockwise % degrees", "repeat", [{"blockSp":"%n / %n","inputs":["360","numPetals"]}]);
+            }
+            var penDownPresent = function penDownPresent() {
+                return (spriteContainsBlock("pen down") && !blockPrecedesInSprite("draw square-petal flower with % petals of size %", "pen down")) || (blockPrecedes("pen down", "repeat % %", realFlowerBody));
+            }
+
+            testAssert(outputLog, flowerPresent,
+                "The 'draw square-petal flower with % petals of size %' block is found.",
+                "The 'draw square-petal flower with % petals of size %' block cannot be found.",
+                "Follow directions to make the 'draw square-petal flower with % petals of size %' block");
+
+            testAssert(outputLog, containsRepeat,
+                "The 'repeat' block is found inside 'draw square-petal flower with % petals of size %'.",
+                "The 'repeat' block is not found inside 'draw square-petal flower with % petals of size %'.",
+                "Make sure you use a repeat inside of 'draw square-petal flower with % petals of size %'");
+
+            testAssert(outputLog, containsCorrectRepeat,
+                "The 'repeat' block has a counter of the number of petals.",
+                "The 'repeat' block does not have the correct counter. Think about the number of petals.",
+                "How many times should we repeat to draw a flower?");
+
+            testAssert(outputLog, containsDrawSquare,
+                "The 'draw square-petal flower with % petals of size %' block contains 'draw square %' inside of the repeat loop.",
+                "The 'draw square-petal flower with % petals of size %' block is not drawing square petals.",
+                "What blocks helps move the sprite?");
+
+            testAssert(outputLog, containsCorrectDrawSquare,
+                "The 'draw square-petal flower with % petals of size %' block contains the correct 'draw square %' inside of the repeat loop.",
+                "The 'draw square-petal flower with % petals of size %' block is missing a correct 'draw square %' block.",
+                "How big are the petals supposed to be supposed to be?");
+
+            testAssert(outputLog, containsTurn,
+                "The 'draw square-petal flower with % petals of size %' block contains a turn block.",
+                "The 'draw square-petal flower with % petals of size %' block is missing a turn block",
+                "Try turn clockwise or counterclockwise block");
+
+            testAssert(outputLog, containsCorrectTurn,
+                "The 'draw square-petal flower with % petals of size %' block contains turn block with 360/numberOfPetals degrees.",
+                "The 'draw square-petal flower with % petals of size %' block needs a turn block with correct inputs.",
+                "Try using a turn block, how many degrees should we turn?");
+
+            testAssert(outputLog, penDownPresent,
+                "The 'draw triangle' block contains the 'pen down' block.",
+                "The 'draw triangle' block is not drawing anything. What block draws things?",
+                "Try using blocks to draw things inside of the 'draw triangle'");
+
+
+            /*Draw a field of flowers using repeat block and randomness block and others..*/
+            var repeatExists = function repeatExists() {
+                return spriteContainsBlock("repeat %n %c", 0);
+            }
+            testAssert(outputLog, repeatExists,
+                "There is a 'repeat' block.",
+                "There is no 'repeat' block in the scripting area.",
+                "Make sure to use a 'repeat' block!");
+            var randomExists = function randomExists() {
+                return spriteContainsBlock("pick random %n to %n", 0);
+            }
+            testAssert(outputLog, randomExists,
+                "There is a 'pick random' block.",
+                "There is no 'pick random' block in the scripting area.",
+                "Make sure to draw different flowers using a 'pick random' block!");
+            var drawFlowerExists = function drawFlowerExists() {
+                return spriteContainsBlock("draw square-petal flower with % petals of size %", 0);
+            }
+            testAssert(outputLog, drawFlowerExists,
+                "There is a 'draw square-petal flower' block.",
+                "There is no 'draw square-petal flower' block in the scripting area.",
+                "Make sure to draw flowers using your 'draw square-petal flower' block!");
+            var drawInRepeat = function drawInRepeat() {
+                var drawFlowerSpec = "draw square-petal flower with %s petals of size %s";
+                var repeatSpec = "repeat %n %c";
+                return CBlockContainsInSprite(drawFlowerSpec, repeatSpec, 0);
+            }
+            testAssert(outputLog, drawInRepeat,
+                "There is a 'draw square-petal flower' in a repeat loop.",
+                "There is no 'draw square-petal flower' in a repeat loop.",
+                "Make sure to draw lots of flowers using a repeat loop!");
+
+            /**/
+            return outputLog;
+        }
+    </script>
+    <script type="text/javascript" src="AGFormatting.js"></script>
+
+    <script type="text/javascript">
+
+        var world;
+        window.onload = function () {
+
+            //INITIALIZE UP SNAP
+            world = new WorldMorph(document.getElementById('world'));
+            new IDE_Morph().openIn(world);
+            var ide = world.children[0];
+
+            //Reduce Stage Size on initialization
+            ide.toggleStageSize(true);
+
+            initializeSnapAdditions(world, id);
+
+            //AUTOGRADER ADDITION - 
+            //Forced to use setTimeout() to let the world load before... Maybe not.           
+            //Create a gradingLog and initialize the AG status bar (AGSB).
+
+            //Initialize AGSB button.
+            var grade_button = document.getElementById("autograding_button");
+            grade_button.addEventListener('click', button_listener);
+            var world_canvas = document.getElementById('world');
+            world_canvas.addEventListener("mouseup", update_listener);
+            // Start Snap Environment Loop
+            setInterval(loop, 1);
+            
+        };
+
+        function loop() {
+            world.doOneCycle();
+        }
+
+    </script>
+    <script type="text/javascript" src="AG_EDX.js"></script>
+</head>
+<body style="margin: 0;">
+    <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
+
+<!-- Snap Autograding Button -->
+<div id="autograding_bar">
+    <div tabindex="0" class="onclick-menu" id='onclick-menu' style="display:inline-block">
+        <span title="Menu">&#9776;</span>
+        <div class='hover_darken'></div>
+      <nav id="navigation" class="site-navigation" role="navigation">
+          <ul id="dropdown-closed" class="bubble">
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="feedback-button">View Feedback</a></li>
+            <li class="menu-divider-sub-menu" id='menu-divider'></li>
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="revert-button">Revert To Best Attempt</a></li>
+            <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last edX Submission</a></li>-->
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Revert To Last Attempt</a></li>
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="reset-button">Reset</a></li>
+            <li class="menu-divider-sub-menu" id='menu-divider'></li>
+            <li class="menu-item-sub-menu" id='enabled-button' onclick="openPopup();"><a id="help-button">Help</a></li>
+          </ul>
+    </nav>
+    </div>
+    <div id="autograding_button" style="display:inline-block;">
+        <span></span>
+        <div class='hover_darken'></div>
+    </div>
+</div>
+<!-- Snap Autograding Menu -->
+<!-- Autograding Menu Help Button -->
+<div class="overlay is-hidden" id="overlay">
+    <!--<div class="popup-content" id="help-popup">
+        <span class="button-close" onclick="closePopup();">X</span>
+            <img id="example-image" src="edX_snap_example.png">-->
+            <p class="help-text" id="full-screen-arrow">&#8600;</p>
+            <p class="help-text" id="full-screen-help">This full-screen button will pop out the Snap! window.</p>
+            <p class="help-text" id="menu-item-arrow">&#8599;</p>
+            <p class="help-text" id="menu-item-help">The first menu item will display the results from running the autograder.</br></br>The next two menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your best attempt or to your last graded attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
+            <p class="help-text" id="ag-button-arrow">&#8593;</p>
+            <p class="help-text" id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
+    <!--</div>-->
+</div>
+
+<div style="display:inline-block" class="view-results" id="circle" onclick="openResults();">Results
+</div>
+<div class="overlay is-hidden" id="ag-output">
+    <div class="popup-content" id="ag-results">
+        <span class="button-close" onclick="closeResults();" id="popup">X</span>
+        <p id = "different-feedback"></p>
+        <p id = "edx-submit-different"></p>
+        <p id="comment"></p>
+        <table class="results">
+            <tbody id="table-data">
+                <tr id="table-titles"> 
+                </tr>
+            </tbody>
+        </table>
+        </br>
+        <table class="results">
+            <tbody id="reporter-table-data">
+                <tr id="reporter-table-titles"> 
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+    </div>
+    <script type="text/javascript" src="AG_status_bar.js" />
+</body>
+</html>

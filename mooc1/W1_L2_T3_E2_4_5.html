@@ -37,12 +37,12 @@
         var starter_path = null;
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
-        var courseID = "BJC.2x";  // e.g. "BJCx"
+        var courseID = "BJC.1x";  // e.g. "BJCx"
         // Specify a prerequisite task id, should be null if no such requirement.
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_M2_W1_L2_T1_E1_2_3_4";
+        var taskID = "_W1_L2_T3_E2_4_5";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -55,200 +55,72 @@
         // var testLog;
         function AGTest(outputLog) {
 
-            //NOTES TO YIFAT AND PATRICK:
-            // No IO tests should be isolated. Which means that you have to check that the block
-            // is on screen.
-            // All getter/setter functions inside anonymous Assert functions.
-            // Thanks for all your work :D
-
-            var everyOtherExists = function() {
-                if (findBlockInPalette("every other %") == null) {
-                    return false;
-                }
-                return true;
+            /* Recreate provided forever script */
+            var foreverBlock1 = function () {
+                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"point towards %dst","inputs":["mouse-pointer"]},{"blockSp":"move %n steps","inputs":["1"]}]]}]');
             }
 
-            var everyThirdExists = function() {
-                if (findBlockInPalette("every third %") == null) {
-                    return false;
-                }
-                return true;
+            var foreverBlock2 = function () {
+                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["mouse x","mouse y"]}]]}]');
             }
 
-            var reverseExists = function() {
-                if (findBlockInPalette("reverse %") == null) {
-                    return false;
-                }
-                return true;
+            var foreverBlock3 = function () {
+                return scriptPresentInSprite('[{"blockSp":"forever %c","inputs":[[{"blockSp":"go to x: %n y: %n","inputs":["x position",{"blockSp":"%n + %n","inputs":["y position","30"]}]}]]}]');
             }
 
-            var lettersBetweenExists = function() {
-                if (findBlockInPalette("letters between % and %") == null) {
-                    return false;
-                }
-                return true;
-            }
 
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
+            console.log('fb created');
+
 
             // Create a first test chunk
-            var first_chunk = fb.newChunk('Make the "every other %" block.');
+            var first_chunk = fb.newChunk('Forever point towards mouse-pointer and move');
+            console.log('test chunk created');
+            console.log(first_chunk);
             // Add a first tip to that first test chunk
-            var first_tip = first_chunk.newTip('Make sure you name your block exactly "every other %".',
+            var first_tip = first_chunk.newTip('Make sure you use create the script from exercise 2!',
                 'Great job!');
+            console.log('test tip created');
 
             var ass_test1 = first_tip.newAssertTest(
-                everyOtherExists,
-                "Testing if there exists an 'every other %' block.",
-                "There exists an 'every other %' block.",
-                "Make sure you name your block exactly 'every other %' and place it in the scripting area.",
+                foreverBlock1,
+                "Testing if script from exercise 2 is present.",
+                "The script from exercise 2 is present.",
+                "Double check that your script matches the one from exercise 2 above.",
                 1);
 
-            var second_tip = first_chunk.newTip("Make sure your block works on basic inputs and make sure it's in the scripting area.",
-                'Great job!');
-
-             second_tip.newIOTest('r',  //testClass
-                'every other %',  //blockSpec
-                ["I love cats."],  //input
-                ["I", "l", "v", " ", "a", "s"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip.newIOTest('r',  //testClass
-                'every other %',  //blockSpec
-                ["a b c."],  //input
-                ["a", "b", "c"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip.newIOTest('r',  //testClass
-                'every other %',  //blockSpec
-                ["."],  //input
-                ["."],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-            var second_chunk = fb.newChunk('Make the "every third %" block.');
+            // Create a first test chunk
+            var second_chunk = fb.newChunk('Forever go to mouse x and mouse y');
+            console.log('test chunk created');
+            console.log(second_chunk);
             // Add a first tip to that first test chunk
-            var first_tip2 = second_chunk.newTip('Make sure you name your block exactly "every third %".',
-                'Great job!');
+            var second_tip = second_chunk.newTip('Make sure you match the script from exercise 4!',
+                'Great job on the loop!');
+            console.log('test tip created');
 
-            var ass_test2 = first_tip2.newAssertTest(
-                everyThirdExists,
-                "Testing if there exists an 'every third %' block.",
-                "There exists an 'every third %' block.",
-                "Make sure you name your block exactly 'every third %' and place it in the scripting area.",
+            var ass_test2 = second_tip.newAssertTest(
+                foreverBlock2,
+                "Testing if script from exercise 4 is present.",
+                "The script from exercise 4 is present.",
+                "Double check that your script matches the one from exercise 4 above.",
                 1);
 
-            var second_tip2 = second_chunk.newTip("Make sure your block works on basic inputs and make sure it's in the scripting area.",
-                'Great job!');
-
-             second_tip2.newIOTest('r',  //testClass
-                'every third %',  //blockSpec
-                ["I love cats."],  //input
-                ["I", "o", " ", "t"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip2.newIOTest('r',  //testClass
-                'every third %',  //blockSpec
-                ["a b c."],  //input
-                ["a", " "],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip2.newIOTest('r',  //testClass
-                'every third %',  //blockSpec
-                ["."],  //input
-                ["."],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-            var third_chunk = fb.newChunk('Make the "reverse %" block.');
+            // Create a first test chunk
+            var third_chunk = fb.newChunk('Forever go to x-position and y-position + 30');
+            console.log('test chunk created');
+            console.log(third_chunk);
             // Add a first tip to that first test chunk
-            var first_tip3 = third_chunk.newTip('Make sure you name your block exactly "reverse %".',
-                'Great job!');
+            var third_tip = third_chunk.newTip('Make sure you match the script from exercise 5.',
+                'Great job on the loop!');
+            console.log('test tip created');
 
-            var ass_test3 = first_tip3.newAssertTest(
-                reverseExists,
-                "Testing if there exists a 'reverse %' block.",
-                "There exists a 'reverse %' block.",
-                "Make sure you name your block exactly 'reverse %' and place it in the scripting area.",
+            var ass_test3 = third_tip.newAssertTest(
+                foreverBlock3,
+                "Testing if script from exercise 5 is present.",
+                "The script from exercise 5 is present.",
+                "Make sure to create another script and add in the new go-to block that contains x-position and (y-position + 30) as inputs.",
                 1);
-
-            var second_tip3 = third_chunk.newTip("Make sure your block works on basic inputs and make sure it's in the scripting area.",
-                'Great job!');
-
-             second_tip3.newIOTest('r',  //testClass
-                'reverse %',  //blockSpec
-                ["I love cats."],  //input
-                [".", "s", "t", "a", "c", " ", "e", "v", "o", "l", " ", "I"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip3.newIOTest('r',  //testClass
-                'reverse %',  //blockSpec
-                ["a b c."],  //input
-                [".", "c", " ", "b", " ", "a"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip3.newIOTest('r',  //testClass
-                'reverse %',  //blockSpec
-                ["."],  //input
-                ["."],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-            var fourth_chunk = fb.newChunk('Make the "letters between % and %" block.');
-            // Add a first tip to that first test chunk
-            var first_tip4 = fourth_chunk.newTip('Make sure you name your block exactly "letters between % and %".',
-                'Great job!');
-
-            var ass_test4 = first_tip4.newAssertTest(
-                lettersBetweenExists,
-                "Testing if there exists a 'letters between % and %' block.",
-                "There exists a 'letters between % and %' block.",
-                "Make sure you name your block exactly 'letters between % and %' and place it in the scripting area.",
-                1);
-
-            var second_tip4 = fourth_chunk.newTip("Make sure your block works on basic inputs and make sure it's in the scripting area.",
-                'Great job!');
-
-             second_tip4.newIOTest('r',  //testClass
-                'letters between % and %',  //blockSpec
-                ["a", "e"],  //input
-                ["a", "b", "c", "d", "e"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip4.newIOTest('r',  //testClass
-                'letters between % and %',  //blockSpec
-                ["a", "a"],  //input
-                ["a"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip4.newIOTest('r',  //testClass
-                'letters between % and %',  //blockSpec
-                ["x", "z"],  //input
-                ["x", "y", "z"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-            
 
             return fb;
         }
@@ -346,4 +218,4 @@
     </div>
     <script type="text/javascript" src="AG_status_bar.js" />
 </body>
-</html>            
+</html>

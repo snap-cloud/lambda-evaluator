@@ -37,12 +37,12 @@
         var starter_path = null;
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
-        var courseID = "BJC.2x";  // e.g. "BJCx"
+        var courseID = "BJC.1x";  // e.g. "BJCx"
         // Specify a prerequisite task id, should be null if no such requirement.
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_M2_W1_L2_T1_E1_2_3_4";
+        var taskID = "_W2_L2_E1";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -55,201 +55,113 @@
         // var testLog;
         function AGTest(outputLog) {
 
-            //NOTES TO YIFAT AND PATRICK:
-            // No IO tests should be isolated. Which means that you have to check that the block
-            // is on screen.
-            // All getter/setter functions inside anonymous Assert functions.
-            // Thanks for all your work :D
-
-            var everyOtherExists = function() {
-                if (findBlockInPalette("every other %") == null) {
-                    return false;
-                }
-                return true;
+            var penDownExists = function penDownExists() {
+                return spriteContainsBlock("pen down", 0);
             }
-
-            var everyThirdExists = function() {
-                if (findBlockInPalette("every third %") == null) {
-                    return false;
-                }
-                return true;
+            /*testAssert(outputLog, penDownExists,
+                "There is a 'pen down' block.",
+                "There is no 'pen down' block in the scripting area.",
+                "Make sure the pen is down.");*/
+            var loopExists = function loopExists() {
+                return spriteContainsBlock("forever %c", 0) || spriteContainsBlock("repeat %n %c", 0);
             }
-
-            var reverseExists = function() {
-                if (findBlockInPalette("reverse %") == null) {
-                    return false;
-                }
-                return true;
+            /*testAssert(outputLog, loopExists,
+                "There is a 'repeat' or a 'forever' block.",
+                "There is no 'repeat' or 'forever' block.",
+                "Make sure your sprite will change location continuously!");*/
+            var moveInLoop = function moveInLoop() {
+                var moveSpec = "move %n steps";
+                var moveInputs = [{"blockSp":"pick random %n to %n","inputs":["",""]}];
+                var repeatSpec = "repeat %n %c";
+                var foreverSpec = "forever %c";
+                return CBlockContainsInSprite(moveSpec, repeatSpec, 0, moveInputs) || CBlockContainsInSprite(moveSpec, foreverSpec, 0, moveInputs);
             }
-
-            var lettersBetweenExists = function() {
-                if (findBlockInPalette("letters between % and %") == null) {
-                    return false;
-                }
-                return true;
+            /*testAssert(outputLog, moveInLoop,
+                "The 'move' block is within a loop and the 'pick random' block is within the 'move' block.",
+                "The 'move' block is not within a loop or the 'pick random' block is not within the 'move' block.",
+                "Make sure your sprite will move continuously and randomly!");*/
+            var turnInLoop = function turnInLoop() {
+                var turnSpec = "turn %clockwise %n degrees";
+                var turnInputs = [{"blockSp":"pick random %n to %n","inputs":["",""]}];
+                var repeatSpec = "repeat %n %c";
+                var foreverSpec = "forever %c";
+                return CBlockContainsInSprite(turnSpec, repeatSpec, 0, turnInputs) || CBlockContainsInSprite(turnSpec, foreverSpec, 0, turnInputs);
             }
+            /*testAssert(outputLog, turnInLoop,
+                "The 'turn' block is within a loop and the 'pick random' block is within the 'turn' block.",
+                "The 'turn' block is not within a loop or the 'pick random' block is not within the 'turn' block.",
+                "Make sure your sprite will turn continuously!");*/
+            var moveTurnSameScript = function moveTurnSameScript() {
+                return (blockPrecedesInSprite("turn %clockwise %n degrees", "move %n steps", 0) || blockPrecedesInSprite("move %n steps", "turn %clockwise %n degrees", 0));
+            }
+            /*testAssert(outputLog, moveTurnSameScript,
+                "The 'move' and 'turn' blocks are in a script together.",
+                "The 'move' and 'turn' blocks are not in a script together.",
+                "Make sure your sprite will both move and turn!");*/
+            /**/
+
 
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
-
+            console.log('fb created');
             // Create a first test chunk
-            var first_chunk = fb.newChunk('Make the "every other %" block.');
+            var test_chunk = fb.newChunk('Random Walk');
+            console.log('test chunk created');
+            console.log(test_chunk);
             // Add a first tip to that first test chunk
-            var first_tip = first_chunk.newTip('Make sure you name your block exactly "every other %".',
-                'Great job!');
+            var test_tip = test_chunk.newTip('Make sure you use a loop so that your sprite moves continuously.',
+                'Great job on the loop!');
+            console.log('test tip created');  
 
-            var ass_test1 = first_tip.newAssertTest(
-                everyOtherExists,
-                "Testing if there exists an 'every other %' block.",
-                "There exists an 'every other %' block.",
-                "Make sure you name your block exactly 'every other %' and place it in the scripting area.",
+            var ass_test1 = test_tip.newAssertTest( 
+                loopExists, 
+                "There is no 'pen down' block in the scripting area.",
+                "There is a 'pen down' block.",
+                "Make sure the pen is down.",
+                1);  
+
+            var second_tip = test_chunk.newTip('Make sure the sprite is moving and turning.',
+                'Your sprite is moving and turning randomly! Good job!');
+            // Add a test to that second tip
+            var ass_test2 = second_tip.newAssertTest(
+                moveInLoop,
+                "The 'move' block is not within a loop or the 'pick random' block is not within the 'move' block.",
+                "The 'move' block is within a loop and the 'pick random' block is within the 'move' block.",
+                "Make sure your sprite will move continuously and randomly!",
                 1);
 
-            var second_tip = first_chunk.newTip("Make sure your block works on basic inputs and make sure it's in the scripting area.",
-                'Great job!');
-
-             second_tip.newIOTest('r',  //testClass
-                'every other %',  //blockSpec
-                ["I love cats."],  //input
-                ["I", "l", "v", " ", "a", "s"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip.newIOTest('r',  //testClass
-                'every other %',  //blockSpec
-                ["a b c."],  //input
-                ["a", "b", "c"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip.newIOTest('r',  //testClass
-                'every other %',  //blockSpec
-                ["."],  //input
-                ["."],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-            var second_chunk = fb.newChunk('Make the "every third %" block.');
-            // Add a first tip to that first test chunk
-            var first_tip2 = second_chunk.newTip('Make sure you name your block exactly "every third %".',
-                'Great job!');
-
-            var ass_test2 = first_tip2.newAssertTest(
-                everyThirdExists,
-                "Testing if there exists an 'every third %' block.",
-                "There exists an 'every third %' block.",
-                "Make sure you name your block exactly 'every third %' and place it in the scripting area.",
+            var ass_test3 = second_tip.newAssertTest(
+                turnInLoop,
+                "The 'turn' block is not within a loop or the 'pick random' block is not within the 'turn' block.",
+                "The 'turn' block is within a loop and the 'pick random' block is within the 'turn' block.",
+                "Make sure your sprite will turn continuously!",
                 1);
 
-            var second_tip2 = second_chunk.newTip("Make sure your block works on basic inputs and make sure it's in the scripting area.",
-                'Great job!');
-
-             second_tip2.newIOTest('r',  //testClass
-                'every third %',  //blockSpec
-                ["I love cats."],  //input
-                ["I", "o", " ", "t"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip2.newIOTest('r',  //testClass
-                'every third %',  //blockSpec
-                ["a b c."],  //input
-                ["a", " "],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip2.newIOTest('r',  //testClass
-                'every third %',  //blockSpec
-                ["."],  //input
-                ["."],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-            var third_chunk = fb.newChunk('Make the "reverse %" block.');
-            // Add a first tip to that first test chunk
-            var first_tip3 = third_chunk.newTip('Make sure you name your block exactly "reverse %".',
-                'Great job!');
-
-            var ass_test3 = first_tip3.newAssertTest(
-                reverseExists,
-                "Testing if there exists a 'reverse %' block.",
-                "There exists a 'reverse %' block.",
-                "Make sure you name your block exactly 'reverse %' and place it in the scripting area.",
+            var ass_test4 = second_tip.newAssertTest(
+                moveTurnSameScript,
+                "The 'move' and 'turn' blocks are not in a script together.",
+                "The 'move' and 'turn' blocks are in a script together.",
+                "Make sure your sprite will both move and turn!",
                 1);
 
-            var second_tip3 = third_chunk.newTip("Make sure your block works on basic inputs and make sure it's in the scripting area.",
-                'Great job!');
+            var third_tip = test_chunk.newTip('Make sure your sprite is drawing its random walk!',
+                'Your sprite is drawing its random walk. Good job!');
 
-             second_tip3.newIOTest('r',  //testClass
-                'reverse %',  //blockSpec
-                ["I love cats."],  //input
-                [".", "s", "t", "a", "c", " ", "e", "v", "o", "l", " ", "I"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip3.newIOTest('r',  //testClass
-                'reverse %',  //blockSpec
-                ["a b c."],  //input
-                [".", "c", " ", "b", " ", "a"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             second_tip3.newIOTest('r',  //testClass
-                'reverse %',  //blockSpec
-                ["."],  //input
-                ["."],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-            var fourth_chunk = fb.newChunk('Make the "letters between % and %" block.');
-            // Add a first tip to that first test chunk
-            var first_tip4 = fourth_chunk.newTip('Make sure you name your block exactly "letters between % and %".',
-                'Great job!');
-
-            var ass_test4 = first_tip4.newAssertTest(
-                lettersBetweenExists,
-                "Testing if there exists a 'letters between % and %' block.",
-                "There exists a 'letters between % and %' block.",
-                "Make sure you name your block exactly 'letters between % and %' and place it in the scripting area.",
+            var ass_test4 = third_tip.newAssertTest(
+                penDownExists,
+                "There is no 'pen down' block in the scripting area.",
+                "There is a 'pen down' block.",
+                "Make sure the pen is down.",
                 1);
 
-            var second_tip4 = fourth_chunk.newTip("Make sure your block works on basic inputs and make sure it's in the scripting area.",
-                'Great job!');
+            //fb.scoreLog();
 
-             second_tip4.newIOTest('r',  //testClass
-                'letters between % and %',  //blockSpec
-                ["a", "e"],  //input
-                ["a", "b", "c", "d", "e"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
 
-             second_tip4.newIOTest('r',  //testClass
-                'letters between % and %',  //blockSpec
-                ["a", "a"],  //input
-                ["a"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
 
-             second_tip4.newIOTest('r',  //testClass
-                'letters between % and %',  //blockSpec
-                ["x", "z"],  //input
-                ["x", "y", "z"],  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
+            /*Make the sprite move around randomly.*/
             
-
+            //return outputLog;
+            console.log(fb);
             return fb;
         }
     </script>
@@ -346,4 +258,4 @@
     </div>
     <script type="text/javascript" src="AG_status_bar.js" />
 </body>
-</html>            
+</html>
