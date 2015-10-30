@@ -58,7 +58,7 @@ function getAllScripts(blockSpec, spriteIndex) {
 function blockSpecMatch(targetBlockSpec, templateBlockSpec) {
 	var targetSplit = targetBlockSpec.split(" ");
 	var templateSplit = templateBlockSpec.split(" ");
-	var symbols = ["%s", "%n", "%b", "%c", "%p", "%txt", "%l", "words", "idx", "%(ringified)", "%upvar", "%cs", "%scriptVars"];
+	var symbols = ["%s", "%n", "%b", "%c", "%p", "%txt", "%repRing", "%mult%L", "exp", "%l", "words", "idx", "%(ringified)", "%upvar", "%cs", "%scriptVars"];
 	if (targetSplit.length !== templateSplit.length) {
 		return false;
 	}
@@ -204,9 +204,32 @@ function JSONblock(block) {
 		morph = block.children[i];
 		if (morph.selector === "reportGetVar") {
 			blockArgs.push(morph.blockSpec);
-		} else if (morph.selector === "reportTrue" || morph.selector === "reportFalse") {
+		} else if ((morph.__proto__.constructor.name === "RingReporterSlotMorph")
+					|| (morph.__proto__.constructor.name === "RingCommandSlotMorph")) {
+			if (morph.children[0].children.length === 0) {
+				blockArgs.push("");
+			} else {
+				blockArgs.push(JSONblock(morph.children[0]));
+			}
+		} else if ((morph.hasOwnProperty("type")) && (morph.type === "list")) {
+			blockArgs.push("");
+	 	} else if (morph.__proto__.constructor.name === "MultiArgMorph") {
+	 		for (var j = 1 ; j < morph.children.length - 1; j++) {
+	 			if (morph.children[j].__proto__.constructor.name === "InputSlotMorph") {
+	 				blockArgs.push(morph.children[j].children[0].text);
+				} else if (morph.children[j].__proto__.constructor.name === "TemplateSlotMorph") {
+					if (reporterHasNoInputs(morph.children[j].children[0])) {
+						blockArgs.push(morph.children[j].children[0].blockSpec);
+					} else {
+						blockArgs.push(JSONblock(morph.children[j].children[0]));
+					}
+				} else if (morph.children[j] instanceof ReporterBlockMorph) {
+					blockArgs.push(JSONblock(morph.children[j]));
+				}
+	 		}
+	 	} else if (morph.selector === "reportTrue" || morph.selector === "reportFalse") {
 			blockArgs.push(morph.blockSpec);
-		} else if (morph instanceof InputSlotMorph) {
+		} else if (morph.__proto__.constructor.name === "InputSlotMorph") {
 			blockArgs.push(morph.children[0].text);
 		} else if (morph instanceof CSlotMorph) {
 			if (morph.children.length === 0) {
@@ -222,6 +245,8 @@ function JSONblock(block) {
 			}
 		}
 	}
+
+
 
 	return {blockSp: block.blockSpec, inputs: blockArgs};
 }
