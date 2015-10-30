@@ -1200,8 +1200,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             string_reporter.innerHTML = '<p class="data assertion">' + testPoints + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion">, returned the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '</p>';
                             document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
 
-                            var className = "tests-section" + String(i) +String(x)[0];
-                            $("." + className).append(thisTest.picture);
+                            /*var className = "tests-section" + String(i) +String(x)[0];
+                            $("." + className).append(thisTest.picture);*/
 
                             appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                         }
@@ -1218,8 +1218,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         }
                         document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
 
-                        var className = "tests-section" + String(i) +String(x)[0];
-                        $("." + className).append(thisTest.picture);
+                        /*var className = "tests-section" + String(i) +String(x)[0];
+                        $("." + className).append(thisTest.picture);*/
 
                         appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                     }

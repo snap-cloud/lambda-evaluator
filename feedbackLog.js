@@ -758,6 +758,144 @@ function setValues(block, values) {
 	}
 }
 
+
+
+
+//sets (in a very hacky way) a list to an ArgMorph of list type
+//sets the first one it sees then exits!!!
+function setNewListToArg(values, block, i) {
+
+	morph = block.children[i];
+	morph_type = morph.constructor.name;
+
+	if ((morph.blockSpec === "list %exp") 
+		&& (morph_type === "ReporterBlockMorph")) {
+			populateList(morph,values);
+	} else if ((morph_type === "ArgMorph") || (morph_type === "InputSlotMorph")) {
+		var newList = cloneListReporter();
+		populateList(newList, values);
+		block.children[i] = newList;
+		block.children[i].parent = block;
+		block.fixLayout();
+		block.changed();	
+	}
+
+}
+
+//Creates a semi invisable sprite for testing purposes
+//Adds the sprite to the stage but no where else!
+//returns the new sprite
+//@param ide - the working snap IDE
+function addInvisibleSprite(world) {
+	var ide = world.children[0]
+	var sprite = new SpriteMorph(ide.globalVariables),
+        rnd = Process.prototype.reportRandom;
+
+    //sprite.name = ide.newSpriteName(sprite.name);
+    sprite.name = "Testing...";
+
+    sprite.setCenter(ide.stage.center());
+   	ide.stage.add(sprite);
+    // randomize sprite properties
+    sprite.setHue(rnd.call(ide, 0, 100));
+    sprite.setBrightness(rnd.call(ide, 50, 100));
+    sprite.turn(rnd.call(ide, 1, 360));
+    sprite.setXPosition(rnd.call(ide, -220, 220));
+    sprite.setYPosition(rnd.call(ide, -160, 160));
+
+    ide.sprites.add(sprite);
+    ide.corral.addSprite(sprite);
+    // this.selectSprite(sprite);
+
+   return sprite;
+ }
+
+function createTestSprite(log, test) {
+	var ide = log.snapWorld.children[0];
+	var sprite = addInvisibleSprite(log.snapWorld);
+	test.sprite = sprite;
+	return sprite;
+}
+
+function setUpIsolatedTest(blockSpec, log, test) {
+	var block = findBlockInPalette(blockSpec, log.snapWorld);
+	if (!block) { 
+		throw blockSpec + " not found in Palette!";
+	}
+	var sprite = createTestSprite(log, test);
+	addBlockToSprite(sprite, block);
+	return block;
+}
+
+/* To compare the blockSpecs we use blockSpecMatch()
+ * simplifySpec(palette[i].blockSpec) === simplifySpec(blockSpec)
+ */
+function findBlockInPalette(blockSpec, workingWorld) {
+	var thisWorld = workingWorld || world,
+		palette = null,
+		i = 0,
+		pList = ["motion", "variables", "looks", "sound", "pen", "control", "sensing", "operators"];
+
+	for (var item of pList) {
+		palette = getPaletteScripts(item, workingWorld);
+		i = 0;
+
+		while (i < palette.length) {
+			if (palette[i].blockSpec && blockSpecMatch(palette[i].blockSpec, blockSpec)) {
+				return palette[i].fullCopy();
+			}
+			i++;
+		}
+	}
+	throw "Custom block: (" + blockSpec + ") not found in palette.";
+	// return null
+}
+
+function addBlockToSprite(sprite, block) {
+	sprite.scripts.add(block);
+	sprite.scripts.cleanUp();
+}
+
+//  list.setContents([1,2,3])
+// MultiArgMorph.addInput('5')
+// getScript('list %exp') -> returns the snap list object reference
+// world.children[0].sprites.contents[0].scripts.children[0].children[1] -> gets the MultiArgMorph
+
+//populates a list reporter block with the given arguments
+function populateList(list, args) {
+	var multiArg = list.children[list.children.length - 1];
+
+	while (multiArg.children.length > 2) {
+		multiArg.removeInput();
+	}
+	for (var i = 0; i < args.length; i++) {
+		if (args[i] === 0) {
+			args[i] = "0";
+		}
+		multiArg.addInput(args[i]);
+	}
+}
+
+function cloneListReporter() {
+	var palette = getPaletteScripts("variables");
+	var block = null;
+	var i = 0;
+	while (i < palette.length) {
+		if (palette[i].blockSpec && palette[i].blockSpec === "list %exp") {
+			block = palette[i].fullCopy();
+			i = palette.length;
+		}
+		i++;
+	}
+	return block;
+}
+
+
+
+
+
+
+
 function evalReporter(block, outputLog, testID) {
 	var stage = world.children[0].stage;
 	var proc = stage.threads.startProcess(block,
@@ -804,6 +942,7 @@ function infLoopCheck(outputLog, testID) {
 			stage.threads.stopProcess(getScript(outputLog["" + testID]["blockSpec"]));
 		}, timeout);
 }
+
 
 /**************** Testing the Feedback Log ************/
 // Create a new feedbackLog
