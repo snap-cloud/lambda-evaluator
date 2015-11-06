@@ -42,7 +42,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_M2_W2_L1_T3_E1";
+        var taskID = "_M2_W3_L1_T4_E1";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -142,60 +142,80 @@
             fb.snapWorld = world;
 
         /* Create chunk_1 for the exercise 1 : nounPhrase */
-            var chunk_1 = fb.newChunk('Make the acronym block.');
+            var chunk_1 = fb.newChunk('Make the Is % a magic square? block.');
 
 
             // Add a first tip to that first test chunk
-            var tip_1_1 = chunk_1.newTip('Try using the unicode block in your solution to choose capital letters.',
+            var tip_1_1 = chunk_1.newTip('Try using the "sum of % number % of %" block that you made previously in your solution.',
                 'Great job!');
 
-            var unicodeExists_1 = function () {
-                return customBlockContains("acronym %", "unicode of %");
+            var triplesExists_1 = function () {
+                return customBlockContains("Is % a magic square?", "sum  of % number % of %");
             }
 
 
             tip_1_1.newAssertTest(
-                unicodeExists_1,
-                "Testing if there is a unicode block in the body of the acronym block.",
-                "There is a unicode block in the body of the acronym.",
-                "Try using a unicode block in the body of the acronym block.",
+                triplesExists_1,
+                "Testing if there is a sum of % number % of % block in the body of Is a magic square? block.",
+                "There is a sum of % number % of % block in the body of the Is a magic square? block.",
+                "Try using the sum of % number % of % block in the body of the Is a magic square? block.",
                 1);
             
 
-            var tip_1_2 = chunk_1.newTip('Make sure your block works for general cases.',
+            var tip_1_2 = chunk_1.newTip('Try using the "triples in square %" block that you made previously in your solution.',
                 'Great job!');
 
-             tip_1_2.newIOTest('r',  //testClass
-                'acronym %',  //blockSpec
-                ["Hello My Name Is"],  //input
-                "HMNI",  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
+            var triplesinsquareExists_1 = function () {
+                return customBlockContains("Is % a magic square?", "triples in square %");
+            }
 
-             tip_1_2.newIOTest('r',  //testClass
-                'acronym %',  //blockSpec
-                ["New York City"],  //input
-                "NYC",  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
 
-             tip_1_2.newIOTest('r',  //testClass
-                'acronym %',  //blockSpec
-                ["I LOVE SHOUTING"],  //input
-                "ILS",  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
+            tip_1_2.newAssertTest(
+                triplesinsquareExists_1,
+                "Testing if there is a triples in square % block in the body of Is a magic square? block.",
+                "There is a triples in square % block in the body of the Is a magic square? block.",
+                "Try using the triples in square % block in the body of the Is a magic square? block.",
+                1);
+            
+    
 
-             var tip_1_3 = chunk_1.newTip('Make sure your block works for edge cases.',
+
+
+
+            var tip_1_3 = chunk_1.newTip('Make sure your block works for general cases.',
                 'Great job!');
 
              tip_1_3.newIOTest('r',  //testClass
-                'acronym %',  //blockSpec
-                [""],  //input
-                "",  //output
+                'Is % a magic square?',  //blockSpec
+                [[12, 13, 14, 10, 18, 11, 17, 15, 16]],  //input
+                false,  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+             tip_1_3.newIOTest('r',  //testClass
+                'Is % a magic square?',  //blockSpec
+                [10, 10, 10, 10, 10, 10, 10, 10, 10],  //input
+                true,  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+             tip_1_3.newIOTest('r',  //testClass
+                'Is % a magic square?',  //blockSpec
+                [11, 10, 11, 10, 11, 10, 11, 10, 11],  //input
+                false,  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+             var tip_1_4 = chunk_1.newTip('Make sure your block works for edge cases.',
+                'Great job!');
+
+             tip_1_4.newIOTest('r',  //testClass
+                'Is % a magic square?',  //blockSpec
+                [-1, -1, -1, -1, -1, -1, -1, -1, -1],  //input
+                true,  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points

@@ -42,7 +42,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_M2_W2_L1_T3_E1";
+        var taskID = "_M2_W3_L2_T2_E1_2";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -142,60 +142,136 @@
             fb.snapWorld = world;
 
         /* Create chunk_1 for the exercise 1 : nounPhrase */
-            var chunk_1 = fb.newChunk('Make the acronym block.');
+            var chunk_1 = fb.newChunk('Make the "find the number % in unsorted list %" block.');
 
 
             // Add a first tip to that first test chunk
-            var tip_1_1 = chunk_1.newTip('Try using the unicode block in your solution to choose capital letters.',
+            var tip_1_1 = chunk_1.newTip('Try using iteration to go through the unsorted list.',
                 'Great job!');
 
-            var unicodeExists_1 = function () {
-                return customBlockContains("acronym %", "unicode of %");
+            var lengthExists_1 = function () {
+                return customBlockContains("find the number % in sorted list %", "length of %");
             }
 
+            var tip_1_2 = chunk_1.newTip('For the sorted list, try comparing your "needle" against the middle element of the list',
+                'Great job!');
 
-            tip_1_1.newAssertTest(
-                unicodeExists_1,
-                "Testing if there is a unicode block in the body of the acronym block.",
-                "There is a unicode block in the body of the acronym.",
-                "Try using a unicode block in the body of the acronym block.",
+            tip_1_2.newAssertTest(
+                lengthExists_1,
+                "Testing if there is a length of % block in the body of find the number % in sorted list %.",
+                "There is a length of % block in the body of the body of find the number % in sorted list %.",
+                "Try using the length of % block in the body of the find the number % in sorted list %",
                 1);
             
 
-            var tip_1_2 = chunk_1.newTip('Make sure your block works for general cases.',
+            var tip_1_3 = chunk_1.newTip('Try using the "round % %" block to avoid errors when splitting odd-length lists.',
                 'Great job!');
 
-             tip_1_2.newIOTest('r',  //testClass
-                'acronym %',  //blockSpec
-                ["Hello My Name Is"],  //input
-                "HMNI",  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
+            var roundExists_1 = function () {
+                return customBlockContains("Is % a magic square?", "round %");
+            }
 
-             tip_1_2.newIOTest('r',  //testClass
-                'acronym %',  //blockSpec
-                ["New York City"],  //input
-                "NYC",  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
 
-             tip_1_2.newIOTest('r',  //testClass
-                'acronym %',  //blockSpec
-                ["I LOVE SHOUTING"],  //input
-                "ILS",  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             var tip_1_3 = chunk_1.newTip('Make sure your block works for edge cases.',
+            tip_1_3.newAssertTest(
+                roundExists_1,
+               "Testing if there is a round % block in the body of find the number % in sorted list %.",
+                "There is a round % block in the body of the body of find the number % in sorted list %.",
+                "Try using the round % block in the body of the find the number % in sorted list % to split odd-length lists.",   
+                1);
+            
+            var tip_1_4 = chunk_1.newTip('Try using a loop.',
                 'Great job!');
 
-             tip_1_3.newIOTest('r',  //testClass
-                'acronym %',  //blockSpec
-                [""],  //input
-                "",  //output
+            var loopExists_1 = function () {
+                return customBlockContains("find the number % in sorted list %", "repeat % %" )
+                || customBlockContains("find the number % in sorted list %", "for % = % to % %")
+                || customBlockContains("find the number % in sorted list %", "repeat until % %")
+                || customBlockContains("find the number % in sorted list %", "for each % of % %")
+                || customBlockContains("find the number % in sorted list %", "forever %");
+            }
+
+
+            tip_1_4.newAssertTest(
+                loopExists_1,
+               "Testing if there is a loop in the body of find the number % in sorted list %.",
+                "There is a loop in the body of the body of find the number % in sorted list %.",
+                "Try using a loop in the body of the find the number % in sorted list % to go through a sequence of halfed lists.",   
+                1);
+    
+
+            var tip_1_5 = chunk_1.newTip('Make sure your block works for general cases.',
+                'Great job!');
+
+             tip_1_5.newIOTest('r',  //testClass
+                'find the number % in unsorted list %',  //blockSpec
+                [17, [12, 13, 14, 10, 18, 11, 17, 15, 16]],  //input
+                7,  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+             tip_1_5.newIOTest('r',  //testClass
+                'find the number % in unsorted list %',  //blockSpec
+                [1, [10, 10, 10, 10, 10, 10, 10, 10, 10]],  //input
+                0,  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+             tip_1_5.newIOTest('r',  //testClass
+                'find the number % in unsorted list %',  //blockSpec
+                [-5, [5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5]],  //input
+                11,  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+             var tip_1_6 = chunk_1.newTip('Make sure your block works for edge cases.',
+                'Great job!');
+
+             tip_1_6.newIOTest('r',  //testClass
+                'find the number % in unsorted list %',  //blockSpec
+                [1, []],  //input
+                0,  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+           /////////sorted  
+            var tip_1_7 = chunk_1.newTip('Make sure your block works for general cases.',
+                'Great job!');
+
+             tip_1_7.newIOTest('r',  //testClass
+                'find the number % in unsorted list %',  //blockSpec
+                [17, [12, 13, 14, 10, 18, 11, 17, 15, 16]],  //input
+                7,  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+             tip_1_7.newIOTest('r',  //testClass
+                'find the number % in unsorted list %',  //blockSpec
+                [1, [10, 10, 10, 10, 10, 10, 10, 10, 10]],  //input
+                0,  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+             tip_1_7.newIOTest('r',  //testClass
+                'find the number % in unsorted list %',  //blockSpec
+                [-5, [5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5]],  //input
+                11,  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+             var tip_1_8 = chunk_1.newTip('Make sure your block works for edge cases.',
+                'Great job!');
+
+             tip_1_8.newIOTest('r',  //testClass
+                'find the number % in unsorted list %',  //blockSpec
+                [1, []],  //input
+                0,  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
