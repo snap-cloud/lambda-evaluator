@@ -546,13 +546,16 @@ function previousFeedbackButton() {
 
 function initializeSnapAdditions(snapWorld, taskID) {
 
+    var prevFeedbackButton = false;
     var isInitial = false;
     if (!sessionStorage.getItem(taskID + "_test_state")) {
         isInitial = true;
         createInitialHelp();
         moveHelp();
-        //previousFeedbackButton();
-        //openPopup();
+    }
+    if (showPrevFeedback && !prevFeedbackButton) {
+        previousFeedbackButton();
+        prevFeedbackButton = true;
     }
     if (isEDX) {
         current_iframe.parentNode.parentNode.parentNode.style.width = "100%";
@@ -609,13 +612,17 @@ function initializeSnapAdditions(snapWorld, taskID) {
     //var menu_button = document.getElementById("menu-icon");
     var menu_button = document.getElementsByClassName("hover_darken")[0];
     var help_overlay = document.getElementById('overlay');
-    //var feedback_button = document.getElementById("feedback-button");
     var results_overlay = document.getElementById("ag-output");
     var regrade_buttons = document.getElementsByClassName("regrade");
     var grade_button = document.getElementById("autograding_button");
     var world_canvas = document.getElementById('world');
     var snap_menu = document.getElementsByClassName('bubble')[0];
     //var edX_submit_button = parent.document.getElementsByClassName('check-label')[id_problem];
+
+    if (showPrevFeedback) {
+        var feedback_button = document.getElementById("feedback-button");
+        feedback_button.onclick = function() { openResults(); };
+    }
 
 
     document.addEventListener("click", function() { grayOutButtons(snapWorld, taskID); });
@@ -1193,8 +1200,9 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             string_reporter.innerHTML = '<p class="data assertion">' + testPoints + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion">, returned the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '</p>';
                             document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
 
-                            var className = "tests-section" + String(i) +String(x)[0];
+                            /*var className = "tests-section" + String(i) +String(x)[0];
                             $("." + className).append(thisTest.picture);
+                            $("." + className).append(thisTest.expectedPicture);*/
 
                             appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                         }
@@ -1211,8 +1219,9 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         }
                         document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
 
-                        var className = "tests-section" + String(i) +String(x)[0];
+                        /*var className = "tests-section" + String(i) +String(x)[0];
                         $("." + className).append(thisTest.picture);
+                        $("." + className).append(thisTest.expectedPicture);*/
 
                         appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                     }
