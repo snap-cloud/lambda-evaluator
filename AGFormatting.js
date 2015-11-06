@@ -1201,7 +1201,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
 
                             /*var className = "tests-section" + String(i) +String(x)[0];
-                            $("." + className).append(thisTest.picture);*/
+                            $("." + className).append(thisTest.picture);
+                            $("." + className).append(thisTest.expectedPicture);*/
 
                             appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                         }
@@ -1219,7 +1220,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
 
                         /*var className = "tests-section" + String(i) +String(x)[0];
-                        $("." + className).append(thisTest.picture);*/
+                        $("." + className).append(thisTest.picture);
+                        $("." + className).append(thisTest.expectedPicture);*/
 
                         appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                     }
