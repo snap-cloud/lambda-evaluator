@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Snap! Build Your Own Blocks. Beta</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <script src="jschannel.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript" src="underscore-min.js"></script>
+    <!--<script type="text/javascript" src='gradingLog.js'></script>-->
+    <script type="text/javascript" src='spriteEventLog.js'></script>
+    <script type="text/javascript" src='scriptAnalysis.js'></script>
+    <meta charset="utf-8">
+    <!-- Moved down to the bottom to have var id. -->
+    <script type="text/javascript" src="morphic.js"></script>
+    <script type="text/javascript" src="widgets.js"></script>
+    <script type="text/javascript" src="blocks.js"></script>
+    <script type="text/javascript" src="threads.js"></script>
+    <script type="text/javascript" src="objects.js"></script>
+    <script type="text/javascript" src="gui.js"></script>
+    <script type="text/javascript" src="paint.js"></script>
+    <script type="text/javascript" src="lists.js"></script>
+    <script type="text/javascript" src="byob.js"></script>
+    <script type="text/javascript" src="xml.js"></script>
+    <script type="text/javascript" src="store.js"></script>
+    <script type="text/javascript" src="locale.js"></script>
+    <script type="text/javascript" src="cloud.js"></script>
+    <script type="text/javascript" src="sha512.js"></script>
+<script type="text/javascript" src="snap-edx-overrides.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
+    <link rel="stylesheet" type="text/css" href="hintstyle.css" />
+
+    <script type="text/javascript" src="AGAgent.js"></script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type='text/javascript'>
+        var starter_path = null;
+        // The id is to act as a course identifier.
+        // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
+        var courseID = "BJC.2x";  // e.g. "BJCx"
+        // Specify a prerequisite task id, should be null if no such requirement.
+        var preReqTaskID = null;
+        var preReqID = courseID + preReqTaskID;
+        // taskID uniquely identifies the task for saving in browser sessionStorage.
+        var taskID = "_M2_W3_L1_T4_E1";
+        var id = courseID + taskID;
+        var isEDX = isEDXurl();
+        // if this question is not meant to be graded, change this flag to false
+        var graded = true;
+        // to hide feedback for this problem, change this flag to false
+        var showFeedback = true;
+        // to allow for the ability to regrade certain tests, change this flag to true
+        var regradeOn = false;
+        // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
+        // var testLog;
+        function AGTest(outputLog) {
+
+            //NOTES TO YIFAT AND PATRICK:
+            // No IO tests should be isolated. Which means that you have to check that the block
+            // is on screen.
+            // All getter/setter functions inside anonymous Assert functions.
+            // Thanks for all your work :D
+            //
+            //
+            //
+            //
+            // NAMING CONVENTIONS:
+            //
+            // **** VARIABLES ****
+            // If you are going to make a variable like this:
+            //
+            // var turnExists = function() {
+            //     return spriteContainsBlock("% !");
+            // }
+            //
+            // please instead append a "_n" to the end, where the "n" is the chunk number associated
+            // with the given function. So, if the "turnExists" function above were from chunk 2,
+            // then please name it: "turnExists_2" and NOT JUST "turnExists" because if more than
+            // one chunk has the same function called "turnExists", then bad things will happen bro.
+            // **THE ONE EXCEPTION IS THE FEEDBACK LOG and WORLD** -- PLEASE HAVE THESE TWO LINES
+            // AT THE TOP OF YOUR AGTEST() FUNCTION BODY:
+            //
+            // var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
+            // fb.snapWorld = world;
+            //
+            //
+            //
+            //
+            // **** CHUNKS ****
+            // please name chunks according to the exercise number they correspond to. For
+            // example, if I am writing a chunk for exercise 3, name the chunk like this:
+            //
+            // chunk_3 = fb.newChunk('Make the block that exercise 3 is asking');
+            //
+            // so clarify it is "chunk_n" where 'n' is the number of the exercise.
+            //
+            //
+            //
+            //
+            // **** TIPS ****
+            // please name tips according to their chunk and which tip within that chunk
+            // they are. So for example, if I am writing the second tip for chunk 4, then
+            // please write it as:
+            //
+            // tip_4_2 = chunk_4.newTip("Make sure you name your block exactly...");
+            //
+            // to clarify, it is "tip_j_k" where "j" is the chunk number and "k" is
+            // the tip number.
+            //
+            //
+            //
+            //
+            // **** ASSERT TESTS ****
+            // please do not assign these function calls to variables names. it is
+            // uncessary and will result in more confusion. So for example, to create
+            // a new ASSERT TEST, just do the following:
+            //
+            // tip_1_2.newAssertTest(
+            //    multiplyExists_1,
+            //    "Testing if there is a multiplication block in the factorial block.",
+            //    "There is a multiplication block in the factorial block.",
+            //    "Make sure you use the multiplication block in your factorial block.",
+            //    1);
+            //
+            //
+            //
+            //
+            // **** IO TESTS ****
+            // same as the assert tests above. To create a new IO TEST, please don't
+            // assign it a variable, just do the following:
+            //
+            // tip_1_4.newIOTest('r',  //testClass
+            //     '% !',  //blockSpec
+            //     [5],  //input
+            //     120,  //output
+            //     -1,  //timeout
+            //     false,  //isolated
+            //     1);  //points
+
+
+            var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
+            fb.snapWorld = world;
+
+        /* Create chunk_1 for the exercise 1 : nounPhrase */
+            var chunk_1 = fb.newChunk('Make the Is % a magic square? block.');
+
+
+            // Add a first tip to that first test chunk
+            var tip_1_1 = chunk_1.newTip('Try using the "sum of % number % of %" block that you made previously in your solution.',
+                'Great job!');
+
+            var triplesExists_1 = function () {
+                return customBlockContains("Is % a magic square?", "sum  of % number % of %");
+            }
+
+
+            tip_1_1.newAssertTest(
+                triplesExists_1,
+                "Testing if there is a sum of % number % of % block in the body of Is a magic square? block.",
+                "There is a sum of % number % of % block in the body of the Is a magic square? block.",
+                "Try using the sum of % number % of % block in the body of the Is a magic square? block.",
+                1);
+            
+
+            var tip_1_2 = chunk_1.newTip('Try using the "triples in square %" block that you made previously in your solution.',
+                'Great job!');
+
+            var triplesinsquareExists_1 = function () {
+                return customBlockContains("Is % a magic square?", "triples in square %");
+            }
+
+
+            tip_1_2.newAssertTest(
+                triplesinsquareExists_1,
+                "Testing if there is a triples in square % block in the body of Is a magic square? block.",
+                "There is a triples in square % block in the body of the Is a magic square? block.",
+                "Try using the triples in square % block in the body of the Is a magic square? block.",
+                1);
+            
+    
+
+
+
+
+            var tip_1_3 = chunk_1.newTip('Make sure your block works for general cases.',
+                'Great job!');
+
+             tip_1_3.newIOTest('r',  //testClass
+                'Is % a magic square?',  //blockSpec
+                [[12, 13, 14, 10, 18, 11, 17, 15, 16]],  //input
+                false,  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+             tip_1_3.newIOTest('r',  //testClass
+                'Is % a magic square?',  //blockSpec
+                [10, 10, 10, 10, 10, 10, 10, 10, 10],  //input
+                true,  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+             tip_1_3.newIOTest('r',  //testClass
+                'Is % a magic square?',  //blockSpec
+                [11, 10, 11, 10, 11, 10, 11, 10, 11],  //input
+                false,  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+             var tip_1_4 = chunk_1.newTip('Make sure your block works for edge cases.',
+                'Great job!');
+
+             tip_1_4.newIOTest('r',  //testClass
+                'Is % a magic square?',  //blockSpec
+                [-1, -1, -1, -1, -1, -1, -1, -1, -1],  //input
+                true,  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
+            return fb;
+        }
+    </script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type="text/javascript" src="AGFormatting.js"></script>
+
+    <script type="text/javascript">
+
+        var world;
+        window.onload = function () {
+
+            //INITIALIZE UP SNAP
+            world = new WorldMorph(document.getElementById('world'));
+            new IDE_Morph().openIn(world);
+            var ide = world.children[0];
+
+            //Reduce Stage Size on initialization
+            ide.toggleStageSize(true);
+
+            initializeSnapAdditions(world, id);
+
+
+            //AUTOGRADER ADDITION -
+            //Forced to use setTimeout() to let the world load before... Maybe not.
+            //Create a gradingLog and initialize the AG status bar (AGSB).
+
+            //Initialize AGSB button.
+            var grade_button = document.getElementById("autograding_button");
+            grade_button.addEventListener('click', button_listener);
+            var world_canvas = document.getElementById('world');
+            world_canvas.addEventListener("mouseup", update_listener);
+            // Start Snap Environment Loop
+            setInterval(loop, 1);
+
+        };
+
+        function loop() {
+            world.doOneCycle();
+        }
+
+    </script>
+    <script type="text/javascript" src='feedbackLog.js'></script>
+    <script type="text/javascript" src="AG_EDX.js"></script>
+</head>
+<body style="margin: 0;">
+    <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
+
+<!-- Snap Autograding Button -->
+<div id="autograding_bar">
+    <div tabindex="0" class="onclick-menu" id='onclick-menu' style="display:inline-block">
+        <span title="Menu">&#9776;</span>
+        <div class='hover_darken'></div>
+      <nav id="navigation" class="site-navigation" role="navigation">
+          <ul id="dropdown-closed" class="bubble">
+            <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="feedback-button">View Feedback</a></li>
+            <li class="menu-divider-sub-menu" id='menu-divider'></li>-->
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Revert To Last Attempt</a></li>
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="revert-button">Revert To Best Attempt</a></li>
+            <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last edX Submission</a></li>-->
+            <li class="menu-item-sub-menu" id="enabled-button"><a id="reset-button">Reset</a></li>
+            <li class="menu-divider-sub-menu" id='menu-divider'></li>
+            <li class="menu-item-sub-menu" id='enabled-button' onclick="openPopup();"><a id="help-button">Help</a></li>
+          </ul>
+    </nav>
+    </div>
+    <div id="autograding_button" style="display:inline-block;">
+        <span></span>
+        <div class='hover_darken'></div>
+    </div>
+    <div id="numtips" style="display:inline-block"></div>
+</div>
+<!-- Snap Autograding Menu -->
+<!-- Autograding Menu Help Button -->
+<div class="overlay is-hidden" id="overlay">
+    <p class="help-text" id="full-screen-arrow">&#8600;</p>
+    <p class="help-text" id="full-screen-help">This full-screen button will pop out the Snap! window.</p>
+    <p class="help-text" id="menu-item-arrow">&#8599;</p>
+    <p class="help-text" id="menu-item-help">The first two menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your last graded attempt or to your best attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
+    <p class="help-text" id="ag-button-arrow">&#8593;</p>
+    <p class="help-text" id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
+</div>
+
+<div style="display:inline-block" class="view-results" id="circle" onclick="openResults();">Results
+</div>
+<div class="overlay is-hidden" id="ag-output">
+    <div class="popup-content" id="ag-results">
+        <span class="button-close" onclick="closeResults();" id="popup">X</span>
+        <!--<p id = "different-feedback"></p>
+        <p id = "edx-submit-different"></p>-->
+        <div id="toggle-correct-tests"></div>
+        <p id="comment"></p>
+    </div>
+</div>
+    </div>
+</body>
+</html>
