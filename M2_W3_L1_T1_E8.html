@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Snap! Build Your Own Blocks. Beta</title>
     <link rel="shortcut icon" href="favicon.ico">
     <script src="jschannel.js"></script>
@@ -33,7 +34,7 @@
     <script type="text/javascript" src="AGAgent.js"></script>
     <script type="text/javascript" src='feedbackLog.js'></script>
     <script type='text/javascript'>
-        var starter_path = "M2_W3_L2_T3_E1_Starter.xml";
+        var starter_path = null;
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
         var courseID = "BJC.2x";  // e.g. "BJCx"
@@ -41,7 +42,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_M2_W3_L2_T2_E1_2";
+        var taskID = "_M2_W3_L1_T1_E8";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -140,140 +141,70 @@
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
 
+
         /* Create chunk_1 for the exercise 1 : nounPhrase */
-            var chunk_1 = fb.newChunk('Make the "find the number % in unsorted list %" block.');
+            var chunk_1 = fb.newChunk('Make the "lookup items %l1 from %l2" block.');
+
+            var lookupExists_1 = function () {
+                return spriteContainsBlock("lookup items % from %");
+            }
 
 
             // Add a first tip to that first test chunk
-            // var tip_1_1 = chunk_1.newTip('Try using iteration to go through the unsorted list.',
-            //     'Great job!');
-
-            var lengthExists_1 = function () {
-                return customBlockContains("find the number % in sorted list %", "length of %");
-            }
-
-            var tip_1_2 = chunk_1.newTip('For the sorted list, try comparing your "needle" against the middle element of the list',
+            var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly "lookup items %list from %list".',
                 'Great job!');
 
-            tip_1_2.newAssertTest(
-                lengthExists_1,
-                "Testing if there is a length of % block in the body of find the number % in sorted list %.",
-                "There is a length of % block in the body of the body of find the number % in sorted list %.",
-                "Try using the length of % block in the body of the find the number % in sorted list %",
+            tip_1_1.newAssertTest(
+                lookupExists_1,
+                "Testing if there is a 'lookup items %l1 from %l2' from block in the scripting area.",
+                "There is a 'lookup items %l1 from %l2' block in the scripting area.",
+                "Make sure you name your block exactly 'lookup items %l1 from %l2' and place it in the scripting area.",
                 1);
-            
 
-            var tip_1_3 = chunk_1.newTip('Try using the "round % %" block to avoid errors when splitting odd-length lists.',
+            var tip_1_2 = chunk_1.newTip('Make sure your block works for general cases.',
                 'Great job!');
 
-            var roundExists_1 = function () {
-                return customBlockContains("Is % a magic square?", "round %");
-            }
-
-
-            tip_1_3.newAssertTest(
-                roundExists_1,
-               "Testing if there is a round % block in the body of find the number % in sorted list %.",
-                "There is a round % block in the body of the body of find the number % in sorted list %.",
-                "Try using the round % block in the body of the find the number % in sorted list % to split odd-length lists.",   
-                1);
-            
-            var tip_1_4 = chunk_1.newTip('Try using a loop.',
-                'Great job!');
-
-            var loopExists_1 = function () {
-                return customBlockContains("find the number % in sorted list %", "repeat % %" )
-                || customBlockContains("find the number % in sorted list %", "for % = % to % %")
-                || customBlockContains("find the number % in sorted list %", "repeat until % %")
-                || customBlockContains("find the number % in sorted list %", "for each % of % %")
-                || customBlockContains("find the number % in sorted list %", "forever %");
-            }
-
-
-            tip_1_4.newAssertTest(
-                loopExists_1,
-               "Testing if there is a loop in the body of find the number % in sorted list %.",
-                "There is a loop in the body of the body of find the number % in sorted list %.",
-                "Try using a loop in the body of the find the number % in sorted list % to go through a sequence of halfed lists.",   
-                1);
-    
-
-            var tip_1_5 = chunk_1.newTip('Make sure your block works for general cases.',
-                'Great job!');
-
-             tip_1_5.newIOTest('r',  //testClass
-                'find the number % in unsorted list %',  //blockSpec
-                [17, [12, 13, 14, 10, 18, 11, 17, 15, 16]],  //input
-                7,  //output
+            tip_1_2.newIOTest('r',  //testClass
+                'lookup items % from %',  //blockSpec
+                [[5, 2], ["a", "b", "c", "d", "e"]],  //input
+                ["e", "b"],  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
 
-             tip_1_5.newIOTest('r',  //testClass
-                'find the number % in unsorted list %',  //blockSpec
-                [1, [10, 10, 10, 10, 10, 10, 10, 10, 10]],  //input
-                0,  //output
+            tip_1_2.newIOTest('r',  //testClass
+                'lookup items % from %',  //blockSpec
+                [[1, 2], ["a", "b", "c", "d"]],  //input
+                ["a", "b"],  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
 
-             tip_1_5.newIOTest('r',  //testClass
-                'find the number % in unsorted list %',  //blockSpec
-                [-5, [5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5]],  //input
-                11,  //output
+            tip_1_2.newIOTest('r',  //testClass
+                'lookup items % from %',  //blockSpec
+                [[1, 8], ["a", "b", "c", "d"]],  //input
+                ["a", ""],  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
 
-             var tip_1_6 = chunk_1.newTip('Make sure your block works for edge cases.',
-                'Great job!');
-
-             tip_1_6.newIOTest('r',  //testClass
-                'find the number % in unsorted list %',  //blockSpec
-                [1, []],  //input
-                0,  //output
+            tip_1_2.newIOTest('r',  //testClass
+                'lookup items % from %',  //blockSpec
+                [[0], ["a", "b", "c", "d"]],  //input
+                [""],  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
 
-           /////////sorted  
-            var tip_1_7 = chunk_1.newTip('Make sure your block works for general cases.',
-                'Great job!');
-
-             tip_1_7.newIOTest('r',  //testClass
-                'find the number % in unsorted list %',  //blockSpec
-                [17, [12, 13, 14, 10, 18, 11, 17, 15, 16]],  //input
-                7,  //output
+            tip_1_2.newIOTest('r',  //testClass
+                'lookup items % from %',  //blockSpec
+                [[3], ["a", "b", "c", "d"]],  //input
+                ["c"],  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
 
-             tip_1_7.newIOTest('r',  //testClass
-                'find the number % in unsorted list %',  //blockSpec
-                [1, [10, 10, 10, 10, 10, 10, 10, 10, 10]],  //input
-                0,  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
 
-             tip_1_7.newIOTest('r',  //testClass
-                'find the number % in unsorted list %',  //blockSpec
-                [-5, [5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5]],  //input
-                11,  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             var tip_1_8 = chunk_1.newTip('Make sure your block works for edge cases.',
-                'Great job!');
-
-             tip_1_8.newIOTest('r',  //testClass
-                'find the number % in unsorted list %',  //blockSpec
-                [1, []],  //input
-                0,  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
 
             return fb;
         }
