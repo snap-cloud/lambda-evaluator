@@ -497,7 +497,7 @@ function createInitialHelp() {
     hamburger_help.classList.add("help-text");
 
     hamburger_help_arrow = document.createElement("p");
-    hamburger_help_arrow_text = document.createTextNode("â†‘");
+    hamburger_help_arrow_text = document.createTextNode("↑");
     hamburger_help_arrow.appendChild(hamburger_help_arrow_text);
     hamburger_help_arrow.id = "hamburger-menu-arrow";
 
