@@ -150,7 +150,8 @@ table.results {
 	-moz-border-radius: 10px;
 	border-radius: 10px;
 	color: #4F5150;
-	content: "▶";
+	/*content: "▶";*/
+	content: "\25B6";
 	display: block;
 	float: left;
 	font-weight: bold;
@@ -163,7 +164,8 @@ table.results {
 }
 
 .details:checked + label:before {
-	content: "▼";
+	/*content: "▼";*/
+	content: "\25BC";
 }
 
 span {
