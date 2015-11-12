@@ -362,6 +362,13 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 		test.correct = expOut(output);
 	} else {
 		if (expOut instanceof Array) {
+			var copy = expOut;
+			var temp = copy[0];
+			if (temp instanceof Array) {
+				for (var i = 0; i < copy.length; i++) {
+					copy[i] = new List(copy[i]);
+				}
+			}
 			expOut = new List(expOut);
 		}
 		test.correct = snapEquals(output, expOut);

@@ -115,7 +115,8 @@
                 'triples in square %',  //blockSpec
                 [[2, 1, 5, 4, 0, 2, 8, 3, 2]],  //input
                 /*"a List [a List [2, 1, 5], a List [4, 0, 2], a List [8, 3, 2], a List [2, 4, 8], a List [1, 0, 3], a List [5, 2, 2], a List [2, 0, 2], a List [5, 0, 8]]",  //output*/
-                [new List([2, 1, 5]), new List([4, 0, 2]), new List([8, 3, 2]), new List([2, 4, 8]), new List([1, 0, 3]), new List([5, 2, 2]), new List([2, 0, 2]), new List([5, 0, 8])],  //output
+                /*[new List([2, 1, 5]), new List([4, 0, 2]), new List([8, 3, 2]), new List([2, 4, 8]), new List([1, 0, 3]), new List([5, 2, 2]), new List([2, 0, 2]), new List([5, 0, 8])],  //output*/
+                [[2, 1, 5], [4, 0, 2], [8, 3, 2], [2, 4, 8], [1, 0, 3], [5, 2, 2], [2, 0, 2], [5, 0, 8]],  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
@@ -123,7 +124,8 @@
             tip_1_1.newIOTest('r',  //testClass
                 'triples in square %',  //blockSpec
                 [[1, 2, 3, 4, 5, 6, 7, 8, 9]],  //input
-                [new List([1,2,3]), new List([4,5,6]), new List([7,8,9]), new List([1,4,7]), new List([2,5,8]), new List([3,6,9]), new List([1,5,9]), new List([3,5,7])],  //output
+                /*[new List([1,2,3]), new List([4,5,6]), new List([7,8,9]), new List([1,4,7]), new List([2,5,8]), new List([3,6,9]), new List([1,5,9]), new List([3,5,7])],  //output*/
+                [[1,2,3], [4,5,6], [7,8,9], [1,4,7], [2,5,8], [3,6,9], [1,5,9], [3,5,7]],  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
