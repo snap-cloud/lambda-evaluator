@@ -362,13 +362,14 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 		test.correct = expOut(output);
 	} else {
 		if (expOut instanceof Array) {
-			var copy = expOut;
+			/*var copy = expOut;
 			var temp = copy[0];
 			if (temp instanceof Array) {
 				for (var i = 0; i < copy.length; i++) {
 					copy[i] = new List(copy[i]);
 				}
-			}
+			}*/
+			listify(expOut);
 			expOut = new List(expOut);
 		}
 		test.correct = snapEquals(output, expOut);
@@ -902,10 +903,6 @@ function cloneListReporter() {
 
 
 
-
-
-
-
 function evalReporter(block, outputLog, testID) {
 	var stage = world.children[0].stage;
 	var proc = stage.threads.startProcess(block,
@@ -951,6 +948,16 @@ function infLoopCheck(outputLog, testID) {
 			}
 			stage.threads.stopProcess(getScript(outputLog["" + testID]["blockSpec"]));
 		}, timeout);
+}
+
+
+function listify(array) {
+	for (var i = 0; i < array.length; i++) {
+		if (array[i] instanceof Array) {
+			listify(array[i]);
+			array[i] = new List(array[i]);
+		}
+	}
 }
 
 
