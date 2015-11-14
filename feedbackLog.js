@@ -242,7 +242,6 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 };
 
 FeedbackLog.prototype.finishSnapTest = function(test, output) {
-
 	// Check that output is being returned
 	if (output == undefined) {
 		test.output = null;
@@ -386,6 +385,7 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 	clearTimeout(this.currentTimeout);
 	test.proc = null;
 	// Clear the input values
+
 	try {
 		if (test.isolated) {
 			test.sprite.remove();
@@ -409,10 +409,7 @@ FeedbackLog.prototype.runNextTest = function(test) {
 	// Find teh next test
 	var next_test = this.nextTest(test);
 	var fb_log = this;
-	//test.tip.test_list.length === 1 && test.tip.chunk.tip_list[test.tip.chunk.tip_list.length - 1] == test.tip;
-	//console.log(test.tip.test_list.length);
-	//console.log(next_test);
-	if (next_test) {// || (test.tip.test_list.length === 1 && test.tip.chunk.tip_list[test.tip.chunk.tip_list.length - 1] == test.tip)) {
+	if (next_test) {
 		setTimeout(function() {
 			fb_log.startSnapTest(next_test);
 		}, 1);

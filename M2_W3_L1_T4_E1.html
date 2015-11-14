@@ -146,7 +146,7 @@
 
 
             // Add a first tip to that first test chunk
-            var tip_1_1 = chunk_1.newTip('Try using the "sum of % number % of %" block that you made previously in your solution.',
+            /*var tip_1_1 = chunk_1.newTip('Try using the "sum of % number % of %" block that you made previously in your solution.',
                 'Great job!');
 
             var triplesExists_1 = function () {
@@ -159,7 +159,7 @@
                 "Testing if there is a sum of % number % of % block in the body of Is a magic square? block.",
                 "There is a sum of % number % of % block in the body of the Is a magic square? block.",
                 "Try using the sum of % number % of % block in the body of the Is a magic square? block.",
-                1);
+                1);*/
             
 
             var tip_1_2 = chunk_1.newTip('Try using the "triples in square %" block that you made previously in your solution.',
@@ -195,7 +195,7 @@
 
              tip_1_3.newIOTest('r',  //testClass
                 'Is % a magic square?',  //blockSpec
-                [10, 10, 10, 10, 10, 10, 10, 10, 10],  //input
+                [[10, 10, 10, 10, 10, 10, 10, 10, 10]],  //input
                 true,  //output
                 -1,  //timeout
                 true,  //isolated
@@ -203,18 +203,18 @@
 
              tip_1_3.newIOTest('r',  //testClass
                 'Is % a magic square?',  //blockSpec
-                [11, 10, 11, 10, 11, 10, 11, 10, 11],  //input
+                [[11, 10, 11, 10, 11, 10, 11, 10, 11]],  //input
                 false,  //output
                 -1,  //timeout
                 true,  //isolated
-                1);  //points
+                1);  //points*/
 
              var tip_1_4 = chunk_1.newTip('Make sure your block works for edge cases.',
                 'Great job!');
 
              tip_1_4.newIOTest('r',  //testClass
                 'Is % a magic square?',  //blockSpec
-                [-1, -1, -1, -1, -1, -1, -1, -1, -1],  //input
+                [[-1, -1, -1, -1, -1, -1, -1, -1, -1]],  //input
                 true,  //output
                 -1,  //timeout
                 true,  //isolated
