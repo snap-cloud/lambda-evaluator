@@ -143,6 +143,8 @@
         /* Create chunk_1 for the exercise 1 : nounPhrase */
             var chunk_1 = fb.newChunk('Make the "find the number % in unsorted list %" block.');
 
+            var chunk_2 = fb.newChunk('Make the "find the number % in sorted list %" block.');
+
 
             // Add a first tip to that first test chunk
             // var tip_1_1 = chunk_1.newTip('Try using iteration to go through the unsorted list.',
@@ -152,7 +154,7 @@
                 return customBlockContains("find the number % in sorted list %", "length of %");
             }
 
-            var tip_1_2 = chunk_1.newTip('For the sorted list, try comparing your "needle" against the middle element of the list',
+            var tip_1_2 = chunk_2.newTip('For the sorted list, try comparing your "needle" against the middle element of the list',
                 'Great job!');
 
             tip_1_2.newAssertTest(
@@ -163,11 +165,11 @@
                 1);
             
 
-            var tip_1_3 = chunk_1.newTip('Try using the "round % %" block to avoid errors when splitting odd-length lists.',
+            var tip_1_3 = chunk_2.newTip('Try using the "round % %" block to avoid errors when splitting odd-length lists.',
                 'Great job!');
 
             var roundExists_1 = function () {
-                return customBlockContains("Is % a magic square?", "round %");
+                return customBlockContains("find the number % in sorted list %", "round %") || customBlockContains("find the number % in sorted list %", "round %", undefined, 1) || customBlockContains("find the number % in sorted list %", "round %", undefined, 2);
             }
 
 
@@ -178,7 +180,7 @@
                 "Try using the round % block in the body of the find the number % in sorted list % to split odd-length lists.",   
                 1);
             
-            var tip_1_4 = chunk_1.newTip('Try using a loop.',
+            var tip_1_4 = chunk_2.newTip('Try using a loop.',
                 'Great job!');
 
             var loopExists_1 = function () {
@@ -237,19 +239,19 @@
                 1);  //points
 
            /////////sorted  
-            var tip_1_7 = chunk_1.newTip('Make sure your block works for general cases.',
+            var tip_1_7 = chunk_2.newTip('Make sure your block works for general cases.',
                 'Great job!');
 
              tip_1_7.newIOTest('r',  //testClass
-                'find the number % in unsorted list %',  //blockSpec
-                [17, [12, 13, 14, 10, 18, 11, 17, 15, 16]],  //input
-                7,  //output
+                'find the number % in sorted list %',  //blockSpec
+                [17, [12, 13, 14, 15, 17, 18, 20]],  //input
+                5,  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
 
              tip_1_7.newIOTest('r',  //testClass
-                'find the number % in unsorted list %',  //blockSpec
+                'find the number % in sorted list %',  //blockSpec
                 [1, [10, 10, 10, 10, 10, 10, 10, 10, 10]],  //input
                 0,  //output
                 -1,  //timeout
@@ -257,18 +259,18 @@
                 1);  //points
 
              tip_1_7.newIOTest('r',  //testClass
-                'find the number % in unsorted list %',  //blockSpec
-                [-5, [5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5]],  //input
+                'find the number % in sorted list %',  //blockSpec
+                [5, [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]],  //input
                 11,  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
 
-             var tip_1_8 = chunk_1.newTip('Make sure your block works for edge cases.',
+             var tip_1_8 = chunk_2.newTip('Make sure your block works for edge cases.',
                 'Great job!');
 
              tip_1_8.newIOTest('r',  //testClass
-                'find the number % in unsorted list %',  //blockSpec
+                'find the number % in sorted list %',  //blockSpec
                 [1, []],  //input
                 0,  //output
                 -1,  //timeout
