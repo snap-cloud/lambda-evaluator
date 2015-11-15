@@ -195,6 +195,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 			//TODO: Fix setUpIsolatedTest to remove testID
 			block = setUpIsolatedTest(test.blockSpec, this, test)
 		} else {
+			console.log("startsnaptest else");
 			block = getScript(test.blockSpec);
 		}
 		//Set the selected block's inputs for the test
@@ -349,10 +350,18 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 	    ctx.drawImage(bub, scr.width + 2, 0);
 	    return pic
 	};
-	var myscript = getScript(test.blockSpec);
+	try {
+		var myscript = getScript(test.blockSpec);
+		var pic = myscript.returnBubble(output, true);
+		console.log(pic);
+		test.picture = pic;
+	} catch (e) {
+		console.log(e);
+	}
+	/*var myscript = getScript(test.blockSpec);
 	var pic = myscript.returnBubble(output, true);
 	console.log(pic);
-	test.picture = pic;
+	test.picture = pic;*/
 	//End of Addison's Section
 
 	var expOut = test.expOut;
