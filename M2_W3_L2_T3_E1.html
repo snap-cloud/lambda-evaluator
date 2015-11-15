@@ -145,7 +145,7 @@
             var chunk_1 = fb.newChunk('Make the "find the number %n in the sorted list %list (memoized)" block.');
 
             var findMemoizedExists_1 = function () {
-                return spriteContainsBlock("find the number %n in the sorted list %list (memoized)");
+                return spriteContainsBlock("find the number %n in the sorted list %l (memoized)") || spriteContainsBlock("find the number %n in the sorted list %l (memoized)", 2);
             }
 
             var containsIfElse_1 = function () {
