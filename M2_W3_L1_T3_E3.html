@@ -1,7 +1,7 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Snap! Build Your Own Blocks. Beta</title>
     <link rel="shortcut icon" href="favicon.ico">
     <script src="jschannel.js"></script>
@@ -34,7 +34,7 @@
     <script type="text/javascript" src="AGAgent.js"></script>
     <script type="text/javascript" src='feedbackLog.js'></script>
     <script type='text/javascript'>
-        var starter_path = "M2_W2_L1_T4_E2_Starter.xml";
+        var starter_path = null;
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
         var courseID = "BJC.2x";  // e.g. "BJCx"
@@ -42,7 +42,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_M2_W2_L1_T1_E2";
+        var taskID = "_M2_W3_L1_T3_E3";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -56,149 +56,77 @@
         function AGTest(outputLog) {
 
             //NOTES TO YIFAT AND PATRICK:
-            // No IO tests should be isolated. Which means that you have to check that the block
-            // is on screen.
+            // IO tests should be isolated.
             // All getter/setter functions inside anonymous Assert functions.
             // Thanks for all your work :D
-            //
-            //
-            //
-            //
-            // NAMING CONVENTIONS:
-            //
-            // **** VARIABLES ****
-            // If you are going to make a variable like this:
-            //
-            // var turnExists = function() {
-            //     return spriteContainsBlock("% !");
-            // }
-            //
-            // please instead append a "_n" to the end, where the "n" is the chunk number associated
-            // with the given function. So, if the "turnExists" function above were from chunk 2,
-            // then please name it: "turnExists_2" and NOT JUST "turnExists" because if more than
-            // one chunk has the same function called "turnExists", then bad things will happen bro.
-            // **THE ONE EXCEPTION IS THE FEEDBACK LOG and WORLD** -- PLEASE HAVE THESE TWO LINES
-            // AT THE TOP OF YOUR AGTEST() FUNCTION BODY:
-            //
-            // var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
-            // fb.snapWorld = world;
-            //
-            //
-            //
-            //
-            // **** CHUNKS ****
-            // please name chunks according to the exercise number they correspond to. For
-            // example, if I am writing a chunk for exercise 3, name the chunk like this:
-            //
-            // chunk_3 = fb.newChunk('Make the block that exercise 3 is asking');
-            //
-            // so clarify it is "chunk_n" where 'n' is the number of the exercise.
-            //
-            //
-            //
-            //
-            // **** TIPS ****
-            // please name tips according to their chunk and which tip within that chunk
-            // they are. So for example, if I am writing the second tip for chunk 4, then
-            // please write it as:
-            //
-            // tip_4_2 = chunk_4.newTip("Make sure you name your block exactly...");
-            //
-            // to clarify, it is "tip_j_k" where "j" is the chunk number and "k" is
-            // the tip number.
-            //
-            //
-            //
-            //
-            // **** ASSERT TESTS ****
-            // please do not assign these function calls to variables names. it is
-            // uncessary and will result in more confusion. So for example, to create
-            // a new ASSERT TEST, just do the following:
-            //
-            // tip_1_2.newAssertTest(
-            //    multiplyExists_1,
-            //    "Testing if there is a multiplication block in the factorial block.",
-            //    "There is a multiplication block in the factorial block.",
-            //    "Make sure you use the multiplication block in your factorial block.",
-            //    1);
-            //
-            //
-            //
-            //
-            // **** IO TESTS ****
-            // same as the assert tests above. To create a new IO TEST, please don't
-            // assign it a variable, just do the following:
-            //
-            // tip_1_4.newIOTest('r',  //testClass
-            //     '% !',  //blockSpec
-            //     [5],  //input
-            //     120,  //output
-            //     -1,  //timeout
-            //     false,  //isolated
-            //     1);  //points
 
 
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
 
-        /* Create chunk_1 for the exercise 1 : nounPhrase */
-            var chunk_1 = fb.newChunk('Fix the increasing block so that it works');
+            var chunk_1 = fb.newChunk('Make the "triples in square %" block.');
 
-
-            // Add a first tip to that first test chunk
-            var tip_1_1 = chunk_1.newTip('Does the "report true" block inside of the for loop cause a problem?',
-                'Great job!');
-
-            var trueAfterFor_1 = function () {
-                return blockPrecedesInSprite("for each % of % %", "true");
+            var triplesExists = function () {
+                return spriteContainsBlock("triples in square %");
             }
 
+            var tip_1_0 = chunk_1.newTip('Make sure you name your block exactly "triples in square %" and place it in the scripting area.',
+                'Great job!');
 
-            tip_1_1.newAssertTest(
-                trueAfterFor_1,
-                "Testing if the return true block is after the for loop in the body of the increasing block.",
-                "The return true block is after the for loop in the increasing block.",
-                "Try moving the true block after the for loop in the increasing block",
+            tip_1_0.newAssertTest(
+                triplesExists,
+                "Testing if the 'triples in square %' block is in the scripting area.",
+                "The 'triples in square %' block is in the scripting area.",
+                "Make sure you name your block exactly 'triples in square %' and place it in the scripting area.",
                 1);
-            
 
-            var tip_1_2 = chunk_1.newTip('Make sure your block works for general cases.',
+            // var containsTriplePositions = function () {
+            //     return customBlockContains("triples in square %", "triple positions");
+            // }
+
+            // var tip_1_2 = chunk_1.newTip('Try using the lists contained in the "triple positions" variable to access the positions in the 8 different triples.',
+            //     'Great job!');
+
+            // tip_1_2.newAssertTest(
+            //     containsTriplePositions,
+            //     "Testing if the 'triple positions' variable is being used.",
+            //     "The 'triple positions' variable is being used.",
+            //     "Try using the lists contained in the 'triple positions' variable to access the positions in the 8 different triples.",
+            //     1);
+
+            var containsMap = function () {
+                return customBlockContains("triples in square %", "map %repRing over %mult%l");
+            }
+
+            var tip_1_3 = chunk_1.newTip('Try using the map block in your solution.',
                 'Great job!');
 
-             tip_1_2.newIOTest('r',  //testClass
-                'increasing? %',  //blockSpec
-                [[2, 1, 5, 4]],  //input
-                false,  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
+            tip_1_3.newAssertTest(
+                containsMap,
+                "Testing if the map block is being used.",
+                "The map block is being used.",
+                "Try using the map block in your solution.",
+                1);
 
-             tip_1_2.newIOTest('r',  //testClass
-                'increasing? %',  //blockSpec
-                [[1, 1, 6, 7]],  //input
-                true,  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             tip_1_2.newIOTest('r',  //testClass
-                'increasing? %',  //blockSpec
-                [[-1, -2, -3, -4]],  //input
-                false,  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             /*var tip_1_3 = chunk_1.newTip('Make sure your block works for edge cases.',
+            var tip_1_1 = chunk_1.newTip('Make sure your block works on any input board.',
                 'Great job!');
 
-             tip_1_3.newIOTest('r',  //testClass
-                'increasing? %',  //blockSpec
-                [[]],  //input
-                true,  //output
+            tip_1_1.newIOTest('r',  //testClass
+                'triples in square %',  //blockSpec
+                [[2, 1, 5, 4, 0, 2, 8, 3, 2]],  //input
+                [[2, 1, 5], [4, 0, 2], [8, 3, 2], [2, 4, 8], [1, 0, 3], [5, 2, 2], [2, 0, 2], [5, 0, 8]],  //output
                 -1,  //timeout
                 true,  //isolated
-                1);  //points*/
+                1);  //points
+
+            tip_1_1.newIOTest('r',  //testClass
+                'triples in square %',  //blockSpec
+                [[1, 2, 3, 4, 5, 6, 7, 8, 9]],  //input
+                [[1,2,3], [4,5,6], [7,8,9], [1,4,7], [2,5,8], [3,6,9], [1,5,9], [3,5,7]],  //output
+                -1,  //timeout
+                true,  //isolated
+                1);  //points
+
 
             return fb;
         }

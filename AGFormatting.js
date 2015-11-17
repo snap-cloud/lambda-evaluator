@@ -497,7 +497,7 @@ function createInitialHelp() {
     hamburger_help.classList.add("help-text");
 
     hamburger_help_arrow = document.createElement("p");
-    hamburger_help_arrow_text = document.createTextNode("â†‘");
+    hamburger_help_arrow_text = document.createTextNode("↑");
     hamburger_help_arrow.appendChild(hamburger_help_arrow_text);
     hamburger_help_arrow.id = "hamburger-menu-arrow";
 
@@ -795,8 +795,8 @@ function initializeSnapAdditions(snapWorld, taskID) {
         StageHandleMorph.prototype.originalFixLayout = StageHandleMorph.prototype.fixLayout;
         StageHandleMorph.prototype.fixLayout = function() {
             this.originalFixLayout();
-            console.log(this.target.right());
-            console.log(this.target.width());
+            //console.log(this.target.right());
+            //console.log(this.target.width());
             if (this.target.width() > 225) {
                 if (this.target.width() > 390) {
                     $('#autograding_bar').css({
@@ -1301,6 +1301,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
         var noCreditText = document.createTextNode("Please note you won't receive a score from edX for attempting this problem.");
         noCreditWarning.appendChild(noCreditText);
         document.getElementById("comment").appendChild(noCreditWarning);
+        openResults();
     }
    
 
