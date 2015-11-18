@@ -477,6 +477,70 @@ function moveAutogradingBar() {
 }
 
 
+
+function createInitialHelp() {
+    initial_help = document.createElement("div");
+    initial_help.classList.add("overlay");
+    initial_help.id = "initial-help";
+
+    $(initial_help).insertAfter("#overlay")
+
+
+    hamburger_help = document.createElement("p");
+    hamburger_text = document.createTextNode("Click this button to access helpful auto-feedback functions.");
+    hamburger_help.appendChild(hamburger_text);
+    hamburger_help.id = "hamburger-menu-help";
+    hamburger_help.classList.add("help-text");
+
+    hamburger_help_arrow = document.createElement("p");
+    hamburger_help_arrow_text = document.createTextNode("↑");
+    hamburger_help_arrow.appendChild(hamburger_help_arrow_text);
+    hamburger_help_arrow.id = "hamburger-menu-arrow";
+
+
+    document.getElementById("initial-help").appendChild(hamburger_help);
+    document.getElementById("initial-help").appendChild(hamburger_help_arrow);
+    $("#full-screen-arrow").clone().appendTo("#initial-help");
+    $("#full-screen-help").clone().appendTo("#initial-help");
+
+    var arrow = document.getElementById("ag-button-arrow"), 
+        arrow_clone = arrow.cloneNode(true);
+    var help = document.getElementById("ag-button-help"), 
+        help_clone = help.cloneNode(true);
+
+    arrow_clone.id = "initial-ag-button-arrow";
+    help_clone.id = "initial-ag-button-help";
+
+    document.getElementById("initial-help").appendChild(arrow_clone);
+    document.getElementById("initial-help").appendChild(help_clone);
+    /*$("#ag-button-arrow").clone().appendTo("#initial-help");
+    $("#ag-button-help").clone().appendTo("#initial-help");*/
+
+}
+
+function previousFeedbackButton() {
+    var prev_feedback = document.createElement("li");
+    prev_feedback.classList.add("menu-item-sub-menu");
+    prev_feedback.id = "enabled-button";
+
+    var prev_feedback_link = document.createElement("a");
+    var prev_feedback_text = document.createTextNode("View Previous Feedback");
+    prev_feedback_link.appendChild(prev_feedback_text);
+    prev_feedback_link.id = "feedback-button";
+
+    prev_feedback.appendChild(prev_feedback_link);
+
+    var menu_divider = document.createElement("li");
+    menu_divider.classList.add("menu-item-sub-menu");
+    menu_divider.id = "menu-divider";
+
+
+    $(".bubble").prepend(menu_divider);
+    $(".bubble").prepend(prev_feedback);
+}
+
+
+
 function initializeSnapAdditions(snapWorld, taskID) {
 
     var prevFeedbackButton = false;
@@ -720,6 +784,34 @@ function initializeSnapAdditions(snapWorld, taskID) {
         }
         //sessionStorage.setItem(id + "_popupFeedback", "");
 
+<<<<<<< HEAD
+=======
+        StageHandleMorph.prototype.originalFixLayout = StageHandleMorph.prototype.fixLayout;
+        StageHandleMorph.prototype.fixLayout = function() {
+            this.originalFixLayout();
+            //console.log(this.target.right());
+            //console.log(this.target.width());
+            if (this.target.width() > 225) {
+                if (this.target.width() > 390) {
+                    $('#autograding_bar').css({
+                        right: 150,
+                        left: 'auto',
+                    });
+                } else {
+                /*if (this.target.left() < 950) {
+                    $('#autograding_bar').css({
+                        left:  1075,
+                    });
+                } else {*/
+                    $('#autograding_bar').css({
+                        left:  this.target.left() - 140,
+                    });
+                }
+                
+            }
+            
+        }
+>>>>>>> upstream/master
 
 
     }, 1000);
@@ -1168,6 +1260,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
         var noCreditText = document.createTextNode("Please note you won't receive a score from edX for attempting this problem.");
         noCreditWarning.appendChild(noCreditText);
         document.getElementById("comment").appendChild(noCreditWarning);
+        openResults();
     }
    
 

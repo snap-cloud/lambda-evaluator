@@ -34,7 +34,7 @@
     <script type="text/javascript" src="AGAgent.js"></script>
     <script type="text/javascript" src='feedbackLog.js'></script>
     <script type='text/javascript'>
-        var starter_path = null;
+        var starter_path = "M2_W1_L1_T2_E3_Starter.xml";
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
         var courseID = "BJC.2x";  // e.g. "BJCx"
@@ -183,7 +183,8 @@
             }
 
             var containsPickAnyFromPrepositionals_2 = function () {
-                return customBlockContains("prepositional phrase", "item %idx of %l", ["any","prepositionals"])
+                return customBlockContains("prepositional phrase", "item %idx of %l", ["any","prepositionals"]) ||
+                customBlockContains("prepositional phrase", "item %idx of %l", ["any","prepositions"])
             }
 
 
@@ -249,7 +250,8 @@
             }
 
             var containsJoinBlock_4 = function () {
-                return customBlockContains("sentence", "join %words")
+                return customBlockContains("sentence", "join %words") || 
+                customBlockContains("sentence", "join words %mult%txt");
             }
 
 
