@@ -195,6 +195,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 			//TODO: Fix setUpIsolatedTest to remove testID
 			block = setUpIsolatedTest(test.blockSpec, this, test)
 		} else {
+			console.log("startsnaptest else");
 			block = getScript(test.blockSpec);
 		}
 		//Set the selected block's inputs for the test
@@ -242,7 +243,6 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 };
 
 FeedbackLog.prototype.finishSnapTest = function(test, output) {
-
 	// Check that output is being returned
 	if (output == undefined) {
 		test.output = null;
@@ -350,10 +350,18 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 	    ctx.drawImage(bub, scr.width + 2, 0);
 	    return pic
 	};
-	var myscript = getScript(test.blockSpec);
+	try {
+		var myscript = getScript(test.blockSpec);
+		var pic = myscript.returnBubble(output, true);
+		console.log(pic);
+		test.picture = pic;
+	} catch (e) {
+		console.log(e);
+	}
+	/*var myscript = getScript(test.blockSpec);
 	var pic = myscript.returnBubble(output, true);
 	console.log(pic);
-	test.picture = pic;
+	test.picture = pic;*/
 	//End of Addison's Section
 
 	var expOut = test.expOut;
@@ -362,6 +370,14 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 		test.correct = expOut(output);
 	} else {
 		if (expOut instanceof Array) {
+			/*var copy = expOut;
+			var temp = copy[0];
+			if (temp instanceof Array) {
+				for (var i = 0; i < copy.length; i++) {
+					copy[i] = new List(copy[i]);
+				}
+			}*/
+			listify(expOut);
 			expOut = new List(expOut);
 		}
 		test.correct = snapEquals(output, expOut);
@@ -378,6 +394,7 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 	clearTimeout(this.currentTimeout);
 	test.proc = null;
 	// Clear the input values
+
 	try {
 		if (test.isolated) {
 			test.sprite.remove();
@@ -892,10 +909,6 @@ function cloneListReporter() {
 
 
 
-
-
-
-
 function evalReporter(block, outputLog, testID) {
 	var stage = world.children[0].stage;
 	var proc = stage.threads.startProcess(block,
@@ -941,6 +954,16 @@ function infLoopCheck(outputLog, testID) {
 			}
 			stage.threads.stopProcess(getScript(outputLog["" + testID]["blockSpec"]));
 		}, timeout);
+}
+
+
+function listify(array) {
+	for (var i = 0; i < array.length; i++) {
+		if (array[i] instanceof Array) {
+			listify(array[i]);
+			array[i] = new List(array[i]);
+		}
+	}
 }
 
 

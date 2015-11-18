@@ -34,7 +34,7 @@
     <script type="text/javascript" src="AGAgent.js"></script>
     <script type="text/javascript" src='feedbackLog.js'></script>
     <script type='text/javascript'>
-        var starter_path = null;
+        var starter_path = "M2_W2_L1_T4_E2_Starter.xml";
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
         var courseID = "BJC.2x";  // e.g. "BJCx"
@@ -166,15 +166,15 @@
                 'Great job!');
 
              tip_1_2.newIOTest('r',  //testClass
-                'increasing %',  //blockSpec
-                [2, 1, 5, 4],  //input
+                'increasing? %',  //blockSpec
+                [[2, 1, 5, 4]],  //input
                 false,  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
 
              tip_1_2.newIOTest('r',  //testClass
-                'increasing %',  //blockSpec
+                'increasing? %',  //blockSpec
                 [[1, 1, 6, 7]],  //input
                 true,  //output
                 -1,  //timeout
@@ -182,23 +182,23 @@
                 1);  //points
 
              tip_1_2.newIOTest('r',  //testClass
-                'increasing %',  //blockSpec
+                'increasing? %',  //blockSpec
                 [[-1, -2, -3, -4]],  //input
                 false,  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
 
-             var tip_1_3 = chunk_1.newTip('Make sure your block works for edge cases.',
+             /*var tip_1_3 = chunk_1.newTip('Make sure your block works for edge cases.',
                 'Great job!');
 
              tip_1_3.newIOTest('r',  //testClass
-                'increasing %',  //blockSpec
+                'increasing? %',  //blockSpec
                 [[]],  //input
                 true,  //output
                 -1,  //timeout
                 true,  //isolated
-                1);  //points
+                1);  //points*/
 
             return fb;
         }
