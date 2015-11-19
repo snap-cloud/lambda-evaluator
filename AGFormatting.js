@@ -784,8 +784,6 @@ function initializeSnapAdditions(snapWorld, taskID) {
         }
         //sessionStorage.setItem(id + "_popupFeedback", "");
 
-<<<<<<< HEAD
-=======
         StageHandleMorph.prototype.originalFixLayout = StageHandleMorph.prototype.fixLayout;
         StageHandleMorph.prototype.fixLayout = function() {
             this.originalFixLayout();
@@ -811,7 +809,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
             }
             
         }
->>>>>>> upstream/master
+
 
 
     }, 1000);
