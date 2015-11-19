@@ -34,7 +34,7 @@
     <script type="text/javascript" src="AGAgent.js"></script>
     <script type="text/javascript" src='feedbackLog.js'></script>
     <script type='text/javascript'>
-        var starter_path = "M2_W2_L1_T4_E2_Starter.xml";
+        var starter_path = null;
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
         var courseID = "BJC.2x";  // e.g. "BJCx"
@@ -42,7 +42,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_M2_W2_L1_T4_E2";
+        var taskID = "_M2_W2_L1_T2_E2_3";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -56,74 +56,144 @@
         function AGTest(outputLog) {
 
             //NOTES TO YIFAT AND PATRICK:
-            // No IO tests should be isolated. Which means that you have to check that the block
-            // is on screen.
+            // IO tests should be isolated.
             // All getter/setter functions inside anonymous Assert functions.
             // Thanks for all your work :D
-            //
 
 
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
 
-        /* Create chunk_1 for the exercise 1 : nounPhrase */
-            var chunk_1 = fb.newChunk('Fix the increasing block so that it works');
+            var chunk_0 = fb.newChunk('Use map and combine with to decode the coded message.');
 
 
-            // // Add a first tip to that first test chunk
-            // var tip_1_1 = chunk_1.newTip('Does the "report true" block inside of the for loop cause a problem?',
+            var mapExists_1 = function () {
+                return spriteContainsBlock("map %repRing over %mult%l");
+            }
+
+            var combineExists_1 = function () {
+                return spriteContainsBlock("combine with % items of %");
+            }
+
+            var unicodeAsLetterExists_1 = function () {
+                return spriteContainsBlock("unicode %n as letter");
+            }
+
+            var joinExists_1 = function () {
+                return spriteContainsBlock("join %");
+            }
+
+            var tip_0_0 = chunk_0.newTip('Try to use the combine block in your solution.',
+                'Great job!');
+
+            tip_0_0.newAssertTest(
+                combineExists_1,
+                "Testing if there is a combine block in the scripting area.",
+                "There is a combine block in the scripting area.",
+                "Try using the combine block in your solution.",
+                1);
+
+            var tip_0_1 = chunk_0.newTip('Try to use the map block in your solution.',
+                'Great job!');
+
+            tip_0_1.newAssertTest(
+                mapExists_1,
+                "Testing if there is a map block in the scripting area.",
+                "There is a map block in the scripting area.",
+                "Try using the map block in your solution.",
+                1);
+
+            var tip_0_2 = chunk_0.newTip('Make sure to use the suggested block that converts a unicode number into its corresponding character.',
+                'Great job!');
+
+            tip_0_2.newAssertTest(
+                unicodeAsLetterExists_1,
+                "Testing if the block that converts unicode into characters is in the scripting area.",
+                "The block that converts unicode into characters is in the scripting area.",
+                "Try using the block that converts unicode into characters in your solution.",
+                1);
+
+            var tip_0_3 = chunk_0.newTip('Try using the block that joins strings together into one string.',
+                'Great job!');
+
+            tip_0_3.newAssertTest(
+                joinExists_1,
+                "Testing if the block that joins strings together into one string is in the scripting area.",
+                "The block that joins strings together into one string is in the scripting area.",
+                "Try using the block that joins strings together into one string in your solution.",
+                1);
+
+
+
+            var chunk_1 = fb.newChunk('Make the "total profit %" block.');
+
+            var totalProfitExists_1 = function () {
+                return spriteContainsBlock("total profit %");
+            }
+
+            var containsKeep = function () {
+                return customBlockContains("total profit %", "keep items such that %predRing from %l");
+            }
+
+            var containsMap = function () {
+                return customBlockContains("total profit %", "map %repRing over %mult%l");
+            }
+
+            var containsCombine = function () {
+                return customBlockContains("total profit %", "combine with % items of %");
+            }
+
+            var tip_1_0 = chunk_1.newTip('Make sure you name your block exactly "total profit %" and place it in the scripting area.',
+                'Great job!');
+
+            tip_1_0.newAssertTest(
+                totalProfitExists_1,
+                "Testing if the 'total profit %' block is in the scripting area.",
+                "The 'total profit %' block is in the scripting area.",
+                "Make sure you name your block exactly 'total profit %' and place it in the scripting area.",
+                1);
+
+            var tip_1_1 = chunk_1.newTip('Make sure you use the keep block in the body of your "total profit %" block.',
+                'Great job!');
+
+            tip_1_1.newAssertTest(
+                containsKeep,
+                "Testing if the keep block is in the body of the 'total profit %' block.",
+                "The keep block is in the body of the 'total profit %' block.",
+                "Make sure to use the keep block in the body of the 'total profit %' block.",
+                1);
+
+            var tip_1_2 = chunk_1.newTip('Make sure you use the map block in the body of your "total profit %" block.',
+                'Great job!');
+
+            tip_1_2.newAssertTest(
+                containsMap,
+                "Testing if the map block is in the body of the 'total profit %' block.",
+                "The map block is in the body of the 'total profit %' block.",
+                "Make sure to use the map block in the body of the 'total profit %' block.",
+                1);
+
+            var tip_1_3 = chunk_1.newTip('Make sure you use the combine block in the body of your "total profit %" block.',
+                'Great job!');
+
+            tip_1_3.newAssertTest(
+                containsCombine,
+                "Testing if the combine block is in the body of the 'total profit %' block.",
+                "The combine block is in the body of the 'total profit %' block.",
+                "Make sure to use the combine block in the body of the 'total profit %' block.",
+                1);
+
+            // var tip_1_4 = chunk_1.newTip('Make sure your "total profit %" block works on the given list "ice cream store day-by-day".',
             //     'Great job!');
 
-            // var trueAfterFor_1 = function () {
-            //     var body = getCustomBody("increasing? %");
-            //     return blockPrecedes("for each % of % %", "true", body) && blockPrecedesInSprite("for each % of % %", "report %", body);
-            // }
+            //  tip_1_4.newIOTest('r',  //testClass
+            //     'total profit %',  //blockSpec
+            //     [[[89, 26, 61], [79, 14, 39], [92, 27, 77], [82, 44, 43], [73, 38, 47], [96, 58, 79], [80, 11, 83], [73, 6, 38]]],  //input
+            //     1207.5,  //output
+            //     -1,  //timeout
+            //     true,  //isolated
+            //     1);  //points
 
-            // tip_1_1.newAssertTest(
-            //     trueAfterFor_1,
-            //     "Testing if the return true block is after the for loop in the body of the increasing block.",
-            //     "The return true block is after the for loop in the increasing block.",
-            //     "Try moving the true block after the for loop in the increasing block",
-            //     1);
-            
-
-            var tip_1_2 = chunk_1.newTip('Make sure your block works for general cases.',
-                'Great job!');
-
-             tip_1_2.newIOTest('r',  //testClass
-                'increasing? %',  //blockSpec
-                [[2, 1, 5, 4]],  //input
-                false,  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             tip_1_2.newIOTest('r',  //testClass
-                'increasing? %',  //blockSpec
-                [[1, 1, 6, 7]],  //input
-                true,  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             tip_1_2.newIOTest('r',  //testClass
-                'increasing? %',  //blockSpec
-                [[-1, -2, -3, -4]],  //input
-                false,  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-             /*var tip_1_3 = chunk_1.newTip('Make sure your block works for edge cases.',
-                'Great job!');
-
-             tip_1_3.newIOTest('r',  //testClass
-                'increasing? %',  //blockSpec
-                [[]],  //input
-                true,  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points*/
 
             return fb;
         }
