@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,7 +35,7 @@
     <script type="text/javascript" src="AGAgent.js"></script>
     <script type="text/javascript" src='feedbackLog.js'></script>
     <script type='text/javascript'>
-        var starter_path = "M2_W2_L1_T4_E2_Starter.xml";
+        var starter_path = null;
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
         var courseID = "BJC.2x";  // e.g. "BJCx"
@@ -42,7 +43,7 @@
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_M2_W2_L1_T4_E2";
+        var taskID = "_M2_W4_L2_T7_E2";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -56,74 +57,64 @@
         function AGTest(outputLog) {
 
             //NOTES TO YIFAT AND PATRICK:
-            // No IO tests should be isolated. Which means that you have to check that the block
-            // is on screen.
+            // IO tests should be isolated.
             // All getter/setter functions inside anonymous Assert functions.
             // Thanks for all your work :D
-            //
 
 
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
 
-        /* Create chunk_1 for the exercise 1 : nounPhrase */
-            var chunk_1 = fb.newChunk('Fix the increasing block so that it works');
+            var chunk_1 = fb.newChunk('Make the "are the numbers of % distinct" block.');
 
+            var blockExists_1 = function () {
+                return spriteContainsBlock("are the numbers of % distinct");
+            }
 
-            // // Add a first tip to that first test chunk
-            // var tip_1_1 = chunk_1.newTip('Does the "report true" block inside of the for loop cause a problem?',
-            //     'Great job!');
-
-            // var trueAfterFor_1 = function () {
-            //     var body = getCustomBody("increasing? %");
-            //     return blockPrecedes("for each % of % %", "true", body) && blockPrecedesInSprite("for each % of % %", "report %", body);
-            // }
-
-            // tip_1_1.newAssertTest(
-            //     trueAfterFor_1,
-            //     "Testing if the return true block is after the for loop in the body of the increasing block.",
-            //     "The return true block is after the for loop in the increasing block.",
-            //     "Try moving the true block after the for loop in the increasing block",
-            //     1);
-            
-
-            var tip_1_2 = chunk_1.newTip('Make sure your block works for general cases.',
+            var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly "are the numbers of % distinct" and place it in the scripting area.',
                 'Great job!');
 
-             tip_1_2.newIOTest('r',  //testClass
-                'increasing? %',  //blockSpec
-                [[2, 1, 5, 4]],  //input
+            tip_1_1.newAssertTest(
+                blockExists_1,
+                "Testing if the 'are the numbers of % distinct' block is in the scripting area.",
+                "The 'are the numbers of % distinct' block is in the scripting area.",
+                "Make sure you name your block exactly 'are the numbers of % distinct' and place it in the scripting area.",
+                1);
+
+            var tip_1_2 = chunk_1.newTip('Make sure your block works for general inputs.',
+                'Great job!');
+
+            tip_1_2.newIOTest('r',  //testClass
+                'are the numbers of % distinct',  //blockSpec
+                [[2, 1, 5, 4, 0, 2, 8, 3, 2]],  //input
                 false,  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
 
-             tip_1_2.newIOTest('r',  //testClass
-                'increasing? %',  //blockSpec
-                [[1, 1, 6, 7]],  //input
+            tip_1_2.newIOTest('r',  //testClass
+                'are the numbers of % distinct',  //blockSpec
+                [[1, 2, 3]],  //input
                 true,  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
 
-             tip_1_2.newIOTest('r',  //testClass
-                'increasing? %',  //blockSpec
-                [[-1, -2, -3, -4]],  //input
+            tip_1_2.newIOTest('r',  //testClass
+                'are the numbers of % distinct',  //blockSpec
+                [[0, 0, 0]],  //input
                 false,  //output
                 -1,  //timeout
                 true,  //isolated
                 1);  //points
 
-             /*var tip_1_3 = chunk_1.newTip('Make sure your block works for edge cases.',
-                'Great job!');
-
-             tip_1_3.newIOTest('r',  //testClass
-                'increasing? %',  //blockSpec
-                [[]],  //input
+            tip_1_2.newIOTest('r',  //testClass
+                'are the numbers of % distinct',  //blockSpec
+                [[2]],  //input
                 true,  //output
                 -1,  //timeout
                 true,  //isolated
-                1);  //points*/
+                1);  //points
 
             return fb;
         }
