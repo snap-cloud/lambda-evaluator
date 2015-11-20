@@ -1085,18 +1085,25 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             document.getElementById("incorrect-section").appendChild(incorrect_chunk);
         }
 
+        var currRank = 1;
+
+        tipLoop:
         for (x=0; x<tips.length; x++) {
             var tip = tips[x];
+
             var allFeedback = allFeedback = typeof allFeedback !== 'undefined' ? allFeedback : false;
             var div = document.createElement("div");
             var label_class = "incorrectans";
             var current_chunk = document.getElementsByClassName("incorrect-chunk"+String(i))[0];
+
             if (tip["allCorrect"] === true) {
                 document.getElementById("correct-section").style.display = "block";
                 document.getElementById("correct-section").appendChild(correct_chunk);
                 current_chunk = document.getElementsByClassName("correct-chunk"+String(i))[0];
                 label_class = "correctans";
                 var suggestion = tip["complement"];
+
+                
             } else {
                 numtips += 1;
                 var suggestion = tip["suggestion"];
@@ -1224,6 +1231,14 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         $("." + className).append(thisTest.expectedPicture);*/
 
                         appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
+                    }
+                }
+
+                if (tip["rank"] === currRank || tip["rank"] !== 0) {
+                    if (!tip["allCorrect"]) {
+                        break tipLoop;
+                    } else {
+                        currRank += 1;
                     }
                 }
             }

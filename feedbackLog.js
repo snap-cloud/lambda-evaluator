@@ -622,8 +622,9 @@ TestChunk.prototype.updateCounts = function(num_tests, num_points) {
 	}
 }
 
-TestChunk.prototype.newTip = function(suggestion, complement) {
-	var new_tip = new Tip(suggestion, complement);
+TestChunk.prototype.newTip = function(suggestion, complement, rank) {
+	rank = typeof rank !== 'undefined' ? rank : 0;
+	var new_tip = new Tip(suggestion, complement, rank);
 	this.addTip(new_tip);
 	return new_tip;
 }
@@ -639,7 +640,7 @@ TestChunk.prototype.addTip = function(tip) {
 /****************************************************************************/
 /****************************************************************************/
 
-function Tip(suggestion, complement) {
+function Tip(suggestion, complement, rank) {
 	this.suggestion = suggestion || 'Try Harder.';
 	this.complement = complement || 'Good Job!';
 	this.test_list = [];
@@ -650,6 +651,7 @@ function Tip(suggestion, complement) {
 	this.points = 0
 	this.allCorrect = false;
 	this.chunk = null;
+	this.rank = rank || 0;
 }
 
 Tip.prototype.updateCounts = function(num_tests, num_points) {
