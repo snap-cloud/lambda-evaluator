@@ -54,7 +54,7 @@
         var regradeOn = false;
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
-        var showPoints = true;
+        showPoints = true;
         function AGTest(outputLog) {
 
             //NOTES TO YIFAT AND PATRICK:
@@ -65,6 +65,57 @@
 
             var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
             fb.snapWorld = world;
+
+            var chunk_0 = fb.newChunk('Make the "length of longest word in %" block.');
+
+            var lengthExists_0 = function () {
+                return spriteContainsBlock("length of longest word in %");
+            }
+
+            var tip_0_1 = chunk_0.newTip('Make sure you name your block exactly "length of longest word in %" and place it in the scripting area.',
+                'Great job!');
+
+            tip_0_1.newAssertTest(
+                lengthExists_0,
+                "Testing if the 'length of longest word in %' block is in the scripting area.",
+                "The 'length of longest word in %' block is in the scripting area.",
+                "Make sure you name your block exactly 'length of longest word in %' and place it in the scripting area.",
+                0);
+
+            var tip_0_2 = chunk_0.newTip('Make sure your block works for any valid input.',
+                'Great job!');
+
+            tip_0_2.newIOTest('r',  //testClass
+                'length of longest word in %',  //blockSpec
+                [['dog', 'cat', 'tree', 'my', 'hello']],  //input
+                5,  //output
+                -1,  //timeout
+                true,  //isolated
+                0.7);  //points
+
+            tip_0_2.newIOTest('r',  //testClass
+                'length of longest word in %',  //blockSpec
+                [['hi', 'morning', 'hello']],  //input
+                7,  //output
+                -1,  //timeout
+                true,  //isolated
+                0.7);  //points
+
+            // tip_0_2.newIOTest('r',  //testClass
+            //     'length of longest word in %',  //blockSpec
+            //     [[]],  //input
+            //     0,  //output
+            //     -1,  //timeout
+            //     true,  //isolated
+            //     1);  //points
+
+            tip_0_2.newIOTest('r',  //testClass
+                'length of longest word in %',  //blockSpec
+                [['TheBeautyAndJoyOfComputing']],  //input
+                26,  //output
+                -1,  //timeout
+                true,  //isolated
+                0.6);  //points
 
             var chunk_1 = fb.newChunk('Make the "choose secret word from % with length %" block.');
 
@@ -91,7 +142,7 @@
                 'hello',  //output
                 -1,  //timeout
                 true,  //isolated
-                2/3);  //points
+                0.5);  //points
 
             tip_1_2.newIOTest('r',  //testClass
                 'choose secret word from % with length %',  //blockSpec
@@ -99,7 +150,7 @@
                 'dog',  //output
                 -1,  //timeout
                 true,  //isolated
-                2/3);  //points
+                0.5);  //points
 
             tip_1_2.newIOTest('r',  //testClass
                 'choose secret word from % with length %',  //blockSpec
@@ -107,10 +158,15 @@
                 'tree',  //output
                 -1,  //timeout
                 true,  //isolated
-                2/3);  //points
+                0.5);  //points
 
-
-
+            tip_1_2.newIOTest('r',  //testClass
+                'choose secret word from % with length %',  //blockSpec
+                [['dog', 'cat', 'tree', 'my', 'hello'], 2],  //input
+                'my',  //output
+                -1,  //timeout
+                true,  //isolated
+                0.5);  //points
 
             var chunk_2 = fb.newChunk('Make the "player won? secret % guesses %" block.');
 
@@ -137,7 +193,7 @@
                 true,  //output
                 -1,  //timeout
                 true,  //isolated
-                2/3);  //points
+                0.5);  //points
 
             tip_2_2.newIOTest('r',  //testClass
                 'player won? secret % guesses %',  //blockSpec
@@ -145,7 +201,7 @@
                 true,  //output
                 -1,  //timeout
                 true,  //isolated
-                2/3);  //points
+                0.5);  //points
 
             tip_2_2.newIOTest('r',  //testClass
                 'player won? secret % guesses %',  //blockSpec
@@ -153,107 +209,110 @@
                 false,  //output
                 -1,  //timeout
                 true,  //isolated
-                2/3);  //points
+                0.5);  //points
 
-
-
-            var chunk_3 = fb.newChunk('Make the "player lost? lives %" block.');
-
-            var playerLostExists_3 = function () {
-                return spriteContainsBlock("player lost? lives %");
-            }
-
-            var tip_3_1 = chunk_3.newTip('Make sure you name your block exactly "player lost? lives %" and place it in the scripting area.',
-                'Great job!');
-
-            tip_3_1.newAssertTest(
-                playerLostExists_3,
-                "Testing if the 'player lost? lives %' block is in the scripting area.",
-                "The 'player lost? lives %' block is in the scripting area.",
-                "Make sure you name your block exactly 'player lost? lives %' and place it in the scripting area.",
-                0);
-
-            var tip_3_2 = chunk_3.newTip('Make sure your block works for general inputs.',
-                'Great job!');
-
-            tip_3_2.newIOTest('r',  //testClass
-                'player lost? lives %',  //blockSpec
-                [0],  //input
-                true,  //output
-                -1,  //timeout
-                true,  //isolated
-                1/3);  //points
-
-            tip_3_2.newIOTest('r',  //testClass
-                'player lost? lives %',  //blockSpec
-                [1],  //input
+            tip_2_2.newIOTest('r',  //testClass
+                'player won? secret % guesses %',  //blockSpec
+                ['ant', ['a', 'n']],  //input
                 false,  //output
                 -1,  //timeout
                 true,  //isolated
-                1/3);  //points
-
-            tip_3_2.newIOTest('r',  //testClass
-                'player lost? lives %',  //blockSpec
-                [3],  //input
-                false,  //output
-                -1,  //timeout
-                true,  //isolated
-                1/3);  //points
+                0.5);  //points
 
 
+            // var chunk_3 = fb.newChunk('Make the "player lost? lives %" block.');
 
-            var chunk_4 = fb.newChunk('Make the "word % contains %" block.');
+            // var playerLostExists_3 = function () {
+            //     return spriteContainsBlock("player lost? lives %");
+            // }
 
-            var wordContainsExists_4 = function () {
-                return spriteContainsBlock("word % contains %");
+            // var tip_3_1 = chunk_3.newTip('Make sure you name your block exactly "player lost? lives %" and place it in the scripting area.',
+            //     'Great job!');
+
+            // tip_3_1.newAssertTest(
+            //     playerLostExists_3,
+            //     "Testing if the 'player lost? lives %' block is in the scripting area.",
+            //     "The 'player lost? lives %' block is in the scripting area.",
+            //     "Make sure you name your block exactly 'player lost? lives %' and place it in the scripting area.",
+            //     1);
+
+            // var tip_3_2 = chunk_3.newTip('Make sure your block works for general inputs.',
+            //     'Great job!');
+
+            // tip_3_2.newIOTest('r',  //testClass
+            //     'player lost? lives %',  //blockSpec
+            //     [0],  //input
+            //     true,  //output
+            //     -1,  //timeout
+            //     true,  //isolated
+            //     1);  //points
+
+            // tip_3_2.newIOTest('r',  //testClass
+            //     'player lost? lives %',  //blockSpec
+            //     [1],  //input
+            //     false,  //output
+            //     -1,  //timeout
+            //     true,  //isolated
+            //     1);  //points
+
+            // tip_3_2.newIOTest('r',  //testClass
+            //     'player lost? lives %',  //blockSpec
+            //     [3],  //input
+            //     false,  //output
+            //     -1,  //timeout
+            //     true,  //isolated
+            //     1);  //points
+
+            var chunk_4 = fb.newChunk('Make the "number of % in %" block.');
+
+            var numberOfExists_4 = function () {
+                return spriteContainsBlock("number of % in %");
             }
 
-            var tip_4_1 = chunk_4.newTip('Make sure you name your block exactly "word % contains %" and place it in the scripting area.',
+            var tip_4_1 = chunk_4.newTip('Make sure you name your block exactly "number of % in %" and place it in the scripting area.',
                 'Great job!');
 
             tip_4_1.newAssertTest(
-                wordContainsExists_4,
-                "Testing if the 'word % contains %' block is in the scripting area.",
-                "The 'word % contains %' block is in the scripting area.",
-                "Make sure you name your block exactly 'word % contains %' and place it in the scripting area.",
+                numberOfExists_4,
+                "Testing if the 'number of % in %' block is in the scripting area.",
+                "The 'number of % in %' block is in the scripting area.",
+                "Make sure you name your block exactly 'number of % in %' and place it in the scripting area.",
                 0);
 
-            var tip_4_2 = chunk_4.newTip('Make sure your block works for general inputs.',
+            var tip_4_2 = chunk_4.newTip('Make sure your block works for all valid inputs.',
                 'Great job!');
 
             tip_4_2.newIOTest('r',  //testClass
-                'word % contains %',  //blockSpec
-                ['table', 'b'],  //input
-                true,  //output
+                'number of % in %',  //blockSpec
+                ['b', 'table'],  //input
+                1,  //output
                 -1,  //timeout
                 true,  //isolated
                 0.5);  //points
 
             tip_4_2.newIOTest('r',  //testClass
-                'word % contains %',  //blockSpec
-                ['hammer', 'r'],  //input
-                true,  //output
+                'number of % in %',  //blockSpec
+                ['t', 'turtle'],  //input
+                2,  //output
                 -1,  //timeout
                 true,  //isolated
                 0.5);  //points
 
             tip_4_2.newIOTest('r',  //testClass
-                'word % contains %',  //blockSpec
-                ['lemon', 'x'],  //input
-                false,  //output
+                'number of % in %',  //blockSpec
+                ['s', 'scissors'],  //input
+                4,  //output
                 -1,  //timeout
                 true,  //isolated
                 0.5);  //points
 
             tip_4_2.newIOTest('r',  //testClass
-                'word % contains %',  //blockSpec
-                ['waves', 'w'],  //input
-                true,  //output
+                'number of % in %',  //blockSpec
+                ['r', 'table'],  //input
+                0,  //output
                 -1,  //timeout
                 true,  //isolated
                 0.5);  //points
-
-
 
 
             var chunk_5 = fb.newChunk('Make the "display pattern of % with %" block.');
@@ -272,40 +331,48 @@
                 "Make sure you name your block exactly 'display pattern of % with %' and place it in the scripting area.",
                 0);
 
-            var tip_5_2 = chunk_5.newTip('Make sure your block works for general inputs.',
+            var tip_5_2 = chunk_5.newTip('Make sure your block works for all valid inputs.',
                 'Great job!');
 
             tip_5_2.newIOTest('r',  //testClass
                 'display pattern of % with %',  //blockSpec
                 ['tree', ['a', 'b', 'r', 'e']],  //input
-                '_ r e e',  //output
+                '-ree',  //output
                 -1,  //timeout
                 true,  //isolated
-                3/4);  //points
+                0.4);  //points
 
             tip_5_2.newIOTest('r',  //testClass
                 'display pattern of % with %',  //blockSpec
                 ['ocean', ['o', 'b', 'r', 'c']],  //input
-                'o c _ _ _',  //output
+                'oc---',  //output
                 -1,  //timeout
                 true,  //isolated
-                3/4);  //points
+                0.4);  //points
+
+            tip_5_2.newIOTest('r',  //testClass
+                'display pattern of % with %',  //blockSpec
+                ['pie', ['i']],  //input
+                '-i-',  //output
+                -1,  //timeout
+                true,  //isolated
+                0.4);  //points
 
             tip_5_2.newIOTest('r',  //testClass
                 'display pattern of % with %',  //blockSpec
                 ['pie', ['o']],  //input
-                '_ _ _',  //output
+                '---',  //output
                 -1,  //timeout
                 true,  //isolated
-                3/4);  //points
+                0.4);  //points
 
             tip_5_2.newIOTest('r',  //testClass
                 'display pattern of % with %',  //blockSpec
-                ['horse', ['h', 'o', 'r', 's', 'e']],  //input
-                'h o r s e',  //output
+                ['horse', ['h', 'e', 'r', 's', 'o']],  //input
+                'horse',  //output
                 -1,  //timeout
                 true,  //isolated
-                3/4);  //points
+                0.4);  //points
 
 
             return fb;
