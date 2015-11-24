@@ -99,7 +99,7 @@ var AG_EDX = (function() {
         }*/
         //console.log(encodeURIComponent(correct_xml));
         output = encodeURI(JSON.stringify(output));
-        //console.log(output);
+        console.log(decodeURI(output));
         return output;
 
         // var last_xml = localStorage.getItem(id + "_test_state");

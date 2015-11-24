@@ -170,6 +170,11 @@ function closeResults(){
     overlay.classList.add("is-hidden");
 }
 
+function closeInitialHelp() {
+    var initial_overlay = document.getElementById("initial-help");
+    initial_overlay.classList.add("is-hidden");
+}
+
 /*function populateFeedback(outputLog) {
     var taskID = outputLog.taskID;
     //var last_log = sessionStorage.getItem(taskID + "_last_submitted_log");
@@ -477,7 +482,6 @@ function moveAutogradingBar() {
 }
 
 
-
 function createInitialHelp() {
     initial_help = document.createElement("div");
     initial_help.classList.add("overlay");
@@ -538,7 +542,6 @@ function previousFeedbackButton() {
     $(".bubble").prepend(menu_divider);
     $(".bubble").prepend(prev_feedback);
 }
-
 
 
 function initializeSnapAdditions(snapWorld, taskID) {
@@ -652,6 +655,11 @@ function initializeSnapAdditions(snapWorld, taskID) {
     $(".bubble").mouseover(function() {
         moveHelp();
     });
+
+    if (isInitial) {
+        var initial_overlay = document.getElementById('initial-help');
+        initial_overlay.onclick = function(e) { closeInitialHelp(); }
+    }
 
     checkButtonExists = false;
     if (isEDX) {
@@ -811,7 +819,6 @@ function initializeSnapAdditions(snapWorld, taskID) {
         }
 
 
-
     }, 1000);
 
     setTimeout(function() {
@@ -855,6 +862,7 @@ var button_listener = function(event) {
 
 function moveHelp() {
     var pos = $(".bubble").offset();
+    var menu_pos = $("#onclick-menu").offset();
 
     $("#menu-item-help").css({
         position: "absolute",
@@ -876,8 +884,33 @@ function moveHelp() {
         top: pos.top - 30 + "px",
         left: pos.left + 270 + "px"
     });
-}
 
+
+
+
+    $("#initial-ag-button-help").css({
+        position: "absolute",
+        top: pos.top + "px",
+        left: pos.left + 200 + "px"
+    });
+    $("#initial-ag-button-arrow").css({
+        position: "absolute",
+        top: pos.top - 33 + "px",
+        left: pos.left + 200 + "px"
+    });
+
+
+    $("#hamburger-menu-help").css({
+        position: "absolute",
+        top: menu_pos.top + 40 + "px",
+        left: menu_pos.left - 100 + "px"
+    });
+    $("#hamburger-menu-arrow").css({
+        position: "absolute",
+        top: menu_pos.top + 5 + "px",
+        left: menu_pos.left + 5 + "px"
+    });
+}
 
 
 
@@ -1102,8 +1135,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                 }
                 if (thisTest["testClass"] !== "r") {
 
-                    
-                    if (document.getElementsByClassName("observations-section" + String(i) +String(x)[0]) !== []) {
+                    if (document.getElementsByClassName("observations-section" + String(i) +String(x)[0]).length === 0) {
                         incorrect_assertions = 0;
                         correct_assertions = 0;
                         appendElement("div", "", ["results", "observations-section" + String(i) +String(x)], document.getElementsByClassName("observations" + String(i) +String(x))[0]);
@@ -1122,6 +1154,12 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         if ((allFeedback) || tip["allCorrect"]) {
                             appendElement("p", "✔", "data", document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
                             appendElement("p", testPoints + "Tests Passed! " + thisTest["feedback"], ["data", "assertion"], document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
+
+                            //console.log("should append picture");
+
+                            /*var className = ".observations-section" + String(i) +String(x)[0];
+                            $(className).append(thisTest.picture);*/
+                            
                             appendElement("br", null, null, document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
                         }
                         
@@ -1129,12 +1167,16 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         appendElement("p", "✖", "data", document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
                         incorrect_assertions += 1;
                         appendElement("p", testPoints + "Error Found! " + thisTest["feedback"], ["data", "assertion"], document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
+                        
+                        /*var className = ".observations-section" + String(i) +String(x)[0];
+                        $(className).append(thisTest.picture);*/
+                        
                         appendElement("br", null, null, document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
                     }
 
                 } else {
 
-                    if (document.getElementsByClassName("tests-section" + String(i) +String(x)[0]) !== []) {
+                    if (document.getElementsByClassName("tests-section" + String(i) +String(x)[0]).length === 0) {
                         incorrect_tests = 0;
                         correct_tests = 0;
                         appendElement("div", "", ["results", "tests-section" + String(i) +String(x)], document.getElementsByClassName("observations" + String(i) +String(x))[0]);
@@ -1163,7 +1205,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             string_reporter.innerHTML = '<p class="data assertion">' + testPoints + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion">, returned the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '</p>';
                             document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
 
-
                             /*var className = "tests-section" + String(i) +String(x)[0];
                             $("." + className).append(thisTest.picture);
                             $("." + className).append(thisTest.expectedPicture);*/
@@ -1172,7 +1213,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         }
                     } else {
                         appendElement("p", "✖", "data", document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
-                        
+                    
 
                         var string_reporter = document.createElement("div");
                         string_reporter.classList.add("data", "assertion");
@@ -1244,8 +1285,9 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     if (showPoints) {
         if (log["totalPoints"] !== 1) {
             problemPlural = "s";
-        } 
-        problemPoints = " (" + log["totalPoints"] + " possible point" + problemPlural + ") ";
+        }
+        log["totalPoints"] = Math.round(log["totalPoints"]);
+        problemPoints = " (" + Math.round(log["totalPoints"]) + " possible point" + problemPlural + ") ";
     }
 
     document.getElementById("comment").innerHTML = "We have " + String(numtips) + " tip" + plural + " for you!" + problemPoints;
