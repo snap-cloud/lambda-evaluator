@@ -81,104 +81,106 @@
                 // AUTOGRADER ADDITION -
                 // Create a gradingLog and initialize the AG status bar (AGSB).
                 // Initialize AGSB button.
-                $("#autograding_button").on('click', button_listener);
-                $('#world').om("mouseup", update_listener);
+                document.getElementById("autograding_button")
+                    .addEventListener('click', button_listener);
+                document.getElementById('world')
+                    .addEventListener("mouseup", update_listener);
                 // Start Snap Environment Loop
                 setInterval(loop, 1);
             };
 
-        function loop() {
-            world.doOneCycle();
-        }
-        </script>
-        <script src='feedbackLog.js'></script>
-        <script src="AG_EDX.js"></script>
-    </head>
-    <body style="margin: 0;">
-        <div class="header">
-            Header Row
-        </div>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-5">
-                    Left Result Column
-                </div>
-                <div class="col-7">
-                    <div class="problem-content">
-                        Problem Content
+            function loop() {
+                world.doOneCycle();
+            }
+            </script>
+            <!-- // <script src='feedbackLog.js'></script> -->
+            <script src="ag-ui/AG_EDX.js"></script>
+        </head>
+        <body style="margin: 0;">
+            <div class="header">
+                Header Row
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-5">
+                        Left Result Column
                     </div>
-                    <div class="snap-content">
-                        <canvas id="world" tabindex="1"></canvas>
+                    <div class="col-7">
+                        <div class="problem-content">
+                            Problem Content
+                        </div>
+                        <div class="snap-content">
+                            <canvas id="world" tabindex="1"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Snap Autograding Button -->
-        <div id="autograding_bar">
-            <div tabindex="0" class="onclick-menu" id='onclick-menu' style="display:inline-block">
-                <span title="Menu">&#9776;</span>
-                <div class='hover_darken'></div>
-                <nav id="navigation" class="site-navigation" role="navigation">
-                    <ul id="dropdown-closed" class="bubble">
-                        <!--
-                        <li class="menu-item-sub-menu" id="enabled-button">
-                            <a id="feedback-button">View Feedback</a>
-                        </li>
-                        <li class="menu-divider-sub-menu" id='menu-divider'>
-                        </li>
-                        -->
-                        <li class="menu-item-sub-menu" id="enabled-button">
-                            <a id="undo-button">Revert To Last Attempt</a>
-                        </li>
-                        <li class="menu-item-sub-menu" id="enabled-button">
-                            <a id="revert-button">Revert To Best Attempt</a>
-                        </li>
-                        <!--<li class="menu-item-sub-menu" id="enabled-button">
-                            <a id="last-submit">Revert To Last edX Submission</a>
-                            </li>-->
-                        <li class="menu-item-sub-menu" id="enabled-button">
-                            <a id="reset-button">Reset</a>
-                        </li>
-                        <li class="menu-divider-sub-menu" id='menu-divider'>
-                        </li>
-                        <li class="menu-item-sub-menu" id='enabled-button' onclick="openPopup();">
-                            <a id="help-button">Help</a>
-                        </li>
-                    </ul>
-                </nav>
+            <!-- Snap Autograding Button -->
+            <div id="autograding_bar">
+                <div tabindex="0" class="onclick-menu" id='onclick-menu' style="display:inline-block">
+                    <span title="Menu">&#9776;</span>
+                    <div class='hover_darken'></div>
+                    <nav id="navigation" class="site-navigation" role="navigation">
+                        <ul id="dropdown-closed" class="bubble">
+                            <!--
+                            <li class="menu-item-sub-menu" id="enabled-button">
+                                <a id="feedback-button">View Feedback</a>
+                            </li>
+                            <li class="menu-divider-sub-menu" id='menu-divider'>
+                            </li>
+                            -->
+                            <li class="menu-item-sub-menu" id="enabled-button">
+                                <a id="undo-button">Revert To Last Attempt</a>
+                            </li>
+                            <li class="menu-item-sub-menu" id="enabled-button">
+                                <a id="revert-button">Revert To Best Attempt</a>
+                            </li>
+                            <!--<li class="menu-item-sub-menu" id="enabled-button">
+                                <a id="last-submit">Revert To Last edX Submission</a>
+                                </li>-->
+                            <li class="menu-item-sub-menu" id="enabled-button">
+                                <a id="reset-button">Reset</a>
+                            </li>
+                            <li class="menu-divider-sub-menu" id='menu-divider'>
+                            </li>
+                            <li class="menu-item-sub-menu" id='enabled-button' onclick="openPopup();">
+                                <a id="help-button">Help</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div id="autograding_button" style="display:inline-block;">
+                    <span></span>
+                    <div class='hover_darken'></div>
+                </div>
+                <div id="numtips" style="display:inline-block"></div>
             </div>
-            <div id="autograding_button" style="display:inline-block;">
-                <span></span>
-                <div class='hover_darken'></div>
+            <!-- Snap Autograding Menu -->
+            <!-- Autograding Menu Help Button -->
+            <div class="overlay is-hidden" id="overlay">
+                <p class="help-text" id="full-screen-arrow">&#8600;</p>
+                <p class="help-text" id="full-screen-help">
+                    This full-screen button will pop out the Snap! window.
+                </p>
+                <p class="help-text" id="menu-item-arrow">&#8599;</p>
+                <p class="help-text" id="menu-item-help">The first two menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your last graded attempt or to your best attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
+                <p class="help-text" id="ag-button-arrow">&#8593;</p>
+                <p class="help-text" id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
             </div>
-            <div id="numtips" style="display:inline-block"></div>
-        </div>
-        <!-- Snap Autograding Menu -->
-        <!-- Autograding Menu Help Button -->
-        <div class="overlay is-hidden" id="overlay">
-            <p class="help-text" id="full-screen-arrow">&#8600;</p>
-            <p class="help-text" id="full-screen-help">
-                This full-screen button will pop out the Snap! window.
-            </p>
-            <p class="help-text" id="menu-item-arrow">&#8599;</p>
-            <p class="help-text" id="menu-item-help">The first two menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your last graded attempt or to your best attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
-            <p class="help-text" id="ag-button-arrow">&#8593;</p>
-            <p class="help-text" id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
-        </div>
 
-        <div style="display:inline-block" class="view-results" id="circle" onclick="openResults();">
-            Results
-        </div>
-        <div class="overlay is-hidden" id="ag-output">
-            <div class="popup-content" id="ag-results">
-                <span class="button-close" onclick="closeResults();" id="popup">X</span>
-                <!--<p id = "different-feedback"></p>
-                    <p id = "edx-submit-different"></p>-->
-                <div id="toggle-correct-tests"></div>
-                <p id="comment"></p>
+            <div style="display:inline-block" class="view-results" id="circle" onclick="openResults();">
+                Results
+            </div>
+            <div class="overlay is-hidden" id="ag-output">
+                <div class="popup-content" id="ag-results">
+                    <span class="button-close" onclick="closeResults();" id="popup">X</span>
+                    <!--<p id = "different-feedback"></p>
+                        <p id = "edx-submit-different"></p>-->
+                    <div id="toggle-correct-tests"></div>
+                    <p id="comment"></p>
+                </div>
             </div>
         </div>
-    </div>
     </body>
 </html>
