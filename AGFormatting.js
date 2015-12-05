@@ -1,12 +1,3 @@
-/*var onclick_menu = document.getElementById('onclick-menu');
-var menu_style = window.getComputedStyle(onclick_menu);
-var menu_right = menu_style.getPropertyValue('right');
-
-var button = document.getElementById('autograding_button');
-var button_style = window.getComputedStyle(button);
-var button_right = button_style.getPropertyValue('right');*/
-
-
  /*
  * Makes AG status bar reflect the ungraded state of the outputLog.
  */
