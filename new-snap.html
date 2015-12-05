@@ -95,6 +95,8 @@
             </script>
             <!-- // <script src='feedbackLog.js'></script> -->
             <script src="ag-ui/AG_EDX.js"></script>
+            <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
+            <script src="lib/bootstrap/js/bootstrap.js.css"></script>
         </head>
         <body style="margin: 0;">
             <div class="header">
@@ -102,10 +104,10 @@
             </div>
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-5">
+                    <div class="col-md-5">
                         Left Result Column
                     </div>
-                    <div class="col-7">
+                    <div class="col-md-7">
                         <div class="problem-content">
                             Problem Content
                         </div>
@@ -123,22 +125,12 @@
                     <div class='hover_darken'></div>
                     <nav id="navigation" class="site-navigation" role="navigation">
                         <ul id="dropdown-closed" class="bubble">
-                            <!--
-                            <li class="menu-item-sub-menu" id="enabled-button">
-                                <a id="feedback-button">View Feedback</a>
-                            </li>
-                            <li class="menu-divider-sub-menu" id='menu-divider'>
-                            </li>
-                            -->
                             <li class="menu-item-sub-menu" id="enabled-button">
                                 <a id="undo-button">Revert To Last Attempt</a>
                             </li>
                             <li class="menu-item-sub-menu" id="enabled-button">
                                 <a id="revert-button">Revert To Best Attempt</a>
                             </li>
-                            <!--<li class="menu-item-sub-menu" id="enabled-button">
-                                <a id="last-submit">Revert To Last edX Submission</a>
-                                </li>-->
                             <li class="menu-item-sub-menu" id="enabled-button">
                                 <a id="reset-button">Reset</a>
                             </li>
@@ -175,8 +167,6 @@
             <div class="overlay is-hidden" id="ag-output">
                 <div class="popup-content" id="ag-results">
                     <span class="button-close" onclick="closeResults();" id="popup">X</span>
-                    <!--<p id = "different-feedback"></p>
-                        <p id = "edx-submit-different"></p>-->
                     <div id="toggle-correct-tests"></div>
                     <p id="comment"></p>
                 </div>
