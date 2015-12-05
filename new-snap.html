@@ -69,14 +69,15 @@
             var world, ide;
             window.onload = function () {
                 //INITIALIZE UP SNAP
-                world = new WorldMorph(document.getElementById('world'));
-                ide = new IDE_Morph(false);
+                world = new WorldMorph(document.getElementById('world'), false);
+                ide = new IDE_Morph();
+                //ide.isAutoFill = false;
                 ide.openIn(world);
 
                 // Reduce Stage Size on initialization
-                ide.toggleStageSize(true);
+                // ide.toggleStageSize(true);
 
-                initializeSnapAdditions(world, id);
+                //initializeSnapAdditions(world, id);
 
                 // AUTOGRADER ADDITION -
                 // Create a gradingLog and initialize the AG status bar (AGSB).
@@ -104,10 +105,10 @@
             </div>
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         Left Result Column
                     </div>
-                    <div class="col-md-7">
+                    <div class="col-md-8" style="border:2px solid black">
                         <div class="problem-content">
                             Problem Content
                         </div>
