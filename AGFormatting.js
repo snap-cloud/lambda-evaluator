@@ -449,14 +449,6 @@ function fullScreenSnap(button, taskID) {
     sessionStorage.setItem(taskID + "full-screen-on", JSON.stringify(true));
 }
 
-IDE_Morph.prototype.originalToggleStageSize = IDE_Morph.prototype.toggleStageSize;
-IDE_Morph.prototype.toggleStageSize = function (isSmall) {
-    this.originalToggleStageSize(isSmall);
-    setTimeout(function() {
-        moveAutogradingBar()
-    }, 100);
-}
-
 function moveAutogradingBar() {
     var autograding_bar = document.getElementById('autograding_bar');
     var ide = world.children[0];
