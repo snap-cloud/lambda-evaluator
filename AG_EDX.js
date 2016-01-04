@@ -31,18 +31,16 @@ var AG_EDX = (function() {
     // grade.
     function getGrade() {
         console.log("getGrade");
-        // console.log("THE ID IS: " + id);
         if (sessionStorage.getItem(id + "_test_log") !== null){
             var glog = JSON.parse(sessionStorage.getItem(id + "_test_log"));
             var snapXML = sessionStorage.getItem(id + "_test_state");
             // console.log(snapXML);
-            //Save Snap XML in Local Storage
-            // localStorage.setItem(id, xmlString); 
-            //If AGTest() has been called, save the gradeLog in 
+            // Save Snap XML in Local Storage
+            // If AGTest() has been called, save the gradeLog in 
             if (glog !== undefined) {
-                //Convert to an AG_state
+               // Convert to an AG_state
                 glog["showFeedback"] = showFeedback;
-                //var edx_log = AG_log(glog, snapXML);
+               // var edx_log = AG_log(glog, snapXML);
                 var edx_log = glog;
                 edx_log["snapXML"] = snapXML;
             }

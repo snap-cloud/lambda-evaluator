@@ -1,15 +1,6 @@
-/*var onclick_menu = document.getElementById('onclick-menu');
-var menu_style = window.getComputedStyle(onclick_menu);
-var menu_right = menu_style.getPropertyValue('right');
-
-var button = document.getElementById('autograding_button');
-var button_style = window.getComputedStyle(button);
-var button_right = button_style.getPropertyValue('right');*/
-
-
- /*
- * Makes AG status bar reflect the ungraded state of the outputLog.
- */
+/*
+* Makes AG status bar reflect the ungraded state of the outputLog.
+*/
 
 var onclick_menu;
 var menu_style;
@@ -19,6 +10,7 @@ var button;
 var button_style;
 var button_right;
 
+// TODO: Pull out first 6 lines in a shared function
 function AG_bar_ungraded(outputLog) {
     var button_text = "Get Feedback ";
     var button_elem = $('#autograding_button span');
@@ -31,7 +23,7 @@ function AG_bar_ungraded(outputLog) {
         button_elem.slideDown('fast');
         $('#autograding_button').css('background', 'orange');
     }); 
-    //document.getElementById("autograding_button").style.backgroundColor = "orange";         
+     
     $('#autograding_button .hover_darken').show();
     $('#onclick-menu').css('color', 'white');
     if (sessionStorage.getItem(outputLog.taskID + "_test_log")) {
@@ -39,7 +31,6 @@ function AG_bar_ungraded(outputLog) {
     } else {
         $('#feedback-button').html("No Feedback Available");
     }
-    //document.getElementById("different-feedback").innerHTML = "This feedback does not match what is in the scripting area."
 }
 
 /*
@@ -53,17 +44,14 @@ function AG_bar_graded(outputLog) {
     if (button_elem.html().match(regex) !== null) {
         return;
     }
-    // button_elem.fadeOut('fast', function() {
-    //     button_elem.html(button_text);
-    //     button_elem.slideDown('fast');
-    //     $('#autograding_button').css('background', '#29A629');
-    // });
+
     button_elem.html(button_text);
     $('#autograding_button').css('background', '#29A629');
     $('#autograding_button .hover_darken').hide();
     $('#onclick-menu').css('color', 'white');
     $('#feedback-button').html("Review Feedback");
 }
+
 /*
  * Makes AG status bar reflect the semi graded state of the outputLog. 
  * This is called when any test on the outputLog fails.
@@ -80,11 +68,7 @@ function AG_bar_semigraded(outputLog) {
     if (button_elem.html().match(regex) !== null) {
         return;
     }
-    // button_elem.fadeOut('fast', function() {
-    //     button_elem.html(button_text);
-    //     button_elem.slideDown('fast');
-    //     $('#autograding_button').css('background', 'red');
-    // });
+
     button_elem.html(button_text);
     $('#autograding_button').css('background', 'red');
     $('#autograding_button .hover_darken').show();
@@ -173,145 +157,12 @@ function closeResults() {
     overlay.classList.add("is-hidden");
 }
 
-/*function populateFeedback(outputLog) {
-    var taskID = outputLog.taskID;
-    //var last_log = sessionStorage.getItem(taskID + "_last_submitted_log");
-    var prev_log = sessionStorage.getItem(taskID + "_test_log");
-    var edx_caution = document.getElementById("edx-submit-different");
-    var caution = document.getElementById("different-feedback");
-
-    // console.log(outputLog);
-    var glog = outputLog;
-    var log = AG_log(glog);
-    var feedback = log["feedback"];
-    var title = log["comment"];
-
-    // console.log(feedback);
-
-    // Wipes the feedback clean, including if it has been populated before. 
-    caution.innerHTML = "";
-    edx_caution.innerHTML = "";
-    document.getElementById("comment").innerHTML = "";
-    var tableTitles = document.getElementsByClassName("titles");
-    var tableResults = document.getElementById("table-data");
-    var repTableResults = document.getElementById("reporter-table-data");
-    while (tableResults.children.length > 1) {
-        tableResults.removeChild(tableResults.children[1]);
-    }
-    while (repTableResults.children.length > 1) {
-        repTableResults.removeChild(repTableResults.children[1]);
-    }
-
-    document.getElementById("comment").innerHTML = title;
-
-    // Checks if the grading button has been clicked
-    if (title === "Please run the Snap! Autograder to view feedback.") {
-        document.getElementById("table-data").style.display = "none";
-        document.getElementById("reporter-table-data").style.display = "none";
-    } else {
-        document.getElementById("table-data").style.display = "table";
-        document.getElementById("reporter-table-data").style.display = "table";
-        document.getElementById("comment").innerHTML += " (" + String(Math.round(feedback["totalPoints"] * feedback["pScore"])) + "/" + String(feedback["totalPoints"]) + ")";
-    }
-
-
-    // Warnings for when student's feedback differ from what's on the scripting area/what's been submitted to edX
-    //document.getElementById("comment").innerHTML = title + "(" + String(Math.round(feedback["totalPoints"] * feedback["pScore"])) + "/" + String(feedback["totalPoints"]) + ")";
-    /*if (!last_log) {
-        edx_caution.innerHTML = "[WARNING: You have not submitted your results to edX yet.]"
-    }
-    else if (last_log !== prev_log) {
-        edx_caution.innerHTML = "[WARNING: These results differ from your last edX submission.]"
-    }*/
-
-    /*var nonRepTest = 1;
-    var repTest = 1;
-    for (i=1; i<=feedback["testCount"]; i++) {
-        var test = String(i);
-        var newRow = document.createElement("tr");
-
-        // If test is not a reporter test, only add columns for Test # and Feedback
-        if (feedback[test]["testClass"] !== "r") {
-            if (document.getElementsByClassName("non-reporter").length === 0) {
-                addBasicHeadings();
-            }
-            addTableCell(String(nonRepTest), "tests", newRow);
-            if (nonRepTest % 2 === 0) {
-                addTableCell(feedback[test]["pointValue"], ["data", "evens"], newRow);
-            } else {
-                addTableCell(feedback[test]["pointValue"], "data", newRow);
-            }
-            nonRepTest += 1;
-        }
-
-        // If test is a reporter test, add all columns, including input, output, and expected. Makes the background of every other row light gray.
-        if (feedback[test]["testClass"] === "r") {
-            if (document.getElementsByClassName("reporter").length === 0) {
-                addReporterHeadings();
-            }
-            addTableCell(String(repTest), "tests", newRow);
-            var keys = ["pointValue", "blockSpec", "input", "output", "expOut"];
-            for (key=0; key<keys.length; key++) {
-                if (keys[key] === "blockSpec") {
-                    var blockSpec = feedback[test][keys[key]];
-                    // var blockSpecSliced = blockSpec.slice(2, blockSpec.length - 2);
-                    // console.log(blockSpecSliced);
-                    if (repTest % 2 === 0) {
-                        addTableCell(blockSpec, ["data", "evens"], newRow);
-                    } else {
-                        addTableCell(blockSpec, "data", newRow);
-                    }
-                } else {
-                    if (repTest % 2 === 0) {
-                        addTableCell(feedback[test][keys[key]], ["data", "evens"], newRow);
-                    } else {
-                        addTableCell(feedback[test][keys[key]], "data", newRow);
-                    }
-                }
-            }
-            repTest += 1;
-        }
-
-        // If test is correct, make the feedback appropriately colored. 
-        if (feedback[test]["correct"] === true) {
-            addTableCell(feedback[test]["feedback"], "correctans", newRow);
-            if (regradeOn) {
-                addRegradeButton("Regrade", ["data", "hidden"], newRow);
-            }
-        } else {
-            addTableCell(feedback[test]["feedback"], "incorrectans", newRow);
-            if (regradeOn) {
-                addRegradeButton("Regrade", ["data", "regrade", test], newRow);
-            }
-        }
-
-        if (feedback[test]["testClass"] === "r") {
-            document.getElementById("reporter-table-data").appendChild(newRow);
-        } else {
-            document.getElementById("table-data").appendChild(newRow);
-        }  
-    }
-    // console.log(outputLog);
-    //outputLog.saveLog();
-
-    if (regradeOn) {
-        // makes recently created regrade buttons clickable 
-        var regrade_buttons = document.getElementsByClassName("regrade");
-        for(var i=0; i<regrade_buttons.length; i++) {
-            regrade_buttons[i].onclick = function() {
-                var testId = this.classList[2];
-                regradeOnClick(outputLog, testId);
-            }
-        }
-    }
-}*/
-
 function addBasicHeadings() {
     basicCols = ["Test", "Points", "Feedback"];
     for (i=0; i<basicCols.length; i++) {
         var header = document.createElement("th");
         var text = document.createTextNode(basicCols[i]);
-        //var lastCol = document.getElementById("reporter-last-column");
+        // var lastCol = document.getElementById("reporter-last-column");
         var titles = document.getElementById("table-titles");
         header.classList.add("titles", "non-reporter");
         header.appendChild(text);
@@ -361,42 +212,25 @@ function addRegradeButton(text, elemClass, row) {
 function grayOutButtons(snapWorld, taskID) {
     var ide = snapWorld.children[0];
     var curr_xml = ide.serializer.serialize(ide.stage);
-    //Retrieve previously graded Snap XML strings (if in sessionStorage).
+    // Retrieve previously graded Snap XML strings (if in sessionStorage).
     var c_prev_xml = sessionStorage.getItem(taskID + "_c_test_state");
     var prev_xml = sessionStorage.getItem(taskID + "_test_state");
 
-    /*var last_xml = sessionStorage.getItem(taskID + "_last_submitted_state");
-
-    var last_submit = document.getElementById("last-submit");
-    if (last_xml === null || isSameSnapXML(last_xml, curr_xml)) {
-        last_submit.style.color = "#373737";
-        last_submit.style.pointerEvents = "none";
-        last_submit.parentNode.id = "disabled-button";
-    } else {
-        last_submit.parentNode.id = "enabled-button";
-        last_submit.style.color = "white";
-        last_submit.style.pointerEvents = "auto";
-    }*/
-
     var revert_button = document.getElementById("revert-button");
     if (c_prev_xml === null || isSameSnapXML(c_prev_xml, curr_xml)) {
-        //revert_button.parent.style.backgroundColor = "rgba(0, 0, 0, 0.2)";
         revert_button.style.pointerEvents = "none";
         revert_button.parentNode.id = "disabled-button";
     } else {
         revert_button.parentNode.id = "enabled-button";
-        //revert_button.parent.style.backgroundColor = "white";
         revert_button.style.pointerEvents = "auto";
     }
 
     var undo_button = document.getElementById("undo-button");
     if (prev_xml === null || isSameSnapXML(prev_xml, curr_xml)) {
-        //undo_button.parent.style.backgroundColor = "rgba(0, 0, 0, 0.2)";
         undo_button.style.pointerEvents = "none";
         undo_button.parentNode.id = "disabled-button";
     } else {
         undo_button.parentNode.id = "enabled-button";
-        //undo_button.parent.style.backgroundColor = "white";
         undo_button.style.pointerEvents = "auto";
     }
 }
@@ -410,8 +244,6 @@ function makeOverlayButton() {
     overlay_button.classList.add('overlay-button');
     var button = parent.document.getElementsByName('problem_id')[id_problem];
     button.parentNode.insertBefore(overlay_button, button.nextSibling);
-    //var overlay_button = parent.document.getElementsByClassName('overlay-button')[id_problem];
-    //overlay_button.style.display = "block";
     overlay_button.onclick = function() { 
         overlay_button.style.display = "none";
         grade_button.click(); 
@@ -436,15 +268,11 @@ function toggleSnapWindow(button, taskID) {
         iframe.style.position = 'initial';
         iframe.style.top = 'initial';
         iframe.style.right = 'initial';
-        //iframe.style.width = 'initial';
         iframe.style.height = '500px';
         iframe.style.zIndex = 'initial';
         button.className = "off";
         button.innerHTML = "Full-Screen";
         sessionStorage.removeItem(taskID + "full-screen-on");
-        /*button.style.position = 'absolute';
-        button.style.right = '31px';
-        button.style.bottom = '225px';*/
     }
 }
 
@@ -482,13 +310,13 @@ function moveAutogradingBar() {
 
 function setInitialHelpDisplay(bool) {
     if (localStorage) {
-        localStorage['-snap-autograder-inital-help'] = bool;
+        localStorage['-snap-autograder-inital-help'] = JSON.stringify(bool);
     }
 }
 
 function hasShownInitalHelp() {
     if (localStorage) {
-        return localStorage['-snap-autograder-inital-help'];
+        return JSON.parse(localStorage['-snap-autograder-inital-help'] || null);
     }
     return false;
 }
@@ -530,8 +358,6 @@ function createInitialHelp() {
     document.getElementById("initial-help").appendChild(help_clone);
     
     setInitialHelpDisplay(true)
-    /*$("#ag-button-arrow").clone().appendTo("#initial-help");
-    $("#ag-button-help").clone().appendTo("#initial-help");*/
 }
 
 function previousFeedbackButton() {
@@ -577,18 +403,17 @@ function initializeSnapAdditions(snapWorld, taskID) {
 
     ide = snapWorld.children[0];
 
-    //AUTOGRADER ADDITION - FEEDBACK FORMATTING
+    // AUTOGRADER ADDITION - FEEDBACK FORMATTING
     // Checks if problem has been checked and modifies the autograded output if it has been checked
 
-    //if (isEDX && parent.document.getElementsByClassName("message").length !== 0) {
     if (isEDX && parent.document.getElementsByClassName("message")[id_problem]) {
         var hint = parent.document.getElementsByClassName("message")[id_problem];
         hint.innerHTML = formatFeedback(hint);
         hint.style.display = "inline";
     }
 
-    //AUTOGRADER ADDITION
-    //Check if Pre-requisite task has completed
+    // AUTOGRADER ADDITION
+    // Check if Pre-requisite task has completed
     var req_check = parent.document.getElementById("pre_req");
     if (preReqTaskID !== null) {
         var preReqLog = JSON.parse(sessionStorage.getItem(preReqID + "_test_log"));
@@ -616,8 +441,6 @@ function initializeSnapAdditions(snapWorld, taskID) {
     var reset_button = document.getElementById("reset-button");
     var revert_button = document.getElementById("revert-button");
     var undo_button = document.getElementById("undo-button");
-    //var menu_button = document.getElementsByClassName("onclick-menu")[0];
-    //var menu_button = document.getElementById("menu-icon");
     var menu_button = document.getElementsByClassName("hover_darken")[0];
     var help_overlay = document.getElementById('overlay');
     var results_overlay = document.getElementById("ag-output");
@@ -625,7 +448,6 @@ function initializeSnapAdditions(snapWorld, taskID) {
     var grade_button = document.getElementById("autograding_button");
     var world_canvas = document.getElementById('world');
     var snap_menu = document.getElementsByClassName('bubble')[0];
-    //var edX_submit_button = parent.document.getElementsByClassName('check-label')[id_problem];
 
     if (showPrevFeedback) {
         var feedback_button = document.getElementById("feedback-button");
@@ -687,22 +509,22 @@ function initializeSnapAdditions(snapWorld, taskID) {
             timesChecked += 1;
             console.log("checking...." + id_problem);
             if (parent.document.getElementsByClassName('check-label')[id_problem]) {
-            //if (edX_check_button) {
+            // if (edX_check_button) {
                 console.log("Exists!");
                 clearInterval(checkExist);
                 edX_check_button = current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.nextElementSibling.children[1];
 
                 edX_check_button.onclick = function () {
-                //edX_check_button.onclick = function() {
-                    sessionStorage.setItem(taskID + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
-                }
+                    sessionStorage.setItem(
+                        taskID + "pageLocation",
+                        JSON.stringify([
+                            parent.window.scrollX,
+                            parent.window.scrollY
+                        ]);
+                    );
+                };
 
-                //var button_text = parent.document.getElementsByClassName('check')[id_problem];
-                //button_text.innerHTML = "Submit";
-                //button_text.style.display = "none";
                 edX_check_button.style.display = "none";
-
-                //makeOverlayButton();
             }
             if (timesChecked === 5) {
                 isEDX = false;
@@ -712,51 +534,6 @@ function initializeSnapAdditions(snapWorld, taskID) {
 
         }, 100);
 
-
-
-        /*setTimeout(function() {
-            console.log(parent.document.getElementsByClassName('check-label'));
-            console.log(id_problem);
-            console.log(parent.document.getElementsByClassName('check-label')[id_problem]);
-            parent.document.getElementsByClassName('check-label')[id_problem].onclick = function () {
-                sessionStorage.setItem(taskID + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
-            }
-
-            var button_text = parent.document.getElementsByClassName('check-label')[id_problem];
-            button_text.innerHTML = "Submit";
-
-            //makeOverlayButton();
-            setTimeout(function() {
-                makeOverlayButton();
-                /*var overlay_button = parent.document.getElementsByClassName('overlay-button')[id_problem];
-                //overlay_button.style.display = "block";
-                overlay_button.onclick = function() { 
-                    overlay_button.style.display = "none";
-                    grade_button.click(); 
-                } 
-            }, 1000);
-        }, 500);*/
-
-        /*console.log(parent.document.getElementsByClassName('check-label'));
-        console.log(id_problem);
-        console.log(parent.document.getElementsByClassName('check-label')[id_problem]);
-        parent.document.getElementsByClassName('check-label')[id_problem].onclick = function () {
-            sessionStorage.setItem(taskID + "pageLocation", JSON.stringify([parent.window.scrollX, parent.window.scrollY]));
-        }
-
-        var button_text = parent.document.getElementsByClassName('check-label')[id_problem];
-        button_text.innerHTML = "Submit";
-
-        makeOverlayButton();
-        setTimeout(function() {
-            var overlay_button = parent.document.getElementsByClassName('overlay-button')[id_problem];
-            //overlay_button.style.display = "block";
-            overlay_button.onclick = function() { 
-                overlay_button.style.display = "none";
-                grade_button.click(); 
-            } 
-        }, 500);*/
-        
         makeFullScreenButton();
         var full_screen = document.getElementById('full-screen');
         full_screen.onclick = function() {
@@ -770,11 +547,8 @@ function initializeSnapAdditions(snapWorld, taskID) {
     }
 
     setTimeout(function() {
-        // console.log(snapWorld);
         document.getElementById("toggle-correct-tests").innerHTML = '<div class="toggle-correct isOff" id="toggle-correct">See Correct Tests</div><div id="correct-table-wrapper">';
-        if (!graded) {return;}
-
-
+        if (!graded) {return; }
     },1000);
 
     setTimeout(function() {
@@ -792,7 +566,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
            var outputLog = AGStart(snapWorld, taskID);
         }
 
-        //for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
+        // for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
         if (showFeedback && sessionStorage.getItem(taskID + "_popupFeedback") !== null) {
             populateFeedback(outputLog); 
             populateFeedback(outputLog);
@@ -806,13 +580,12 @@ function initializeSnapAdditions(snapWorld, taskID) {
         for(var i=0; i < tip_tests.length; i++){
             tip_tests[i].style.maxWidth = String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px";
         }
-        //sessionStorage.setItem(id + "_popupFeedback", "");
 
         StageHandleMorph.prototype.originalFixLayout = StageHandleMorph.prototype.fixLayout;
         StageHandleMorph.prototype.fixLayout = function() {
             this.originalFixLayout();
-            //console.log(this.target.right());
-            //console.log(this.target.width());
+            // console.log(this.target.right());
+            // console.log(this.target.width());
             if (this.target.width() > 225) {
                 if (this.target.width() > 390) {
                     $('#autograding_bar').css({
@@ -820,18 +593,11 @@ function initializeSnapAdditions(snapWorld, taskID) {
                         left: 'auto',
                     });
                 } else {
-                /*if (this.target.left() < 950) {
-                    $('#autograding_bar').css({
-                        left:  1075,
-                    });
-                } else {*/
                     $('#autograding_bar').css({
                         left:  this.target.left() - 140,
                     });
                 }
-                
             }
-            
         }
     }, 1000);
 
@@ -857,21 +623,10 @@ var button_listener = function(event) {
     runAGTest(world, id, outputLog);
 
     var tip_tests = document.getElementsByClassName("data");
-    //console.log(String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px");
     for(var i = 0; i < tip_tests.length; i++) {
         tip_tests[i].style.maxWidth = String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px";
     }
-    /*if (checkButtonExists) {
-        sessionStorage.setItem(id + "_popupFeedback", "");
-    }*/
     sessionStorage.setItem(id + "_popupFeedback", "");
-
-    /*if (!checkButtonExists) {
-        populateFeedback();
-        openResults();
-    } else {
-        sessionStorage.setItem(id + "_popupFeedback", "");
-    }*/
 }
 
 function moveHelp() {
@@ -900,7 +655,6 @@ function moveHelp() {
 }
 
 
-
 function appendElement(elem, text, elemClass, selector) {
     var data = document.createElement(elem);
     if (text !== null) {
@@ -918,7 +672,7 @@ function appendElement(elem, text, elemClass, selector) {
 function addReporterHeadings(selector) {
     var columns = ["Input", "Output", "Expected", "Comment"];
     var newRow = document.createElement("tr");
-    for (z=0; z<columns.length; z++) {
+    for (z = 0; z < columns.length; z++) {
         var header = document.createElement("th");
         var text = document.createTextNode(columns[z]);
         header.classList.add("titles", "reporter");
@@ -932,15 +686,12 @@ function createCollapsibleCorrectSection(selector) {
     var identifier = "something";
     var correct_collapse = document.createElement("div");
     var correct_tip = document.createElement("div");
-    //var correct_tip_text = document.createTextNode("Here are the parts you did correctly!");
-    //correct_tip_section.appendChild(correct_tip_text);
     correct_tip.id = "correct-tip" + String(identifier);
     correct_tip.classList.add("correct-tip");
 
     correct_collapse.innerHTML = '<br><input class="details correct-details" id="correct-expander' + String(identifier) + '" type="checkbox" ><label for="correct-expander' + String(identifier) + '">' + "Here are the parts you did correctly!" + '</label><div id="correct-table-wrapper' + String(identifier) + '">';
     correct_collapse.innerHTML = '<br><div class="toggle-correct" id="toggle-correct' + String(identifier) + '">Click Here</div><span class="correct-expander correct-expander' + String(identifier) + '">Here are the parts you did correctly!</span><div id="correct-table-wrapper' + String(identifier) + '">';
     correct_collapse.innerHTML = '<br><div class="toggle-correct" id="toggle-correct' + String(identifier) + '">See Correct Tests</div><div id="correct-table-wrapper' + String(identifier) + '">';
-    //example.nextSibling = correct_tip_section;
 
     selector.insertBefore(correct_tip, selector.firstChild);
 
@@ -1009,20 +760,11 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
 
     var chunknum = chunknum = typeof chunknum !== 'undefined' ? chunknum : undefined;
     var tipnum = tipnum = typeof tipnum !== 'undefined' ? tipnum : undefined;
-    //var showPoints = showPoints = typeof showPoints !== 'undefined' ? showPoints : undefined;
-
-    //console.log(showPoints);
-    //console.log(showFeedback);
-    //showPoints = false;
-    //console.log(showPoints);
-    //console.log(typeof showPoints);
-    //console.log(typeof showPoints);
-    //console.log(!showPoints);
     if (!showPoints) {
         showPoints = false;
     }
 
-    for (i=0; i<chunks.length; i++) {
+    for (i = 0; i < chunks.length; i++) {
         var chunk = chunks[i];
 
         var chunkPlural = "";
@@ -1054,7 +796,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             document.getElementById("incorrect-section").appendChild(incorrect_chunk);
         }
 
-        for (x=0; x<tips.length; x++) {
+        for (x = 0; x < tips.length; x++) {
             var tip = tips[x];
             var allFeedback = allFeedback = typeof allFeedback !== 'undefined' ? allFeedback : false;
             var div = document.createElement("div");
@@ -1072,9 +814,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             }
 
             var tipPoints = "";
-            /*if (showPoints) {
-                tipPoints = "(" + tip["points"] + " point(s)) ";
-            }*/
 
             div.innerHTML = '<input class="details" id="expander' + String(i) + String(x) + '" type="checkbox" ><label class="' + label_class + '" for="expander' + String(i) + String(x) + '">' + tipPoints + String(suggestion) + '</label><div id="table-wrapper' + String(i) + String(x) + '">';
 
@@ -1096,8 +835,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                     testPoints = "(" + thisTest["points"] + " point" + testPlural + ") ";
                 }
                 if (thisTest["testClass"] !== "r") {
-
-                    
                     if (document.getElementsByClassName("observations-section" + String(i) +String(x)[0]) !== []) {
                         incorrect_assertions = 0;
                         correct_assertions = 0;
@@ -1107,9 +844,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                     if (tip["allCorrect"] === false && thisTest["correct"] === true) {
                         tipHasCorrectTest = true;
                         if (!document.getElementById("correct-tip" + String(i) + String(x))) {
-
-                        } 
-
+                            // TODO: What's this for?
+                        }
                     }
                     
                     if (thisTest["correct"] === true) {
@@ -1119,7 +855,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             appendElement("p", testPoints + "Tests Passed! " + thisTest["feedback"], ["data", "assertion"], document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
                             appendElement("br", null, null, document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
                         }
-                        
                     } else {
                         appendElement("p", "✖", "data", document.getElementsByClassName("observations-section" + String(i) +String(x))[0]);
                         incorrect_assertions += 1;
@@ -1128,7 +863,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                     }
 
                 } else {
-
                     if (document.getElementsByClassName("tests-section" + String(i) +String(x)[0]) !== []) {
                         incorrect_tests = 0;
                         correct_tests = 0;
@@ -1137,9 +871,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                     if (thisTest["correct"] === true && tip["allCorrect"] === false) {
                         tipHasCorrectTest = true;
                         if (!document.getElementById("correct-tip" + String(i) + String(x))) {
-
+                            // TODO: This?
                         }
-
                     }
 
                     if (thisTest["correct"]) {
@@ -1158,11 +891,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             string_reporter.innerHTML = '<p class="data assertion">' + testPoints + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion">, returned the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + '</p>';
                             document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
 
-
-                            /*var className = "tests-section" + String(i) +String(x)[0];
-                            $("." + className).append(thisTest.picture);
-                            $("." + className).append(thisTest.expectedPicture);*/
-
                             appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                         }
                     } else {
@@ -1178,10 +906,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         }
                         document.getElementsByClassName("tests-section" + String(i) + String(x))[0].appendChild(string_reporter);
 
-                        /*var className = "tests-section" + String(i) +String(x)[0];
-                        $("." + className).append(thisTest.picture);
-                        $("." + className).append(thisTest.expectedPicture);*/
-
                         appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                     }
                 }
@@ -1193,7 +917,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     }
     correct_width = document.getElementById("correct-section").offsetWidth;
     incorrect_width = document.getElementById("incorrect-section").offsetWidth;
-    popup_width = document.getElementById("ag-results").offsetWidth - 60; //To-do, make the subtracted value work for any padding values
+    popup_width = document.getElementById("ag-results").offsetWidth - 60; // TODO: make the subtracted value work for any padding values
     if (document.getElementsByClassName("incorrectans")[0] !== undefined) {
         document.getElementsByClassName("incorrectans")[0].click();
     }
@@ -1263,8 +987,4 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
         document.getElementById("comment").appendChild(noCreditWarning);
         openResults();
     }
-
 }
-
-
-
