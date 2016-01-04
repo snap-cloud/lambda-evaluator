@@ -2,52 +2,55 @@
  * set values, and initiates blocks.
  */
 
+// TODO: Make this robut and use .at(), but changes indexing.
 function getSprite(index) {
-	try {
-		return world.children[0].sprites.contents[index];
-	} catch(e) {
-		throw "Sprite: " + index + " was not found."
-	}
+    try {
+        return world.children[0].sprites.contents[index];
+    } catch(e) {
+        throw "Sprite: " + index + " was not found."
+    }
 }
 
 //Returns the scripts of the sprite at 'index', undefined otherwise.
 function getScripts(index) {
-	var sprite = getSprite(index);
-	return sprite.scripts.children;
+    var sprite = getSprite(index);
+    return sprite.scripts.children;
 }
+
 //Get just the most recently touched block that matches
 function getScript(blockSpec, spriteIndex) {
-	return getAllScripts(blockSpec, spriteIndex)[0];
+    return getAllScripts(blockSpec, spriteIndex)[0];
 }
+
 function getAllScripts(blockSpec, spriteIndex) {
-	//TODO: Consider expanding to grab from additional sprites
-	//Try to get a sprite's scripts
-	//Throw exception if none exist.
-	spriteIndex = spriteIndex || 0;
-	var scripts = getScripts(spriteIndex);
-	//If no scripts, throw an exception.
-	if (scripts.length === 0) {
-		throw "Block/script not found."
-	}
+    //TODO: Consider expanding to grab from additional sprites
+    //Try to get a sprite's scripts
+    //Throw exception if none exist.
+    spriteIndex = spriteIndex || 0;
+    var scripts = getScripts(spriteIndex);
+    //If no scripts, throw an exception.
+    if (scripts.length === 0) {
+        throw "Block/script not found."
+    }
 
-	//Try to return the first block matching 'blockSpec'.
-	//Throw exception if none exist/
-	var validScripts = scripts.filter(function (morph) {
-		// if (morph.selector) {
-		// 	//TODO: consider adding selector type check (morph.selector === "evaluateCustomBlock")
-		// 	return (morph.blockSpec === blockSpec);
-		// }
-		if (morph.selector) {
-			return blockSpecMatch(morph.blockSpec, blockSpec);
-		}
-	});
+    //Try to return the first block matching 'blockSpec'.
+    //Throw exception if none exist/
+    var validScripts = scripts.filter(function (morph) {
+        // if (morph.selector) {
+        //     //TODO: consider adding selector type check (morph.selector === "evaluateCustomBlock")
+        //     return (morph.blockSpec === blockSpec);
+        // }
+        if (morph.selector) {
+            return blockSpecMatch(morph.blockSpec, blockSpec);
+        }
+    });
 
-	if (validScripts.length === 0) {
-		throw "The target block/script (" +
-			blockSpec.replace(/%[a-z]/g, "[]") +
-			") is not in script window.";
-	}
-	return validScripts;
+    if (validScripts.length === 0) {
+        throw "The target block/script (" +
+            blockSpec.replace(/%[a-z]/g, "[]") +
+            ") is not in script window.";
+    }
+    return validScripts;
 }
 
 /* Takes in two strings TARGETBLOCKSPEC and TEMPLATEBLOCKSPEC. The only difference is that
@@ -56,28 +59,28 @@ function getAllScripts(blockSpec, spriteIndex) {
  * only difference is the "n" character following the "%" character.
  */
 function blockSpecMatch(targetBlockSpec, templateBlockSpec) {
-	var targetSplit = targetBlockSpec.split(" ");
-	var templateSplit = templateBlockSpec.split(" ");
-	var symbols = ["%s", "%n", "%b", "%c", "%p", "%txt", "%repRing", "%mult%L", "%exp", "%l", "%words", "%idx", "%(ringified)", "%upvar", "%cs", "%scriptVars"];
-	if (targetSplit.length !== templateSplit.length) {
-		return false;
-	}
-	for (var i = 0; i < templateSplit.length; i++) {
-		var templateStr = templateSplit[i];
-		var targetStr = targetSplit[i];
-		if (templateStr !== targetStr) {
-			if (templateStr.length > 1) {
-				return false;
-			}
-			if (templateStr[0] !== targetStr[0]) {
-				return false;
-			}
-			if (symbols.indexOf(targetStr) === -1) {
-				return false;
-			}
-		}
-	}
-	return true;
+    var targetSplit = targetBlockSpec.split(" ");
+    var templateSplit = templateBlockSpec.split(" ");
+    var symbols = ["%s", "%n", "%b", "%c", "%p", "%txt", "%repRing", "%mult%L", "%exp", "%l", "%words", "%idx", "%(ringified)", "%upvar", "%cs", "%scriptVars"];
+    if (targetSplit.length !== templateSplit.length) {
+        return false;
+    }
+    for (var i = 0; i < templateSplit.length; i++) {
+        var templateStr = templateSplit[i];
+        var targetStr = targetSplit[i];
+        if (templateStr !== targetStr) {
+            if (templateStr.length > 1) {
+                return false;
+            }
+            if (templateStr[0] !== targetStr[0]) {
+                return false;
+            }
+            if (symbols.indexOf(targetStr) === -1) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 /* Gets all of the indices of a certain character TARGET in a word WORD in an array.
@@ -85,13 +88,13 @@ function blockSpecMatch(targetBlockSpec, templateBlockSpec) {
  * indexes-of-all-occurrences-of-character-in-a-string
  */
 function getCharIndices(target, word) {
-	var result = [];
-	var index = word.indexOf(target);
-	while (index >= 0) {
-		result.push(index);
-		index = word.indexOf(target, index + 1);
-	}
-	return result;
+    var result = [];
+    var index = word.indexOf(target);
+    while (index >= 0) {
+        result.push(index);
+        index = word.indexOf(target, index + 1);
+    }
+    return result;
 }
 
 /* Takes in a string version of a JSONified SCRIPT (JSONtoString), which can be 
@@ -103,58 +106,58 @@ function getCharIndices(target, word) {
 * tab of the given sprite. See documentation of checkTemplate for more details.
 */
 function scriptPresentInSprite(script, spriteIndex, scriptVariables) {
-	//Populate optional parameters
-	if (spriteIndex === undefined) {
-		spriteIndex = 0;
-	}
-	if (scriptVariables === undefined) {
-		scriptVariables = [];
-	}
+    //Populate optional parameters
+    if (spriteIndex === undefined) {
+        spriteIndex = 0;
+    }
+    if (scriptVariables === undefined) {
+        scriptVariables = [];
+    }
 
-	var JSONtemplate = stringToJSON(script);
-	var blockSpec = JSONtemplate[0].blockSp;
-	//Handle case when no scripts present on stage.
-	try {
-		var JSONtarget;
-		var scriptsOnScreen = getAllScripts(blockSpec, spriteIndex);
-		var isPresent;
-		for (var i = 0; i < scriptsOnScreen.length; i++) {
-			JSONtarget = JSONscript(scriptsOnScreen[i]);
-			if (JSONtarget[0].blockSp === blockSpec) {
-				isPresent = checkTemplate(JSONtemplate, JSONtarget, scriptVariables);
-				if (isPresent) {
-					return true;
-				}
-			}
-		}
-	} catch(e) {
-		return false;
-	}
-	return false;
+    var JSONtemplate = stringToJSON(script);
+    var blockSpec = JSONtemplate[0].blockSp;
+    //Handle case when no scripts present on stage.
+    try {
+        var JSONtarget;
+        var scriptsOnScreen = getAllScripts(blockSpec, spriteIndex);
+        var isPresent;
+        for (var i = 0; i < scriptsOnScreen.length; i++) {
+            JSONtarget = JSONscript(scriptsOnScreen[i]);
+            if (JSONtarget[0].blockSp === blockSpec) {
+                isPresent = checkTemplate(JSONtemplate, JSONtarget, scriptVariables);
+                if (isPresent) {
+                    return true;
+                }
+            }
+        }
+    } catch(e) {
+        return false;
+    }
+    return false;
 }
 
 /* Returns true if a reporter block is composed of only text morphs. Takes in
  * BLOCK is the raw JavaScript morph that we will loop through to check all of
  * its children and make sure that all of its morphs are text morphs. */
 function reporterHasNoInputs(block) {
-	if (block === undefined) {
-		return false;
-	}
-	if (!(block instanceof ReporterBlockMorph)) {
-		return false;
-	}
-	var morph;
-	try {
-		for (var i = 0; i < block.children.length; i++) {
-			morph = block.children[i];
-			if (!(morph instanceof StringMorph)) {
-				return false;
-			}
-		}
-	} catch(e) {
-		return false;
-	}
-	return true;
+    if (block === undefined) {
+        return false;
+    }
+    if (!(block instanceof ReporterBlockMorph)) {
+        return false;
+    }
+    var morph;
+    try {
+        for (var i = 0; i < block.children.length; i++) {
+            morph = block.children[i];
+            if (!(morph instanceof StringMorph)) {
+                return false;
+            }
+        }
+    } catch(e) {
+        return false;
+    }
+    return true;
 }
 
 /* Takes in a single block and converts it into JSON format.
@@ -195,60 +198,60 @@ function reporterHasNoInputs(block) {
  * ]
  */
 function JSONblock(block) {
-	if ((block === undefined) || (block === null)) {
-		throw "block is undefined";
-	}
-	var blockArgs = [];
-	var morph;
-	for (var i = 0; i < block.children.length; i++) {
-		morph = block.children[i];
-		if (morph.selector === "reportGetVar") {
-			blockArgs.push(morph.blockSpec);
-		} else if ((morph.__proto__.constructor.name === "RingReporterSlotMorph")
-					|| (morph.__proto__.constructor.name === "RingCommandSlotMorph")) {
-			if (morph.children[0].children.length === 0) {
-				blockArgs.push("");
-			} else {
-				blockArgs.push(JSONblock(morph.children[0]));
-			}
-		} else if ((morph.hasOwnProperty("type")) && (morph.type === "list")) {
-			blockArgs.push("");
-	 	} else if (morph.__proto__.constructor.name === "MultiArgMorph") {
-	 		for (var j = 1 ; j < morph.children.length - 1; j++) {
-	 			if (morph.children[j].__proto__.constructor.name === "InputSlotMorph") {
-	 				blockArgs.push(morph.children[j].children[0].text);
-				} else if (morph.children[j].__proto__.constructor.name === "TemplateSlotMorph") {
-					if (reporterHasNoInputs(morph.children[j].children[0])) {
-						blockArgs.push(morph.children[j].children[0].blockSpec);
-					} else {
-						blockArgs.push(JSONblock(morph.children[j].children[0]));
-					}
-				} else if (morph.children[j] instanceof ReporterBlockMorph) {
-					blockArgs.push(JSONblock(morph.children[j]));
-				}
-	 		}
-	 	} else if (morph.selector === "reportTrue" || morph.selector === "reportFalse") {
-			blockArgs.push(morph.blockSpec);
-		} else if (morph.__proto__.constructor.name === "InputSlotMorph") {
-			blockArgs.push(morph.children[0].text);
-		} else if (morph instanceof CSlotMorph) {
-			if (morph.children.length === 0) {
-				blockArgs.push([]);
-			} else {
-				blockArgs.push(JSONscript(morph.children[0]));
-			}
-		} else if (morph instanceof ReporterBlockMorph) {
-			if (reporterHasNoInputs(morph)) {
-				blockArgs.push(morph.blockSpec);
-			} else {
-				blockArgs.push(JSONblock(morph));
-			}
-		}
-	}
+    if ((block === undefined) || (block === null)) {
+        throw "block is undefined";
+    }
+    var blockArgs = [];
+    var morph;
+    for (var i = 0; i < block.children.length; i++) {
+        morph = block.children[i];
+        if (morph.selector === "reportGetVar") {
+            blockArgs.push(morph.blockSpec);
+        } else if ((morph.__proto__.constructor.name === "RingReporterSlotMorph")
+                    || (morph.__proto__.constructor.name === "RingCommandSlotMorph")) {
+            if (morph.children[0].children.length === 0) {
+                blockArgs.push("");
+            } else {
+                blockArgs.push(JSONblock(morph.children[0]));
+            }
+        } else if ((morph.hasOwnProperty("type")) && (morph.type === "list")) {
+            blockArgs.push("");
+         } else if (morph.__proto__.constructor.name === "MultiArgMorph") {
+             for (var j = 1 ; j < morph.children.length - 1; j++) {
+                 if (morph.children[j].__proto__.constructor.name === "InputSlotMorph") {
+                     blockArgs.push(morph.children[j].children[0].text);
+                } else if (morph.children[j].__proto__.constructor.name === "TemplateSlotMorph") {
+                    if (reporterHasNoInputs(morph.children[j].children[0])) {
+                        blockArgs.push(morph.children[j].children[0].blockSpec);
+                    } else {
+                        blockArgs.push(JSONblock(morph.children[j].children[0]));
+                    }
+                } else if (morph.children[j] instanceof ReporterBlockMorph) {
+                    blockArgs.push(JSONblock(morph.children[j]));
+                }
+             }
+         } else if (morph.selector === "reportTrue" || morph.selector === "reportFalse") {
+            blockArgs.push(morph.blockSpec);
+        } else if (morph.__proto__.constructor.name === "InputSlotMorph") {
+            blockArgs.push(morph.children[0].text);
+        } else if (morph instanceof CSlotMorph) {
+            if (morph.children.length === 0) {
+                blockArgs.push([]);
+            } else {
+                blockArgs.push(JSONscript(morph.children[0]));
+            }
+        } else if (morph instanceof ReporterBlockMorph) {
+            if (reporterHasNoInputs(morph)) {
+                blockArgs.push(morph.blockSpec);
+            } else {
+                blockArgs.push(JSONblock(morph));
+            }
+        }
+    }
 
 
 
-	return {blockSp: block.blockSpec, inputs: blockArgs};
+    return {blockSp: block.blockSpec, inputs: blockArgs};
 }
 
 /* Takes in a custom block and converts it to JSON format. For example,
@@ -282,36 +285,36 @@ function JSONblock(block) {
  * ]}]
  */
 function JSONcustomBlock(block) {
-	if ((block === undefined) || (block === null)) {
-		throw "Custom block definition not found.";
-		// return null;
-	}
-	var resultJSONblock = JSONblock(block);
-	var JSONbody = JSONscript(block.definition.body.expression);
-	var inputs = block.definition.body.inputs;
-	var JSONinputs = [];
-	for (var i = 0; i < inputs.length; i++) {
-		JSONinputs[i] = inputs[i];
-	}
-	return {blockSp: resultJSONblock.blockSp,
-		    inputs: resultJSONblock.inputs,
-		    body: JSONbody,
-		    variables: JSONinputs};
+    if ((block === undefined) || (block === null)) {
+        throw "Custom block definition not found.";
+        // return null;
+    }
+    var resultJSONblock = JSONblock(block);
+    var JSONbody = JSONscript(block.definition.body.expression);
+    var inputs = block.definition.body.inputs;
+    var JSONinputs = [];
+    for (var i = 0; i < inputs.length; i++) {
+        JSONinputs[i] = inputs[i];
+    }
+    return {blockSp: resultJSONblock.blockSp,
+            inputs: resultJSONblock.inputs,
+            body: JSONbody,
+            variables: JSONinputs};
 }
 
 /* Takes in a string BLOCKSPEC and returns the JSONified version of
  * the custom block's body.
  */
 function getCustomBody(blockSpec, spriteIndex) {
-	if (spriteIndex === undefined) {
-		spriteIndex = 0;
-	}
-	try {
-		return JSONcustomBlock(findBlockInPalette(blockSpec)).body;
-	}
-	catch(e) {
-		return undefined;
-	}
+    if (spriteIndex === undefined) {
+        spriteIndex = 0;
+    }
+    try {
+        return JSONcustomBlock(findBlockInPalette(blockSpec)).body;
+    }
+    catch(e) {
+        return undefined;
+    }
 }
 
 /* Takes in all blocks in a single script for a single Sprite in chronological order
@@ -333,32 +336,32 @@ function getCustomBody(blockSpec, spriteIndex) {
  *
  */
 function JSONscript(blocks) {
-	if (blocks.__proto__.constructor.name === "CommentMorph") {
-		return [{blockSp: "_Comment_",
-				 inputs: []}];
-	}
-	var currBlock = blocks;
-	var scriptArr = [];
-	var currJSONblock = JSONblock(currBlock);
-	var childrenList = currBlock.children;
-	var lastChild = childrenList[childrenList.length - 1];
-	scriptArr.push(currJSONblock);
-	while (lastChild instanceof CommandBlockMorph) {
-		currBlock = lastChild;
-		currJSONblock = JSONblock(currBlock);
-		childrenList = currBlock.children;
-		lastChild = childrenList[childrenList.length - 1];
-		scriptArr.push(currJSONblock);
-	}
+    if (blocks.__proto__.constructor.name === "CommentMorph") {
+        return [{blockSp: "_Comment_",
+                 inputs: []}];
+    }
+    var currBlock = blocks;
+    var scriptArr = [];
+    var currJSONblock = JSONblock(currBlock);
+    var childrenList = currBlock.children;
+    var lastChild = childrenList[childrenList.length - 1];
+    scriptArr.push(currJSONblock);
+    while (lastChild instanceof CommandBlockMorph) {
+        currBlock = lastChild;
+        currJSONblock = JSONblock(currBlock);
+        childrenList = currBlock.children;
+        lastChild = childrenList[childrenList.length - 1];
+        scriptArr.push(currJSONblock);
+    }
 
-	return scriptArr;
+    return scriptArr;
 }
 
 /* Returns a JavaScript object that contains all of the global variables with
  * their associated values.
  */
 function getAllGlobalVars() {
-	return world.children[0].globalVariables.vars;
+    return world.children[0].globalVariables.vars;
 }
 
 /* Returns the value of a specific global variable. Takes in a string VARTOGET
@@ -367,10 +370,10 @@ function getAllGlobalVars() {
  * corresponding values.
  */
 function getGlobalVar(varToGet, globalVars) {
-	if (!globalVars.hasOwnProperty(varToGet)) {
-		throw varToGet + " is not a global variable.";
-	}
-	return globalVars[varToGet].value;
+    if (!globalVars.hasOwnProperty(varToGet)) {
+        throw varToGet + " is not a global variable.";
+    }
+    return globalVars[varToGet].value;
 }
 
 /* Takes in string CUSTOMBLOCKSPEC, the strings BLOCKSPEC1 (any block)
@@ -379,22 +382,22 @@ function getGlobalVar(varToGet, globalVars) {
  * inside of the block represented by BLOCKSPEC2. Also has a SOFTMATCH input.
  */
 function CBlockContainsInCustom(customBlockSpec, blockSpec1, blockSpec2, argArray1, argArray2, softMatch) {
-	if (argArray1 === undefined) {
-		argArray1 = [];
-	}
-	if (argArray2 === undefined) {
-		argArray2 = [];
-	}
-	if (softMatch === undefined) {
-		softMatch = false;
-	}
-	try {
-		var script = getCustomBody(customBlockSpec);
-	}
-	catch(e) {
-		return false;
-	}
-	return CBlockContains(blockSpec1, blockSpec2, script, argArray1, argArray2, softMatch);
+    if (argArray1 === undefined) {
+        argArray1 = [];
+    }
+    if (argArray2 === undefined) {
+        argArray2 = [];
+    }
+    if (softMatch === undefined) {
+        softMatch = false;
+    }
+    try {
+        var script = getCustomBody(customBlockSpec);
+    }
+    catch(e) {
+        return false;
+    }
+    return CBlockContains(blockSpec1, blockSpec2, script, argArray1, argArray2, softMatch);
 }
 
 /* Takes in a SCRIPT and checks recursively if it contains
@@ -412,77 +415,77 @@ function CBlockContainsInCustom(customBlockSpec, blockSpec1, blockSpec2, argArra
  * BLOCKSPEC should not be "true" or "false".
  */
 function scriptContainsBlock(script, blockSpec, argArray, softMatch) {
-	if (Object.prototype.toString.call(script) !== '[object Array]') {
-		return false;
-	}
-	if (argArray === undefined) {
-		argArray = [];
-	}
-	if (softMatch === undefined) {
-		softMatch = false;
-	}
-	var morph1, type1;
-	for (var i = 0; i < script.length; i++) {
-		morph1 = script[i];
-		type1 = typeof(morph1);
+    if (Object.prototype.toString.call(script) !== '[object Array]') {
+        return false;
+    }
+    if (argArray === undefined) {
+        argArray = [];
+    }
+    if (softMatch === undefined) {
+        softMatch = false;
+    }
+    var morph1, type1;
+    for (var i = 0; i < script.length; i++) {
+        morph1 = script[i];
+        type1 = typeof(morph1);
 
-		if ((type1 === "string")) {
-			continue;
-		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
-			if (scriptContainsBlock(morph1, blockSpec, argArray)) {
-				return true;
-			}
-		} else {
-			if (blockSpecMatch(morph1.blockSp, blockSpec)) {
-				if (argArray.length === 0 || ((argArray.length === 1 ) && (argArray[0] === ""))) {
-					return true;
-				} else if ((argArray.length > 0) && _.isEqual(morph1.inputs, argArray)) {
-					return true;
-				} else if (softMatch) {
-					return checkArgArrays(argArray, morph1.inputs);
-				}
-			}
-			if (scriptContainsBlock(morph1.inputs, blockSpec, argArray)) {
-				return true;
-			}
-		}
-	}
-	return false;
+        if ((type1 === "string")) {
+            continue;
+        } else if (Object.prototype.toString.call(morph1) === '[object Array]') {
+            if (scriptContainsBlock(morph1, blockSpec, argArray)) {
+                return true;
+            }
+        } else {
+            if (blockSpecMatch(morph1.blockSp, blockSpec)) {
+                if (argArray.length === 0 || ((argArray.length === 1 ) && (argArray[0] === ""))) {
+                    return true;
+                } else if ((argArray.length > 0) && _.isEqual(morph1.inputs, argArray)) {
+                    return true;
+                } else if (softMatch) {
+                    return checkArgArrays(argArray, morph1.inputs);
+                }
+            }
+            if (scriptContainsBlock(morph1.inputs, blockSpec, argArray)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 /* Takes in arrays TEMPLATE and ACTUAL, and returns false if TEMPLATE[i] !== ACTUAL[i] and
  * TEMPLATE[i] !== "" and TEMPLATE[i] !== [].
  */
 function checkArgArrays(template, actual) {
-	if (Object.prototype.toString.call(template) !== '[object Array]') {
-		return false;
-	}
-	if (Object.prototype.toString.call(actual) !== '[object Array]') {
-		return false;
-	}
-	if ((template.length > 0) && (template.length !== actual.length)) {
-		return false;
-	}
-	for (var i = 0; i < template.length; i++) {
-		var currArg = template[i];
-		if ((currArg === "")
-			|| (Object.prototype.toString.call(currArg) === '[object Array]' && currArg.length === 0)) {
-			continue;
-		} else if (Object.prototype.toString.call(currArg) === '[object Object]') {
-			try {
-				if (blockSpecMatch(actual[i].blockSp, currArg.blockSp)) {
-					return checkArgArrays(currArg.inputs, actual[i].inputs);
-				} else {
-					return false;
-				}
-			} catch(e) {
-				return false;
-			}
-		} else if (!_.isEqual(currArg, actual[i])) { //maybe don't need _.isEqual, can just do basic comparison?
-			return false;
-		}
-	}
-	return true;
+    if (Object.prototype.toString.call(template) !== '[object Array]') {
+        return false;
+    }
+    if (Object.prototype.toString.call(actual) !== '[object Array]') {
+        return false;
+    }
+    if ((template.length > 0) && (template.length !== actual.length)) {
+        return false;
+    }
+    for (var i = 0; i < template.length; i++) {
+        var currArg = template[i];
+        if ((currArg === "")
+            || (Object.prototype.toString.call(currArg) === '[object Array]' && currArg.length === 0)) {
+            continue;
+        } else if (Object.prototype.toString.call(currArg) === '[object Object]') {
+            try {
+                if (blockSpecMatch(actual[i].blockSp, currArg.blockSp)) {
+                    return checkArgArrays(currArg.inputs, actual[i].inputs);
+                } else {
+                    return false;
+                }
+            } catch(e) {
+                return false;
+            }
+        } else if (!_.isEqual(currArg, actual[i])) { //maybe don't need _.isEqual, can just do basic comparison?
+            return false;
+        }
+    }
+    return true;
 }
 
 /* Wrapper function that returns true if the given block with string BLOCKSPEC (can be general, 
@@ -492,28 +495,28 @@ function checkArgArrays(template, actual) {
  * If SOFTMATCH is true, then we will ignore empty inputs like "" or [].
  */
 function spriteContainsBlock(blockSpec, spriteIndex, argArray, softMatch) {
-	if (argArray === undefined) {
-		argArray = [];
-	}
-	if (spriteIndex === undefined) {
-		spriteIndex = 0;
-	}
-	if (softMatch === undefined) {
-		softMatch = false;
-	}
+    if (argArray === undefined) {
+        argArray = [];
+    }
+    if (spriteIndex === undefined) {
+        spriteIndex = 0;
+    }
+    if (softMatch === undefined) {
+        softMatch = false;
+    }
 
-	var JSONtarget;
-	var hasFound = false;
-	var scriptsOnScreen = getScripts(spriteIndex);
-	for (var i = 0; i < scriptsOnScreen.length; i++) {
-		JSONtarget = JSONscript(scriptsOnScreen[i]);
-		hasFound = scriptContainsBlock(JSONtarget, blockSpec, argArray, softMatch);
-		if (hasFound) {
-			return true;
-		}
-	}
+    var JSONtarget;
+    var hasFound = false;
+    var scriptsOnScreen = getScripts(spriteIndex);
+    for (var i = 0; i < scriptsOnScreen.length; i++) {
+        JSONtarget = JSONscript(scriptsOnScreen[i]);
+        hasFound = scriptContainsBlock(JSONtarget, blockSpec, argArray, softMatch);
+        if (hasFound) {
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 /* Takes in a CUSTOMBLOCKSPEC and a string BLOCKSPEC, both of which can be general 
@@ -522,18 +525,18 @@ function spriteContainsBlock(blockSpec, spriteIndex, argArray, softMatch) {
 * written test...
 */
 function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex, softMatch) {
-	if (argArray === undefined) {
-		argArray = [];
-	}
-	if (spriteIndex === undefined) {
-		spriteIndex = 0;
-	}
-	if (softMatch === undefined) {
-		softMatch = false;
-	}
-	var customBody = JSONcustomBlock(findBlockInPalette(customBlockSpec)).body;
-	var hasFound = scriptContainsBlock(customBody, blockSpec, argArray, softMatch);
-	return hasFound;
+    if (argArray === undefined) {
+        argArray = [];
+    }
+    if (spriteIndex === undefined) {
+        spriteIndex = 0;
+    }
+    if (softMatch === undefined) {
+        softMatch = false;
+    }
+    var customBody = JSONcustomBlock(findBlockInPalette(customBlockSpec)).body;
+    var hasFound = scriptContainsBlock(customBody, blockSpec, argArray, softMatch);
+    return hasFound;
 }
 
 /* Takes in BLOCK1SPEC (any block) and BLOCK2SPEC (a C-block), 
@@ -549,17 +552,17 @@ function customBlockContains(customBlockSpec, blockSpec, argArray, spriteIndex, 
  *  -repeat, repeat until, warp, forever, for loop, if, if else, for each
  */
 function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2, softMatch) {
-	if (Object.prototype.toString.call(script) !== '[object Array]') {
-		return false;
-	}
-	if (argArray1 === undefined) {
-		argArray1 = [];
-	}
-	if (argArray2 === undefined) {
-		argArray2 = [];
-	}
-	if (softMatch === undefined) {
-    	softMatch = false;
+    if (Object.prototype.toString.call(script) !== '[object Array]') {
+        return false;
+    }
+    if (argArray1 === undefined) {
+        argArray1 = [];
+    }
+    if (argArray2 === undefined) {
+        argArray2 = [];
+    }
+    if (softMatch === undefined) {
+        softMatch = false;
     }
     var morph1, type1, CblockSpecs;
     CblockSpecs = ["repeat %n %c", "warp %c", "forever %c", "for %upvar = %n to %n %cs"];
@@ -569,14 +572,14 @@ function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2, so
     //Added the below for loop to make checking for valid blockSpecs more robust using blockSpecMatch()
     var foundSpec = false;
     for (var i = 0; i < CblockSpecs.length; i++) {
-    	if (blockSpecMatch(CblockSpecs[i], block2Spec)) {
-    		foundSpec = true;
-    		break;
-    	}
+        if (blockSpecMatch(CblockSpecs[i], block2Spec)) {
+            foundSpec = true;
+            break;
+        }
     }
 
     if (!foundSpec) {
-    	return false;
+        return false;
     }
 
     for (var i = 0; i < script.length; i++) {
@@ -627,8 +630,8 @@ function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
             argArray2 = [];
         }
         if (softMatch === undefined) {
-    		softMatch = false;
-    	}
+            softMatch = false;
+        }
         var nicknameDict = {
             "repeat" : "repeat %n %c",
             "warp" : "warp %c",
@@ -659,7 +662,7 @@ function CBlockContainsInSprite(block1Spec, block2Spec, spriteIndex, argArray1, 
         spriteIndex = 0;
     }
     if (softMatch === undefined) {
-    	softMatch = false;
+        softMatch = false;
     }
     try {
         var JSONtarget;
@@ -687,10 +690,10 @@ function CBlockContainsInSprite(block1Spec, block2Spec, spriteIndex, argArray1, 
  * JSONscript(...)
  */
 function ifElseContains(script, clause, block1Spec, argArray1) {
-	if (Object.prototype.toString.call(script) !== '[object Array]') {
-		return false;
-	}
-	if (argArray1 === undefined) {
+    if (Object.prototype.toString.call(script) !== '[object Array]') {
+        return false;
+    }
+    if (argArray1 === undefined) {
         argArray1 = [];
     }
     if (!scriptContainsBlock(script, "if %b %c else %c")) {
@@ -731,7 +734,7 @@ function ifElseContains(script, clause, block1Spec, argArray1) {
  * by CLAUSE in an if-else block in any script in the given sprite's scripts tab.
  */
 function ifElseContainsInSprite(clause, block1Spec, argArray1, spriteIndex) {
-    //Populate optional parameters
+    // Populate optional parameters
     if (spriteIndex === undefined) {
         spriteIndex = 0;
     }
@@ -766,46 +769,46 @@ function ifElseContainsInSprite(clause, block1Spec, argArray1, spriteIndex) {
  * would count the (%n + %n) block as coming before the (%n - %n) block.
  */
 function blockPrecedes(block1, block2, script, seen1) {
-	if (Object.prototype.toString.call(script) !== '[object Array]') {
-		return false;
-	}
-	if (seen1 === undefined) {
-		seen1 = false;
-	}
-	var morph1, type1;
-	for (var i = 0; i < script.length; i++) {
-		morph1 = script[i];
-		type1 = typeof(morph1);
+    if (Object.prototype.toString.call(script) !== '[object Array]') {
+        return false;
+    }
+    if (seen1 === undefined) {
+        seen1 = false;
+    }
+    var morph1, type1;
+    for (var i = 0; i < script.length; i++) {
+        morph1 = script[i];
+        type1 = typeof(morph1);
 
-		if ((type1 === "string")) {
-			continue;
-		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
-			if (blockPrecedes(block1, block2, morph1, seen1)) {
-				return true;
-			}
-		} else {
-			if (blockSpecMatch(morph1.blockSp, block2)) {
-				if (!seen1) {
-					return false;
-				}
-				return true;
-			}
-			if (blockSpecMatch(morph1.blockSp, block1)) {
-				seen1 = true;
-			}
-			if (blockPrecedes(block1, block2, morph1.inputs, seen1)) {
-				return true;
-			}
-			if (morph1.blockSp ===  "if %b %c else %c") {
-				if (ifElseContains(script, "if", block1)
-					|| ifElseContains(script, "else", block1)) {
-					seen1 = true;
-				}
-			}
-		}
-	}
+        if ((type1 === "string")) {
+            continue;
+        } else if (Object.prototype.toString.call(morph1) === '[object Array]') {
+            if (blockPrecedes(block1, block2, morph1, seen1)) {
+                return true;
+            }
+        } else {
+            if (blockSpecMatch(morph1.blockSp, block2)) {
+                if (!seen1) {
+                    return false;
+                }
+                return true;
+            }
+            if (blockSpecMatch(morph1.blockSp, block1)) {
+                seen1 = true;
+            }
+            if (blockPrecedes(block1, block2, morph1.inputs, seen1)) {
+                return true;
+            }
+            if (morph1.blockSp ===  "if %b %c else %c") {
+                if (ifElseContains(script, "if", block1)
+                    || ifElseContains(script, "else", block1)) {
+                    seen1 = true;
+                }
+            }
+        }
+    }
 
-	return false;
+    return false;
 }
 
 
@@ -817,31 +820,31 @@ function blockPrecedes(block1, block2, script, seen1) {
 * details of what "precedes" means.
 */
 function blockPrecedesInSprite(block1Sp, block2Sp, spriteIndex) {
-	//Populate optional parameters
-	if (spriteIndex === undefined) {
-		spriteIndex = 0;
-	}
-	try {
-		var JSONtarget;
-		var doesPrecede;
-		var scriptsOnScreen = getScripts(spriteIndex);
-		for (var i = 0; i < scriptsOnScreen.length; i++) {
-			JSONtarget = JSONscript(scriptsOnScreen[i]);
-			doesPrecede = blockPrecedes(block1Sp, block2Sp, JSONtarget, false);
-			if (doesPrecede) {
-				return true; //if any script on the scripting area has block1
-					//occuring before block2, then this test will pass.
-			}
-		}
-	} catch(e) {
-		doesPrecede = false;
-		feedback = "Error when looking to see if " + block1Spec + " precedes";
-		feedback += " " + block2Spec + " in script.";
-		//Return undefined so the grade state doesn't change when no script is present??
-		console.log(feedback);
-		return false;
-	}
-	return false;
+    // Populate optional parameters
+    if (spriteIndex === undefined) {
+        spriteIndex = 0;
+    }
+    try {
+        var JSONtarget;
+        var doesPrecede;
+        var scriptsOnScreen = getScripts(spriteIndex);
+        for (var i = 0; i < scriptsOnScreen.length; i++) {
+            JSONtarget = JSONscript(scriptsOnScreen[i]);
+            doesPrecede = blockPrecedes(block1Sp, block2Sp, JSONtarget, false);
+            if (doesPrecede) {
+                return true; //if any script on the scripting area has block1
+                    //occuring before block2, then this test will pass.
+            }
+        }
+    } catch(e) {
+        doesPrecede = false;
+        feedback = "Error when looking to see if " + block1Spec + " precedes";
+        feedback += " " + block2Spec + " in script.";
+        // Return undefined so the grade state doesn't change when no script is present??
+        console.log(feedback);
+        return false;
+    }
+    return false;
 }
 
 /* Takes in a block BLOCK and returns the number of occurances
@@ -853,28 +856,28 @@ function blockPrecedesInSprite(block1Sp, block2Sp, spriteIndex) {
  * JSONscript(...)
  */
 function occurancesOfBlockSpec(blockSpec, block) {
-	if (Object.prototype.toString.call(block) !== '[object Array]') {
-		return 0;
-	}
-	var morph1, type1;
-	var result = 0;
-	for (var i = 0; i < block.length; i++) {
-		morph1 = block[i];
-		type1 = typeof(morph1);
+    if (Object.prototype.toString.call(block) !== '[object Array]') {
+        return 0;
+    }
+    var morph1, type1;
+    var result = 0;
+    for (var i = 0; i < block.length; i++) {
+        morph1 = block[i];
+        type1 = typeof(morph1);
 
-		if ((type1 === "string")) {
-			continue;
-		} else if (Object.prototype.toString.call(morph1) === '[object Array]') {
-			result += occurancesOfBlockSpec(blockSpec, morph1);
-		} else {
-			if (blockSpecMatch(morph1.blockSp, blockSpec)) {
-				result += 1;
-			}
-			result += occurancesOfBlockSpec(blockSpec, morph1.inputs);
-		}
-	}
+        if ((type1 === "string")) {
+            continue;
+        } else if (Object.prototype.toString.call(morph1) === '[object Array]') {
+            result += occurancesOfBlockSpec(blockSpec, morph1);
+        } else {
+            if (blockSpecMatch(morph1.blockSp, blockSpec)) {
+                result += 1;
+            }
+            result += occurancesOfBlockSpec(blockSpec, morph1.inputs);
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /* Takes in a BLOCKSPEC representation of the block to be counted (can be general, 
@@ -888,26 +891,26 @@ function occurancesOfBlockSpec(blockSpec, block) {
 * the student that the block does not occur enough times for the solution to be correct).
 */
 function occurancesOfBlockInSprite(blockSpec, expected, spriteIndex) {
-	//Populate optional parameters
-	if (spriteIndex === undefined) {
-		spriteIndex = 0;
-	}
-	try {
-		var JSONtarget;
-		var actual;
-		var isCorrect = false;
-		var scriptsOnScreen = getScripts(spriteIndex);
-		for (var i = 0; i < scriptsOnScreen.length; i++) {
-			JSONtarget = JSONscript(scriptsOnScreen[i]);
-			actual = occurancesOfBlockSpec(blockSpec, JSONtarget);
-			if (actual === expected) {
-				return true;
-			}
-		}
-	} catch(e) {
-		return false;
-	}
-	return false;
+    // Populate optional parameters
+    if (spriteIndex === undefined) {
+        spriteIndex = 0;
+    }
+    try {
+        var JSONtarget;
+        var actual;
+        var isCorrect = false;
+        var scriptsOnScreen = getScripts(spriteIndex);
+        for (var i = 0; i < scriptsOnScreen.length; i++) {
+            JSONtarget = JSONscript(scriptsOnScreen[i]);
+            actual = occurancesOfBlockSpec(blockSpec, JSONtarget);
+            if (actual === expected) {
+                return true;
+            }
+        }
+    } catch(e) {
+        return false;
+    }
+    return false;
 }
 
 
@@ -922,73 +925,73 @@ function occurancesOfBlockInSprite(blockSpec, expected, spriteIndex) {
  *
  */
 function scriptsMatch(template, script, softMatch, vars, templateVariables) {
-	if (Object.prototype.toString.call(script) !== '[object Array]') {
-		return false;
-	}
-	if (Object.prototype.toString.call(template) !== '[object Array]') {
-		return false;
-	}
-	var morph1, morph2, type1, type2, templateIsArray, scriptIsArray;
-	templateIsArray = (Object.prototype.toString.call(template) === '[object Array]');
-	scriptIsArray = (Object.prototype.toString.call(script) === '[object Array]');
-	if (templateIsArray && scriptIsArray) {
-		if (template.length !== script.length) {
-			return false;
-		}
-	}
-	for (var i = 0; i < template.length; i++) {
-		morph1 = template[i];
-		morph2 = script[i];
-		type1 = typeof(morph1);
-		type2 = typeof(morph2);
+    if (Object.prototype.toString.call(script) !== '[object Array]') {
+        return false;
+    }
+    if (Object.prototype.toString.call(template) !== '[object Array]') {
+        return false;
+    }
+    var morph1, morph2, type1, type2, templateIsArray, scriptIsArray;
+    templateIsArray = (Object.prototype.toString.call(template) === '[object Array]');
+    scriptIsArray = (Object.prototype.toString.call(script) === '[object Array]');
+    if (templateIsArray && scriptIsArray) {
+        if (template.length !== script.length) {
+            return false;
+        }
+    }
+    for (var i = 0; i < template.length; i++) {
+        morph1 = template[i];
+        morph2 = script[i];
+        type1 = typeof(morph1);
+        type2 = typeof(morph2);
 
 
-		if (type1 !== type2) {
-			return false;
-		}
+        if (type1 !== type2) {
+            return false;
+        }
 
-		if ((type1 === "string") && (type2 === "string")) {
-			if (softMatch && (morph1 !== morph2)) {
-				if (vars.hasOwnProperty(morph1)) {
-					if (vars[morph1] !== morph2) {
-						return false;
-					}
-				} else if (templateVariables.indexOf(morph1) === -1) {
-					return false;
-				} else {
-					vars[morph1] = morph2;
-				}
-			} else if (!softMatch && (morph1 !== morph2)) {
-				return false;
-			}
-		} else if ((Object.prototype.toString.call(morph1) === '[object Array]')
-			&& (Object.prototype.toString.call(morph2) === '[object Array]')) {
+        if ((type1 === "string") && (type2 === "string")) {
+            if (softMatch && (morph1 !== morph2)) {
+                if (vars.hasOwnProperty(morph1)) {
+                    if (vars[morph1] !== morph2) {
+                        return false;
+                    }
+                } else if (templateVariables.indexOf(morph1) === -1) {
+                    return false;
+                } else {
+                    vars[morph1] = morph2;
+                }
+            } else if (!softMatch && (morph1 !== morph2)) {
+                return false;
+            }
+        } else if ((Object.prototype.toString.call(morph1) === '[object Array]')
+            && (Object.prototype.toString.call(morph2) === '[object Array]')) {
 
-			if (!scriptsMatch(morph1, morph2, softMatch, vars, templateVariables)) {
-				return false;
-			}
+            if (!scriptsMatch(morph1, morph2, softMatch, vars, templateVariables)) {
+                return false;
+            }
 
-		} else {
-			if (morph1.blockSp !== morph2.blockSp) {
-				return false;
-			}
-			if (morph1.inputs.length !== morph2.inputs.length) {
-				return false;
-			}
-			if (!scriptsMatch(morph1.inputs, morph2.inputs, softMatch, vars, templateVariables)) {
-				return false;
-			}
-		}
-	}
+        } else {
+            if (morph1.blockSp !== morph2.blockSp) {
+                return false;
+            }
+            if (morph1.inputs.length !== morph2.inputs.length) {
+                return false;
+            }
+            if (!scriptsMatch(morph1.inputs, morph2.inputs, softMatch, vars, templateVariables)) {
+                return false;
+            }
+        }
+    }
 
-	return true;
+    return true;
 }
 
 /* Takes in a JavaScript object SCRIPT that is the result of calling JSONscript() on
  * a piece of Snap! code and converts it to a string.
  */
 function JSONtoString(script) {
-	return JSON.stringify(script);
+    return JSON.stringify(script);
 }
 
 /* Takes in a string SCRIPT that is the representation of a JavaScript object and
@@ -996,7 +999,7 @@ function JSONtoString(script) {
  * JSONscript() on a piece of Snap! code).
  */
 function stringToJSON(script) {
-	return JSON.parse(script);
+    return JSON.parse(script);
 }
 
 /* Returns the next character after C. Got this from StackOverflow at this link:
@@ -1006,12 +1009,12 @@ function stringToJSON(script) {
  * only uses alphabeticaly characters, just increments using the character's unicode value.
  */
 function nextChar(c) {
-	if (c === "Z") {
-		return "a";
-	}
-	if (c === "z") {
-		return "A";
-	}
+    if (c === "Z") {
+        return "a";
+    }
+    if (c === "z") {
+        return "A";
+    }
     return String.fromCharCode(c.charCodeAt(0) + 1);
 }
 
@@ -1025,38 +1028,38 @@ function nextChar(c) {
  * variables that will be in the returned template RESULT.
  */
 function genPattern(script1, script2, result, newMap, currChar, templateVariables) {
-	var morph1, morph2, type1, type2;
-	for (var i = 0; i < script1.length; i++) {
-		morph1 = script1[i];
-		morph2 = script2[i];
-		morphR = result[i];
-		type1 = typeof(morph1);
-		type2 = typeof(morph2);
+    var morph1, morph2, type1, type2;
+    for (var i = 0; i < script1.length; i++) {
+        morph1 = script1[i];
+        morph2 = script2[i];
+        morphR = result[i];
+        type1 = typeof(morph1);
+        type2 = typeof(morph2);
 
-		if ((type1 === "string") && (type2 === "string")) {
-			if (morph1 !== morph2) {
+        if ((type1 === "string") && (type2 === "string")) {
+            if (morph1 !== morph2) {
 
-				var newKey = JSONtoString([morph1, morph2]);
-				if (newMap.hasOwnProperty(newKey)) {
-					result[i] = newMap[newKey];
-				} else {
-					result[i] = currChar.val;
-					newMap[newKey] = currChar.val;
-					templateVariables.push(currChar.val);
-					currChar.val = nextChar(currChar.val);
-				}
-			}
-		} else if ((Object.prototype.toString.call(morph1) === '[object Array]')
-			&& (Object.prototype.toString.call(morph2) === '[object Array]')) {
+                var newKey = JSONtoString([morph1, morph2]);
+                if (newMap.hasOwnProperty(newKey)) {
+                    result[i] = newMap[newKey];
+                } else {
+                    result[i] = currChar.val;
+                    newMap[newKey] = currChar.val;
+                    templateVariables.push(currChar.val);
+                    currChar.val = nextChar(currChar.val);
+                }
+            }
+        } else if ((Object.prototype.toString.call(morph1) === '[object Array]')
+            && (Object.prototype.toString.call(morph2) === '[object Array]')) {
 
-			genPattern(morph1, morph2, morphR, newMap, currChar, templateVariables);
+            genPattern(morph1, morph2, morphR, newMap, currChar, templateVariables);
 
-		} else {
-			genPattern(morph1.inputs, morph2.inputs, morphR.inputs, newMap, currChar, templateVariables);
-		}
-	}
+        } else {
+            genPattern(morph1.inputs, morph2.inputs, morphR.inputs, newMap, currChar, templateVariables);
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /* Takes in two JSONscripts, SCRIPT1 and SCRIPT2 from calling JSONscript(...)
@@ -1069,16 +1072,16 @@ function genPattern(script1, script2, result, newMap, currChar, templateVariable
  * modify either of the original student's scripts.
  */
 function getTemplate(script1, script2) {
-	if ((Object.prototype.toString.call(script1) !== '[object Array]')
-		|| (Object.prototype.toString.call(script2) !== '[object Array]')) {
-		return [[], []];
-	}
-	var result = jQuery.extend(true, [], script1);
-	var newMap = {};
-	var chars = {val: "A"};
-	var newMap = {};
-	var templateVariables = [];
-	return [genPattern(script1, script2, result, newMap, chars, templateVariables), templateVariables];
+    if ((Object.prototype.toString.call(script1) !== '[object Array]')
+        || (Object.prototype.toString.call(script2) !== '[object Array]')) {
+        return [[], []];
+    }
+    var result = jQuery.extend(true, [], script1);
+    var newMap = {};
+    var chars = {val: "A"};
+    var newMap = {};
+    var templateVariables = [];
+    return [genPattern(script1, script2, result, newMap, chars, templateVariables), templateVariables];
 }
 
 /* Shortcut function initializes onscreen scripts for use with getTemplate.
@@ -1086,10 +1089,10 @@ function getTemplate(script1, script2) {
  * are present in the scripts window.
  */
 function fastTemplate() {
-	var scripts = getScripts(0);
-	var script1 = JSONscript(scripts[0]);
-	var script2 = JSONscript(scripts[1]);
-	return JSON.stringify(getTemplate(script1, script2));
+    var scripts = getScripts(0);
+    var script1 = JSONscript(scripts[0]);
+    var script2 = JSONscript(scripts[1]);
+    return JSON.stringify(getTemplate(script1, script2));
 }
 
 /* Takes in a TEMPLATE and a student's SCRIPT and grades it by checking the pattern
@@ -1100,20 +1103,20 @@ function fastTemplate() {
  * the values in the student's SCRIPT.
  */
 function checkTemplate(template, script, templateVariables) {
-	if (Object.prototype.toString.call(script) !== '[object Array]') {
-		return false;
-	}
-	if (Object.prototype.toString.call(template) !== '[object Array]') {
-		return false;
-	}
-	var vars = {};
-	var softMatch = true;
-	return scriptsMatch(template, script, softMatch, vars, templateVariables);
+    // TODO: Fix these to check the .constructor
+    if (Object.prototype.toString.call(script) !== '[object Array]') {
+        return false;
+    }
+    if (Object.prototype.toString.call(template) !== '[object Array]') {
+        return false;
+    }
+    var vars = {}, softMatch = true;
+    return scriptsMatch(template, script, softMatch, vars, templateVariables);
 }
 
 /* Takes in a string blockspec and returns its type (reporter, predicate, command).
  * This only works for blocks IN THE PALETTE. NOT COMMENTS.
 */
 function blockType(blockSpec) {
-	return findBlockInPalette(blockSpec).__proto__.constructor.name;
+    return findBlockInPalette(blockSpec).__proto__.constructor.name;
 }

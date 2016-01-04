@@ -13,13 +13,13 @@ Files List:
 * spriteEventLog.js
 
 * snap-edx-overrides.js
-	* These are the only customizations to the Snap! source
-	* (Not true right now, but eventually things will be refactored.)
+    * These are the only customizations to the Snap! source
+    * (Not true right now, but eventually things will be refactored.)
 
 * Libraries:
-	* jQuery
-		* duh!
-	* jschannel.js
-		* Used for communication with edX via iframes
-	* underscore-min.js
-		* used once in scriptAnalysis.js
+    * jQuery
+        * duh!
+    * jschannel.js
+        * Used for communication with edX via iframes
+    * underscore-min.js
+        * used once in scriptAnalysis.js
