@@ -9,7 +9,7 @@
         <link rel="stylesheet" type="text/css" href="hintstyle.css" />
 
         <script src="jschannel.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="https:// ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
         <script src="underscore-min.js"></script>
         <script src='spriteEventLog.js'></script>
@@ -49,11 +49,10 @@
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
         var graded = true;
-        // to hide feedback for this problem, change this flag to false
+        // to hide feedback for this problem, set this to false
         var showFeedback = true;
-        // to allow for the ability to regrade certain tests, change this flag to true
-        var regradeOn = false;
-        // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
+        // to allow ability to regrade certain tests, set this to true
+        var regradeOn = false
         // var testLog;
         function AGTest(outputLog) {
             var fb = new FeedbackLog(
@@ -69,50 +68,24 @@
                 return spriteContainsBlock(blockName);
             }
 
-            var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly "are the numbers of % distinct" and place it in the scripting area.',
-                'Great job!');
+            var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly ' + blockName + ' and place it in the scripting area.',
+                'The coordinates block exists.');
 
             tip_1_1.newAssertTest(
                 blockExists_1,
-                "Testing if the 'are the numbers of % distinct' block is in the scripting area.",
-                "The 'are the numbers of % distinct' block is in the scripting area.",
-                "Make sure you name your block exactly 'are the numbers of % distinct' and place it in the scripting area.",
+                "Testing if the " + blockName + " block is in the scripting area.",
+                "The " + blockName + " block is in the scripting area.",
+                "Make sure you name your block exactly " + blockName + " and place it in the scripting area.",
                 1);
 
             var tip_1_2 = chunk_1.newTip('Make sure your block works for general inputs.',
                 'Great job!');
-
-            tip_1_2.newIOTest('r',  //testClass
-                'are the numbers of % distinct',  //blockSpec
-                [[2, 1, 5, 4, 0, 2, 8, 3, 2]],  //input
-                false,  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-            tip_1_2.newIOTest('r',  //testClass
-                'are the numbers of % distinct',  //blockSpec
-                [[1, 2, 3]],  //input
-                true,  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-            tip_1_2.newIOTest('r',  //testClass
-                'are the numbers of % distinct',  //blockSpec
-                [[0, 0, 0]],  //input
-                false,  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
-
-            tip_1_2.newIOTest('r',  //testClass
-                'are the numbers of % distinct',  //blockSpec
-                [[2]],  //input
-                true,  //output
-                -1,  //timeout
-                true,  //isolated
-                1);  //points
+            var inputCSVURL = 'http://bjc.edc.org/bjc-r/cur/programming/4-internet/2-gps-data/GPS-NYC.csv';
+            tip_1_2.newIOTest('r',  // testClass
+                blockName,          // blockSpec
+                inputCSVURL,        // input
+                false               // output
+            );
 
             return fb;
         }
@@ -123,7 +96,7 @@
         var world, world_canvas;
         window.onload = function () {
             var ide, grade_button;
-            //INITIALIZE SNAP
+            // INITIALIZE SNAP
             world_canvas = document.getElementById('world')
             world = new WorldMorph(world_canvas);
             ide = new IDE_Morph();
