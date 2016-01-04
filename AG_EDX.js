@@ -117,14 +117,19 @@ var AG_EDX = (function() {
         // return encodeURI(world_string);
     }
 
-    //EDX: Used to save the world state into edX. FOR RELOAD 
+    // EDX: Used to save the world state into edX. FOR RELOAD 
     function setState() {
         console.log('SET STATE IS CALLED');
         var last_state_string = arguments.length === 1 ? arguments[0] : arguments[1];
         //var ide = world.children[0];
         if (last_state_string === 'starter file') {
-            var starter_xml = $.get(starter_path, function(data) {
-                sessionStorage.setItem(id + "starter_file", data)}, "text"); //TODO: Loading here still unsafe
+            var starter_xml = $.get(
+                starter_path,
+                function(data) {
+                    sessionStorage.setItem(id + "starter_file", data)
+                },
+                "text"
+            ); // TODO: Loading here still unsafe
             return;
         } else if (last_state_string === 'never graded') {
             return;
@@ -132,8 +137,8 @@ var AG_EDX = (function() {
             return;
         } else {
             var last_state = JSON.parse(last_state_string);
-            //console.log(last_state);
-            //console.log(last_state.out_log)
+            // console.log(last_state);
+            // console.log(last_state.out_log)
             last_state.state = decodeURIComponent(last_state.state);
             //console.log(last_state.out_log);
             sessionStorage.setItem(id + '_test_state', last_state.state);
@@ -168,8 +173,6 @@ var AG_EDX = (function() {
         
         // //ide.openProjectString(decodeURIComponent(last_xml));
         // ide.openProjectString(last_xml);
-        
-
 
     }
     return {

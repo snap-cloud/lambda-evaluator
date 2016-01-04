@@ -17,6 +17,7 @@
         <script src='scriptAnalysis.js'></script>
 
         <!-- Snap JS Files-->
+        <script src="FileSaver.min.js"></script>
         <script src="morphic.js"></script>
         <script src="widgets.js"></script>
         <script src="blocks.js"></script>
@@ -36,15 +37,15 @@
         <script src="AGAgent.js"></script>
         <script src='feedbackLog.js'></script>
         <script type='text/javascript'>
-        var starter_path = null;
+        var starter_path = 'GPS Scraping.xml';
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
-        var courseID = "BJC.2x";  // e.g. "BJCx"
+        var courseID = "BJC.3x";  // e.g. "BJCx"
         // Specify a prerequisite task id, should be null if no such requirement.
         var preReqTaskID = null;
         var preReqID = courseID + preReqTaskID;
         // taskID uniquely identifies the task for saving in browser sessionStorage.
-        var taskID = "_M2_W4_L2_T7_E2";
+        var taskID = "_M3_W1_L1_T?_E?";
         var id = courseID + taskID;
         var isEDX = isEDXurl();
         // if this question is not meant to be graded, change this flag to false
@@ -56,20 +57,17 @@
         // Add tests to the outputLog. Function is called by runAGTest(id, outputLog)
         // var testLog;
         function AGTest(outputLog) {
+            var fb = new FeedbackLog(
+                world,
+                id,
+                'Generate a list of coordinates'
+            );
 
-            //NOTES TO YIFAT AND PATRICK:
-            // IO tests should be isolated.
-            // All getter/setter functions inside anonymous Assert functions.
-            // Thanks for all your work :D
-
-
-            var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
-            fb.snapWorld = world;
-
-            var chunk_1 = fb.newChunk('Make the "are the numbers of % distinct" block.');
+            var blockName = "coordinates list from url %"
+            var chunk_1 = fb.newChunk('Complete the ' + blockName + ' block.');
 
             var blockExists_1 = function () {
-                return spriteContainsBlock("are the numbers of % distinct");
+                return spriteContainsBlock(blockName);
             }
 
             var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly "are the numbers of % distinct" and place it in the scripting area.',
@@ -131,17 +129,11 @@
             world = new WorldMorph(world_canvas);
             ide = new IDE_Morph();
             ide.openIn(world);
-            // var ide = world.children[0];
 
-            //Reduce Stage Size on initialization
+            // AUTOGRADER ADDITIONS:
+            // Set Snap! to small stage mode
             ide.toggleStageSize(true);
-
             initializeSnapAdditions(world, id);
-
-
-            // AUTOGRADER ADDITION -
-            // Forced to use setTimeout() to let the world load before... Maybe not.
-            // Create a gradingLog and initialize the AG status bar (AGSB).
 
             //Initialize AGSB button.
             grade_button = document.getElementById("autograding_button");
@@ -169,14 +161,19 @@
       <div class='hover_darken'></div>
       <nav id="navigation" class="site-navigation" role="navigation">
         <ul id="dropdown-closed" class="bubble">
-          <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="feedback-button">View Feedback</a></li>
-          <li class="menu-divider-sub-menu" id='menu-divider'></li>-->
-          <li class="menu-item-sub-menu" id="enabled-button"><a id="undo-button">Revert To Last Attempt</a></li>
-          <li class="menu-item-sub-menu" id="enabled-button"><a id="revert-button">Revert To Best Attempt</a></li>
-          <!--<li class="menu-item-sub-menu" id="enabled-button"><a id="last-submit">Revert To Last edX Submission</a></li>-->
-          <li class="menu-item-sub-menu" id="enabled-button"><a id="reset-button">Reset</a></li>
+          <li class="menu-item-sub-menu" id="enabled-button">
+              <a id="undo-button">Revert To Last Attempt</a>
+          </li>
+          <li class="menu-item-sub-menu" id="enabled-button">
+              <a id="revert-button">Revert To Best Attempt</a>
+          </li>
+          <li class="menu-item-sub-menu" id="enabled-button">
+              <a id="reset-button">Reset</a>
+          </li>
           <li class="menu-divider-sub-menu" id='menu-divider'></li>
-          <li class="menu-item-sub-menu" id='enabled-button' onclick="openPopup();"><a id="help-button">Help</a></li>
+          <li class="menu-item-sub-menu" id='enabled-button' onclick="openPopup();">
+              <a id="help-button">Help</a>
+          </li>
         </ul>
       </nav>
     </div>
@@ -205,8 +202,6 @@
   <div class="overlay is-hidden" id="ag-output">
     <div class="popup-content" id="ag-results">
       <span class="button-close" onclick="closeResults();" id="popup">X</span>
-      <!--<p id = "different-feedback"></p>
-      <p id = "edx-submit-different"></p>-->
       <div id="toggle-correct-tests"></div>
       <p id="comment"></p>
     </div>

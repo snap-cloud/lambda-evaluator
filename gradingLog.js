@@ -531,18 +531,6 @@ function multiTestBlock(outputLog, blockSpec, inputs, expOuts, timeOuts, isolate
 	return outputLog;
 }
 
-//David's code for checking an array for inner arrays
-//then converting them to snap lists
-//a - the JS Array you want to check for inner Arrays
-// PROBABLY USELES AT THE MOMENT
-function checkArrayForList(a) {
-	for (var i = 0; i < a.length; i++) {
-		if (a[i] instanceof Array) {
-			a[i] = new List(a[i]);
-		}
-	}
-}
-
 //David added in a way to populate a list in the
 //set values. Does not yet work for variables!
 function setValues(block, values) {

@@ -18,12 +18,7 @@ var showPrevFeedback = false;
 
 
 function isEDXurl() {
-    var url = window.location.href;
-    if (url.indexOf("edx") !== -1) {
-        return true;
-    } else {
-        return false;
-    }
+    return window.location.host.indexOf('edx.org') !== -1;
 }
 
 /*if (isEDX) {
@@ -31,6 +26,7 @@ function isEDXurl() {
     var edX_check_button = current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.nextElementSibling.children[1];
     current_iframe.parentNode.parentNode.parentNode.style.width = "100%";
 }*/
+
 /* Removes the previously saved AG_state. Runs the tests in
  * AGTest().
  * Called by 'click' event on autograder_button.
@@ -58,7 +54,7 @@ function runAGTest(snapWorld, taskID, outputLog) {
  * TODO: Trigger AGStart when a Snap file is loaded.
  */
 function AGStart(snapWorld, taskID) {
-    //Grab HTML divs
+    // Grab HTML divs
     var menu_button = document.getElementById("onclick-menu");
     var grade_button = document.getElementById("autograding_button");
     //Get the current Snap XML string
@@ -72,9 +68,9 @@ function AGStart(snapWorld, taskID) {
 
     if (!graded) {
         AG_bar_nograde();
-        return
+        return null;
     }
-    //If the current XML matches the stored correct XML
+    // If the current XML matches the stored correct XML
     if (isSameSnapXML(c_prev_xml, curr_xml)) {
         //Restore the AG status bar to a graded state
         var outputLog = JSON.parse(sessionStorage.getItem(taskID + "_c_test_log"));
@@ -102,6 +98,7 @@ function AGStart(snapWorld, taskID) {
         return outputLog;
     }   
 }
+
 /* Checks to see if the Snap! XML has changed and updates the
  * AG status bar. If Snap! is restored to its former state
  * the grading log and status bar are also restored.
@@ -110,11 +107,8 @@ function AGStart(snapWorld, taskID) {
  *  - Should only be called from a "mouseup" event.
  */
 function AGUpdate(snapWorld, taskID) {
-
-    
-
-    //TODO: Are there any optional parameters that may be useful?
-    //Grabs HTML divs
+    // TODO: Are there any optional parameters that may be useful?
+    // Grabs HTML divs
     var menu_button = document.getElementById("onclick-menu");
     var grade_button = document.getElementById("autograding_button");
     //Get the current Snap XML string
@@ -172,8 +166,8 @@ function AGUpdate(snapWorld, taskID) {
     } else if (prev_xml && isSameSnapXML(prev_xml, curr_xml, true)) {
         //Restore the AG status bar to a graded state
         console.log('AGUpdate: Thinks this is just the "last" XML.');
-        //Retrieve the previous test log from sessionStorage
-        //document.getElementById("different-feedback").innerHTML = "";
+        // Retrieve the previous test log from sessionStorage
+        // document.getElementById("different-feedback").innerHTML = "";
 
         outputLog = JSON.parse(prev_log);
         outputLog.snapWorld = snapWorld;
@@ -248,7 +242,7 @@ function AGFinish(outputLog) {
     console.log(outputLog);
     //populateFeedback(outputLog);
     if (isEDX) {
-        //parent.document.getElementsByClassName('check-label')[id_problem].click();
+        // parent.document.getElementsByClassName('check-label')[id_problem].click();
         edX_check_button.click();
     } 
     if (!isEDX) {
@@ -257,6 +251,7 @@ function AGFinish(outputLog) {
     }
     //parent.document.getElementsByClassName('check-label')[0].click();
 }
+
 /*
  * Reset state removes all saved logs and XML files, and opens a new
  * Snap! file. 
@@ -273,9 +268,13 @@ function resetState(snapWorld, taskID) {
     var ide = snapWorld.children[0];
 
     if (starter_path) {
-        $.get(starter_path, function(data) {
-        ide.openProjectString(data)}, 
-        "text");
+        $.get(
+            starter_path,
+            function(data) {
+                ide.openProjectString(data)
+            }, 
+            "text"
+        );
     } else {
         ide.newProject();
     }
@@ -289,7 +288,6 @@ function resetState(snapWorld, taskID) {
 }
 
 function revertToBestState(snapWorld, taskID) {
-
     var ide = snapWorld.children[0];
 
     var numAttempts = JSON.parse(sessionStorage.getItem(taskID + "_test_log")).numAttempts;
@@ -311,7 +309,6 @@ function revertToBestState(snapWorld, taskID) {
 }
 
 function revertToLastState(snapWorld, taskID) {
-
     var ide = snapWorld.children[0];
     var prev_xml = sessionStorage.getItem(taskID + "_test_state");
     var prev_log = JSON.parse(sessionStorage.getItem(taskID + "_test_log"));
@@ -469,6 +466,7 @@ function setNumAttempts(taskID) {
     }
 }
 
+// TODO: MOVE THIS TO A MORE ISOLATED LOCATION
 IDE_Morph.prototype.originalOpenProject = IDE_Morph.prototype.openProjectString;
 IDE_Morph.prototype.openProjectString = function (name) {
     this.originalOpenProject(name);
@@ -484,26 +482,4 @@ IDE_Morph.prototype.openCloudDataString = function (name) {
         AGUpdate(world, id);
     }, 1000);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

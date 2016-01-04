@@ -99,6 +99,9 @@ function AG_bar_nograde() {
     document.getElementById('autograding_button').style.pointerEvents = 'none';
 }
 
+/*
+    TODO: Add documentation
+*/
 function escapeRegExp(string) {
     return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
@@ -150,22 +153,22 @@ function toggleMenu() {
     }
 }
 
-function openPopup(){
+function openPopup() {
     var overlay = document.getElementById('overlay');
     overlay.classList.remove("is-hidden");
 }
 
-function closePopup(){
+function closePopup() {
     var overlay = document.getElementById('overlay');
     overlay.classList.add("is-hidden");
 }
 
-function openResults(){
+function openResults() {
     var overlay = document.getElementById('ag-output');
     overlay.classList.remove("is-hidden");
 }
 
-function closeResults(){
+function closeResults() {
     var overlay = document.getElementById('ag-output');
     overlay.classList.add("is-hidden");
 }
@@ -318,7 +321,7 @@ function addBasicHeadings() {
 
 function addReporterHeadings() {
     var columns = ["Test", "Points", "Block", "Input", "Output", "Expected", "Feedback"];
-    for (i=0; i<columns.length; i++) {
+    for (i = 0; i < columns.length; i++) {
         var header = document.createElement("th");
         var text = document.createTextNode(columns[i]);
         var repTitles = document.getElementById("reporter-table-titles");
@@ -458,11 +461,12 @@ function fullScreenSnap(button, taskID) {
     sessionStorage.setItem(taskID + "full-screen-on", JSON.stringify(true));
 }
 
+// TODO: REFACTOR THIS
 IDE_Morph.prototype.originalToggleStageSize = IDE_Morph.prototype.toggleStageSize;
 IDE_Morph.prototype.toggleStageSize = function (isSmall) {
     this.originalToggleStageSize(isSmall);
     setTimeout(function() {
-        moveAutogradingBar()
+        moveAutogradingBar();
     }, 100);
 }
 
@@ -476,6 +480,18 @@ function moveAutogradingBar() {
     }
 }
 
+function setInitialHelpDisplay(bool) {
+    if (localStorage) {
+        localStorage['-snap-autograder-inital-help'] = bool;
+    }
+}
+
+function hasShownInitalHelp() {
+    if (localStorage) {
+        return localStorage['-snap-autograder-inital-help'];
+    }
+    return false;
+}
 
 
 function createInitialHelp() {
@@ -484,7 +500,6 @@ function createInitialHelp() {
     initial_help.id = "initial-help";
 
     $(initial_help).insertAfter("#overlay")
-
 
     hamburger_help = document.createElement("p");
     hamburger_text = document.createTextNode("Click this button to access helpful auto-feedback functions.");
@@ -513,9 +528,10 @@ function createInitialHelp() {
 
     document.getElementById("initial-help").appendChild(arrow_clone);
     document.getElementById("initial-help").appendChild(help_clone);
+    
+    setInitialHelpDisplay(true)
     /*$("#ag-button-arrow").clone().appendTo("#initial-help");
     $("#ag-button-help").clone().appendTo("#initial-help");*/
-
 }
 
 function previousFeedbackButton() {
@@ -534,19 +550,14 @@ function previousFeedbackButton() {
     menu_divider.classList.add("menu-item-sub-menu");
     menu_divider.id = "menu-divider";
 
-
     $(".bubble").prepend(menu_divider);
     $(".bubble").prepend(prev_feedback);
 }
 
 
-
 function initializeSnapAdditions(snapWorld, taskID) {
-
     var prevFeedbackButton = false;
-    var isInitial = false;
-    if (!sessionStorage.getItem(taskID + "_test_state")) {
-        isInitial = true;
+    if (!hasShownInitalHelp()) {
         createInitialHelp();
         moveHelp();
     }
@@ -587,9 +598,9 @@ function initializeSnapAdditions(snapWorld, taskID) {
     }
 
     setTimeout(function() {
-        //If page has already been loaded, restore previously tested XML
-        //TODO: Separate this into its own function.
-        //Moved this into the timeout so that keys in session storage have time to be set from setstate in AGEDX before they are called
+        // If page has already been loaded, restore previously tested XML
+        // TODO: Separate this into its own function.
+        // Moved this into the timeout so that keys in session storage have time to be set from setstate in AGEDX before they are called
         var prev_xml = sessionStorage.getItem(taskID + "_test_state");
         if (prev_xml !== null) {
             ide.openProjectString(prev_xml);
@@ -622,12 +633,27 @@ function initializeSnapAdditions(snapWorld, taskID) {
     }
 
 
-    document.addEventListener("click", function() { grayOutButtons(snapWorld, taskID); });
+    document.addEventListener(
+        "click",
+        function() {
+            grayOutButtons(snapWorld, taskID);
+        }
+    );
     snap_menu.addEventListener('click', popup_listener);
-    reset_button.onclick = function() { resetState(snapWorld, taskID); toggleMenu(taskID); };
-    revert_button.onclick = function() { revertToBestState(snapWorld, taskID); toggleMenu(taskID); };
-    undo_button.onclick = function() { revertToLastState(snapWorld, taskID); toggleMenu(taskID); };
-    menu_button.onclick = function() { toggleMenu(taskID); };
+    reset_button.onclick = function () {
+        resetState(snapWorld, taskID); toggleMenu(taskID);
+    };
+    revert_button.onclick = function (e) {
+        revertToBestState(snapWorld, taskID);
+        toggleMenu(taskID);
+    };
+    undo_button.onclick = function (e) {
+        revertToLastState(snapWorld, taskID);
+        toggleMenu(taskID);
+    };
+    menu_button.onclick = function (e) {
+        toggleMenu(taskID);
+    };
 
     help_overlay.onclick = function(e) {
         closePopup();
@@ -649,13 +675,10 @@ function initializeSnapAdditions(snapWorld, taskID) {
         event.stopPropagation();
     }
 
-    $(".bubble").mouseover(function() {
-        moveHelp();
-    });
+    $(".bubble").mouseover(moveHelp);
 
     checkButtonExists = false;
     if (isEDX) {
-
         var timesChecked = 0;
 
         checkButtonExists = true;
@@ -809,9 +832,6 @@ function initializeSnapAdditions(snapWorld, taskID) {
             }
             
         }
-
-
-
     }, 1000);
 
     setTimeout(function() {
@@ -820,14 +840,14 @@ function initializeSnapAdditions(snapWorld, taskID) {
             ide.openProjectString(starter_xml);
             sessionStorage.removeItem(taskID + "starter_file");
         }
-
     }, 1500);
 }
 
-//Call the test suite when this element is clicked.
+// Call the test suite when this element is clicked.
 var update_listener = function() {
     var outputLog = AGUpdate(world, id);
 };
+
 var button_listener = function(event) {
     event.stopPropagation();
     var numAttempts = setNumAttempts(id);
@@ -837,7 +857,7 @@ var button_listener = function(event) {
 
     var tip_tests = document.getElementsByClassName("data");
     //console.log(String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px");
-    for(var i=0; i < tip_tests.length; i++){
+    for(var i = 0; i < tip_tests.length; i++) {
         tip_tests[i].style.maxWidth = String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px";
     }
     /*if (checkButtonExists) {
@@ -877,24 +897,6 @@ function moveHelp() {
         left: pos.left + 270 + "px"
     });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -945,7 +947,8 @@ function createCollapsibleCorrectSection(selector) {
 }
 
 function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
-    document.getElementById("toggle-correct-tests").onclick = function() {
+    // TODO: Extract this function
+    document.getElementById("toggle-correct-tests").onclick = function () {
         if (toggleButton.classList.contains("isOff")) {
             toggleButton.classList.remove("isOff");
             allFeedback = true;
@@ -960,8 +963,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             openResults();
         }, 100);
     }
-
-    
 
     var comment = document.getElementById("comment");
 
@@ -1174,7 +1175,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         } else {
                             string_reporter.innerHTML = '<p class="data assertion">' + testPoints + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion"> did NOT return the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + ' <p class="data assertion"> Instead it returned the ' + '<p class="data assertion bold">output: ' + thisTest["output"] + '</p>';
                         }
-                        document.getElementsByClassName("tests-section" + String(i) +String(x))[0].appendChild(string_reporter);
+                        document.getElementsByClassName("tests-section" + String(i) + String(x))[0].appendChild(string_reporter);
 
                         /*var className = "tests-section" + String(i) +String(x)[0];
                         $("." + className).append(thisTest.picture);
@@ -1240,6 +1241,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     document.getElementById("numtips").innerHTML = String(numtips) + " tip" + plural;
     var tipwidth = document.getElementById("numtips").offsetWidth;
 
+    // TODO: Fix this or document why corercion is needed.
     onclick_menu.style.right = String(Number(menu_right.slice(0, menu_right.length - 2)) + tipwidth - 2) + "px";
     
     button.style.right = String(Number(button_right.slice(0, button_right.length - 2)) + tipwidth - 2) + "px";
@@ -1260,16 +1262,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
         document.getElementById("comment").appendChild(noCreditWarning);
         openResults();
     }
-   
 
 }
-
-
-
-
-
-
-
 
 
 
