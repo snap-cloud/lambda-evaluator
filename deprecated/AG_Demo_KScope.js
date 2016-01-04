@@ -27,105 +27,105 @@ function AGTest(outputLog) {
     /* Create 'draw square' command motion */
     // var testFunc = function(i, t) {t.expOut = true; if (i == 1) {return true;} return false;};
 
-	// multiTestBlock(outputLog, 'factorial %s', 
-	//     [[0],[1],[2],[4],[5],[10]],
-	//     //[1,1,2,24,120,3628800],
-	//     [testFunc,testFunc,testFunc,testFunc,testFunc,testFunc],
-	//     [-1,-1,-1,-1,-1,-1],
-	//     [true,true,true,true,true,true], 2);
+    // multiTestBlock(outputLog, 'factorial %s', 
+    //     [[0],[1],[2],[4],[5],[10]],
+    //     //[1,1,2,24,120,3628800],
+    //     [testFunc,testFunc,testFunc,testFunc,testFunc,testFunc],
+    //     [-1,-1,-1,-1,-1,-1],
+    //     [true,true,true,true,true,true], 2);
 
-	/* KScopeTest */
-	
-	var func1 = function() {
-		return spriteContainsBlock('when %keyHat key pressed', 0, ['space']) &&
-	    spriteContainsBlock('when %keyHat key pressed', 1, ['space']) &&
-	    spriteContainsBlock('when %keyHat key pressed', 2, ['space']) &&
-	    spriteContainsBlock('when %keyHat key pressed', 3, ['space']);
-	}
-	/*testAssert(outputLog, 
-	    func1,
-	    "All sprites have the 'when [space] key pressed' hat-block.",
-	    "All sprites must have a 'when [space] key pressed' hat-block.",
-	    "The Kaleidoscope should begin drawing when the 'space' key is pressed.",1);*/
-	var func2 = function() {
-		return spriteContainsBlock('forever %c', 0) &&
-	    spriteContainsBlock('forever %c', 1) &&
-	    spriteContainsBlock('forever %c', 2) &&
-	    spriteContainsBlock('forever %c', 3);
-	}
-	/*testAssert(outputLog,
-	    func2,
-	    "All sprites have a forever loop",
-	    "All sprites must have a 'forever' loop.",
-	    "The 'forever' loop is required.",1);*/
-	var func3 = function() {
-		return spriteContainsBlock('go to x: %n y: %n', 0) &&
-	    spriteContainsBlock('go to x: %n y: %n', 1) &&
-	    spriteContainsBlock('go to x: %n y: %n', 2) &&
-	    spriteContainsBlock('go to x: %n y: %n', 3);
-	}
-	/*testAssert(outputLog,
-	    func3,
-	    "All sprites have a 'go to' motion-block",
-	    "All sprites must have a 'go to' motion-block",
-	    "The 'go to' motion-block is required.",2);*/
-	var func4 = function() {
-		return spriteContainsBlock('pen down', 0) &&
-	    spriteContainsBlock('pen down', 1) &&
-	    spriteContainsBlock('pen down', 2) &&
-	    spriteContainsBlock('pen down', 3);
-	}
-	/*testAssert(outputLog,
-	    func4,
-	    "All sprites have a 'pen down' pen-block",
-	    "All sprites must have a 'pen down' pen-block",
-	    "The 'pen down' pen-block is required.",1);*/
-	/*testKScope(outputLog,3, 3);
-	console.log(outputLog);
+    /* KScopeTest */
+    
+    var func1 = function() {
+        return spriteContainsBlock('when %keyHat key pressed', 0, ['space']) &&
+        spriteContainsBlock('when %keyHat key pressed', 1, ['space']) &&
+        spriteContainsBlock('when %keyHat key pressed', 2, ['space']) &&
+        spriteContainsBlock('when %keyHat key pressed', 3, ['space']);
+    }
+    /*testAssert(outputLog, 
+        func1,
+        "All sprites have the 'when [space] key pressed' hat-block.",
+        "All sprites must have a 'when [space] key pressed' hat-block.",
+        "The Kaleidoscope should begin drawing when the 'space' key is pressed.",1);*/
+    var func2 = function() {
+        return spriteContainsBlock('forever %c', 0) &&
+        spriteContainsBlock('forever %c', 1) &&
+        spriteContainsBlock('forever %c', 2) &&
+        spriteContainsBlock('forever %c', 3);
+    }
+    /*testAssert(outputLog,
+        func2,
+        "All sprites have a forever loop",
+        "All sprites must have a 'forever' loop.",
+        "The 'forever' loop is required.",1);*/
+    var func3 = function() {
+        return spriteContainsBlock('go to x: %n y: %n', 0) &&
+        spriteContainsBlock('go to x: %n y: %n', 1) &&
+        spriteContainsBlock('go to x: %n y: %n', 2) &&
+        spriteContainsBlock('go to x: %n y: %n', 3);
+    }
+    /*testAssert(outputLog,
+        func3,
+        "All sprites have a 'go to' motion-block",
+        "All sprites must have a 'go to' motion-block",
+        "The 'go to' motion-block is required.",2);*/
+    var func4 = function() {
+        return spriteContainsBlock('pen down', 0) &&
+        spriteContainsBlock('pen down', 1) &&
+        spriteContainsBlock('pen down', 2) &&
+        spriteContainsBlock('pen down', 3);
+    }
+    /*testAssert(outputLog,
+        func4,
+        "All sprites have a 'pen down' pen-block",
+        "All sprites must have a 'pen down' pen-block",
+        "The 'pen down' pen-block is required.",1);*/
+    /*testKScope(outputLog,3, 3);
+    console.log(outputLog);
     return outputLog;*/
 
     var fb = new FeedbackLog(null, id, 'this is a feedback log test', 0);
-	fb.snapWorld = world;
-	var test_chunk = fb.newChunk('Kaleidoscope');
-	var test_tip = test_chunk.newTip('Make sure your script starts drawing when the space key is pressed, and that there is a "Go To" block.',
+    fb.snapWorld = world;
+    var test_chunk = fb.newChunk('Kaleidoscope');
+    var test_tip = test_chunk.newTip('Make sure your script starts drawing when the space key is pressed, and that there is a "Go To" block.',
                 'Great job starting the script!');
-	
+    
 
-	var ass_test1 = test_tip.newAssertTest( 
+    var ass_test1 = test_tip.newAssertTest( 
                 func1,
                 "All sprites must have a 'when [space] key pressed' hat-block.",
                 "All sprites have the 'when [space] key pressed' hat-block.",
-			    "The Kaleidoscope should begin drawing when the 'space' key is pressed.",
+                "The Kaleidoscope should begin drawing when the 'space' key is pressed.",
                 1); 
-	var ass_test2 = test_tip.newAssertTest( 
+    var ass_test2 = test_tip.newAssertTest( 
                 func3,
                 "All sprites must have a 'go to' motion-block",
                 "All sprites have a 'go to' motion-block",
-			    "The 'go to' motion-block is required.",
+                "The 'go to' motion-block is required.",
                 1); 
 
-	var second_tip = test_chunk.newTip('Make sure you use a loop so that your sprite moves continuously.',
+    var second_tip = test_chunk.newTip('Make sure you use a loop so that your sprite moves continuously.',
                 'Great job on the loop!');
 
-	var ass_test3 = second_tip.newAssertTest(
+    var ass_test3 = second_tip.newAssertTest(
                 func2,
                 "All sprites must have a 'forever' loop.",
                 "All sprites have a forever loop",
-			    "The 'forever' loop is required.",
+                "The 'forever' loop is required.",
                 1);
 
-	var third_tip = test_chunk.newTip('Make sure your sprite is drawing its kaleidoscope',
+    var third_tip = test_chunk.newTip('Make sure your sprite is drawing its kaleidoscope',
                 'Your sprite is drawing its kaleidoscope!');
 
-	var ass_test4 = third_tip.newAssertTest(
+    var ass_test4 = third_tip.newAssertTest(
                 func4,
                 "All sprites must have a 'pen down' pen-block",
                 "All sprites have a 'pen down' pen-block",
-			    "The 'pen down' pen-block is required.",
+                "The 'pen down' pen-block is required.",
                 1);
 
-	//testKScope(outputLog,3, 3);
-	return fb;
+    //testKScope(outputLog,3, 3);
+    return fb;
 }
 
 // Example of using a function in expOut
