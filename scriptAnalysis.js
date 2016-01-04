@@ -10,11 +10,13 @@ function getSprite(index) {
         throw "Sprite: " + index + " was not found."
     }
 }
+
 // Returns the scripts of the sprite at 'index', undefined otherwise.
 function getScripts(index) {
     var sprite = getSprite(index);
     return sprite.scripts.children;
 }
+
 // Get just the most recently touched block that matches
 function getScript(blockSpec, spriteIndex) {
     return getAllScripts(blockSpec, spriteIndex)[0];
@@ -247,9 +249,10 @@ function JSONblock(block) {
         }
     }
 
-
-
-    return {blockSp: block.blockSpec, inputs: blockArgs};
+    return {
+        blockSp: block.blockSpec,
+        inputs: blockArgs
+    };
 }
 
 /* Takes in a custom block and converts it to JSON format. For example,
@@ -284,8 +287,8 @@ function JSONblock(block) {
  */
 function JSONcustomBlock(block) {
     if ((block === undefined) || (block === null)) {
+        // FIXME: throw new Error()
         throw "Custom block definition not found.";
-        // return null;
     }
     var resultJSONblock = JSONblock(block);
     var JSONbody = JSONscript(block.definition.body.expression);
@@ -294,10 +297,12 @@ function JSONcustomBlock(block) {
     for (var i = 0; i < inputs.length; i++) {
         JSONinputs[i] = inputs[i];
     }
-    return {blockSp: resultJSONblock.blockSp,
-            inputs: resultJSONblock.inputs,
-            body: JSONbody,
-            variables: JSONinputs};
+    return {
+        blockSp: resultJSONblock.blockSp,
+        inputs: resultJSONblock.inputs,
+        body: JSONbody,
+        variables: JSONinputs
+    };
 }
 
 /* Takes in a string BLOCKSPEC and returns the JSONified version of
@@ -455,6 +460,7 @@ function scriptContainsBlock(script, blockSpec, argArray, softMatch) {
  * TEMPLATE[i] !== "" and TEMPLATE[i] !== [].
  */
 function checkArgArrays(template, actual) {
+    // TODO: Simplify, check against .constructor
     if (Object.prototype.toString.call(template) !== '[object Array]') {
         return false;
     }
@@ -479,7 +485,8 @@ function checkArgArrays(template, actual) {
             } catch(e) {
                 return false;
             }
-        } else if (!_.isEqual(currArg, actual[i])) {// maybe don't need _.isEqual, can just do basic comparison?
+        } else if (!_.isEqual(currArg, actual[i])) {
+            // maybe don't need _.isEqual, can just do basic comparison?
             return false;
         }
     }
@@ -576,9 +583,7 @@ function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2, so
         }
     }
 
-    if (!foundSpec) {
-        return false;
-    }
+    if (!foundSpec) { return false; }
 
     for (var i = 0; i < script.length; i++) {
         morph1 = script[i];
@@ -630,6 +635,7 @@ function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
         if (softMatch === undefined) {
             softMatch = false;
         }
+        // TODO: Extract this
         var nicknameDict = {
             "repeat" : "repeat %n %c",
             "warp" : "warp %c",
@@ -688,6 +694,7 @@ function CBlockContainsInSprite(block1Spec, block2Spec, spriteIndex, argArray1, 
  * JSONscript(...)
  */
 function ifElseContains(script, clause, block1Spec, argArray1) {
+    // TODO: fix this
     if (Object.prototype.toString.call(script) !== '[object Array]') {
         return false;
     }
@@ -923,6 +930,7 @@ function occurancesOfBlockInSprite(blockSpec, expected, spriteIndex) {
  *
  */
 function scriptsMatch(template, script, softMatch, vars, templateVariables) {
+    // TODO: FIXME
     if (Object.prototype.toString.call(script) !== '[object Array]') {
         return false;
     }
@@ -985,7 +993,8 @@ function scriptsMatch(template, script, softMatch, vars, templateVariables) {
     return true;
 }
 
-/* Takes in a JavaScript object SCRIPT that is the result of calling JSONscript() on
+/* TODO: this isn't really necessary.
+ * Takes in a JavaScript object SCRIPT that is the result of calling JSONscript() on
  * a piece of Snap! code and converts it to a string.
  */
 function JSONtoString(script) {
