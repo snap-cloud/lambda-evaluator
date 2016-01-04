@@ -257,21 +257,25 @@ function AGFinish(outputLog) {
  * Snap! file. 
  */
 function resetState(snapWorld, taskID) {
+    var ide, numAttempts = 0, prevState;
 
-    var numAttempts = JSON.parse(sessionStorage.getItem(taskID + "_test_log")).numAttempts;
+    prevState = sessionStorage.getItem(taskID + "_test_log");
+    if (prevState) {
+        numAttempts = JSON.parse(prevState).numAttempts;
+    }
 
     sessionStorage.removeItem(taskID + "_test_log");
     sessionStorage.removeItem(taskID + "_test_state");
     sessionStorage.removeItem(taskID + "_c_test_log");
     sessionStorage.removeItem(taskID + "_c_test_state");
 
-    var ide = snapWorld.children[0];
+    ide = snapWorld.children[0];
 
     if (starter_path) {
         $.get(
             starter_path,
             function(data) {
-                ide.openProjectString(data)
+                ide.openProjectString(data);
             }, 
             "text"
         );

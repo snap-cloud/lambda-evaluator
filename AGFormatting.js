@@ -641,7 +641,8 @@ function initializeSnapAdditions(snapWorld, taskID) {
     );
     snap_menu.addEventListener('click', popup_listener);
     reset_button.onclick = function () {
-        resetState(snapWorld, taskID); toggleMenu(taskID);
+        resetState(snapWorld, taskID);
+        toggleMenu(taskID);
     };
     revert_button.onclick = function (e) {
         revertToBestState(snapWorld, taskID);

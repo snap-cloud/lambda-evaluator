@@ -26,7 +26,7 @@ var AG_EDX = (function() {
 
     // The following return value may or may not be used to grade
     // server-side.
-    // If getState and  are used, then the Python grader also gets
+    // If getState and setState are used, then the Python grader also gets
     // access to the return value of getState and can choose it instead to
     // grade.
     function getGrade() {
