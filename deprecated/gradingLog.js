@@ -1,4 +1,4 @@
-//Snap Protocol Language Enabler
+// Snap Protocol Language Enabler
 
 /*
     gradingLog is initialized when a block is tested.
@@ -97,7 +97,7 @@ gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, tim
                                  "isolated": isolate || false,
                                  "pointValue": point,
                                  "sprite": 0};
-    //if thie expected output is an array, convert it to  snap list so snapEquals works
+   // if thie expected output is an array, convert it to  snap list so snapEquals works
 
     return this.testCount;
 };
@@ -126,7 +126,7 @@ gradingLog.prototype.addAssert = function(testClass, statement, feedback, text, 
  */
 gradingLog.prototype.runSnapTests = function() {
 
-    //Find the first reporter test and start it.
+   // Find the first reporter test and start it.
     for (var id = 1; id <= this.testCount; id++) {
         var test = this[id];
         if (test.testClass === 'r') {
@@ -137,7 +137,7 @@ gradingLog.prototype.runSnapTests = function() {
             return true;
         }
     }
-    //return this gradingLog
+   // return this gradingLog
     return false;
 }
 
@@ -149,7 +149,7 @@ gradingLog.prototype.startSnapTest = function(testID) {
 
     }
     test.output = "INVALID";
-    //Retrieve the block from the stage TODO: Handle Errors
+   // Retrieve the block from the stage TODO: Handle Errors
     try {
         var block = null;
         if (test.isolated) {
@@ -157,12 +157,12 @@ gradingLog.prototype.startSnapTest = function(testID) {
         } else {
             block = getScript(test.blockSpec);
         }
-    //Set the selected block's inputs for the test
+   // Set the selected block's inputs for the test
         setValues(block, test['input']);
-    //Initiate the Snap Process with a callback to .finishSnapTest
+   // Initiate the Snap Process with a callback to .finishSnapTest
 
         var stage = this.snapWorld.children[0].stage;
-        var outputLog = this; //Reference for the anonymouse function to follow
+        var outputLog = this;// Reference for the anonymouse function to follow
 
         var proc = stage.threads.startProcess(block,
             stage.isThreadSafe,
@@ -172,33 +172,33 @@ gradingLog.prototype.startSnapTest = function(testID) {
                 console.log(readValue(proc));
                 outputLog.finishSnapTest(testID, readValue(proc));
         });
-    //Add reference to proc in gradingLog for error handling
+   // Add reference to proc in gradingLog for error handling
         test.proc = proc;
-    //Timeouts for infinitely looping script or an Error.
+   // Timeouts for infinitely looping script or an Error.
         var timeout = test.timeOut;
-    //Set default time if none is specified
+   // Set default time if none is specified
         if (timeout < 0) {
             timeout = 1000;
         }
         var myself = this;
-        //Launch timeout to handle Snap errors and infinitely looping scripts
+       // Launch timeout to handle Snap errors and infinitely looping scripts
         var timeout_id = setTimeout(function() {
             var stage = outputLog.snapWorld.children[0].stage;
             if (test['proc'].errorFlag) {
-                test['feedback'] = "Snap Error." //TODO: Find error message from process or block
+                test['feedback'] = "Snap Error."// TODO: Find error message from process or block
             } else {
                 test['feedback'] = "Test Timeout Occurred."
             }
             test.output = "INVALID";
             stage.threads.stopProcess(getScript(outputLog[testID]["blockSpec"], test.sprite));
             test.correct = false;
-            //Set the graded flag to true for this test.
+           // Set the graded flag to true for this test.
             test.graded = true;
             // if (test.isolated) {
             //     myself.snapWorld.children[0].sprites.contents[test.sprite].remove();
             // }
         },timeout);
-        //Save timeout id, to stop error handling timeout if test succeeds.
+       // Save timeout id, to stop error handling timeout if test succeeds.
         this.currentTimeout = timeout_id;
 
         return this;
@@ -208,10 +208,10 @@ gradingLog.prototype.startSnapTest = function(testID) {
         test.graded = true;
         test.proc = null;
         var outputLog = this;
-        //Find the next Snap reporter test
+       // Find the next Snap reporter test
         for (var id = testID+1; id <= this.testCount;id++) {
             var next_test = this[id];
-            //Continue to the next test if not a 'reporter' test type
+           // Continue to the next test if not a 'reporter' test type
             if (next_test.testClass === 'r' && !next_test.graded) {
                 setTimeout(function() {
                     outputLog.startSnapTest(id);
@@ -233,14 +233,14 @@ gradingLog.prototype.startSnapTest = function(testID) {
 */
 gradingLog.prototype.finishSnapTest = function(testID, output) {
 
-    //Populate Grade Log //May be DEPRICATED.
+   // Populate Grade Log// May be DEPRICATED.
     var test = this[testID];
 
     if (test === undefined) {
         throw "gradingLog.finishSnapTest: TestID: " + testID + ", is invalid.";
     }
 
-    //Added a variable "expOut" to check for snap Lists correctly
+   // Added a variable "expOut" to check for snap Lists correctly
     var expOut = test.expOut;
     
     if (output === undefined) {
@@ -253,44 +253,44 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
         }
     }
 
-    //if expOut is an array turn it into a snap! list for processing
+   // if expOut is an array turn it into a snap! list for processing
     if (expOut instanceof Array) {
         expOut = new List(expOut);
     }
 
-    //if expOut is a seperate function call run it with the output
-    //and update things accordingly. The expOut function should update
-    //the test.expOut!
-    //Format: function(output, test)
+   // if expOut is a seperate function call run it with the output
+   // and update things accordingly. The expOut function should update
+   // the test.expOut!
+   // Format: function(output, test)
     if (expOut instanceof Function) {
         output = expOut(output, test);
         expOut = true;
     }
 
-    //Update feedback and 'correct' flag depending on output.
+   // Update feedback and 'correct' flag depending on output.
     if (snapEquals(output, expOut)) {
         test.correct = true;
-        //test.feedback = test.feedback || "Test Passed.";
+       // test.feedback = test.feedback || "Test Passed.";
         test.feedback = "Test Passed." || test.feedback;
     } else {
         test.correct = false;
-        //test.feedback = test.feedback || "Unexpected Output: " + String(output);
+       // test.feedback = test.feedback || "Unexpected Output: " + String(output);
         test.feedback = "Unexpected Output: " + String(output) || test.feedback;
     }
 
-    //Set expOut back to an array
+   // Set expOut back to an array
     if (expOut instanceof List) {
         expOut = expOut.asArray();
     }
 
-    //Set test graded flag to true, for gradingLog.gradeLog()
+   // Set test graded flag to true, for gradingLog.gradeLog()
     test.graded = true;
-    //Kill error handling timeout
+   // Kill error handling timeout
     clearTimeout(this.currentTimeout);
     test.proc = null;
-    //Reference this gradingLog for the anonymous function
+   // Reference this gradingLog for the anonymous function
     this[testID] = test;
-    //Clear the input values.
+   // Clear the input values.
     try {
         if (test.isolated) {
             console.log("removing sprite");    
@@ -308,10 +308,10 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
         throw "gradingLog.finishSnapTest: Trying to clear values of block that does not exist.";
     }
     var outputLog = this;
-    //Find the next Snap reporter test
+   // Find the next Snap reporter test
     for (var id = testID+1; id <= this.testCount;id++) {
         var next_test = this[id];
-        //Continue to the next test if not a 'reporter' test type
+       // Continue to the next test if not a 'reporter' test type
         if (next_test.testClass === 'r' && !next_test.graded) {
             setTimeout(function() {
                 outputLog.startSnapTest(id);
@@ -319,7 +319,7 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
             return;
         }
     }
-    //If this was the last test, grade the log
+   // If this was the last test, grade the log
     this.scoreLog();
 };
 
@@ -349,7 +349,7 @@ gradingLog.prototype.scoreLog = function() {
     }
     var testIDs = [];
     for (var i = 1; i <= this.testCount; i++) {
-        //If any tests are incomplete, return the log and prevent updating.
+       // If any tests are incomplete, return the log and prevent updating.
         if (!this[i].graded) { 
             console.log("scoreLog: The log is not yet complete.");
             return this; 
@@ -364,11 +364,11 @@ gradingLog.prototype.scoreLog = function() {
     var test;
     for (var id of testIDs) {
         test = this[id];
-        //If the test is correct, increase the tests_passed counter.
+       // If the test is correct, increase the tests_passed counter.
         if (test.correct) {
             tests_passed += 1;
             partial_points += test.pointValue;
-        } else {    //One failed test flips the allCorrect flag.
+        } else {   // One failed test flips the allCorrect flag.
             this.allCorrect = false;
         }
         // if (test.isolate) {
@@ -379,16 +379,16 @@ gradingLog.prototype.scoreLog = function() {
         // }
     }
 
-    //Calculate the pScore
+   // Calculate the pScore
     this.numCorrect = tests_passed;
     this.pScore = partial_points / this.totalPoints;
-    //this.numAttempts += 1;
-    //Save the log in localStorage
+   // this.numAttempts += 1;
+   // Save the log in localStorage
     this.saveLog();
 
-    //flip gradingLog.graded flag to true.
+   // flip gradingLog.graded flag to true.
     this.graded = true;
-    //Update the Autograder Status Bar
+   // Update the Autograder Status Bar
     AGFinish(this);
     return this;
 }
@@ -399,7 +399,7 @@ gradingLog.prototype.scoreLog = function() {
  */
 function dictLog(outputLog) {
     var outDict = {};
-    //Populate tests
+   // Populate tests
     for (var i = 1; i <=outputLog.testCount;i++) {
         var testDict = {};
         testDict["id"] = i;
@@ -420,7 +420,7 @@ function dictLog(outputLog) {
         testDict["pointValue"] = outputLog[i]["pointValue"];
         outDict[i] = testDict;
     }
-    //Populate outDict with outputLog instantiation variables.
+   // Populate outDict with outputLog instantiation variables.
     outDict["testCount"] = outputLog.testCount;
     outDict["allCorrect"] = outputLog.allCorrect;
     outDict["taskID"] = outputLog.taskID;
@@ -434,7 +434,7 @@ function dictLog(outputLog) {
 *  print out the output log in a nice format
 */
 function printLog(outputLog) {
-    var testString = ""; //TODO: Consider putting Output Header
+    var testString = "";// TODO: Consider putting Output Header
     for (var i = 1; i<=outputLog.testCount;i++) {
         testString += "[Test " + i + "]";
         testString += "Class: " + outputLog[i]["correct"];
@@ -461,7 +461,7 @@ function AG_log(outputLog, snapXMLString) {
         'feedback': dictLog(outputLog),
         'snapXML' : snapXMLString
     };
-    //Only update the
+   // Only update the
     console.log(outputLog);
     if (outputLog.pScore !== null) {
         var percent_score = Number((outputLog.pScore * 100).toFixed(1));
@@ -519,20 +519,18 @@ function multiTestBlock(outputLog, blockSpec, inputs, expOuts, timeOuts, isolate
     }
 
     var testIDs = new Array(inputs.length);
-    //TODO: Handle this error in startSnapTest
-    //var scripts = getScript(blockSpec);
+   // TODO: Handle this error in startSnapTest
+   // var scripts = getScript(blockSpec);
 
     for (var i=0;i<inputs.length; i++) {
-        //checkArrayForList(inputs[i]);
+       // checkArrayForList(inputs[i]);
         testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i], isolated[i], parseInt(pointsArray[i]));
     }
     // testBlock(outputLog, testIDs[0]);
     // outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
     return outputLog;
 }
-
-//David added in a way to populate a list in the
-//set values. Does not yet work for variables!
+// David added in a way to populate a list in the// set values. Does not yet work for variables!
 function setValues(block, values) {
     if (!(values instanceof Array)) {
         values = [values];
@@ -562,7 +560,7 @@ function setValues(block, values) {
         morphIndex++;
     }
     if (valIndex + 1 !== values.length) {
-        //TODO: THROW ERROR FOR INVALID BLOCK DEFINITION
+       // TODO: THROW ERROR FOR INVALID BLOCK DEFINITION
     }
 }
 

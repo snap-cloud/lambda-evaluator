@@ -124,7 +124,7 @@ function AGTest(outputLog) {
                 "The 'pen down' pen-block is required.",
                 1);
 
-    //testKScope(outputLog,3, 3);
+   // testKScope(outputLog,3, 3);
     return fb;
 }
 

@@ -10,34 +10,32 @@ function getSprite(index) {
         throw "Sprite: " + index + " was not found."
     }
 }
-
-//Returns the scripts of the sprite at 'index', undefined otherwise.
+// Returns the scripts of the sprite at 'index', undefined otherwise.
 function getScripts(index) {
     var sprite = getSprite(index);
     return sprite.scripts.children;
 }
-
-//Get just the most recently touched block that matches
+// Get just the most recently touched block that matches
 function getScript(blockSpec, spriteIndex) {
     return getAllScripts(blockSpec, spriteIndex)[0];
 }
 
 function getAllScripts(blockSpec, spriteIndex) {
-    //TODO: Consider expanding to grab from additional sprites
-    //Try to get a sprite's scripts
-    //Throw exception if none exist.
+   // TODO: Consider expanding to grab from additional sprites
+   // Try to get a sprite's scripts
+   // Throw exception if none exist.
     spriteIndex = spriteIndex || 0;
     var scripts = getScripts(spriteIndex);
-    //If no scripts, throw an exception.
+   // If no scripts, throw an exception.
     if (scripts.length === 0) {
         throw "Block/script not found."
     }
 
-    //Try to return the first block matching 'blockSpec'.
-    //Throw exception if none exist/
+   // Try to return the first block matching 'blockSpec'.
+   // Throw exception if none exist/
     var validScripts = scripts.filter(function (morph) {
         // if (morph.selector) {
-        //     //TODO: consider adding selector type check (morph.selector === "evaluateCustomBlock")
+        //    // TODO: consider adding selector type check (morph.selector === "evaluateCustomBlock")
         //     return (morph.blockSpec === blockSpec);
         // }
         if (morph.selector) {
@@ -106,7 +104,7 @@ function getCharIndices(target, word) {
 * tab of the given sprite. See documentation of checkTemplate for more details.
 */
 function scriptPresentInSprite(script, spriteIndex, scriptVariables) {
-    //Populate optional parameters
+   // Populate optional parameters
     if (spriteIndex === undefined) {
         spriteIndex = 0;
     }
@@ -116,7 +114,7 @@ function scriptPresentInSprite(script, spriteIndex, scriptVariables) {
 
     var JSONtemplate = stringToJSON(script);
     var blockSpec = JSONtemplate[0].blockSp;
-    //Handle case when no scripts present on stage.
+   // Handle case when no scripts present on stage.
     try {
         var JSONtarget;
         var scriptsOnScreen = getAllScripts(blockSpec, spriteIndex);
@@ -481,7 +479,7 @@ function checkArgArrays(template, actual) {
             } catch(e) {
                 return false;
             }
-        } else if (!_.isEqual(currArg, actual[i])) { //maybe don't need _.isEqual, can just do basic comparison?
+        } else if (!_.isEqual(currArg, actual[i])) {// maybe don't need _.isEqual, can just do basic comparison?
             return false;
         }
     }
@@ -569,7 +567,7 @@ function CBlockContains(block1Spec, block2Spec, script, argArray1, argArray2, so
     CblockSpecs = CblockSpecs.concat(["repeat until %b %c", "if %b %c", "if %b %c else %c"]);
     CblockSpecs = CblockSpecs.concat(["for each %upvar of %l %cs"]);
 
-    //Added the below for loop to make checking for valid blockSpecs more robust using blockSpecMatch()
+   // Added the below for loop to make checking for valid blockSpecs more robust using blockSpecMatch()
     var foundSpec = false;
     for (var i = 0; i < CblockSpecs.length; i++) {
         if (blockSpecMatch(CblockSpecs[i], block2Spec)) {
@@ -657,7 +655,7 @@ function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
 * details of what blocks are considered C-shaped.
 */
 function CBlockContainsInSprite(block1Spec, block2Spec, spriteIndex, argArray1, argArray2, softMatch) {
-    //Populate optional parameters
+   // Populate optional parameters
     if (spriteIndex === undefined) {
         spriteIndex = 0;
     }
@@ -700,7 +698,7 @@ function ifElseContains(script, clause, block1Spec, argArray1) {
         return false;
     }
     if (!(clause === "if" || clause === "else")) {
-        return false; //return false or return a string!??!?!
+        return false;// return false or return a string!??!?!
     }
 
     var morph1, type1;
@@ -832,8 +830,8 @@ function blockPrecedesInSprite(block1Sp, block2Sp, spriteIndex) {
             JSONtarget = JSONscript(scriptsOnScreen[i]);
             doesPrecede = blockPrecedes(block1Sp, block2Sp, JSONtarget, false);
             if (doesPrecede) {
-                return true; //if any script on the scripting area has block1
-                    //occuring before block2, then this test will pass.
+                return true;// if any script on the scripting area has block1
+                   // occuring before block2, then this test will pass.
             }
         }
     } catch(e) {

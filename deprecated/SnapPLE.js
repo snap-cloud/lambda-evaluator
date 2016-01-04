@@ -1,7 +1,6 @@
 /* DEPRICATED: SPLIT INTO gradingLog.js, 
 spriteEventLog.js, and scriptAnalysis.js */
-
-//Snap Protocol Language Enabler
+// Snap Protocol Language Enabler
 
 /*
     gradingLog is initialized when a block is tested.
@@ -96,7 +95,7 @@ gradingLog.prototype.addTest = function(testClass, blockSpec, input, expOut, tim
                                  'graded': false,
                                  "isolated": isolate || false,
                                  "sprite": 0};
-    //if thie expected output is an array, convert it to  snap list so snapEquals works
+   // if thie expected output is an array, convert it to  snap list so snapEquals works
 
     return this.testCount;
 };
@@ -123,7 +122,7 @@ gradingLog.prototype.addAssert = function(testClass, statement, feedback, text, 
  */
 gradingLog.prototype.runSnapTests = function() {
 
-    //Find the first reporter test and start it.
+   // Find the first reporter test and start it.
     for (var id = 1; id <= this.testCount; id++) {
         var test = this[id];
         if (test.testClass === 'r') {
@@ -134,7 +133,7 @@ gradingLog.prototype.runSnapTests = function() {
             return true;
         }
     }
-    //return this gradingLog
+   // return this gradingLog
     return false;
 }
 
@@ -146,7 +145,7 @@ gradingLog.prototype.startSnapTest = function(testID) {
 
     }
     test.output = "INVALID";
-    //Retrieve the block from the stage TODO: Handle Errors
+   // Retrieve the block from the stage TODO: Handle Errors
     try {
         var block = null;
         if (test.isolated) {
@@ -154,12 +153,12 @@ gradingLog.prototype.startSnapTest = function(testID) {
         } else {
             block = getScript(test.blockSpec);
         }
-    //Set the selected block's inputs for the test
+   // Set the selected block's inputs for the test
         setValues(block, test['input']);
-    //Initiate the Snap Process with a callback to .finishSnapTest
+   // Initiate the Snap Process with a callback to .finishSnapTest
 
         var stage = this.snapWorld.children[0].stage;
-        var outputLog = this; //Reference for the anonymouse function to follow
+        var outputLog = this;// Reference for the anonymouse function to follow
         var proc = stage.threads.startProcess(block,
             stage.isThreadSafe,
             false,
@@ -167,34 +166,34 @@ gradingLog.prototype.startSnapTest = function(testID) {
                 outputLog.finishSnapTest(testID, readValue(proc));
 
         });
-    //Add reference to proc in gradingLog for error handling
+   // Add reference to proc in gradingLog for error handling
         test.proc = proc;
-    //Timeouts for infinitely looping script or an Error.
+   // Timeouts for infinitely looping script or an Error.
         var timeout = test.timeOut;
-    //Set default time if none is specified
+   // Set default time if none is specified
         if (timeout < 0) {
             timeout = 1000;
         }
         var myself = this;
-        //Launch timeout to handle Snap errors and infinitely looping scripts
+       // Launch timeout to handle Snap errors and infinitely looping scripts
         var timeout_id = setTimeout(function() {
             var stage = outputLog.snapWorld.children[0].stage;
             if (test['proc'].errorFlag) {
-                test['feedback'] = "Snap Error." //TODO: Find error message from process or block
+                test['feedback'] = "Snap Error."// TODO: Find error message from process or block
             } else {
                 test['feedback'] = "Test Timeout Occurred."
             }
             test.output = "INVALID";
             stage.threads.stopProcess(getScript(outputLog[testID]["blockSpec"], test.sprite));
             test.correct = false;
-            //Set the graded flag to true for this test.
+           // Set the graded flag to true for this test.
             console.log(timeout);
             test.graded = true;
             // if (test.isolated) {
             //     myself.snapWorld.children[0].sprites.contents[test.sprite].remove();
             // }
         },timeout);
-        //Save timeout id, to stop error handling timeout if test succeeds.
+       // Save timeout id, to stop error handling timeout if test succeeds.
         this.currentTimeout = timeout_id;
 
         return this;
@@ -204,10 +203,10 @@ gradingLog.prototype.startSnapTest = function(testID) {
         test.graded = true;
         test.proc = null;
         var outputLog = this;
-        //Find the next Snap reporter test
+       // Find the next Snap reporter test
         for (var id = testID+1; id <= this.testCount;id++) {
             var next_test = this[id];
-            //Continue to the next test if not a 'reporter' test type
+           // Continue to the next test if not a 'reporter' test type
             if (next_test.testClass === 'r' && !next_test.graded) {
                 setTimeout(function() {
                     outputLog.startSnapTest(id);
@@ -229,14 +228,14 @@ gradingLog.prototype.startSnapTest = function(testID) {
 */
 gradingLog.prototype.finishSnapTest = function(testID, output) {
 
-    //Populate Grade Log //May be DEPRICATED.
+   // Populate Grade Log// May be DEPRICATED.
     var test = this[testID];
 
     if (test === undefined) {
         throw "gradingLog.finishSnapTest: TestID: " + testID + ", is invalid.";
     }
 
-    //Added a variable "expOut" to check for snap Lists correctly
+   // Added a variable "expOut" to check for snap Lists correctly
     var expOut = test.expOut;
     
     if (output === undefined) {
@@ -259,25 +258,25 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
         expOut = new List(expOut);
     }
 
-    //Update feedback and 'correct' flag depending on output.
+   // Update feedback and 'correct' flag depending on output.
     if (snapEquals(output, expOut)) {
         test.correct = true;
-        //test.feedback = test.feedback || "Test Passed.";
+       // test.feedback = test.feedback || "Test Passed.";
         test.feedback = "Test Passed." || test.feedback;
     } else {
         test.correct = false;
-        //test.feedback = test.feedback || "Unexpected Output: " + String(output);
+       // test.feedback = test.feedback || "Unexpected Output: " + String(output);
         test.feedback = "Unexpected Output: " + String(output) || test.feedback;
     }
-    //Set test graded flag to true, for gradingLog.gradeLog()
+   // Set test graded flag to true, for gradingLog.gradeLog()
 
     test.graded = true;
-    //Kill error handling timeout
+   // Kill error handling timeout
     clearTimeout(this.currentTimeout);
     test.proc = null;
-    //Reference this gradingLog for the anonymous function
+   // Reference this gradingLog for the anonymous function
     this[testID] = test;
-    //Clear the input values.
+   // Clear the input values.
     try {
         if (test.isolated) {
             console.log("removing sprite");    
@@ -295,10 +294,10 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
         throw "gradingLog.finishSnapTest: Trying to clear values of block that does not exist.";
     }
     var outputLog = this;
-    //Find the next Snap reporter test
+   // Find the next Snap reporter test
     for (var id = testID+1; id <= this.testCount;id++) {
         var next_test = this[id];
-        //Continue to the next test if not a 'reporter' test type
+       // Continue to the next test if not a 'reporter' test type
         if (next_test.testClass === 'r' && !next_test.graded) {
             setTimeout(function() {
                 outputLog.startSnapTest(id);
@@ -306,7 +305,7 @@ gradingLog.prototype.finishSnapTest = function(testID, output) {
             return;
         }
     }
-    //If this was the last test, grade the log
+   // If this was the last test, grade the log
     // console.log(this);
     this.scoreLog();
 };
@@ -337,7 +336,7 @@ gradingLog.prototype.scoreLog = function() {
     }
     var testIDs = [];
     for (var i = 1; i <= this.testCount; i++) {
-        //If any tests are incomplete, return the log and prevent updating.
+       // If any tests are incomplete, return the log and prevent updating.
         if (!this[i].graded) { 
             console.log("scoreLog: The log is not yet complete.");
             return this; 
@@ -351,10 +350,10 @@ gradingLog.prototype.scoreLog = function() {
     var test;
     for (var id of testIDs) {
         test = this[id];
-        //If the test is correct, increase the tests_passed counter.
+       // If the test is correct, increase the tests_passed counter.
         if (test.correct) {
             tests_passed += 1;
-        } else {    //One failed test flips the allCorrect flag.
+        } else {   // One failed test flips the allCorrect flag.
             this.allCorrect = false;
         }
         // if (test.isolate) {
@@ -365,16 +364,16 @@ gradingLog.prototype.scoreLog = function() {
         // }
     }
 
-    //Calculate the pScore
+   // Calculate the pScore
     this.numCorrect = tests_passed;
     this.pScore = tests_passed / this.testCount;
-    //this.numAttempts += 1;
-    //Save the log in localStorage
+   // this.numAttempts += 1;
+   // Save the log in localStorage
     this.saveLog();
 
-    //flip gradingLog.graded flag to true.
+   // flip gradingLog.graded flag to true.
     this.graded = true;
-    //Update the Autograder Status Bar
+   // Update the Autograder Status Bar
     AGFinish(this);
     return this;
 }
@@ -385,7 +384,7 @@ gradingLog.prototype.scoreLog = function() {
  */
 function dictLog(outputLog) {
     var outDict = {};
-    //Populate tests
+   // Populate tests
     for (var i = 1; i <=outputLog.testCount;i++) {
         var testDict = {};
         testDict["id"] = i;
@@ -405,7 +404,7 @@ function dictLog(outputLog) {
         testDict["feedback"] = outputLog[i]["feedback"];
         outDict[i] = testDict;
     }
-    //Populate outDict with outputLog instantiation variables.
+   // Populate outDict with outputLog instantiation variables.
     outDict["testCount"] = outputLog.testCount;
     outDict["allCorrect"] = outputLog.allCorrect;
     outDict["taskID"] = outputLog.taskID;
@@ -417,7 +416,7 @@ function dictLog(outputLog) {
 *  print out the output log in a nice format
 */
 function printLog(outputLog) {
-    var testString = ""; //TODO: Consider putting Output Header
+    var testString = "";// TODO: Consider putting Output Header
     for (var i = 1; i<=outputLog.testCount;i++) {
         testString += "[Test " + i + "]";
         testString += "Class: " + outputLog[i]["correct"];
@@ -444,7 +443,7 @@ function AG_log(outputLog, snapXMLString) {
         'feedback': dictLog(outputLog),
         'snapXML' : snapXMLString
     };
-    //Only update the
+   // Only update the
     if (outputLog.pScore !== null) {
         var percent_score = Number((outputLog.pScore * 100).toFixed(1));
         AG_state['comment'] = "Autograder Score: " + percent_score + "%"
@@ -478,32 +477,30 @@ function getSprite(index) {
         throw "Sprite: " + index + " was not found."
     }
 }
-
-//Returns the scripts of the sprite at 'index', undefined otherwise.
+// Returns the scripts of the sprite at 'index', undefined otherwise.
 function getScripts(index) {
     var sprite = getSprite(index);
     return sprite.scripts.children;
-}
-//Get just the most recently touched block that matches
+}// Get just the most recently touched block that matches
 function getScript(blockSpec, spriteIndex) {
     return getAllScripts(blockSpec, spriteIndex)[0];
 }
 function getAllScripts(blockSpec, spriteIndex) {
-    //TODO: Consider expanding to grab from additional sprites
-    //Try to get a sprite's scripts
-    //Throw exception if none exist.
+   // TODO: Consider expanding to grab from additional sprites
+   // Try to get a sprite's scripts
+   // Throw exception if none exist.
     spriteIndex = spriteIndex || 0;
     var scripts = getScripts(spriteIndex);
-    //If no scripts, throw an exception.
+   // If no scripts, throw an exception.
     if (scripts.length === 0) {
         throw "No blocks/scripts were found."
     }
 
-    //Try to return the first block matching 'blockSpec'.
-    //Throw exception if none exist/
+   // Try to return the first block matching 'blockSpec'.
+   // Throw exception if none exist/
     var validScripts = scripts.filter(function (morph) {
         // if (morph.selector) {
-        //     //TODO: consider adding selector type check (morph.selector === "evaluateCustomBlock")
+        //    // TODO: consider adding selector type check (morph.selector === "evaluateCustomBlock")
         //     return (morph.blockSpec === blockSpec);
         // }
         if (morph.selector) {
@@ -572,7 +569,7 @@ function getCharIndices(target, word) {
 * tab of the given sprite. See documentation of checkTemplate for more details.
 */
 function scriptPresentInSprite(script, spriteIndex, scriptVariables) {
-    //Populate optional parameters
+   // Populate optional parameters
     if (spriteIndex === undefined) {
         spriteIndex = 0;
     }
@@ -582,7 +579,7 @@ function scriptPresentInSprite(script, spriteIndex, scriptVariables) {
 
     var JSONtemplate = stringToJSON(script);
     var blockSpec = JSONtemplate[0].blockSp;
-    //Handle case when no scripts present on stage.
+   // Handle case when no scripts present on stage.
     try {
         var JSONtarget;
         var scriptsOnScreen = getAllScripts(blockSpec, spriteIndex);
@@ -628,22 +625,19 @@ function multiTestBlock(outputLog, blockSpec, inputs, expOuts, timeOuts, isolate
     }
 
     var testIDs = new Array(inputs.length);
-    //TODO: Handle this error in startSnapTest
-    //var scripts = getScript(blockSpec);
-    //checkArrayForList(expOuts);
+   // TODO: Handle this error in startSnapTest
+   // var scripts = getScript(blockSpec);
+   // checkArrayForList(expOuts);
 
     for (var i=0;i<inputs.length; i++) {
-        //checkArrayForList(inputs[i]);
+       // checkArrayForList(inputs[i]);
         testIDs[i] = outputLog.addTest("r", blockSpec, inputs[i], expOuts[i], timeOuts[i], isolated[i]);
     }
     // testBlock(outputLog, testIDs[0]);
     // outputLog.currentTimeout = infLoopCheck(outputLog, testIDs[0]);
     return outputLog;
 }
-
-//David's code for checking an array for inner arrays
-//then converting them to snap lists
-//a - the JS Array you want to check for inner Arrays
+// David's code for checking an array for inner arrays// then converting them to snap lists// a - the JS Array you want to check for inner Arrays
 // PROBABLY USELES AT THE MOMENT
 function checkArrayForList(a) {
     for (var i = 0; i < a.length; i++) {
@@ -652,9 +646,7 @@ function checkArrayForList(a) {
         }
     }
 }
-
-//David added in a way to populate a list in the
-//set values. Does not yet work for variables!
+// David added in a way to populate a list in the// set values. Does not yet work for variables!
 function setValues(block, values) {
     var valIndex = 0,
         morphIndex = 0;
@@ -681,7 +673,7 @@ function setValues(block, values) {
         morphIndex++;
     }
     if (valIndex + 1 !== values.length) {
-        //TODO: THROW ERROR FOR INVALID BLOCK DEFINITION
+       // TODO: THROW ERROR FOR INVALID BLOCK DEFINITION
     }
 }
 
@@ -734,16 +726,13 @@ function infLoopCheck(outputLog, testID) {
 
 
 /* ------ START DAVID'S MESS ------ */
-
-//SpriteEvent.prototype = new SpriteEvent();
+// SpriteEvent.prototype = new SpriteEvent();
 SpriteEvent.prototype.constructor = SpriteEvent;
-
-//SpriteEvent constructor
+// SpriteEvent constructor
 function SpriteEvent(sprite, index) {
     this.init(sprite, index);
 }
-
-//SpriteEvent constructor helper
+// SpriteEvent constructor helper
 SpriteEvent.prototype.init = function(_sprite, index) {
     this.sprite = index;
     this.x = _sprite.xPosition();
@@ -757,8 +746,7 @@ SpriteEvent.prototype.init = function(_sprite, index) {
     this.bubble = _sprite.talkBubble();
     this.bubbleData = (this.bubble && this.bubble.data) || "nothing...";
 }
-
-//compares another SpriteEvent to this one for "equality"
+// compares another SpriteEvent to this one for "equality"
 SpriteEvent.prototype.equals = function(sEvent) {
     if (this.sprite === sEvent.sprite &&
         this.x === sEvent.x &&
@@ -770,17 +758,12 @@ SpriteEvent.prototype.equals = function(sEvent) {
     }
     return false;
 }
-
-//SpriteEventLog constructor
+// SpriteEventLog constructor
 function SpriteEventLog() {
     this.numSprites = 0;
     this.callVal = null;
 }
-
-//adds events to the event log
-//_sprite is the sprite object and index is its index in the world array
-//creates an array for each _sprite using its index as an identifier
-//this method gets called every snap cycle
+// adds events to the event log// _sprite is the sprite object and index is its index in the world array// creates an array for each _sprite using its index as an identifier// this method gets called every snap cycle
 SpriteEventLog.prototype.addEvent = function(_sprite, index) {
     if (this["" + index] === undefined) {
         this["" + index] = [];
@@ -789,9 +772,7 @@ SpriteEventLog.prototype.addEvent = function(_sprite, index) {
     this["" + index].push(new SpriteEvent(_sprite, index));
     this.checkDup(index);
 }
-
-//Checks for a changed event state
-//if the event is unchanged then remove it from the log
+// Checks for a changed event state// if the event is unchanged then remove it from the log
 SpriteEventLog.prototype.checkDup = function(index) {
     var len = this["" + index].length;
     if (len < 2) {
@@ -803,10 +784,7 @@ SpriteEventLog.prototype.checkDup = function(index) {
         this["" + index][len - 1].ignore = true;
     } 
 }
-
-//takes out all of the "ignored" events from the event log
-//Warning! Modifies object!
-//cascadeable
+// takes out all of the "ignored" events from the event log// Warning! Modifies object!// cascadeable
 SpriteEventLog.prototype.spliceIgnores = function() {
     function helper(ary) {
         var newAry = [];
@@ -824,10 +802,7 @@ SpriteEventLog.prototype.spliceIgnores = function() {
 
     return this;
 }
-
-//Caompares one or more sprites according to an input function
-//the input function must take care of all event errors and
-//base cases (ex: must be 4 sprites)
+// Caompares one or more sprites according to an input function// the input function must take care of all event errors and// base cases (ex: must be 4 sprites)
 SpriteEventLog.prototype.compareSprites = function(f) {
     if (this["" + 0] === undefined) {
         return false;
@@ -841,10 +816,7 @@ SpriteEventLog.prototype.compareSprites = function(f) {
 
     return true;
 }
-
-//Prints out the event log
-//ignore is an optional parameter that defaults to true
-//ignore is used to ignore/not ignore those events with the ignore flag of true
+// Prints out the event log// ignore is an optional parameter that defaults to true// ignore is used to ignore/not ignore those events with the ignore flag of true
 function printEventLog(eventLog, ignore) {
     ignore = ignore || true;
     for (var j = 0; j < eventLog.numSprites; j++) {
@@ -863,12 +835,7 @@ function printEventLog(eventLog, ignore) {
         }
     }
 }
-
-//THIS! is a way around making snap call a callback for EVERY process
-//I basically took the ThreadManager.prototype.removeTerminatedProcesses
-//and added a few lines
-//I temporarily replace ThreadManager.prototype.removeTerminatedProcesses
-//with this function for testing callbacks
+// THIS! is a way around making snap call a callback for EVERY process// I basically took the ThreadManager.prototype.removeTerminatedProcesses// and added a few lines// I temporarily replace ThreadManager.prototype.removeTerminatedProcesses// with this function for testing callbacks
 function tempRemoveTP() {
     // and un-highlight their scripts
     var remaining = [];
@@ -902,7 +869,7 @@ function tempRemoveTP() {
                         );
                     }
                 }
-            //This else block is the newly added code, it simply runs the callback
+           // This else block is the newly added code, it simply runs the callback
             } else {
                 if (proc.onComplete instanceof Function) {
                     proc.onComplete();
@@ -914,10 +881,7 @@ function tempRemoveTP() {
     });
     this.processes = remaining;
 }
-
-//Specific test function for snap autograder
-//Tests if a FOR block "says" 0 through 30 by even numbers
-//This test temporarily modifies Snap itself by using tempRemoveTP
+// Specific test function for snap autograder// Tests if a FOR block "says" 0 through 30 by even numbers// This test temporarily modifies Snap itself by using tempRemoveTP
 //@param outputLog - the required test output Log
 function testSayTo30(outputLog) {
     var backupOrigFunc = ThreadManager.prototype.removeTerminatedProcesses;
@@ -938,7 +902,7 @@ function testSayTo30(outputLog) {
         false,
         function() {
             clearInterval(collect);
-            //this loop hacky fixes the above issue
+           // this loop hacky fixes the above issue
             eLog["0"][0].ignore = true;
             eLog.spliceIgnores();
             gLog[testID].graded = true;
@@ -967,9 +931,7 @@ function testSayTo30(outputLog) {
 
     return gLog;
 }
-
-//Super similar to testKScope! 
-//Does not check for PenDown however
+// Super similar to testKScope! // Does not check for PenDown however
 function testMouseMove(outputLog, iter) {
     var snapWorld = outputLog.snapWorld;
     var taskID = outputLog.taskID;
@@ -979,7 +941,7 @@ function testMouseMove(outputLog, iter) {
         testID = gLog.addTest("s", undefined, null, true, -1),
         spriteList = snapWorld.children[0].sprites.contents;
 
-    //creating this too early has caused issues with getting incorect data
+   // creating this too early has caused issues with getting incorect data
     var collect = setInterval(function() {
         for (var i = 0; i < spriteList.length; i++) {
             eLog.addEvent(spriteList[i], i);
@@ -988,7 +950,7 @@ function testMouseMove(outputLog, iter) {
 
     var callback = function() {
         clearInterval(collect);
-        //this loop hacky fixes the above issue
+       // this loop hacky fixes the above issue
         eLog["0"][0].ignore = true;
         
         eLog.spliceIgnores();
@@ -1017,11 +979,7 @@ function testMouseMove(outputLog, iter) {
     return gLog;
 
 }
-
-//Very specific test for kalidiscope
-//Does not test "clear"/"penup"/"pendown"
-//Only tests for prescence of 4 sprites and
-//proper sprite movements
+// Very specific test for kalidiscope// Does not test "clear"/"penup"/"pendown"// Only tests for prescence of 4 sprites and// proper sprite movements
 function testKScope(outputLog, iter) {
     var snapWorld = outputLog.snapWorld;
     var taskID = outputLog.taskID;
@@ -1031,7 +989,7 @@ function testKScope(outputLog, iter) {
         iterations = iter || 3,
         spriteList = snapWorld.children[0].sprites.contents;
 
-    //creating this too early has caused issues with getting incorect data
+   // creating this too early has caused issues with getting incorect data
     var collect = setInterval(function() {
         for (var i = 0; i < spriteList.length; i++) {
             eLog.addEvent(spriteList[i], i);
@@ -1040,7 +998,7 @@ function testKScope(outputLog, iter) {
 
     var callback = function() {
         clearInterval(collect);
-        //this loop hacky fixes the above issue
+       // this loop hacky fixes the above issue
         for (var i = 0; i < eLog.numSprites; i++) {
             eLog["" + i][0].ignore = true;
         }
@@ -1091,24 +1049,15 @@ function testKScope(outputLog, iter) {
     return gLog;
 
 }
-
-//Get the distance between two points
-//x1, y1 - from point coordinates
-//x2, y2 - to point coordinates
+// Get the distance between two points// x1, y1 - from point coordinates// x2, y2 - to point coordinates
 function distance(x1, x2, y1, y2) {
     return Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
 }
-
-//check to see if a number is within a tolerance +/-
-//actual - the actual value you want to check
-//projected - the value that you want to check actual against
-//tolerance - the tolerance you are willing to accept
+// check to see if a number is within a tolerance +/-// actual - the actual value you want to check// projected - the value that you want to check actual against// tolerance - the tolerance you are willing to accept
 function inTolerance(actual, projected, tolerance) {
     return projected - tolerance < actual && projected + tolerance > actual;
 }
-
-//Get the smallest measured angle between two directions in degrees
-//a, b - the directions in degrees to measure
+// Get the smallest measured angle between two directions in degrees// a, b - the directions in degrees to measure
 function getAngle(a, b) {
     var result = Math.min(Math.abs(a - b), Math.abs(b - a));
 
@@ -1117,26 +1066,19 @@ function getAngle(a, b) {
     }
     return result;
 }
-
-//find out if we can force the user to use the green flag top block
-//test a script for drawing a simple uniform shape
-//sides - the number of sides of the shape
-//angle - the inner angle of the shape
-//length - the length the sides should be
-//blockSpec - not required at this time
-//gradeLog - the grading log this test will be added to
+// find out if we can force the user to use the green flag top block// test a script for drawing a simple uniform shape// sides - the number of sides of the shape// angle - the inner angle of the shape// length - the length the sides should be// blockSpec - not required at this time// gradeLog - the grading log this test will be added to
 function testUniformShapeInLoop(sides, angle, length, gradeLog, blockSpec) {
     var gLog = gradeLog || new gradingLog(),
         testID = gLog.addTest("s", blockSpec, null, true, -1),
         eLog = new SpriteEventLog(),
         block = blockSpec && getScript(blockSpec),
-        //this collects the sprite log data
+       // this collects the sprite log data
         collect = setInterval(function() {
             for (var i = 0; i < spriteList.length; i++) {
                 eLog.addEvent(spriteList[i], i);
             }
         }, 1),
-        //the keyboard input spoof. Kicks off the test and does the final checks.
+       // the keyboard input spoof. Kicks off the test and does the final checks.
         spoof = new createInputSpoof(100, function() {
             var sidesCounted = 0,
                 flag = false,
@@ -1199,7 +1141,7 @@ function testUniformShapeInLoop(sides, angle, length, gradeLog, blockSpec) {
                 }
             }
             gLog.updateLog(testID, result, feedback, result);
-            //setTimeout(gLog.scoreLog, 50);
+           // setTimeout(gLog.scoreLog, 50);
         });
 
     spoof("green flag");
@@ -1208,27 +1150,19 @@ function testUniformShapeInLoop(sides, angle, length, gradeLog, blockSpec) {
     return gLog;
 
 }
-
-//turn an x coordinate into an x coordinate realitive to the
-//drawing area in snap
+// turn an x coordinate into an x coordinate realitive to the// drawing area in snap
 function realitiveX(coord) {
     var centerStage = world.children[0].stage;
     var stageSize = centerStage.scale;
     return centerStage.center().x + coord / stageSize;
 }
-
-//turn an y coordinate into a y coordinate realitive to the
-//drawing area in snap
+// turn an y coordinate into a y coordinate realitive to the// drawing area in snap
 function realitiveY(coord) {
     var centerStage = world.children[0].stage;
     var stageSize = centerStage.scale;
     return centerStage.center().y + coord / stageSize;
 }
-
-//Creates a protected function used to spoof user input
-//timeout is how many milliseconds you want each action to take
-//callback is an optional paramiter for a callback function
-//element is an optional paramiter for a DOM element
+// Creates a protected function used to spoof user input// timeout is how many milliseconds you want each action to take// callback is an optional paramiter for a callback function// element is an optional paramiter for a DOM element
 function createInputSpoof(timeout, callback, element) {
     var timeoutCount = 0,
         timeoutInc = timeout,
@@ -1266,8 +1200,7 @@ function createInputSpoof(timeout, callback, element) {
         timeoutCount += timeoutInc;
     });
 }
-
-//Demo for *GreenFlag Hat -> pen down -> forever(go to mouse x, y)*
+// Demo for *GreenFlag Hat -> pen down -> forever(go to mouse x, y)*
 function doTheThing() {
     var act = createInputSpoof(50);
     act("mousemove", 0, 0);
@@ -1278,8 +1211,7 @@ function doTheThing() {
     act("mousemove", 0, 0);
     act("stop all");
 }
-
-//Demo for *When space pressed Hat -> pen down -> forever(go to mouse x, y)*
+// Demo for *When space pressed Hat -> pen down -> forever(go to mouse x, y)*
 function doTheOtherThing() {
 var act = createInputSpoof(50);
     act("mousemove", 0, 0);
@@ -1290,12 +1222,8 @@ var act = createInputSpoof(50);
     act("mousemove", 0, 0);
     act("stop all");
 }
-
-//The following functions will create a dragon fractal
-//using spoofed mouse movements and the correct
-//Snap! code
-
-//Creates the dragon curve
+// The following functions will create a dragon fractal// using spoofed mouse movements and the correct// Snap! code
+// Creates the dragon curve
 function createCurve(iterations) {
     var ret = [],
         temp = [];
@@ -1315,9 +1243,7 @@ function createCurve(iterations) {
     }
     return ret;
 }
-
-//Draws the dragon curve with spoofed mouse movemnets
-//takes in the array of turns and the spoof function
+// Draws the dragon curve with spoofed mouse movemnets// takes in the array of turns and the spoof function
 function drawDragon(turns, func) {
     var lastMove = "up",
         lastX = 0,
@@ -1356,10 +1282,7 @@ function drawDragon(turns, func) {
         func("mousemove", lastX, lastY);
     }
 }
-
-//the function that is called to create and draw the dragon
-//iterations is the number of folds the dragon has and
-//callback is an optional callback function
+// the function that is called to create and draw the dragon// iterations is the number of folds the dragon has and// callback is an optional callback function
 function makeDragon(iterations, callback) {
     var turns = createCurve(iterations);
     var act = createInputSpoof(100, callback);
@@ -1371,9 +1294,7 @@ function makeDragon(iterations, callback) {
     act("callback");
     return act("time");
 }
-
-//takes a block spec and attempts to get the input list for it
-//used for testing and demo purposes mostly
+// takes a block spec and attempts to get the input list for it// used for testing and demo purposes mostly
 function getListBlock(blockSpec, spriteIndex) {
     var block = null,
         listArgs = [];
@@ -1397,7 +1318,7 @@ function getListBlock(blockSpec, spriteIndex) {
             if (variable && (val = vars.getVar(name)) instanceof List) {
                 listArgs.push(val);
             }
-            //Find out how to handle variables!
+           // Find out how to handle variables!
         }
     }
     return listArgs;
@@ -1425,8 +1346,7 @@ function cloneListReporter() {
 // MultiArgMorph.addInput('5')
 // getScript('list %exp') -> returns the snap list object reference
 // world.children[0].sprites.contents[0].scripts.children[0].children[1] -> gets the MultiArgMorph
-
-//populates a list reporter block with the given arguments
+// populates a list reporter block with the given arguments
 function populateList(list, args) {
     var multiArg = list.children[list.children.length - 1];
 
@@ -1438,9 +1358,7 @@ function populateList(list, args) {
         multiArg.addInput(args[i]);
     }
 }
-
-//sets (in a very hacky way) a list to an ArgMorph of list type
-//sets the first one it sees then exits!!!
+// sets (in a very hacky way) a list to an ArgMorph of list type// sets the first one it sees then exits!!!
 function setNewListToArg(values, block, i) {
     var newList = cloneListReporter();
 
@@ -1498,10 +1416,7 @@ function createTestSprite(log, testID) {
     log[testID].sprite = sprite;
     return sprite;
 }
-
-//Creates a semi invisable sprite for testing purposes
-//Adds the sprite to the stage but no where else!
-//returns the new sprite
+// Creates a semi invisable sprite for testing purposes// Adds the sprite to the stage but no where else!// returns the new sprite
 //@param ide - the working snap IDE
 function addInvisibleSprite(ide) {
     var sprite = new SpriteMorph(ide.globalVariables),
@@ -1971,7 +1886,7 @@ function simpleCBlockContains(script, blockSpec1, block2Name, argArray1, argArra
 * details of what blocks are considered C-shaped.
 */
 function CBlockContainsInSprite(block1String, block2String, spriteIndex) {
-    //Populate optional parameters
+   // Populate optional parameters
     if (spriteIndex === undefined) {
         spriteIndex = 0;
     }
@@ -2013,7 +1928,7 @@ function ifElseContains(script, clause, block1Spec, argArray1) {
         return false;
     }
     if (!(clause === "if" || clause === "else")) {
-        return false; //return false or return a string!??!?!
+        return false;// return false or return a string!??!?!
     }
 
     var morph1, type1;
@@ -2047,7 +1962,7 @@ function ifElseContains(script, clause, block1Spec, argArray1) {
  * by CLAUSE in an if-else block in any script in the given sprite's scripts tab.
  */
 function ifElseContainsInSprite(clause, block1Spec, argArray1, spriteIndex) {
-    //Populate optional parameters
+   // Populate optional parameters
     if (spriteIndex === undefined) {
         spriteIndex = 0;
     }
@@ -2133,7 +2048,7 @@ function blockPrecedes(block1, block2, script, seen1) {
 * details of what "precedes" means.
 */
 function blockPrecedesInSprite(block1Sp, block2Sp, spriteIndex) {
-    //Populate optional parameters
+   // Populate optional parameters
     if (spriteIndex === undefined) {
         spriteIndex = 0;
     }
@@ -2145,15 +2060,15 @@ function blockPrecedesInSprite(block1Sp, block2Sp, spriteIndex) {
             JSONtarget = JSONscript(scriptsOnScreen[i]);
             doesPrecede = blockPrecedes(block1Sp, block2Sp, JSONtarget, false);
             if (doesPrecede) {
-                return true; //if any script on the scripting area has block1
-                    //occuring before block2, then this test will pass.
+                return true;// if any script on the scripting area has block1
+                   // occuring before block2, then this test will pass.
             }
         }
     } catch(e) {
         doesPrecede = false;
         feedback = "Error when looking to see if " + block1Spec + " precedes";
         feedback += " " + block2Spec + " in script.";
-        //Return undefined so the grade state doesn't change when no script is present??
+       // Return undefined so the grade state doesn't change when no script is present??
         console.log(feedback);
         return false;
     }
@@ -2204,7 +2119,7 @@ function occurancesOfBlockSpec(blockSpec, block) {
 * the student that the block does not occur enough times for the solution to be correct).
 */
 function occurancesOfBlockInSprite(blockSpec, expected, spriteIndex) {
-    //Populate optional parameters
+   // Populate optional parameters
     if (spriteIndex === undefined) {
         spriteIndex = 0;
     }
