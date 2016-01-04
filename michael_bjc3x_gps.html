@@ -12,7 +12,6 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
         <script src="underscore-min.js"></script>
-        <!--<script src='gradingLog.js'></script>-->
         <script src='spriteEventLog.js'></script>
         <script src='scriptAnalysis.js'></script>
 
@@ -135,7 +134,7 @@
             ide.toggleStageSize(true);
             initializeSnapAdditions(world, id);
 
-            //Initialize AGSB button.
+            // Initialize AGSB button.
             grade_button = document.getElementById("autograding_button");
             grade_button.addEventListener('click', button_listener);
             world_canvas.addEventListener("mouseup", update_listener);
@@ -148,7 +147,6 @@
             world.doOneCycle();
         }
         </script>
-        <script src='feedbackLog.js'></script>
         <script src="AG_EDX.js"></script>
 </head>
 <body style="margin: 0;">
