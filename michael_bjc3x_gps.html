@@ -9,7 +9,7 @@
         <link rel="stylesheet" type="text/css" href="hintstyle.css" />
 
         <script src="jschannel.js"></script>
-        <script src="https:// ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
         <script src="underscore-min.js"></script>
         <script src='spriteEventLog.js'></script>
@@ -79,7 +79,7 @@
                 1);
 
             var tip_1_2 = chunk_1.newTip(
-                '',
+                'Your block should return a list of coordinates.',
                 'Great job! Your block reports a list of coordinates.'
             );
             var inputCSVURL = 'http://bjc.edc.org/bjc-r/cur/programming/4-internet/2-gps-data/GPS-NYC.csv';
@@ -88,17 +88,15 @@
                 inputCSVURL,        // input
                 function (output) {
                     // Output should be a list of 2D lists.
-                    var suggestion,
-                        expectedLength,
+                    var expectedLength,
                         type,
                         outLength, item, i;
                     
-                    suggestion = tip_1_2.suggestion;
                     type = Process.prototype.reportTypeOf(output);
                     expectedLength = 223;
                     if (type !== 'list') {
                         tip_1_2.suggestion = 'Your block must return a list,';
-                        tip_1_2.suggestion += ' but was a ' + type + '.';
+                        tip_1_2.suggestion += ' but returned a type "' + type + '".';
                         return false;
                     }
                     outLength = output.length();
@@ -118,11 +116,12 @@
                             tip_1_2.suggestion = 'Item ' + i + ' should have 2 items.';
                             return false;
                         }
-                        console.log(Process.prototype.reportTypeOf(item.at(1));
-                        console.log(Process.prototype.reportTypeOf(item.at(2));
+                        console.log(Process.prototype.reportTypeOf(item.at(1)));
+                        console.log(Process.prototype.reportTypeOf(item.at(2)));
                     }
                     return true;
-                }
+                },
+                4 * 1000 // 4 second time out.
             );
 
             return fb;

@@ -163,6 +163,7 @@ FeedbackLog.prototype.stringifySnapXML = function() {
 
 FeedbackLog.prototype.runSnapTests = function() {
     // IE sucks: Can't use for...of until IE supports it.
+    // TODO: Document this...it seems buggy (returning too early??)
     // Iterate over each chunk
     var chunk;
     var tip;
@@ -187,6 +188,7 @@ FeedbackLog.prototype.runSnapTests = function() {
     }
     return false;
 };
+
 // NOTE: This function must now pass in a test.
 FeedbackLog.prototype.startSnapTest = function(test) {
     try {
@@ -248,6 +250,7 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
     if (output == undefined) {
         test.output = null;
     } else {
+        // TODO: We probably shouldn't do this...
         // If the output is a list, reformat it for comparision
         if (output instanceof List) {
             test.output = output.asArray();
@@ -710,7 +713,6 @@ function setValues(block, values) {
         // TODO: THROW ERROR FOR INVALID BLOCK DEFINITION
     }
 }
-
 
 
 // sets (in a very hacky way) a list to an ArgMorph of list type

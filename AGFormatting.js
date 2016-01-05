@@ -897,14 +897,33 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                     } else {
                         appendElement("p", "✖", "data", document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
                         
+                        var string_reporter = document.createElement("div"),
+                            htmlString;
 
-                        var string_reporter = document.createElement("div");
                         string_reporter.classList.add("data", "assertion");
-                        if (thisTest["output"] === null) {
-                            string_reporter.innerHTML = '<p class="data assertion">' + testPoints + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion"> did NOT return the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + ' <p class="data assertion"> Instead it returned no output.</p>';
-                        } else {
-                            string_reporter.innerHTML = '<p class="data assertion">' + testPoints + thisTest["feedback"] + " The " + '<p class = "data assertion bold">input: ' + thisTest["input"] + '</p>' + '<p class="data assertion"> did NOT return the </p>' + '<p class="data assertion bold">expected value: ' + thisTest["expOut"] + ' <p class="data assertion"> Instead it returned the ' + '<p class="data assertion bold">output: ' + thisTest["output"] + '</p>';
+                        // TODO Clean these strings up.
+                        htmlString = [
+                            '<p class="data assertion">',
+                            testPoints + thisTest.feedback,
+                            " The  <p class = \"data assertion bold\">input: '",
+                            thisTest.input,
+                            '</p> '
+                        ].join('');
+                        // Don't show "expected output" if the output check is
+                        // a custon JS function (where no output type is known.)
+                        if (thisTest.expOut.constructor !== Function) {
+                            htmlString += [
+                                '<p class="data assertion">did <em>not</em> return the </p>',
+                                '<p class="data assertion bold">expected value: ',
+                                thisTest.expOut
+                            ].join('');
                         }
+                        if (thisTest.output === null) {
+                            htmlString += '<p class="data assertion">Instead it returned no output.</p>';
+                        } else {
+                            htmlString += '<p class="data assertion bold">output: ' + thisTest.output + '</p>';
+                        }
+                        string_reporter.innerHTML = htmlString;
                         document.getElementsByClassName("tests-section" + String(i) + String(x))[0].appendChild(string_reporter);
 
                         appendElement("br", null, null, document.getElementsByClassName("tests-section" + String(i) +String(x))[0]);
