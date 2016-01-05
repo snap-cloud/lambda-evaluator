@@ -218,7 +218,7 @@ function AGUpdate(snapWorld, taskID) {
  *  - Should only be called from outputLog.evaluateLog()
  */
 function AGFinish(outputLog) {
-    var c_prev_log = JSON.parse(sessionStorage.getItem(outputLog.taskID + "_c_test_log"));
+    //var c_prev_log = JSON.parse(sessionStorage.getItem(outputLog.taskID + "_c_test_log"));
 
     if (!graded) {
         AG_bar_nograde();
@@ -229,7 +229,7 @@ function AGFinish(outputLog) {
         // Save the correct XML string into sessionStorage
         AG_bar_graded(outputLog);
         outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
-    } else if ((outputLog.pScore > 0) && ((c_prev_log && outputLog.pScore >= c_prev_log.pScore) || (!c_prev_log))) {
+    //} else if ((outputLog.pScore > 0) && ((c_prev_log && outputLog.pScore >= c_prev_log.pScore) || (!c_prev_log))) {
         //if (outputLog.pScore >= c_prev_log.pScore && c_prev_log || !c_prev_log) {
         //AG_bar_semigraded(outputLog);
         //outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");

@@ -130,6 +130,11 @@ FeedbackLog.prototype.tipOf = function(test) {
 FeedbackLog.prototype.saveLog = function() {
 	//Save current state as 'last attempt'
 	var log_string = this.toString();
+	/*try {
+		sessionStorage.setItem(this.taskID + '_test_log', log_string);
+	} catch (e) {
+		console.log(e);
+	}*/
 	sessionStorage.setItem(this.taskID + '_test_log', log_string);
 	//Find previous 'best attempt', compare with current, if better, overwrite
 	//Note: Holy Jesus. This predicate is rediculous. Brain hurts...
@@ -138,7 +143,13 @@ FeedbackLog.prototype.saveLog = function() {
 		((this.pScore > 0) && 
 			((c_prev_log && (this.pScore >= c_prev_log.pScore)) || (!c_prev_log)))) {
 		// Store the correct log in sessionStorage
+		/*try {
+			sessionStorage.setItem(this.taskID + "_c_test_log", log_string);
+		} catch (e) {
+			console.log(e);
+		}*/
 		sessionStorage.setItem(this.taskID + "_c_test_log", log_string);
+		
 	}
 }
 
@@ -195,7 +206,6 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 			//TODO: Fix setUpIsolatedTest to remove testID
 			block = setUpIsolatedTest(test.blockSpec, this, test)
 		} else {
-			console.log("startsnaptest else");
 			block = getScript(test.blockSpec);
 		}
 		//Set the selected block's inputs for the test
@@ -218,15 +228,65 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 			timeout = 1000; //Set default if -1
 		}
 		//Launch timeout to handle Snap errors and infinitely looping scripts
+
 		var timeout_id = setTimeout(function() {
 			var stage = fb_log.snapWorld.children[0].stage;
 			if (test.proc.errorFlag) {
+				//var ide = test.sprite.parentThatIsA(IDE_Morph);
+			    /*if (ide) {
+			        ide.removeSprite(test.sprite);
+			    }*/
+				//test.sprite = null;
 				test.feedback = "Snap Error.";
+				//console.log(test.sprite);
+				//fb_log.finishSnapTest(test, readValue(proc));
+
+
+
 			} else {
 				test.feedback = "Test Timeout Occurred.";
 			}
 			test.output = "INVALID";
 			stage.threads.stopProcess(getScript(test.blockSpec), test.sprite);
+			//stage.threads.stopProcess(getScript(test.blockSpec));
+
+			fb_log.runNextTest(test);
+			//fb_log.finishSnapTest(test, readValue(proc));
+
+			test.proc = null;
+			test.sprite = null;
+			var ide = world.children[0];
+			var spriteList = ide.sprites;
+			var sprites = spriteList.asArray();
+			var removeArr = [];
+			for (var i = 0; i < sprites.length; i++) {
+				if (sprites[i].name === "Testing...") {
+					sprites[i].destroy();
+					removeArr.push(i);
+					//spriteList.remove(i);
+					//ide.createCorral();
+		    		//ide.fixLayout();
+				}
+				/*if (children[i].__proto__.constructor.name === "SpriteMorph") {
+					if (children[i].name === "Testing...") {
+						children[i].remove();
+					}
+				}*/
+			}
+
+			for (var j = 0; j < removeArr.length; j++) {
+				ide.stage.watchers().forEach(function (watcher) {
+			        if (watcher.object() === spriteList[j]) {
+			            watcher.destroy();
+			        }
+			    });
+				spriteList.remove(j);
+
+				ide.createCorral();
+		    	ide.fixLayout();
+			}
+
+
 		}, timeout);
 		this.currentTimeout = timeout_id;
 		return this;
@@ -406,6 +466,7 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 			setValues(block, Array(test['input'].length).join('a').split('a'));
 		}
 	} catch(e) {
+		console.log(e);
 		throw "gradingLog.finishSnapTest: Trying to clear values of block that does not exist.";
 	}
 	// Launch the next test if it exists, scoreLog otherwise.
@@ -474,6 +535,38 @@ FeedbackLog.prototype.scoreLog = function() {
 	if (this.testCount === 0) {
 		throw 'FeedbackLog.scoreLog: Attempted to score empty FeedbackLog';
 	}
+
+	var ide = world.children[0];
+		var spriteList = ide.sprites;
+		var sprites = spriteList.asArray();
+		var removeArr = [];
+		for (var i = 0; i < sprites.length; i++) {
+			if (sprites[i].name === "Testing...") {
+				sprites[i].destroy();
+				removeArr.push(i);
+				//spriteList.remove(i);
+				//ide.createCorral();
+	    		//ide.fixLayout();
+			}
+			/*if (children[i].__proto__.constructor.name === "SpriteMorph") {
+				if (children[i].name === "Testing...") {
+					children[i].remove();
+				}
+			}*/
+		}
+
+		for (var j = 0; j < removeArr.length; j++) {
+			ide.stage.watchers().forEach(function (watcher) {
+		        if (watcher.object() === spriteList[j]) {
+		            watcher.destroy();
+		        }
+		    });
+			spriteList.remove(j);
+
+			ide.createCorral();
+	    	ide.fixLayout();
+		}
+	
 	// Ensure that all tests have been graded.
 	// var test = this.firstTest();
 	// var all_tests = this.allIOTests();
