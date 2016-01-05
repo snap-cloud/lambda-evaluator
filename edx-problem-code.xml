@@ -8,6 +8,10 @@
 
   When using this file, you need to set:
   html_file='' to the proper HTML file path. It should start with '/static'
+
+  If you have a starter file:
+     set initial_state='' to 'starter file',
+     otherwise it should be 'no starter file'.
  -->
 <problem>
   <link rel="stylesheet" type="text/css" href="/static/hintstyle.css" />
@@ -20,8 +24,8 @@ def process_ag_response(e, ans):
     log = urllib.unquote(par['answer']).decode('utf8')
     answer = json.loads(log)
     state = False
-    if answer["feedback"]["pScore"] == 1:
-        state = True
+    #if answer["feedback"]["pScore"] == 1:
+        #state = True
     #return {'input_list': [{ 'ok': state, 'msg': '', 'grade_decimal': answer["feedback"]["pScore"]}]}
     #return {'input_list': [{ 'ok': True, 'msg': ''}]}
     return answer["checkState"]
@@ -51,7 +55,7 @@ def hint_fn(answer_ids, student_answers, new_cmap, old_cmap):
     <jsinput gradefn="AG_EDX.getGrade"
       get_statefn="AG_EDX.getState"
       set_statefn="AG_EDX.setState"
-      initial_state="W1_L1_Starter_GPS_Scraping.xml"
+      initial_state="starter file"
       width="100%" height="600"
       html_file="/static/michael_bjc3x_gps.html"
       sop="false"/>

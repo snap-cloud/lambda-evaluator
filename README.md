@@ -5,18 +5,29 @@ An extension to Snap<em>!</em> which enables client-side autograding.
 ## Architecture Overview
 
 Files List:
-* AG_EDX.js
-* AGAgent.js
-* AGFormatting.js
-* feedbackLog.js
-* scriptAnalysis.js
-* spriteEventLog.js
 
+* edx-problem-code.xml
+	* This is the code that belongs in edX for each autograded exercise.
+	* You will need to modify parameters in this file when pasting it into edX. (See the README comments at the top.)
+* AG_EDX.js
+	* TODO
+* AG_EDX_NoXML.js
+	* TODO
+* AGAgent.js
+	* TODO
+* AGFormatting.js
+	* TODO
+* feedbackLog.js
+	* TODO
+* scriptAnalysis.js
+	* TODO
+* spriteEventLog.js
+	* TODO
 * snap-edx-overrides.js
     * These are the only customizations to the Snap! source
     * (Not true right now, but eventually things will be refactored.)
 
-* Libraries:
+* Dependencies:
     * jQuery
         * duh!
     * jschannel.js
