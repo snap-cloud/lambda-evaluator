@@ -618,7 +618,6 @@ Tip.prototype.newIOTest = function(testClass, blockSpec, input, expOut, timeOut,
 }
 
 Tip.prototype.newAssertTest = function(statement, feedback, text, pos_fb, neg_fb, points) {
-    points = typeof points !== 'undefined' ? points : 1;
     // console.log(statement);
     var new_ass_test = new AssertTest(statement, feedback, text, pos_fb, neg_fb, points);
     this.addTest(new_ass_test);
@@ -643,7 +642,7 @@ function IOTest(testClass, blockSpec, input, expOut, timeOut, isolated, points) 
     this.expOut = expOut;
     this.timeOut = timeOut;
     this.isolated = isolated || false;
-    this.points = points || 1;
+    this.points = points === 0 ? 0 : (points || 1);
 
     this.output = null;
     this.correct = false;
