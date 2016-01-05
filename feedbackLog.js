@@ -370,6 +370,10 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
     } catch (e) {
         console.log(e);
     }
+    /*var myscript = getScript(test.blockSpec);
+    var pic = myscript.returnBubble(output, true);
+    console.log(pic);
+    test.picture = pic;*/
     // End of Addison's Section
 
     var expOut = test.expOut;
@@ -601,7 +605,7 @@ TestChunk.prototype.addTip = function(tip) {
 /****************************************************************************/
 /****************************************************************************/
 
-function Tip(suggestion, complement) {
+function Tip(suggestion, complement, rank) {
     this.suggestion = suggestion || 'Try Harder.';
     this.complement = complement || 'Good Job!';
     this.test_list = [];
@@ -612,6 +616,7 @@ function Tip(suggestion, complement) {
     this.points = 0
     this.allCorrect = false;
     this.chunk = null;
+    this.rank = rank || 0;
 }
 
 Tip.prototype.updateCounts = function(num_tests, num_points) {

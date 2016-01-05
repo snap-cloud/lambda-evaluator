@@ -72,7 +72,6 @@ var AG_EDX = (function() {
             output['c_log'] = correct_log;
             output['c_state'] = encodeURIComponent(correct_xml);
         }
-
         return encodeURI(JSON.stringify(output));
     }
 

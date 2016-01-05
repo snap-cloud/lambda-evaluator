@@ -308,6 +308,11 @@ function moveAutogradingBar() {
     }
 }
 
+function closeInitialHelp() {
+    var initial_overlay = document.getElementById("initial-help");
+    initial_overlay.classList.add("is-hidden");
+}
+
 function setInitialHelpDisplay(bool) {
     if (localStorage) {
         localStorage['-snap-autograder-inital-help'] = JSON.stringify(bool);
@@ -500,6 +505,11 @@ function initializeSnapAdditions(snapWorld, taskID) {
 
     $(".bubble").mouseover(moveHelp);
 
+    var initial_overlay = document.getElementById('initial-help');
+    if (initial_overlay) {
+        initial_overlay.onclick = function(e) { closeInitialHelp(); }
+    }
+
     checkButtonExists = false;
     if (isEDX) {
         var timesChecked = 0;
@@ -632,6 +642,7 @@ var button_listener = function(event) {
 
 function moveHelp() {
     var pos = $(".bubble").offset();
+    var menu_pos = $("#onclick-menu").offset();
 
     $("#menu-item-help").css({
         position: "absolute",
@@ -652,6 +663,27 @@ function moveHelp() {
         position: "absolute",
         top: pos.top - 30 + "px",
         left: pos.left + 270 + "px"
+    });
+
+    $("#initial-ag-button-help").css({
+        position: "absolute",
+        top: pos.top + "px",
+        left: pos.left + 200 + "px"
+    });
+    $("#initial-ag-button-arrow").css({
+        position: "absolute",
+        top: pos.top - 33 + "px",
+        left: pos.left + 200 + "px"
+    });
+    $("#hamburger-menu-help").css({
+        position: "absolute",
+        top: menu_pos.top + 40 + "px",
+        left: menu_pos.left - 100 + "px"
+    });
+    $("#hamburger-menu-arrow").css({
+        position: "absolute",
+        top: menu_pos.top + 5 + "px",
+        left: menu_pos.left + 5 + "px"
     });
 }
 
@@ -808,6 +840,9 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             document.getElementById("incorrect-section").style.display = "block";
             document.getElementById("incorrect-section").appendChild(incorrect_chunk);
         }
+
+        var currRank = 1;
+        tipLoop:
 
         for (x = 0; x < tips.length; x++) {
             var tip = tips[x];
@@ -1028,6 +1063,14 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         );
                     } // 'r' test cases
                 } // end adding test div
+
+                if (tip.rank === currRank || tip.rank !== 0) {
+                    if (!tip.allCorrect) {
+                        break tipLoop;
+                    } else {
+                        currRank += 1;
+                    }
+                }
             } // end j loop
         } // end x loop
     } // end i loop
@@ -1076,6 +1119,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
         if (log["totalPoints"] !== 1) {
             problemPlural = "s";
         } 
+        log["totalPoints"] = Math.round(log["totalPoints"]);
         problemPoints = " (" + log["totalPoints"] + " possible point" + problemPlural + ") ";
     }
 
