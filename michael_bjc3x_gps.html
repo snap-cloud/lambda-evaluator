@@ -36,7 +36,7 @@
         <script src="AGAgent.js"></script>
         <script src='feedbackLog.js'></script>
         <script type='text/javascript'>
-        var starter_path = 'GPS Scraping.xml';
+        var starter_path = 'W1_L1_Starter_GPS_Scraping.xml';
         // The id is to act as a course identifier.
         // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
         var courseID = "BJC.3x";  // e.g. "BJCx"
@@ -109,11 +109,11 @@
                     for (i = 1; i <= outLength; i+= 1) {
                         item = output.at(i);
                         if (Process.prototype.reportTypeOf(item) !== 'list') {
-                            tip_1_2.suggestion = 'Item ' + i + ' should be a list.';
+                            tip_1_2.suggestion = 'Output item ' + i + ' should be a list.';
                             return false;
                         }
                         if (item.length() !== 2) {
-                            tip_1_2.suggestion = 'Item ' + i + ' should have 2 items.';
+                            tip_1_2.suggestion = 'Output item ' + i + ' should have length 2.';
                             return false;
                         }
                         console.log(Process.prototype.reportTypeOf(item.at(1)));

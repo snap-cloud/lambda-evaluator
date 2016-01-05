@@ -253,9 +253,15 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
         // TODO: We probably shouldn't do this...
         // If the output is a list, reformat it for comparision
         if (output instanceof List) {
-            test.output = output.asArray();
+            test.output = arrayFormattedString(
+                toNativeArray(output),
+                {
+                    newline: '<br>',
+                    indent: '&nbsp;&nbsp;'
+                }
+            );
         } else {
-            test.output = output;
+            test.output = output.toString();
         }
     }
     
@@ -382,7 +388,9 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
     if (test.correct) {
         test.feedback = test.feedback || "Test Passed.";
     } else {
-        test.feedback = test.feedback || "Unexpected Output: " + String(output);
+        test.feedback = test.feedback || "Unexpected Output: " + (
+            typeof output === 'string' || typeof output === 'number' ? output : ''
+        );
     }
     // Set test graded flag to true, for gradingLog.gradeLog()
     test.graded = true;
@@ -412,10 +420,10 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
 FeedbackLog.prototype.runNextTest = function(test) {
     // Find teh next test
     var next_test = this.nextTest(test);
-    var fb_log = this;
+    var myself = this;
     if (next_test) {
         setTimeout(function() {
-            fb_log.startSnapTest(next_test);
+            myself.startSnapTest(next_test);
         }, 1);
     } else {
         this.scoreLog();
@@ -738,7 +746,7 @@ function setNewListToArg(values, block, i) {
 // Creates a semi invisable sprite for testing purposes
 // Adds the sprite to the stage but no where else!
 // returns the new sprite
-//@param ide - the working snap IDE
+// @param ide - the working snap IDE
 function addInvisibleSprite(world) {
     var ide = world.children[0]
     var sprite = new SpriteMorph(ide.globalVariables),
@@ -760,7 +768,7 @@ function addInvisibleSprite(world) {
     ide.corral.addSprite(sprite);
 
    return sprite;
- }
+}
 
 function createTestSprite(log, test) {
     var ide = log.snapWorld.children[0];
@@ -915,6 +923,47 @@ function toSnapList(array) {
     }));
 }
 
+// Recursively Convert a Snap! list into a native array
+function toNativeArray(list) {
+    return list.asArray().map(function (item) {
+        return item.constructor === List ? toNativeArray(item) : item;
+    });
+}
+
+/** Give a nice visual display to a list, including showing nesting.
+ *  The Default is for a console, but you can supply HTML strings for parameters
+ *
+ *  OPTIONS Defaults:
+ *    {
+ *        separator: ',',
+ *        indent: '\t',
+ *        newline: '\n',
+ *        start: '[',
+ *        end: ']'
+ *    }
+ *  For example [1, 2, 3] becomes: '[\n\t1,\n\t2,\n\t3\n]'
+ *  Use `console.log` to see the output.
+ *  @param {array} items - the array to format as a nice string
+ *  @param {object} options - control paramters for separating elements
+ */
+function arrayFormattedString(items, options) {
+    if (items.constructor !== Array) {
+        return items;
+    }
+    var separator, indent, newline, start, end, content;
+    
+    separator = options.separator || ',';
+    indent = options.indent || '\t';
+    newline = (options.newline || '\n') + indent;
+    start = options.start || '[';
+    end = options.end || ']';
+    
+    content = items.map(function (item) {
+        return arrayFormattedString(item, options);
+    });
+    return start + newline + content.join(separator + newline) +
+        newline.replace(indent, '') + end; // replace(): un-indent 1 level.
+}
 
 /**************** Testing the Feedback Log ************/
 // Create a new feedbackLog

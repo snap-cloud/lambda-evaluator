@@ -708,6 +708,9 @@ function createCollapsibleCorrectSection(selector) {
     * Remove add extra String() coercions, and document any that are necessary
 */
 function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
+    // TODO: Declare move variables up here:
+    var i, j, x;
+    
     // TODO: Extract this function
     document.getElementById("toggle-correct-tests").onclick = function () {
         if (toggleButton.classList.contains("isOff")) {
@@ -767,8 +770,10 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     document.getElementById("correct-section").style.display = "none";
     document.getElementById("incorrect-section").style.display = "none";
 
-    var chunknum = chunknum = typeof chunknum !== 'undefined' ? chunknum : undefined;
-    var tipnum = tipnum = typeof tipnum !== 'undefined' ? tipnum : undefined;
+    // TODO: What is this doing? It seems redundant.
+    var chunknum = typeof chunknum !== 'undefined' ? chunknum : undefined;
+    var tipnum = typeof tipnum !== 'undefined' ? tipnum : undefined;
+    
     if (!showPoints) {
         showPoints = false;
     }
@@ -806,7 +811,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
 
         for (x = 0; x < tips.length; x++) {
             var tip = tips[x];
-            var allFeedback = allFeedback = typeof allFeedback !== 'undefined' ? allFeedback : false;
+            var allFeedback = typeof allFeedback !== 'undefined' ? allFeedback : false;
             var div = document.createElement("div");
             var label_class = "incorrectans";
             var current_chunk = document.getElementsByClassName("incorrect-chunk"+String(i))[0];
@@ -824,10 +829,10 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             var tipPoints = "";
 
             // TODO: Clean this up
-            div.innerHTML = '<input class="details" id="expander' + String(i) + String(x) + '" type="checkbox" ><label class="' + label_class + '" for="expander' + String(i) + String(x) + '">' + tipPoints + String(suggestion) + '</label><div id="table-wrapper' + String(i) + String(x) + '">';
+            div.innerHTML = '<input class="details" id="expander' + i + x + '" type="checkbox" ><label class="' + label_class + '" for="expander' + i + x + '">' + tipPoints + String(suggestion) + '</label><div id="table-wrapper' + i + x + '">';
 
             current_chunk.appendChild(div);
-            var details = document.getElementById("table-wrapper" + String(i) + String(x));
+            var details = document.getElementById("table-wrapper" + i + x);
             details.previousSibling.click();
             var allTests = tip["test_list"];
             appendElement(
@@ -846,8 +851,9 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                     if (thisTest.points !== 1) {
                         testPlural = "s";
                     }
-                    testPoints = "(" + thisTest["points"] + " point" + testPlural + ") ";
+                    testPoints = "(" + thisTest.points + " point" + testPlural + ") ";
                 }
+                
                 if (thisTest.testClass !== "r") {
                     if (document.getElementsByClassName("observations-section" + i + x[0]) !== []) {
                         incorrect_assertions = 0;
@@ -860,16 +866,16 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         );
                     }
 
-                    if (tip.allCorrect === false && thisTest.correct === true) {
+                    if (!tip.allCorrect && thisTest.correct) {
                         tipHasCorrectTest = true;
-                        if (!document.getElementById("correct-tip" + String(i) + String(x))) {
+                        if (!document.getElementById("correct-tip" + i + x)) {
                             // TODO: What's this for?
                         }
                     }
                     
-                    if (thisTest["correct"] === true) {
+                    if (thisTest.correct) {
                         correct_assertions += 1;
-                        if ((allFeedback) || tip["allCorrect"]) {
+                        if (allFeedback || tip.allCorrect) {
                             appendElement(
                                 "p",
                                 "✔",
@@ -889,7 +895,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                                 document.getElementsByClassName("observations-section" + i + x)[0]
                             );
                         }
-                    } else {
+                    } else { // Non-r class failing cases.
                         appendElement(
                             "p",
                             "✖",
@@ -910,15 +916,20 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             document.getElementsByClassName("observations-section" + i + x)[0]
                         );
                     }
-                } else {
+                } else { // TESTS WITH CLASS 'r'
                     if (document.getElementsByClassName("tests-section" + i + x[0]) !== []) {
                         incorrect_tests = 0;
                         correct_tests = 0;
-                        appendElement("div", "", ["results", "tests-section" + i + x], document.getElementsByClassName("observations" + i + x)[0]);
+                        appendElement(
+                            "div",
+                            "",
+                            ["results", "tests-section" + i + x],
+                            document.getElementsByClassName("observations" + i + x)[0]
+                        );
                     }
                     if (thisTest["correct"] === true && tip["allCorrect"] === false) {
                         tipHasCorrectTest = true;
-                        if (!document.getElementById("correct-tip" + String(i) + String(x))) {
+                        if (!document.getElementById("correct-tip" + i + x)) {
                             // TODO: This?
                         }
                     }
@@ -929,14 +940,20 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         incorrect_tests += 1;
                     }
 
-                    var htmlString,
-                        keys = ["input", "output", "expOut", "comment"];
-
+                    var htmlString, string_reporter, testSectionDiv;
+                    
+                    string_reporter = document.createElement("div")
+                    string_reporter.classList.add("data", "assertion");
+                    
                     if (thisTest.correct) {
-                        if ((allFeedback) || tip["allCorrect"]) {
-                            appendElement("p", "✔", "data", document.getElementsByClassName("tests-section" + i + x)[0]);
-                            var string_reporter = document.createElement("div");
-                            string_reporter.classList.add("data", "assertion");
+                        if ((allFeedback) || tip.allCorrect) {
+                            appendElement(
+                                "p",
+                                "✔",
+                                "data",
+                                document.getElementsByClassName("tests-section" + i + x)[0]
+                            );
+                            
                             htmlString = [
                                 '<p class="data assertion">',
                                 testPoints + thisTest.feedback,
@@ -952,14 +969,13 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                                     '</p>'
                                 ].join('');
                             } else {
-                                htmlString += [
-                                    '<p class="data assertion">, ',
-                                    'passed the tests.</p>'
-                                ].join('');
+                                htmlString += '<p class="data assertion">passed the tests.</p>';
                             }
                             string_reporter.innerHTML = htmlString;
                             // TODO: Clean up this...
-                            document.getElementsByClassName("tests-section" + i + x)[0].appendChild(string_reporter);
+                            document.getElementsByClassName(
+                                "tests-section" + i + x
+                            )[0].appendChild(string_reporter);
                             appendElement(
                                 "br",
                                 null,
@@ -974,17 +990,17 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             "data",
                             document.getElementsByClassName("tests-section" + i + x)[0]
                         );
-                        var string_reporter = document.createElement("div");
 
                         string_reporter.classList.add("data", "assertion");
                         // TODO Clean these strings up.
                         htmlString = [
                             '<p class="data assertion">',
                             testPoints + thisTest.feedback,
-                            " The  <p class = \"data assertion bold\">input: '",
+                            ' The <p class="data assertion bold">input: ',
                             thisTest.input,
                             '</p> '
                         ].join('');
+                        
                         // Don't show "expected output" if the output check is
                         // a custon JS function (where no output type is known.)
                         if (thisTest.expOut.constructor !== Function) {
@@ -1001,7 +1017,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         }
                         string_reporter.innerHTML = htmlString;
                         document.getElementsByClassName(
-                            "tests-section" + String(i) + String(x)
+                            "tests-section" + i + x
                         )[0].appendChild(string_reporter);
 
                         appendElement(
@@ -1010,12 +1026,12 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             null,
                             document.getElementsByClassName("tests-section" + i + x)[0]
                         );
-                    }
-                }
-
-            }
-        }
-    }
+                    } // 'r' test cases
+                } // end adding test div
+            } // end j loop
+        } // end x loop
+    } // end i loop
+    
     if (document.getElementsByClassName("incorrectans")[0] !== undefined) {
         document.getElementsByClassName("incorrectans")[0].click();
     }
