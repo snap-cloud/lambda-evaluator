@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Snap! Build Your Own Blocks</title>
+        <link rel="shortcut icon" href="favicon.ico">
+
+        <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
+        <link rel="stylesheet" type="text/css" href="hintstyle.css" />
+
+        <script src="lib/jschannel.js"></script>
+        <script src="lib/jquery-1.11.3.min.js"></script>
+
+        <script src="underscore-min.js"></script>
+        <script src='spriteEventLog.js'></script>
+        <script src='scriptAnalysis.js'></script>
+
+        <!-- Snap JS Files-->
+        <script src="snap/FileSaver.min.js"></script>
+        <script src="snap/morphic.js"></script>
+        <script src="snap/widgets.js"></script>
+        <script src="snap/blocks.js"></script>
+        <script src="snap/threads.js"></script>
+        <script src="snap/objects.js"></script>
+        <script src="snap/gui.js"></script>
+        <script src="snap/paint.js"></script>
+        <script src="snap/lists.js"></script>
+        <script src="snap/byob.js"></script>
+        <script src="snap/xml.js"></script>
+        <script src="snap/store.js"></script>
+        <script src="snap/locale.js"></script>
+        <script src="snap/cloud.js"></script>
+        <script src="snap/sha512.js"></script>
+        <script src="snap-edx-overrides.js"></script>
+
+        <script src="AGAgent.js"></script>
+        <script src='feedbackLog.js'></script>
+        <script type='text/javascript'>
+        /*
+          This is where the document loading will go.
+        */
+        </script>
+        <script src="AGFormatting.js"></script>
+
+        <script>
+        var world, world_canvas;
+        window.onload = function () {
+            var ide, grade_button;
+            // INITIALIZE SNAP
+            world_canvas = document.getElementById('world')
+            world = new WorldMorph(world_canvas);
+            ide = new IDE_Morph();
+            ide.openIn(world);
+
+            // AUTOGRADER ADDITIONS:
+            // Set Snap! to small stage mode
+            ide.toggleStageSize(true);
+            initializeSnapAdditions(world, id);
+
+            // Initialize AGSB button.
+            grade_button = document.getElementById("autograding_button");
+            grade_button.addEventListener('click', button_listener);
+            world_canvas.addEventListener("mouseup", update_listener);
+            // Start Snap Environment Loop
+            loop();
+        };
+
+        function loop() {
+            requestAnimationFrame(loop);
+            world.doOneCycle();
+        }
+        </script>
+        <script src="AG_EDX.js"></script>
+</head>
+<body style="margin: 0;">
+  <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
+
+  <!-- Snap Autograding Button -->
+  <div id="autograding_bar">
+    <div tabindex="0" class="onclick-menu" id='onclick-menu' style="display:inline-block">
+      <span title="Menu">&#9776;</span>
+      <div class='hover_darken'></div>
+      <nav id="navigation" class="site-navigation" role="navigation">
+        <ul id="dropdown-closed" class="bubble">
+          <li class="menu-item-sub-menu" id="enabled-button">
+              <a id="undo-button">Revert To Last Attempt</a>
+          </li>
+          <li class="menu-item-sub-menu" id="enabled-button">
+              <a id="revert-button">Revert To Best Attempt</a>
+          </li>
+          <li class="menu-item-sub-menu" id="enabled-button">
+              <a id="reset-button">Reset</a>
+          </li>
+          <li class="menu-divider-sub-menu" id='menu-divider'></li>
+          <li class="menu-item-sub-menu" id='enabled-button' onclick="openPopup();">
+              <a id="help-button">Help</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <div id="autograding_button" style="display:inline-block;">
+      <span></span>
+      <div class='hover_darken'></div>
+    </div>
+    <div id="numtips" style="display:inline-block"></div>
+  </div>
+
+  <!-- Snap Autograding Menu -->
+  <!-- Autograding Menu Help Button -->
+  <div class="overlay is-hidden" id="overlay">
+    <p class="help-text" id="full-screen-arrow">&#8600;</p>
+    <p class="help-text" id="full-screen-help">This full-screen button will pop out the Snap! window.</p>
+    <p class="help-text" id="menu-item-arrow">&#8599;</p>
+    <p class="help-text" id="menu-item-help">The first two menu items will revert your current Snap! state to one of your previous attempts, depending on whether you wish to revert to your last graded attempt or to your best attempt.</br></br>The 'Reset' button will revert to a blank Snap! project, or to a provided starter file if one is given for this problem.</p>
+    <p class="help-text" id="ag-button-arrow">&#8593;</p>
+    <p class="help-text" id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
+  </div>
+
+  <div style="display:inline-block" class="view-results"
+    id="circle" onclick="openResults();">Results
+  </div>
+
+  <div class="overlay is-hidden" id="ag-output">
+    <div class="popup-content" id="ag-results">
+      <span class="button-close" onclick="closeResults();" id="popup">X</span>
+      <div id="toggle-correct-tests"></div>
+      <p id="comment"></p>
+    </div>
+  </div>
+  </div>
+</body>
+</html>
