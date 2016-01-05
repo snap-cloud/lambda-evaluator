@@ -369,6 +369,7 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
         test.correct = expOut(output);
     } else {
         if (expOut instanceof Array) {
+            // TODO: Switch this to toSnapList (or whatever I named that fn)
             listify(expOut);
             expOut = new List(expOut);
         }
@@ -628,8 +629,6 @@ Tip.prototype.addTest = function(test) {
     this.test_list.push(test);
     test.tip = this;
     this.updateCounts(1, test.points);
-    // this.testCount += 1;
-    // this.totalPoints += test.points;
 }
 
 /****************************************************************************/

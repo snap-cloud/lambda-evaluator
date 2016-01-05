@@ -520,7 +520,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
                         JSON.stringify([
                             parent.window.scrollX,
                             parent.window.scrollY
-                        ]);
+                        ])
                     );
                 };
 
@@ -531,7 +531,6 @@ function initializeSnapAdditions(snapWorld, taskID) {
                 checkButtonExists = false;
                 clearInterval(checkExist);
             }
-
         }, 100);
 
         makeFullScreenButton();
@@ -566,7 +565,9 @@ function initializeSnapAdditions(snapWorld, taskID) {
            var outputLog = AGStart(snapWorld, taskID);
         }
 
-        // for some reason, the for loop in populateFeedback doesn't increment correctly the first time it is run, so populateFeedback has to be called twice at the very beginning...
+        // for some reason, the for loop in populateFeedback doesn't increment
+        // correctly the first time it is run, so populateFeedback has to be
+        // called twice at the very beginning...
         if (showFeedback && sessionStorage.getItem(taskID + "_popupFeedback") !== null) {
             populateFeedback(outputLog); 
             populateFeedback(outputLog);

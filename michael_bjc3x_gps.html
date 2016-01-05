@@ -78,13 +78,51 @@
                 "Make sure you name your block exactly " + blockName + " and place it in the scripting area.",
                 1);
 
-            var tip_1_2 = chunk_1.newTip('Make sure your block works for general inputs.',
-                'Great job!');
+            var tip_1_2 = chunk_1.newTip(
+                '',
+                'Great job! Your block reports a list of coordinates.'
+            );
             var inputCSVURL = 'http://bjc.edc.org/bjc-r/cur/programming/4-internet/2-gps-data/GPS-NYC.csv';
             tip_1_2.newIOTest('r',  // testClass
                 blockName,          // blockSpec
                 inputCSVURL,        // input
-                false               // output
+                function (output) {
+                    // Output should be a list of 2D lists.
+                    var suggestion,
+                        expectedLength,
+                        type,
+                        outLength, item, i;
+                    
+                    suggestion = tip_1_2.suggestion;
+                    type = Process.prototype.reportTypeOf(output);
+                    expectedLength = 223;
+                    if (type !== 'list') {
+                        tip_1_2.suggestion = 'Your block must return a list,';
+                        tip_1_2.suggestion += ' but was a ' + type + '.';
+                        return false;
+                    }
+                    outLength = output.length();
+                    if (outLength !== expectedLength) {
+                        tip_1_2.suggestion = 'You list should have length 223;';
+                        tip_1_2.suggestion += ' but was ' + outLength + '.';
+                        return false;
+                    }
+                    // FIXME: Not great if list is linked.
+                    for (i = 1; i <= outLength; i+= 1) {
+                        item = output.at(i);
+                        if (Process.prototype.reportTypeOf(item) !== 'list') {
+                            tip_1_2.suggestion = 'Item ' + i + ' should be a list.';
+                            return false;
+                        }
+                        if (item.length() !== 2) {
+                            tip_1_2.suggestion = 'Item ' + i + ' should have 2 items.';
+                            return false;
+                        }
+                        console.log(Process.prototype.reportTypeOf(item.at(1));
+                        console.log(Process.prototype.reportTypeOf(item.at(2));
+                    }
+                    return true;
+                }
             );
 
             return fb;
