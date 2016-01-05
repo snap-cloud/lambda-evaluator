@@ -34,3 +34,13 @@ Files List:
         * Used for communication with edX via iframes
     * underscore-min.js
         * used once in scriptAnalysis.js
+
+## edX Setup
+
+* Upload a folder `snap` which is an exact copy of the Snap<em>!</em> repo.
+	* To do this you need to export a tar file, then add `snap` to the `static` folder
+	* Recompress the course folder and use edX's import tool.
+* Upload all the files in `ag-files` to edX, but not in a subfolder.
+* TODO: Upload lib?
+* Upload `edx-snap-ag.html` but not in a subfolder.
+* Upload a `*.js` file for each problem

@@ -3,17 +3,6 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Snap! Build Your Own Blocks</title>
-        <link rel="shortcut icon" href="favicon.ico">
-
-        <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
-        <link rel="stylesheet" type="text/css" href="hintstyle.css" />
-
-        <script src="lib/jschannel.js"></script>
-        <script src="lib/jquery-1.11.3.min.js"></script>
-
-        <script src="underscore-min.js"></script>
-        <script src='spriteEventLog.js'></script>
-        <script src='scriptAnalysis.js'></script>
 
         <!-- Snap JS Files-->
         <script src="snap/FileSaver.min.js"></script>
@@ -31,46 +20,71 @@
         <script src="snap/locale.js"></script>
         <script src="snap/cloud.js"></script>
         <script src="snap/sha512.js"></script>
-        <script src="snap-edx-overrides.js"></script>
 
-        <script src="AGAgent.js"></script>
-        <script src='feedbackLog.js'></script>
-        <script type='text/javascript'>
-        /*
-          This is where the document loading will go.
-        */
-        </script>
-        <script src="AGFormatting.js"></script>
-
+        <!-- AG Snap Modifications -->
+        <script src="ag-files/snap-edx-overrides.js"></script>
+        <!-- Autograder custom display -->
+        <link rel="stylesheet" type="text/css" href="ag-files/AG_status_bar.css" />
+        <link rel="stylesheet" type="text/css" href="ag-files/hintstyle.css" />
+        <!-- Autograder + edX Utilties -->
+        <script src="lib/jschannel.js"></script>
+        <script src="lib/jquery-1.11.3.min.js"></script>
+        <script src="lib/underscore-min.js"></script>
+        
+        <!-- Main autograder components -->
+        <script src='ag-files/ag-util.js'></script>
+        <script src='ag-files/spriteEventLog.js'></script>
+        <script src='ag-files/scriptAnalysis.js'></script>
+        <script src="ag-files/AGAgent.js"></script>
+        <script src='ag-files/feedbackLog.js'></script>
+        <script src="ag-files/AGFormatting.js"></script>
+        <script src="ag-files/AG_EDX.js"></script>
+        <!-- Load snap + AG additions, similar to snap.html -->
         <script>
         var world, world_canvas;
         window.onload = function () {
             var ide, grade_button;
-            // INITIALIZE SNAP
             world_canvas = document.getElementById('world')
             world = new WorldMorph(world_canvas);
             ide = new IDE_Morph();
+            // This is a change for snap.html
+            ide.logoURL = 'snap/snap_logo_sm.png';
             ide.openIn(world);
-
+            // Start Snap Environment Loop
+            loop();
+            
             // AUTOGRADER ADDITIONS:
             // Set Snap! to small stage mode
             ide.toggleStageSize(true);
-            initializeSnapAdditions(world, id);
-
             // Initialize AGSB button.
             grade_button = document.getElementById("autograding_button");
             grade_button.addEventListener('click', button_listener);
             world_canvas.addEventListener("mouseup", update_listener);
-            // Start Snap Environment Loop
-            loop();
+            // Load a remote specified file that contains the AG test
+            loadTestJS();
         };
 
         function loop() {
             requestAnimationFrame(loop);
             world.doOneCycle();
         }
+
+        function loadTestJS() {
+          var query = queryString.parse(location.hash.slice(1)),
+              problem_js = query.test_file,
+              tag = document.createElement('script');
+          if (problem_js) {
+            tag.src = problem_js;
+            tag.onload = function () {
+              // Note modify the global so we can keep file paths the same
+              // while dev'ing.
+              starter_path = problem_js.split('/')[0] + '/' + starter_path;
+              initializeSnapAdditions(world, id);
+            };
+            document.head.appendChild(tag);
+          }
+        }
         </script>
-        <script src="AG_EDX.js"></script>
 </head>
 <body style="margin: 0;">
   <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
