@@ -52,8 +52,7 @@
         // to hide feedback for this problem, set this to false
         var showFeedback = true;
         // to allow ability to regrade certain tests, set this to true
-        var regradeOn = false
-        // var testLog;
+        var regradeOn = true;
         function AGTest(outputLog) {
             var fb = new FeedbackLog(
                 world,
@@ -76,7 +75,8 @@
                 "Testing if the " + blockName + " block is in the scripting area.",
                 "The " + blockName + " block is in the scripting area.",
                 "Make sure you name your block exactly " + blockName + " and place it in the scripting area.",
-                1);
+                1
+            );
 
             var tip_1_2 = chunk_1.newTip(
                 'Your block should return a list of coordinates.',
@@ -121,7 +121,9 @@
                     }
                     return true;
                 },
-                4 * 1000 // 4 second time out.
+                4 * 1000, // 4 second time out.
+                true, // is isolated
+                1 // points
             );
 
             return fb;
