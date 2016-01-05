@@ -12,19 +12,19 @@
 <problem>
   <link rel="stylesheet" type="text/css" href="/static/hintstyle.css" />
   <script type="loncapa/python">
-
 import json
 import urllib
-def vglcfn(e, ans):
+
+def process_ag_response(e, ans):
     par = json.loads(ans)
     log = urllib.unquote(par['answer']).decode('utf8')
     answer = json.loads(log)
     state = False
-    #if answer["feedback"]["pScore"] == 1:
-        #state = True
+    if answer["feedback"]["pScore"] == 1:
+        state = True
     #return {'input_list': [{ 'ok': state, 'msg': '', 'grade_decimal': answer["feedback"]["pScore"]}]}
-    return {'input_list': [{ 'ok': True, 'msg': ''}]}
-    #return answer["checkState"]
+    #return {'input_list': [{ 'ok': True, 'msg': ''}]}
+    return answer["checkState"]
 
 def feedback_print(feedback):
     output = ""
@@ -47,12 +47,12 @@ def hint_fn(answer_ids, student_answers, new_cmap, old_cmap):
   <p style="color: red" id="pre_req"></p>
 
   <!-- EDIT ME: html_file='/static/YOUR_FILE.html' -->
-  <customresponse cfn="vglcfn">
+  <customresponse cfn="process_ag_response">
     <jsinput gradefn="AG_EDX.getGrade"
       get_statefn="AG_EDX.getState"
       set_statefn="AG_EDX.setState"
-      initial_state="no starter file"
-      width="100%" height="500"
+      initial_state="W1_L1_Starter_GPS_Scraping.xml"
+      width="100%" height="600"
       html_file="/static/michael_bjc3x_gps.html"
       sop="false"/>
 

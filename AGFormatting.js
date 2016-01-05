@@ -1003,7 +1003,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         
                         // Don't show "expected output" if the output check is
                         // a custon JS function (where no output type is known.)
-                        if (thisTest.expOut.constructor !== Function) {
+                        if (thisTest.expOut && thisTest.expOut.constructor !== Function) {
                             htmlString += [
                                 '<p class="data assertion">did <em>not</em> return the </p>',
                                 '<p class="data assertion bold">expected value: ',

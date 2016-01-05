@@ -82,7 +82,7 @@
                 'Your block should return a list of coordinates.',
                 'Great job! Your block reports a list of coordinates.'
             );
-            var inputCSVURL = 'http://bjc.edc.org/bjc-r/cur/programming/4-internet/2-gps-data/GPS-NYC.csv';
+            var inputCSVURL = 'bjc.edc.org/bjc-r/cur/programming/4-internet/2-gps-data/GPS-NYC.csv';
             tip_1_2.newIOTest('r',  // testClass
                 blockName,          // blockSpec
                 inputCSVURL,        // input
@@ -116,8 +116,6 @@
                             tip_1_2.suggestion = 'Output item ' + i + ' should have length 2.';
                             return false;
                         }
-                        console.log(Process.prototype.reportTypeOf(item.at(1)));
-                        console.log(Process.prototype.reportTypeOf(item.at(2)));
                     }
                     return true;
                 },
