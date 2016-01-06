@@ -4,14 +4,6 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Snap! Build Your Own Blocks</title>
 
-        <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
-        <link rel="stylesheet" type="text/css" href="hintstyle.css" />
-
-        <!-- NOTE: edX loads jQuery and underscore -->
-
-        <script src='spriteEventLog.js'></script>
-        <script src='scriptAnalysis.js'></script>
-
         <!-- Snap JS Files-->
         <script src="snap_FileSaver.min.js"></script>
         <script src="snap_morphic.js"></script>
@@ -28,44 +20,68 @@
         <script src="snap_locale.js"></script>
         <script src="snap_cloud.js"></script>
         <script src="snap_sha512.js"></script>
-        <script src="snap-edx-overrides.js"></script>
 
+        <!-- AG Snap Modifications -->
+        <script src="snap-edx-overrides.js"></script>
+        <!-- Autograder custom display -->
+        <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
+        <link rel="stylesheet" type="text/css" href="hintstyle.css" />
+        <!-- Autograder + edX Utilties -->
+        <script src="lib_jschannel.js"></script>
+        <script src="lib_jquery-1.11.3.min.js"></script>
+        <script src="lib_underscore-min.js"></script>
+        
+        <!-- Main autograder components -->
+        <script src='ag-util.js'></script>
+        <script src='spriteEventLog.js'></script>
+        <script src='scriptAnalysis.js'></script>
         <script src="AGAgent.js"></script>
         <script src='feedbackLog.js'></script>
-        <script type='text/javascript'>
-
-        </script>
         <script src="AGFormatting.js"></script>
-
+        <script src="AG_EDX.js"></script>
+        <!-- Load snap + AG additions, similar to snap.html -->
         <script>
         var world, world_canvas;
         window.onload = function () {
             var ide, grade_button;
-            // INITIALIZE SNAP
             world_canvas = document.getElementById('world')
             world = new WorldMorph(world_canvas);
             ide = new IDE_Morph();
+            // This is a change for snap.html
             ide.logoURL = 'snap_snap_logo_sm.png';
             ide.openIn(world);
-
+            // Start Snap Environment Loop
+            loop();
+            
             // AUTOGRADER ADDITIONS:
             // Set Snap! to small stage mode
             ide.toggleStageSize(true);
-
             // Initialize AGSB button.
             grade_button = document.getElementById("autograding_button");
             grade_button.addEventListener('click', button_listener);
             world_canvas.addEventListener("mouseup", update_listener);
-            // Start Snap Environment Loop
-            loop();
+            // Load a remote specified file that contains the AG test
+            loadTestJS();
         };
 
         function loop() {
             requestAnimationFrame(loop);
             world.doOneCycle();
         }
+
+        function loadTestJS() {
+          var query = queryString.parse(location.hash.slice(1)),
+              problem_js = query.test_file,
+              tag = document.createElement('script');
+          if (problem_js) {
+            tag.src = problem_js;
+            tag.onload = function () {
+              initializeSnapAdditions(world, id);
+            };
+            document.head.appendChild(tag);
+          }
+        }
         </script>
-        <script src="AG_EDX.js"></script>
 </head>
 <body style="margin: 0;">
   <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
@@ -123,6 +139,5 @@
     </div>
   </div>
   </div>
-
 </body>
 </html>

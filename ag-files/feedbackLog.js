@@ -206,11 +206,16 @@ FeedbackLog.prototype.startSnapTest = function(test) {
         // Initiate the Snap Process with a callback to .finishSnapTest
         var stage = this.snapWorld.children[0].stage;
         var fb_log = this;    // to use in anonymous function
-        var proc = stage.threads.startProcess(block,
+        var proc = stage.threads.startProcess(
+            block,
             stage.isThreadSafe,
             false,
             function() {
-                fb_log.finishSnapTest(test, readValue(proc));
+                try {
+                    fb_log.finishSnapTest(test, readValue(proc));
+                } catch (e) {
+                    console.log(e);
+                }
             }
         );
         // Add reference to proc in gradingLog for error handling
@@ -360,20 +365,16 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
             ctx = pic.getContext('2d');
         ctx.drawImage(scr, 0, pic.height - scr.height);
         ctx.drawImage(bub, scr.width + 2, 0);
-        return pic
+        return pic;
     };
     try {
         var myscript = getScript(test.blockSpec);
         var pic = myscript.returnBubble(output, true);
-        console.log(pic);
         test.picture = pic;
     } catch (e) {
+        test.picture = null;
         console.log(e);
     }
-    /*var myscript = getScript(test.blockSpec);
-    var pic = myscript.returnBubble(output, true);
-    console.log(pic);
-    test.picture = pic;*/
     // End of Addison's Section
 
     var expOut = test.expOut;
@@ -402,23 +403,25 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
     clearTimeout(this.currentTimeout);
     test.proc = null;
     // Clear the input values
-
     try {
         if (test.isolated) {
+            var thisSprite, ide
             test.sprite.remove();
             test.sprite = null;
-            var focus = this.snapWorld.children[0].sprites.contents[0];
-            this.snapWorld.children[0].selectSprite(focus);
+            ide = this.snapWorld.children[0];
+            thisSprite = ide.sprites.contents[0];
+            ide.selectSprite(thisSprite);
         } else {
             var block = getScript(test.blockSpec);
-            setValues(block, Array(test['input'].length).join('a').split('a'));
+            setValues(block, Array(test.input.length).join('a').split('a'));
         }
     } catch(e) {
-        throw "gradingLog.finishSnapTest: Trying to clear values of block that does not exist.";
+        console.log(e);
+        console.log("FeedbackLog.finishSnapTest: Trying to clear values of block that does not exist.");
+        return;
     }
     // Launch the next test if it exists, scoreLog otherwise.
     this.runNextTest(test);
-
 };
 
 FeedbackLog.prototype.runNextTest = function(test) {

@@ -82,7 +82,7 @@ var AG_EDX = (function() {
 
         // TODO: Migrate conditional to switch / case
         if (last_state_string === 'starter file') {
-            var starter_xml = $.get(
+            $.get(
                 starter_path,
                 function(data) {
                     sessionStorage.setItem(id + "starter_file", data)
@@ -90,9 +90,8 @@ var AG_EDX = (function() {
                 "text"
             ); // TODO: Loading here still unsafe
             return;
-        } else if (last_state_string === 'never graded') {
-            return;
-        } else if (last_state_string === 'no starter file') {
+        } else if (last_state_string === 'never graded' ||
+            last_state_string === 'no starter file') {
             return;
         } else {
             var last_state = JSON.parse(last_state_string);
