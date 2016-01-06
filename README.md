@@ -2,6 +2,14 @@
 
 An extension to Snap<em>!</em> which enables client-side autograding.
 
+## Cloning __README__
+Clone with `git clone --recursive` to download the snap source as a submodule.
+
+If you've already cloned without `--recursive` do:
+
+* `git submodule init`
+* `git submodule update`
+
 ## Architecture Overview
 
 Files List:
@@ -34,3 +42,28 @@ Files List:
         * Used for communication with edX via iframes
     * underscore-min.js
         * used once in scriptAnalysis.js
+
+## Writing Tests
+This is the recommended approach:
+
+* Start a local host server, such as:
+	* `cd` into this directory.
+	* `python -m SimpleHttpServer` or `python3 -m http.server`
+	* Navigate to [http://localhost:8000/](http://localhost:8000/)
+* Use the file: `local-snap-ag.html`
+* Set `#test_file=path` in the URL.
+	* For example:  [`http://localhost:8000/snap_autograder/local-snap-ag.html#test_file=mooc3/week1_gps.js`](http://localhost:8000/snap_autograder/local-snap-ag.html#test_file=mooc3/week1_gps.js)
+* If you have a starter XML file, it must be in the same directory as `test_file`
+	* Example: In the above case you have `week1_gps.js` in the `mooc3/` folder and a starter file `W1_L1_Starter_GPS_Scraping.xml` also in `mooc3/`
+	* NOTE: When referring to the path to the starter file, don't write the directory in your test file.
+
+## edX Setup
+
+* Upload `snap/` which is an exact copy of the Snap<em>!</em> repo, and `lib/`
+	* Export a tar file from studio.edx, and uncompress it
+	* then add `snap/` to the `static/` folder
+	* add `lib/` to `static/`
+	* Recompress the course folder and use edX's import tool.
+* Upload all the files in `ag-files` to edX, but not in a subfolder.
+* Upload `edx-snap-ag.html` but not in a subfolder.
+* Upload a `*.js` file for each problem

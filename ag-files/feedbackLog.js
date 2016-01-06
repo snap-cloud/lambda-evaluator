@@ -206,11 +206,16 @@ FeedbackLog.prototype.startSnapTest = function(test) {
         // Initiate the Snap Process with a callback to .finishSnapTest
         var stage = this.snapWorld.children[0].stage;
         var fb_log = this;    // to use in anonymous function
-        var proc = stage.threads.startProcess(block,
+        var proc = stage.threads.startProcess(
+            block,
             stage.isThreadSafe,
             false,
             function() {
-                fb_log.finishSnapTest(test, readValue(proc));
+                try {
+                    fb_log.finishSnapTest(test, readValue(proc));
+                } catch (e) {
+                    console.log(e);
+                }
             }
         );
         // Add reference to proc in gradingLog for error handling
@@ -250,7 +255,6 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
     if (output == undefined) {
         test.output = null;
     } else {
-        // TODO: We probably shouldn't do this...
         // If the output is a list, reformat it for comparision
         if (output instanceof List) {
             test.output = arrayFormattedString(
@@ -265,116 +269,13 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
         }
     }
     
-    // TODO: Extract and Document this code!
-    // Addison's Code Here
-    SyntaxElementMorph.prototype.returnBubble = function (value, exportPic) {
-        var bubble,
-            txt,
-            img,
-            morphToShow,
-            isClickable = false,
-            sf = this.parentThatIsA(ScrollFrameMorph),
-            wrrld = this.world();
-
-        if ((value === undefined) || !wrrld) {
-            return null;
-        }
-        if (value instanceof ListWatcherMorph) {
-            morphToShow = value;
-            morphToShow.update(true);
-            morphToShow.step = value.update;
-            morphToShow.isDraggable = false;
-            isClickable = true;
-        } else if (value instanceof Morph) {
-            img = value.fullImage();
-            morphToShow = new Morph();
-            morphToShow.silentSetWidth(img.width);
-            morphToShow.silentSetHeight(img.height);
-            morphToShow.image = img;
-        } else if (value instanceof Costume) {
-            img = value.thumbnail(new Point(40, 40));
-            morphToShow = new Morph();
-            morphToShow.silentSetWidth(img.width);
-            morphToShow.silentSetHeight(img.height);
-            morphToShow.image = img;
-        } else if (value instanceof Context) {
-            img = value.image();
-            morphToShow = new Morph();
-            morphToShow.silentSetWidth(img.width);
-            morphToShow.silentSetHeight(img.height);
-            morphToShow.image = img;
-        } else if (typeof value === 'boolean') {
-            morphToShow = SpriteMorph.prototype.booleanMorph.call(
-                null,
-                value
-            );
-        } else if (isString(value)) {
-            txt  = value.length > 500 ? value.slice(0, 500) + '...' : value;
-            morphToShow = new TextMorph(
-                txt,
-                this.fontSize
-            );
-        } else if (value === null) {
-            morphToShow = new TextMorph(
-                '',
-                this.fontSize
-            );
-        } else if (value === 0) {
-            morphToShow = new TextMorph(
-                '0',
-                this.fontSize
-            );
-        } else if (value.toString) {
-            morphToShow = new TextMorph(
-                value.toString(),
-                this.fontSize
-            );
-        }
-        bubble = new SpeechBubbleMorph(
-            morphToShow,
-            null,
-            Math.max(this.rounding - 2, 6),
-            0
-        );
-        bubble.popUp(
-            wrrld,
-            this.rightCenter().add(new Point(2, 0)),
-            isClickable
-        );
-        if (exportPic) {
-            return this.returnPictureWithResult(bubble);
-        }
-        if (sf) {
-            bubble.keepWithin(sf);
-        }
-    };
-
-    SyntaxElementMorph.prototype.returnPictureWithResult = function (aBubble) {
-        var scr = this.fullImage(),
-            bub = aBubble.fullImageClassic(),
-            taller = Math.max(0, bub.height - scr.height),
-            pic = newCanvas(new Point(
-                scr.width + bub.width + 2,
-                scr.height + taller
-            )),
-            ctx = pic.getContext('2d');
-        ctx.drawImage(scr, 0, pic.height - scr.height);
-        ctx.drawImage(bub, scr.width + 2, 0);
-        return pic
-    };
     try {
         var myscript = getScript(test.blockSpec);
-        var pic = myscript.returnBubble(output, true);
-        console.log(pic);
-        test.picture = pic;
+        test.picture = myscript.returnResultBubble(output);
     } catch (e) {
-        console.log(e);
+        console.log('Error Generating Script Pic: ', e);
+        test.picture = null;
     }
-    /*var myscript = getScript(test.blockSpec);
-    var pic = myscript.returnBubble(output, true);
-    console.log(pic);
-    test.picture = pic;*/
-    // End of Addison's Section
 
     var expOut = test.expOut;
     if (expOut instanceof Function) {
@@ -388,6 +289,7 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
         }
         test.correct = snapEquals(output, expOut);
     }
+
     // Set feedback based on test.correct value
     if (test.correct) {
         test.feedback = test.feedback || "Test Passed.";
@@ -402,23 +304,25 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
     clearTimeout(this.currentTimeout);
     test.proc = null;
     // Clear the input values
-
     try {
         if (test.isolated) {
+            var thisSprite, ide;
             test.sprite.remove();
             test.sprite = null;
-            var focus = this.snapWorld.children[0].sprites.contents[0];
-            this.snapWorld.children[0].selectSprite(focus);
+            ide = this.snapWorld.children[0];
+            thisSprite = ide.sprites.contents[0];
+            ide.selectSprite(thisSprite);
         } else {
             var block = getScript(test.blockSpec);
-            setValues(block, Array(test['input'].length).join('a').split('a'));
+            setValues(block, Array(test.input.length).join('a').split('a'));
         }
     } catch(e) {
-        throw "gradingLog.finishSnapTest: Trying to clear values of block that does not exist.";
+        console.log(e);
+        console.log("FeedbackLog.finishSnapTest: Trying to clear values of block that does not exist.");
+        return;
     }
     // Launch the next test if it exists, scoreLog otherwise.
     this.runNextTest(test);
-
 };
 
 FeedbackLog.prototype.runNextTest = function(test) {
