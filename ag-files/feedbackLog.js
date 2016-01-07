@@ -839,41 +839,6 @@ function toNativeArray(list) {
     });
 }
 
-/** Give a nice visual display to a list, including showing nesting.
- *  The Default is for a console, but you can supply HTML strings for parameters
- *
- *  OPTIONS Defaults:
- *    {
- *        separator: ',',
- *        indent: '\t',
- *        newline: '\n',
- *        start: '[',
- *        end: ']'
- *    }
- *  For example [1, 2, 3] becomes: '[\n\t1,\n\t2,\n\t3\n]'
- *  Use `console.log` to see the output.
- *  @param {array} items - the array to format as a nice string
- *  @param {object} options - control paramters for separating elements
- */
-function arrayFormattedString(items, options) {
-    if (items.constructor !== Array) {
-        return items;
-    }
-    var separator, indent, newline, start, end, content;
-    
-    separator = options.separator || ',';
-    indent = options.indent || '\t';
-    newline = (options.newline || '\n') + indent;
-    start = options.start || '[';
-    end = options.end || ']';
-    
-    content = items.map(function (item) {
-        return arrayFormattedString(item, options);
-    });
-    return start + newline + content.join(separator + newline) +
-        newline.replace(indent, '') + end; // replace(): un-indent 1 level.
-}
-
 /**************** Testing the Feedback Log ************/
 // Create a new feedbackLog
 
