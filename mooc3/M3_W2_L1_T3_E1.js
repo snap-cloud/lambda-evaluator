@@ -1,4 +1,4 @@
-var starter_path = 'spam-ham-starter.xml';
+var starter_path = 'spam-ham-starter_M3_W2_L1_T3_E1.xml';
 // The id is to act as a course identifier.
 // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
 var courseID = "BJC.3x";  // e.g. "BJCx"
@@ -44,7 +44,7 @@ function AGTest(outputLog) {
         'Your block should return the average length of a message in a given list of messages.',
         'Great job! Your block reports the average length of a message in a given list of messages.'
     );
-    var inputWords_1_2 = ['hey how goes it', 'did you have a good day?', 'what is your favorite color!'];
+    var inputWords_1_2 = [['hey how goes it', 'did you have a good day?', 'what is your favorite color!']];
     tip_1_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
         inputWords_1_2,        // input
@@ -67,7 +67,7 @@ function AGTest(outputLog) {
         1 // points
     );
 
-    var inputWords_1_2_0 = ['hi there', 'trees!'];
+    var inputWords_1_2_0 = [['hi there', 'trees!']];
     tip_1_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
         inputWords_1_2_0,        // input
@@ -90,7 +90,7 @@ function AGTest(outputLog) {
         1 // points
     );
 
-    var inputWords_1_2_1 = ['the', 'trees!', 'are', 'waves', '.com'];
+    var inputWords_1_2_1 = [['the', 'trees!', 'are', 'waves', '.com']];
     tip_1_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
         inputWords_1_2_1,        // input
