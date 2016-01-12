@@ -97,7 +97,7 @@
             <!-- // <script src='feedbackLog.js'></script> -->
             <script src="ag-ui/AG_EDX.js"></script>
             <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
-            <script src="lib/bootstrap/js/bootstrap.js.css"></script>
+            <script src="lib/bootstrap/js/bootstrap.min.js"></script>
         </head>
         <body style="margin: 0;">
             <div class="header">
@@ -105,12 +105,14 @@
             </div>
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-4">
-                        Left Result Column
-                    </div>
-                    <div class="col-md-8" style="border:2px solid black">
+                    <div class="col-md-6">
                         <div class="problem-content">
                             Problem Content
+                        </div>
+                    </div>
+                    <div class="col-md-6" style="border:2px solid black">
+                        <div class="ag-bar">
+                            AG Stuff Here...eventually.
                         </div>
                         <div class="snap-content">
                             <canvas id="world" tabindex="1"></canvas>
@@ -120,7 +122,7 @@
             </div>
 
             <!-- Snap Autograding Button -->
-            <div id="autograding_bar">
+            <div id="autograding_bar is-hidden">
                 <div tabindex="0" class="onclick-menu" id='onclick-menu' style="display:inline-block">
                     <span title="Menu">&#9776;</span>
                     <div class='hover_darken'></div>
@@ -162,7 +164,7 @@
                 <p class="help-text" id="ag-button-help">Clicking this button will grade your current attempt and send the results to edX.</p>
             </div>
 
-            <div style="display:inline-block" class="view-results" id="circle" onclick="openResults();">
+            <div style="display:inline-block" class="view-results is-hidden" id="circle" onclick="openResults();">
                 Results
             </div>
             <div class="overlay is-hidden" id="ag-output">

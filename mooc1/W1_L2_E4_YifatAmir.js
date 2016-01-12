@@ -90,11 +90,11 @@
 
     /******** Saving the FeedbackLog ***********/
     FeedbackLog.prototype.saveLog = function() {
-    //Save current state as 'last attempt'
+   // Save current state as 'last attempt'
     var log_string = this.toString();
     sessionStorage.setItem(this.taskID + '_test_log', log_string);
-    //Find previous 'best attempt', compare with current, if better, overwrite
-    //Note: Holy Jesus. This predicate is rediculous. Brain hurts...
+   // Find previous 'best attempt', compare with current, if better, overwrite
+   // Note: Holy Jesus. This predicate is rediculous. Brain hurts...
     var c_prev_log = JSON.parse(sessionStorage.getItem(this.taskID + "_c_test_log"));
     if (this.allCorrect || 
     ((this.pScore > 0) && 
@@ -123,7 +123,7 @@
     /************* Running the Feedback Log *************/
 
     FeedbackLog.prototype.runSnapTests = function() {
-    //IE sucks: Can't use for...of until IE supports it.
+   // IE sucks: Can't use for...of until IE supports it.
     // Iterate over each chunk
     var chunk;
     var tip;
@@ -148,7 +148,7 @@
     }
     return false;
     };
-    //NOTE: This function must now pass in a test.
+   // NOTE: This function must now pass in a test.
     FeedbackLog.prototype.startSnapTest = function(test) {
     if (!test || !this.findTest(test)) {
     throw 'FeedbackLog.startSnapTest: Test not found';
@@ -156,19 +156,19 @@
     throw 'FeedbackLog.startSnapTest: Test is wrong type';
     }
     try {
-    //Retrieve the block from the stage
+   // Retrieve the block from the stage
     var block = null;
     if (test.isolated) {
-        //TODO: Fix setUpIsolatedTest to remove testID
+       // TODO: Fix setUpIsolatedTest to remove testID
         block = setUpIsolatedTest(test.blockSpec, this, test)
     } else {
         block = getScript(test.blockSpec);
     }
-    //Set the selected block's inputs for the test
+   // Set the selected block's inputs for the test
     setValues(block, test.input);
-    //Initiate the Snap Process with a callback to .finishSnapTest
+   // Initiate the Snap Process with a callback to .finishSnapTest
     var stage = this.snapWorld.children[0].stage;
-    var fb_log = this;  //to use in anonymous function
+    var fb_log = this; // to use in anonymous function
     var proc = stage.threads.startProcess(block,
         stage.isThreadSafe,
         false,
@@ -176,14 +176,14 @@
             fb_log.finishSnapTest(test, readValue(proc));
         }
     );
-    //Add reference to proc in gradingLog for error handling
+   // Add reference to proc in gradingLog for error handling
     test.proc = proc;
-    //Timeouts for infinitely looping script or an Error.
+   // Timeouts for infinitely looping script or an Error.
     var timeout = test.timeOut;
     if (timeout < 0) {
-        timeout = 1000; //Set default if -1
+        timeout = 1000;// Set default if -1
     }
-    //Launch timeout to handle Snap errors and infinitely looping scripts
+   // Launch timeout to handle Snap errors and infinitely looping scripts
     var timeout_id = setTimeout(function() {
         var stage = fb_log.snapWorld.children[0].stage;
         if (test.proc.errorFlag) {
@@ -197,12 +197,12 @@
     this.currentTimeout = timeout_id;
     return this;
     } catch(e) {
-    //If an error is throw, fill out the test info, and find the next test
+   // If an error is throw, fill out the test info, and find the next test
     test.feedback = e;
     test.correct = false;
     test.graded = true;
     test.proc = null;
-    //Find the next test and run it.
+   // Find the next test and run it.
     runNextTest(test);
 
     }
@@ -223,7 +223,7 @@
     }
     var expOut = test.expOut;
     if (expOut instanceof Function) {
-    //NOTE: This may not work if output is of 'bad' type
+   // NOTE: This may not work if output is of 'bad' type
     test.correct = expOut(output);
     } else {
     if (expOut instanceof Array) {
@@ -237,9 +237,9 @@
     } else {
     test.feedback = test.feedback || "Unexpected Output: " + String(output);
     }
-    //Set test graded flag to true, for gradingLog.gradeLog()
+   // Set test graded flag to true, for gradingLog.gradeLog()
     test.graded = true;
-    //Kill error handling timeout
+   // Kill error handling timeout
     clearTimeout(this.currentTimeout);
     test.proc = null;
     // Clear the input values
@@ -275,23 +275,23 @@
     }
     // if it exists, launch it with a timeout
     };
-    //NOTE: May have an error if a tip has no test.
+   // NOTE: May have an error if a tip has no test.
     FeedbackLog.prototype.nextTest = function(test) {
     var this_tip = this.tipOf(test);
     // Find the position of the test in the tip_list
     var test_index = this_tip.test_list.indexOf(test);
     // Find the next reporter test in the list and run it
-    if ((this_tip.test_list.length - test_index) > 1) { //not last test
+    if ((this_tip.test_list.length - test_index) > 1) {// not last test
     return this_tip.test_list[test_index + 1];
     }
     // If it is the last test in the tip, find the next tip
     var this_chunk = this.chunkOf(this_tip);
     var tip_index = this_chunk.tip_list.indexOf(this_tip);
-    if ((this_chunk.tip_list.length - tip_index) > 1) { //not last tip
+    if ((this_chunk.tip_list.length - tip_index) > 1) {// not last tip
 
     var next_tip = this_chunk.tip_list[tip_index + 1];
 
-    if (next_tip.test_list.length > 0) { //only if next_tip has tests
+    if (next_tip.test_list.length > 0) {// only if next_tip has tests
         return next_tip.test_list[0];
     }
     }
@@ -317,7 +317,7 @@
     return this.chunk_list[0].tip_list[0].test_list[0];
     }
     };
-    //NOTE: This is depricated. 
+   // NOTE: This is depricated. 
     FeedbackLog.prototype.updateTest = function(testID, output, feedback, correct) {
     throw 'FeedbackLog.updateTest: This function is DEPRICATED.'
     };
@@ -333,7 +333,7 @@
         console.log('FeedbackLog.scoreLog: The log is not yet complete');
         return this;
     }
-    //Continue to the next test otherwise
+   // Continue to the next test otherwise
     test = this.nextTest(test);
     }
 
@@ -361,7 +361,7 @@
         tip.graded = true;
         chunk.numCorrect += tip.numCorrect;
         chunk.points += tip.points;
-        chunk.allCorrect &= tip.allCorrect //like '+='' but with booleans
+        chunk.allCorrect &= tip.allCorrect// like '+='' but with booleans
     }
     chunk.graded = true;
     this.numCorrect += chunk.numCorrect;
@@ -371,12 +371,12 @@
     // Calculate percentage score (for edX partial credit)
     this.pScore = this.points / this.totalPoints;
     this.graded = true;
-    this.numAttempts += 1; //increment the number of attempts when grading succeeds.
+    this.numAttempts += 1;// increment the number of attempts when grading succeeds.
     // save the log 
     this.saveLog();
     // Update the Autograder Status Bar
     /**********/
-    //TODO: UNCOMMENT AGFinish
+   // TODO: UNCOMMENT AGFinish
     /**********/
     try {
     AGFinish(this);
@@ -388,7 +388,7 @@
 
     /************** Formatting the Feedback Log *****************/
 
-    //NOTE: May not longer be necessary
+   // NOTE: May not longer be necessary
     FeedbackLog.prototype.toDict = function() {
     throw 'FeedbackLog.toDict: This function is DEPRICATED.'
     // body...
@@ -397,9 +397,9 @@
     FeedbackLog.prototype.toString = function() {
     var world_ref = this.snapWorld;
     this.SnapWorld = null;
-    //Stringify the object with additional function to prevent cycles
-    //Note: Borrowed from stack overflow
-    //http://stackoverflow.com/questions/9382167/serializing-object-that-contains-cyclic-object-value
+   // Stringify the object with additional function to prevent cycles
+   // Note: Borrowed from stack overflow
+   // http://stackoverflow.com/questions/9382167/serializing-object-that-contains-cyclic-object-value
     seen = [];
     var log_string = JSON.stringify(this, function(key, val) {
     if (val != null && typeof val == "object") {
@@ -547,9 +547,9 @@
     /****************************************************************************/
     /******************* Additional Functions *******************/
 
-    //David's code for checking an array for inner arrays
-    //then converting them to snap lists
-    //a - the JS Array you want to check for inner Arrays
+   // David's code for checking an array for inner arrays
+   // then converting them to snap lists
+   // a - the JS Array you want to check for inner Arrays
     // PROBABLY USELES AT THE MOMENT
     function checkArrayForList(a) {
     for (var i = 0; i < a.length; i++) {
@@ -559,8 +559,8 @@
     }
     }
 
-    //David added in a way to populate a list in the
-    //set values. Does not yet work for variables!
+   // David added in a way to populate a list in the
+   // set values. Does not yet work for variables!
     function setValues(block, values) {
     if (!(values instanceof Array)) {
     values = [values];
@@ -590,7 +590,7 @@
     morphIndex++;
     }
     if (valIndex + 1 !== values.length) {
-    //TODO: THROW ERROR FOR INVALID BLOCK DEFINITION
+   // TODO: THROW ERROR FOR INVALID BLOCK DEFINITION
     }
     }
 
