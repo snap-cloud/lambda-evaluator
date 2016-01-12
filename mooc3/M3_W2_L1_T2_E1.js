@@ -42,14 +42,12 @@ function AGTest(outputLog) {
 
     // var containsLoopOrHOF_1 = function () {
     //     return customBlockContains(blockName, "repeat %n %c") ||
-    //         customBlockContains(blockName, "for %upvar = %n to %n %cs") 
-    //         ||
-    //         // customBlockContains(blockName, "repeat until %b %c") ||
-    //         // customBlockContains(blockName, "for each %upvar of %l %cs") ||
-    //         // customBlockContains(blockName, "keep items such that % from %") ||
-    //         // customBlockContains(blockName, "combine with % items of %") ||
-    //         customBlockContains(blockName, "map % over %")
-    //         ;
+    //         customBlockContains(blockName, "for %upvar = %n to %n %cs") ||
+    //         customBlockContains(blockName, "repeat until %b %c") ||
+    //         customBlockContains(blockName, "for each %upvar of %l %cs") ||
+    //         customBlockContains(blockName, "keep items such that % from %") ||
+    //         customBlockContains(blockName, "combine with % items of %") ||
+    //         customBlockContains(blockName, "map % over %");
     // }
 
     // var tip_1_2 = chunk_1.newTip(
@@ -62,35 +60,34 @@ function AGTest(outputLog) {
     //     "Testing if the '" + blockName + "' block uses a loop or a higher order function in its body.",
     //     "The '" + blockName + "' block uses a loop or a higher order function in its body.",
     //     "Make sure your block uses a loop or a higher order function in its body.",
-    //     1
+    //     1);
+
+    // var tip_1_3 = chunk_1.newTip(
+    //     'Your block should output the correct number of HAM or SPAM messages in the datasheet.',
+    //     'Great job! Your block outputs the correct number of HAM or SPAM messages in the datasheet.'
     // );
-
-    var tip_1_3 = chunk_1.newTip(
-        'Your block should output the correct number of HAM or SPAM messages in the datasheet.',
-        'Great job! Your block outputs the correct number of HAM or SPAM messages in the datasheet.'
-    );
     
-    tip_1_3.newIOTest('r',  // testClass
-        blockName,          // blockSpec
-        ["HAM", [["HAM", "Hey how are you"], ["SPAM", "Alaska Airlines Flight VR8 500"], ["HAM", "See you soon!"]]],        // input
-        // function (output) {
-        //     // Output should be a number.
-        //     var expectedCount, count;
+    // tip_1_3.newIOTest('r',  // testClass
+    //     blockName,          // blockSpec
+    //     ["HAM", [["HAM", "Hey how are you"], ["SPAM", "Alaska Airlines Flight VR8 500"], ["HAM", "See you soon!"]]],        // input
+    //     // function (output) {
+    //     //     // Output should be a number.
+    //     //     var expectedCount, count;
 
-        //     expectedCount = 2;
-        //     count = output;
-        //     if (expectedCount !== count) {
-        //         tip_1_3.suggestion = 'The number of HAM messages should be ' + expectedCount + ";";
-        //         tip_1_3.suggestion += ' but was ' + count + '.';
-        //         return false;
-        //     }
-        //     return true;
-        // },
-        2, //expected output
-        1000, // 1 second time out.
-        true, // is isolated
-        1 // points
-    );
+    //     //     expectedCount = 2;
+    //     //     count = output;
+    //     //     if (expectedCount !== count) {
+    //     //         tip_1_3.suggestion = 'The number of HAM messages should be ' + expectedCount + ";";
+    //     //         tip_1_3.suggestion += ' but was ' + count + '.';
+    //     //         return false;
+    //     //     }
+    //     //     return true;
+    //     // },
+    //     2, //expected output
+    //     1000, // 1 second time out.
+    //     true, // is isolated
+    //     1 // points
+    // );
 
     return fb;
 }

@@ -27,8 +27,8 @@ def process_ag_response(e, ans):
     #if answer["feedback"]["pScore"] == 1:
         #state = True
     #return {'input_list': [{ 'ok': state, 'msg': '', 'grade_decimal': answer["feedback"]["pScore"]}]}
-    #return {'input_list': [{ 'ok': True, 'msg': ''}]}
-    return answer["checkState"]
+    return {'input_list': [{ 'ok': True, 'msg': ''}]}
+    #return answer["checkState"]
 
 def feedback_print(feedback):
     output = ""

@@ -85,6 +85,7 @@ var AG_EDX = (function() {
             $.get(
                 starter_path,
                 function(data) {
+                    console.log("inside get function");
                     sessionStorage.setItem(id + "starter_file", data)
                 },
                 "text"
@@ -108,7 +109,6 @@ var AG_EDX = (function() {
             console.log("submitted...");
         }
     }
-    
     return {
         getState: getState,
         setState: setState,

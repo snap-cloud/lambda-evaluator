@@ -5,21 +5,21 @@
         <title>Snap! Build Your Own Blocks</title>
 
         <!-- Snap JS Files-->
-        <script src="snap_FileSaver.min.js"></script>
-        <script src="snap_morphic.js"></script>
-        <script src="snap_widgets.js"></script>
-        <script src="snap_blocks.js"></script>
-        <script src="snap_threads.js"></script>
-        <script src="snap_objects.js"></script>
-        <script src="snap_gui.js"></script>
-        <script src="snap_paint.js"></script>
-        <script src="snap_lists.js"></script>
-        <script src="snap_byob.js"></script>
-        <script src="snap_xml.js"></script>
-        <script src="snap_store.js"></script>
-        <script src="snap_locale.js"></script>
-        <script src="snap_cloud.js"></script>
-        <script src="snap_sha512.js"></script>
+        <script src="FileSaver.min.js"></script>
+        <script src="morphic.js"></script>
+        <script src="widgets.js"></script>
+        <script src="blocks.js"></script>
+        <script src="threads.js"></script>
+        <script src="objects.js"></script>
+        <script src="gui.js"></script>
+        <script src="paint.js"></script>
+        <script src="lists.js"></script>
+        <script src="byob.js"></script>
+        <script src="xml.js"></script>
+        <script src="store.js"></script>
+        <script src="locale.js"></script>
+        <script src="cloud.js"></script>
+        <script src="sha512.js"></script>
 
         <!-- AG Snap Modifications -->
         <script src="snap-edx-overrides.js"></script>
@@ -27,9 +27,9 @@
         <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
         <link rel="stylesheet" type="text/css" href="hintstyle.css" />
         <!-- Autograder + edX Utilties -->
-        <script src="lib_jschannel.js"></script>
-        <script src="lib_jquery-1.11.3.min.js"></script>
-        <script src="lib_underscore-min.js"></script>
+        <script src="jschannel.js"></script>
+        <script src="jquery-1.11.3.min.js"></script>
+        <script src="underscore-min.js"></script>
         
         <!-- Main autograder components -->
         <script src='ag-util.js'></script>
@@ -40,7 +40,8 @@
         <script src="AGFormatting.js"></script>
         <script src="AG_EDX.js"></script>
         <!-- Load snap + AG additions, similar to snap.html -->
-        <script>
+        <script id="snap_ag">
+        loadTestJS();
         var world, world_canvas;
         window.onload = function () {
             var ide, grade_button;
@@ -61,7 +62,7 @@
             grade_button.addEventListener('click', button_listener);
             world_canvas.addEventListener("mouseup", update_listener);
             // Load a remote specified file that contains the AG test
-            loadTestJS();
+            //loadTestJS();
         };
 
         function loop() {
@@ -74,11 +75,19 @@
               problem_js = query.test_file,
               tag = document.createElement('script');
           if (problem_js) {
-            tag.src = problem_js;
+            /*tag.src = problem_js;
             tag.onload = function () {
               initializeSnapAdditions(world, id);
             };
-            document.head.appendChild(tag);
+            //document.head.appendChild(tag);
+            var ref = document.getElementById("snap_ag");
+            document.head.insertBefore(tag, ref);*/
+            $.getScript(
+              problem_js,
+              function(data) {
+                initializeSnapAdditions(world, id);
+              }
+            );
           }
         }
         </script>
