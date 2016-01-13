@@ -1,0 +1,113 @@
+<problem>
+  <link rel="stylesheet" type="text/css" href="/static/hintstyle.css" />
+  <script type="loncapa/python">
+
+import json
+import urllib
+def vglcfn(e, ans):
+    par = json.loads(ans)
+    log = urllib.unquote(par['answer']).decode('utf8')
+    answer = json.loads(log)
+    state = False
+    if answer["feedback"]["pScore"] == 1:
+        state = True
+    return {'input_list': [{ 'ok': state, 'msg': '', 'grade_decimal': answer["feedback"]["pScore"]}]}
+    #return answer["checkState"]
+
+def feedback_print(feedback):
+    output = ""
+    for test in feedback:
+        test_string = "[Test " + test + "] "
+        current_test = feedback[test]
+        for key in current_test:
+            #test_string += key + ": " + str(current_test[key]) + " ;"
+            a = 1
+        output += test_string[0:-1] + " "
+    return output
+def hint_fn(answer_ids, student_answers, new_cmap, old_cmap):
+    aid = answer_ids[0]
+    grade = json.loads(student_answers[aid])
+    #ans = json.loads(grade["answer"])
+    log = urllib.unquote(grade['answer']).decode('utf8')
+    ans = json.loads(log)
+    log = ans["feedback"]
+    hint = str(log)
+    comment = str(ans["comment"])
+    
+    output = ""
+    norep_output = ""
+    rep_output = ""
+    if comment != "Please run the Snap! Autograder to view feedback.":
+        headings = """rowstart headstart Test headend headstart Points headend headstart Feedback headend rowend"""
+        repheadings = """rowstart headstart Test headend headstart Points headend headstart Block headend headstart Input headend headstart Output headend headstart Expected headend headstart Feedback headend rowend"""
+        numtests = log['testCount']
+        numpoints = log['totalPoints']
+        numcorrect = 0
+        noreptests = 1
+        reptests = 1
+        for i in range(1, numtests + 1):
+            test = str(i)
+            test_string = ""
+            #test_string = "teststart" + test + "dataend"
+            current_test = log[test]
+            if str(current_test["testClass"]) == "r":
+                test_string += "teststart" + str(reptests) + "dataend"
+                for key in ["pointValue", "blockSpec", "input", "output", "expOut"]:
+                    if reptests % 2 == 0:
+                        test_string += "evenstart" + str(current_test[key]) + "dataend"
+                    else:
+                        test_string += "datastart" + str(current_test[key]) + "dataend"
+                reptests += 1
+            if str(current_test["testClass"]) != "r":
+                test_string += "teststart" + str(noreptests) + "dataend"
+                if noreptests % 2 == 0:
+                    test_string += "evenstart" + str(current_test["pointValue"]) + "dataend"
+                else: 
+                    test_string += "datastart" + str(current_test["pointValue"]) + "dataend"
+                noreptests += 1
+            if str(current_test["correct"]) == "True":
+                test_string += "correctstart" + str(current_test["feedback"]) + "dataend"
+                numcorrect += current_test["pointValue"]
+            else:
+                test_string += "wrongstart" + str(current_test["feedback"]) + "dataend"
+            if str(current_test["testClass"]) == "r":
+                rep_output += "rowstart" + test_string[:] + "rowend"
+            else:
+                norep_output += "rowstart" + test_string[:] + "rowend"
+        output = " ({0}/{1})".format(numcorrect, numpoints)
+        if (log['showFeedback']):
+            output += """linebreak collapsedivstart
+                    tablestart""" + \
+                        headings + norep_output + \
+                    "tableend"
+            if (reptests > 1):
+                output += "tablestart" + \
+                        repheadings + rep_output + \
+                    """tableend collapsedivend"""
+        new_cmap.set_hint_and_mode(aid,ans['comment']+ " " + output,'always')
+    else:
+        new_cmap.set_hint_and_mode(aid,ans['comment']+ " " + output,'always')
+
+
+  
+  
+  </script>
+  
+  <p>
+    Create the factorial block! &#9;
+<img src="/static/AG_D1_T1_sample.png" width="150px"/>
+  </p>
+<p>
+  Factorial is a naturally recursive function:<br/>
+  4! = 24<br/>
+  5! = 120<br/>
+  5! = 5 * 4!<br/>
+</p>
+<p style="color: red" id="pre_req">
+  </p>
+
+  <customresponse cfn="vglcfn">
+    <jsinput gradefn="AG_EDX.getGrade" get_statefn="AG_EDX.getState" set_statefn="AG_EDX.setState" initial_state="starter file" width="100%" height="500" html_file="/static/AG_D1_T1.html" sop="false"/>
+    <hintgroup hintfn="hint_fn"/>
+  </customresponse>
+</problem>

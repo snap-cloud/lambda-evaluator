@@ -30,7 +30,7 @@
         <script src="jschannel.js"></script>
         <script src="jquery-1.11.3.min.js"></script>
         <script src="underscore-min.js"></script>
-        
+
         <!-- Main autograder components -->
         <script src='ag-util.js'></script>
         <script src='spriteEventLog.js'></script>
@@ -40,7 +40,8 @@
         <script src="AGFormatting.js"></script>
         <script src="AG_EDX.js"></script>
         <!-- Load snap + AG additions, similar to snap.html -->
-        <script>
+        <script id="snap_ag">
+        loadTestJS();
         var world, world_canvas;
         window.onload = function () {
             var ide, grade_button;
@@ -52,7 +53,7 @@
             ide.openIn(world);
             // Start Snap Environment Loop
             loop();
-            
+
             // AUTOGRADER ADDITIONS:
             // Set Snap! to small stage mode
             ide.toggleStageSize(true);
@@ -61,7 +62,7 @@
             grade_button.addEventListener('click', button_listener);
             world_canvas.addEventListener("mouseup", update_listener);
             // Load a remote specified file that contains the AG test
-            loadTestJS();
+            //loadTestJS();
         };
 
         function loop() {
@@ -74,11 +75,19 @@
               problem_js = query.test_file,
               tag = document.createElement('script');
           if (problem_js) {
-            tag.src = problem_js;
+            /*tag.src = problem_js;
             tag.onload = function () {
               initializeSnapAdditions(world, id);
             };
-            document.head.appendChild(tag);
+            //document.head.appendChild(tag);
+            var ref = document.getElementById("snap_ag");
+            document.head.insertBefore(tag, ref);*/
+            $.getScript(
+              problem_js,
+              function(data) {
+                initializeSnapAdditions(world, id);
+              }
+            );
           }
         }
         </script>
