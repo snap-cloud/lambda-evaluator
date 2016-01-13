@@ -5,6 +5,7 @@
         <title>Snap! Build Your Own Blocks</title>
 
         <!-- Snap JS Files-->
+        <!-- TODO: Prepend snap_ to these URLS -->
         <script src="FileSaver.min.js"></script>
         <script src="morphic.js"></script>
         <script src="widgets.js"></script>
@@ -23,13 +24,14 @@
 
         <!-- AG Snap Modifications -->
         <script src="snap-edx-overrides.js"></script>
+        <script src="snap-ui-overrides.js"></script>
         <!-- Autograder custom display -->
         <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
         <link rel="stylesheet" type="text/css" href="hintstyle.css" />
         <!-- Autograder + edX Utilties -->
-        <script src="jschannel.js"></script>
-        <script src="jquery-1.11.3.min.js"></script>
-        <script src="underscore-min.js"></script>
+        <script src="lib_jschannel.js"></script>
+        <script src="lib_jquery-1.11.3.min.js"></script>
+        <script src="lib_underscore-min.js"></script>
 
         <!-- Main autograder components -->
         <script src='ag-util.js'></script>
