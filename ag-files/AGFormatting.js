@@ -411,21 +411,21 @@ function initializeSnapAdditions(snapWorld, taskID) {
     // AUTOGRADER ADDITION - FEEDBACK FORMATTING
     // Checks if problem has been checked and modifies the autograded output if it has been checked
 
-    if (isEDX && parent.document.getElementsByClassName("message")[id_problem]) {
+    /*if (isEDX && parent.document.getElementsByClassName("message")[id_problem]) {
         var hint = parent.document.getElementsByClassName("message")[id_problem];
         hint.innerHTML = formatFeedback(hint);
         hint.style.display = "inline";
-    }
+    }*/
 
     // AUTOGRADER ADDITION
     // Check if Pre-requisite task has completed
-    var req_check = parent.document.getElementById("pre_req");
+    /*var req_check = parent.document.getElementById("pre_req");
     if (preReqTaskID !== null) {
         var preReqLog = JSON.parse(sessionStorage.getItem(preReqID + "_test_log"));
         if ((preReqLog === null || !preReqLog.allCorrect) && req_check) {
             req_check.innerHTML = "[WARNING: The previous task must be completed before continuing.]"
         }
-    }
+    }*/
 
     setTimeout(function() {
         // If page has already been loaded, restore previously tested XML
@@ -996,7 +996,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                                 thisTest.input,
                                 '</p>'
                             ].join('');
-                            if (thisTest.expOut.constructor !== Function) {
+                            if (typeof thisTest.expOut === "function") {
+                            //if (thisTest.expOut.constructor !== Function) {
                                 htmlString += [
                                     '<p class="data assertion">, returned the </p>',
                                     '<p class="data assertion bold">expected value: ',
