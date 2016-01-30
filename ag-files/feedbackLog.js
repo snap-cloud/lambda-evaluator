@@ -198,7 +198,6 @@ FeedbackLog.prototype.startSnapTest = function(test) {
             // TODO: Fix setUpIsolatedTest to remove testID
             block = setUpIsolatedTest(test.blockSpec, this, test)
         } else {
-            console.log("startsnaptest else");
             block = getScript(test.blockSpec);
         }
         // Set the selected block's inputs for the test
@@ -267,6 +266,12 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
         } else {
             test.output = output.toString();
         }
+
+        /*if (output instanceof List) {
+            test.output = output.asArray();
+        } else {
+            test.output = output;
+        }*/
     }
     
     try {
