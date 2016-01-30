@@ -27,8 +27,8 @@ def process_ag_response(e, ans):
     #if answer["feedback"]["pScore"] == 1:
         #state = True
     #return {'input_list': [{ 'ok': state, 'msg': '', 'grade_decimal': answer["feedback"]["pScore"]}]}
-    #return {'input_list': [{ 'ok': True, 'msg': ''}]}
-    return answer["checkState"]
+    return {'input_list': [{ 'ok': True, 'msg': ''}]}
+    #return answer["checkState"]
 
 def feedback_print(feedback):
     output = ""
@@ -50,16 +50,19 @@ def hint_fn(answer_ids, student_answers, new_cmap, old_cmap):
   </script>
   <p style="color: red" id="pre_req"></p>
 
-  <!-- EDIT ME: html_file='/static/YOUR_FILE.html' -->
+  <!--
+    EDIT ME: ?test_file='*.js'
+    DO NOT INCLUDE /static in the path
+    NOTE: The full URL is a current hack! 
+    -->
   <customresponse cfn="process_ag_response">
     <jsinput gradefn="AG_EDX.getGrade"
       get_statefn="AG_EDX.getState"
       set_statefn="AG_EDX.setState"
       initial_state="starter file"
       width="100%" height="600"
-      html_file="/static/edx-snap-ag.html#test_file=FILENAME.js"
+      html_file="https://courses.edx.org/c4x/BerkeleyX/BJC.3x/asset/edx-snap-ag.html#test_file=FILENAME.js"
       sop="false"/>
-
     <hintgroup hintfn="hint_fn"/>
   </customresponse>
 </problem>
