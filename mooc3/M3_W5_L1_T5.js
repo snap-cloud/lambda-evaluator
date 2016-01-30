@@ -158,13 +158,23 @@ function AGTest(outputLog) {
 
             expected1 = [1, 0, 1, 1, 0];
             expected2 = [0, 1, 1, 0, 1];
-            actual = output;
-            if (!actual.equalTo(expected1) && !actual.equalTo(expected2)) {
+
+            if (output instanceof List) {
+                actual = output.asArray();
+            } else {
+                actual = output;
+            }
+            //if (!actual.equalTo(expected1) && !actual.equalTo(expected2)) {
+            if (!_.isEqual(actual, expected1) && !_.isEqual(actual, expected2)) {
                 tip_2_2.suggestion = 'The output should be ' + expected1 + ' or ' + expected2 + ' ;';
                 tip_2_2.suggestion += ' but was ' + actual + '.';
                 return false;
+            } else if (_.isEqual(actual, expected1) || _.isEqual(actual, expected2)) {
+                return true;
+            } else {
+                return false;
             }
-            return true;
+            //return true;
         },
         4 * 1000, // 4 second time out.
         true, // is isolated
@@ -188,13 +198,21 @@ function AGTest(outputLog) {
 
             expected1 = [1, 0, 1, 1];
             expected2 = [1, 1, 0, 1];
-            actual = output;
-            if (!actual.equalTo(expected1) && !actual.equalTo(expected2)) {
-                tip_2_3.suggestion = 'The output should be ' + expected1 + ' or ' + expected2 + ';';
-                tip_2_3.suggestion += ' but was ' + actual + '.';
+            if (output instanceof List) {
+                actual = output.asArray();
+            } else {
+                actual = output;
+            }
+            
+            if (!_.isEqual(actual, expected1) && !_.isEqual(actual, expected2)) {
+                tip_2_2.suggestion = 'The output should be ' + expected1 + ' or ' + expected2 + ' ;';
+                tip_2_2.suggestion += ' but was ' + actual + '.';
+                return false;
+            } else if (_.isEqual(actual, expected1) || _.isEqual(actual, expected2)) {
+                return true;
+            } else {
                 return false;
             }
-            return true;
         },
         4 * 1000, // 4 second time out.
         true, // is isolated
@@ -242,8 +260,13 @@ function AGTest(outputLog) {
                 actual;
 
             expected = [3, 0, 5];
-            actual = output;
-            if (!actual.equalTo(expected)) {
+
+            if (output instanceof List) {
+                actual = output.asArray();
+            } else {
+                actual = output;
+            }
+            if (!_.isEqual(actual, expected)) {
                 tip_3_2.suggestion = 'The output should be ' + expected + ';';
                 tip_3_2.suggestion += ' but was ' + actual + '.';
                 return false;
@@ -270,8 +293,13 @@ function AGTest(outputLog) {
                 actual;
 
             expected = [3, 0, 22, 33, 0];
-            actual = output;
-            if (!actual.equalTo(expected)) {
+
+            if (output instanceof List) {
+                actual = output.asArray();
+            } else {
+                actual = output;
+            }
+            if (!_.isEqual(actual, expected)) {
                 tip_3_3.suggestion = 'The output should be ' + expected + ';';
                 tip_3_3.suggestion += ' but was ' + actual + '.';
                 return false;
@@ -321,8 +349,13 @@ function AGTest(outputLog) {
                 actual;
 
             expected = [-2, -3, 15, -10];
-            actual = output;
-            if (!actual.equalTo(expected)) {
+
+            if (output instanceof List) {
+                actual = output.asArray();
+            } else {
+                actual = output;
+            }
+            if (!_.isEqual(actual, expected)) {
                 tip_4_2.suggestion = 'The output should be ' + expected + ';';
                 tip_4_2.suggestion += ' but was ' + actual + '.';
                 return false;
@@ -349,8 +382,13 @@ function AGTest(outputLog) {
                 actual;
 
             expected = [];
-            actual = output;
-            if (!actual.equalTo(expected)) {
+
+            if (output instanceof List) {
+                actual = output.asArray();
+            } else {
+                actual = output;
+            }
+            if (!_.isEqual(actual, expected)) {
                 tip_4_3.suggestion = 'The output should be ' + expected + ';';
                 tip_4_3.suggestion += ' but was ' + actual + '.';
                 return false;
@@ -377,8 +415,13 @@ function AGTest(outputLog) {
                 actual;
 
             expected = [0];
-            actual = output;
-            if (!actual.equalTo(expected)) {
+
+            if (output instanceof List) {
+                actual = output.asArray();
+            } else {
+                actual = output;
+            }
+            if (!_.isEqual(actual, expected)) {
                 tip_4_4.suggestion = 'The output should be ' + expected + ';';
                 tip_4_4.suggestion += ' but was ' + actual + '.';
                 return false;
