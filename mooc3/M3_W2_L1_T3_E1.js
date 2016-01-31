@@ -1,4 +1,4 @@
-var starter_path = '/static/spam-ham-starter.xml';
+var starter_path = '/spam-ham-starter.xml';
 // The id is to act as a course identifier.
 // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
 var courseID = "BJC.3x";  // e.g. "BJCx"
