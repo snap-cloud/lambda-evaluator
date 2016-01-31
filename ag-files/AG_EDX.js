@@ -85,7 +85,6 @@ var AG_EDX = (function() {
             $.get(
                 starter_path,
                 function(data) {
-                    console.log("inside get function");
                     sessionStorage.setItem(id + "starter_file", data)
                 },
                 "text"
@@ -106,7 +105,6 @@ var AG_EDX = (function() {
                 );
                 sessionStorage.setItem(id + '_c_test_log', last_state.c_log);
             }
-            console.log("submitted...");
         }
     }
     return {
