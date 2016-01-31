@@ -1,4 +1,4 @@
-var starter_path = 'subset_sum.xml';
+var starter_path = 'subset_starter.xml';
 // The id is to act as a course identifier.
 // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
 var courseID = "BJC.3x";  // e.g. "BJCx"
