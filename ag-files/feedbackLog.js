@@ -255,7 +255,7 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
         test.output = null;
     } else {
         // If the output is a list, reformat it for comparision
-        if (output instanceof List) {
+        /*if (output instanceof List) {
             test.output = arrayFormattedString(
                 toNativeArray(output),
                 {
@@ -265,13 +265,13 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
             );
         } else {
             test.output = output.toString();
-        }
+        }*/
 
-        /*if (output instanceof List) {
+        if (output instanceof List) {
             test.output = output.asArray();
         } else {
             test.output = output;
-        }*/
+        }
     }
     
     try {
