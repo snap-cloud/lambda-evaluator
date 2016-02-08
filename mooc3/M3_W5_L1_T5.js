@@ -160,7 +160,7 @@ function AGTest(outputLog) {
             expected2 = [0, 1, 1, 0, 1];
 
             if (output instanceof List) {
-                actual = output.asArray();
+                actual = _.map(output.asArray(), Number);
             } else {
                 actual = output;
             }
@@ -199,7 +199,7 @@ function AGTest(outputLog) {
             expected1 = [1, 0, 1, 1];
             expected2 = [1, 1, 0, 1];
             if (output instanceof List) {
-                actual = output.asArray();
+                actual = _.map(output.asArray(), Number);
             } else {
                 actual = output;
             }
@@ -262,7 +262,7 @@ function AGTest(outputLog) {
             expected = [3, 0, 5];
 
             if (output instanceof List) {
-                actual = output.asArray();
+                actual = _.map(output.asArray(), Number);
             } else {
                 actual = output;
             }
@@ -295,7 +295,7 @@ function AGTest(outputLog) {
             expected = [3, 0, 22, 33, 0];
 
             if (output instanceof List) {
-                actual = output.asArray();
+                actual = _.map(output.asArray(), Number);
             } else {
                 actual = output;
             }
@@ -351,7 +351,13 @@ function AGTest(outputLog) {
             expected = [-2, -3, 15, -10];
 
             if (output instanceof List) {
-                actual = output.asArray();
+                var ar = output.asArray();
+
+                if (ar[0] instanceof List) {
+                    actual = _.map(ar[0].asArray(), Number);
+                } else {
+                    actual = _.map(ar, Number);
+                }
             } else {
                 actual = output;
             }
@@ -384,7 +390,7 @@ function AGTest(outputLog) {
             expected = [];
 
             if (output instanceof List) {
-                actual = output.asArray();
+                actual = _.map(output.asArray(), Number);
             } else {
                 actual = output;
             }
@@ -417,11 +423,13 @@ function AGTest(outputLog) {
             expected = [0];
 
             if (output instanceof List) {
-                actual = output.asArray();
+                actual = _.map(output.asArray(), Number);
             } else {
                 actual = output;
             }
-            if (!_.isEqual(actual, expected)) {
+            if (_.isEqual(actual, ["0"])) {
+                return true;
+            } else if (!_.isEqual(actual, expected)) {
                 tip_4_4.suggestion = 'The output should be ' + expected + ';';
                 tip_4_4.suggestion += ' but was ' + actual + '.';
                 return false;
