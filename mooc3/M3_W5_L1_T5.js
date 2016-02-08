@@ -351,7 +351,13 @@ function AGTest(outputLog) {
             expected = [-2, -3, 15, -10];
 
             if (output instanceof List) {
-                actual = _.map(output.asArray(), Number);
+                var ar = output.asArray();
+
+                if (ar[0] instanceof List) {
+                    actual = _.map(ar[0].asArray(), Number);
+                } else {
+                    actual = _.map(ar, Number);
+                }
             } else {
                 actual = output;
             }

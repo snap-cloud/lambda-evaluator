@@ -315,7 +315,7 @@ function AGTest(outputLog) {
             // Output should be a list of 2D lists.
             var expected,
                 actual;
-
+            console.log("test 4_2");
             expected = 3;
             actual = output;
             if (actual !== expected) {
@@ -343,7 +343,7 @@ function AGTest(outputLog) {
             // Output should be a list of 2D lists.
             var expected,
                 actual;
-
+            console.log("test 4_3");
             expected = 1;
             actual = output;
             if (actual !== expected) {
@@ -397,7 +397,7 @@ function AGTest(outputLog) {
             // Output should be a list of 2D lists.
             var expected,
                 actual;
-
+            console.log("test 5_2");
             expected = 5;
             actual = output;
             if (actual !== expected) {
@@ -425,7 +425,7 @@ function AGTest(outputLog) {
             // Output should be a list of 2D lists.
             var expected,
                 actual;
-
+            console.log("test 5_3");
             expected = 7;
             actual = output;
             if (actual !== expected) {
