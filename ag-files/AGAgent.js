@@ -13,7 +13,7 @@ var showPoints = false;
 var showPrevFeedback = false;
 
 function isEDXurl() {
-    return window.location.host.indexOf('edx.org') !== -1;
+    return window.location.host.indexOf('edx.org') !== -1;//|| window.location.host.indexOf('cloudfront.net') !== -1;
 }
 
 /* Removes the previously saved AG_state. Runs the tests in
@@ -188,10 +188,10 @@ function AGFinish(outputLog) {
     }
     console.log('Autograder test Results:');
     console.log(outputLog);
-    if (isEDX) {
+    if (isEDXurl()) {
         edX_check_button.click();
     } 
-    if (!isEDX) {
+    if (!isEDXurl()) {
         populateFeedback(outputLog, false)
         openResults();
     }
