@@ -362,7 +362,7 @@ function createInitialHelp() {
     document.getElementById("initial-help").appendChild(arrow_clone);
     document.getElementById("initial-help").appendChild(help_clone);
     
-    setInitialHelpDisplay(true)
+    setInitialHelpDisplay(true);
 }
 
 function previousFeedbackButton() {

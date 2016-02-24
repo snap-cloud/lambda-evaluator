@@ -62,9 +62,6 @@ var AG_EDX = (function() {
         } else {
             return JSON.stringify(AG_state);
         }
-
-
-
     }
 
     function getState() {
@@ -87,7 +84,10 @@ var AG_EDX = (function() {
             return 'never graded';
         }
 
-        var output = {out_log:graded_log,state:encodeURIComponent(graded_xml)};
+        var output = {
+            out_log: graded_log,
+            state: encodeURIComponent(graded_xml)
+        };
 
         if (correct_xml && correct_log) {
             output['c_log'] = correct_log;
@@ -117,14 +117,15 @@ var AG_EDX = (function() {
         // return encodeURI(world_string);
     }
 
-    //EDX: Used to save the world state into edX. FOR RELOAD 
+    // EDX: Used to save the world state into edX. FOR RELOAD 
     function setState() {
         console.log('SET STATE IS CALLED');
         var last_state_string = arguments.length === 1 ? arguments[0] : arguments[1];
         //var ide = world.children[0];
         if (last_state_string === 'starter file') {
             var starter_xml = $.get(starter_path, function(data) {
-                sessionStorage.setItem(id + "starter_file", data)}, "text"); //TODO: Loading here still unsafe
+                sessionStorage.setItem(id + "starter_file", data)
+            }, "text"); // TODO: Loading here still unsafe
             return;
         } else if (last_state_string === 'never graded') {
             return;
@@ -154,7 +155,7 @@ var AG_EDX = (function() {
 
 
         // var last_xml = arguments.length === 1 ? arguments[0] : arguments[1];
-        
+
         // var ide = world.children[0];
         // if (last_xml === "starter file") {
         //     var starter_xml = $.get(starter_path, function(data) {
@@ -165,15 +166,14 @@ var AG_EDX = (function() {
         // console.log(last_xml);
         // //var last_xml = arguments.length === 1 ? arguments[0] : arguments[1];
         // //state = JSON.parse(stateStr);
-        
+
         // //ide.openProjectString(decodeURIComponent(last_xml));
         // ide.openProjectString(last_xml);
-        
-
 
     }
     return {
         getState: getState,
         setState: setState,
-        getGrade: getGrade};
+        getGrade: getGrade
+    };
 }());
