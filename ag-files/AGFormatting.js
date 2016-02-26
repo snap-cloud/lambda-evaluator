@@ -737,6 +737,34 @@ function createCollapsibleCorrectSection(selector) {
 }
 
 /*
+    A basic form of pluralization. 
+    Note that it returns a new word.
+*/
+function pluralize (word, count) {
+    if (count == 1) {
+        return word;
+    }
+    if (word.match(/y$/i)) {
+        return word.replace(/y$/i, 'ies');
+    }
+    return word + 's';
+}
+
+function createCorrectIncorrectGrouping(sectName) {
+    var text_content = {
+        correct: 'Nice work! Here are passing tests:',
+        incorrect: 'Here are some test cases you should review:'
+    },
+    div = $('<div>')
+        .html(text_content[sectName])
+        .attr('id', sectName + '-section')
+        .css({display: 'none'});
+            
+    $('#ag-results').append(div)
+}
+
+
+/*
     TODO: Update this to use jQuery, and maybe _ templates
     http://underscorejs.org/#template
     * This needs to be broken into at least a few functions
@@ -792,20 +820,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
 
     button.style.borderRadius = "0px";
 
-    var correct_section = document.createElement("div");
-    var incorrect_section = document.createElement("div");
-    var correct_section_text = document.createTextNode("Here is what you did well!");
-    var incorrect_section_text = document.createTextNode("Here is what you may want to look at again!");
-    correct_section.appendChild(correct_section_text);
-    incorrect_section.appendChild(incorrect_section_text);
-    correct_section.id = "correct-section";
-    incorrect_section.id = "incorrect-section";
-
-    document.getElementById("ag-results").appendChild(correct_section);
-    document.getElementById("ag-results").appendChild(incorrect_section);
-
-    document.getElementById("correct-section").style.display = "none";
-    document.getElementById("incorrect-section").style.display = "none";
+    [ 'correct', 'incorrect' ].forEach(createCorrectIncorrectGrouping);
 
     // TODO: What is this doing? It seems redundant.
     var chunknum = typeof chunknum !== 'undefined' ? chunknum : undefined;
