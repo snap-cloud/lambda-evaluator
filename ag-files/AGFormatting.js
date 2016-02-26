@@ -348,8 +348,13 @@ function createInitialHelp() {
 
     document.getElementById("initial-help").appendChild(hamburger_help);
     document.getElementById("initial-help").appendChild(hamburger_help_arrow);
-    $("#full-screen-arrow").clone().appendTo("#initial-help");
-    $("#full-screen-help").clone().appendTo("#initial-help");
+    
+    // FOR NOW: Only show full screen if in edX.
+    // Note: iframe solution probably applies to embedded LTI apps
+    if (isEDX) {
+        $("#full-screen-arrow").clone().appendTo("#initial-help");
+        $("#full-screen-help").clone().appendTo("#initial-help");
+    }
 
     var arrow = document.getElementById("ag-button-arrow"), 
         arrow_clone = arrow.cloneNode(true);
@@ -1146,10 +1151,10 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     }
 
     if (!isEDX) {
-        var noCreditWarning = document.createElement("p");
-        var noCreditText = document.createTextNode("Please note you won't receive a score from edX for attempting this problem.");
-        noCreditWarning.appendChild(noCreditText);
-        document.getElementById("comment").appendChild(noCreditWarning);
+        // var noCreditWarning = document.createElement("p");
+        // var noCreditText = document.createTextNode("Please note you won't receive a score from edX for attempting this problem.");
+        // noCreditWarning.appendChild(noCreditText);
+        // document.getElementById("comment").appendChild(noCreditWarning);
         openResults();
     }
 }
