@@ -226,6 +226,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
         }
         // Launch timeout to handle Snap errors and infinitely looping scripts
         var timeout_id = setTimeout(function() {
+            // TODO: This is erroring for some reason....
             var stage = fb_log.snapWorld.children[0].stage;
             if (test.proc.errorFlag) {
                 test.feedback = "Snap Error.";
@@ -251,31 +252,28 @@ FeedbackLog.prototype.startSnapTest = function(test) {
 
 FeedbackLog.prototype.finishSnapTest = function(test, output) {
     // Check that output is being returned
-    if (output == undefined) {
-        test.output = null;
+    if (output == undefined || output == null) {
+        test.output = '[NO OUTPUT]';
+    } else if (output === '') {
+        test.output = '[empty output]'
     } else {
         // If the output is a list, reformat it for comparision
-        /*if (output instanceof List) {
+        if (output instanceof List) {
             test.output = arrayFormattedString(
                 toNativeArray(output),
                 {
-                    newline: '<br>',
+                    newline: output.length() < 25 ? '<br>' : '&nbsp;',
                     indent: '&nbsp;&nbsp;'
                 }
             );
         } else {
             test.output = output.toString();
-        }*/
-
-        if (output instanceof List) {
-            test.output = output.asArray();
-        } else {
-            test.output = output;
         }
     }
     
     try {
         var myscript = getScript(test.blockSpec);
+        // FIXME -- this isn't working...
         test.picture = myscript.returnResultBubble(output);
     } catch (e) {
         console.log('Error Generating Script Pic: ', e);
@@ -345,7 +343,7 @@ FeedbackLog.prototype.runNextTest = function(test) {
     // if it exists, launch it with a timeout
 };
 
-FeedbackLog.prototype.nextTest = function(test) {
+FeedbackLog.prototype.nextTest = function (test) {
     all_tests = this.allIOTests();
     var test_index = all_tests.indexOf(test);
     if ((all_tests.length - test_index) > 1) {
