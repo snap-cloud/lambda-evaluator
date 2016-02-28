@@ -739,8 +739,11 @@ function createCollapsibleCorrectSection(selector) {
 /*
     A basic form of pluralization. 
     Note that it returns a new word.
+    @param {string} word - the base word to turn into a plural
+    @param {integer} count - amount of items to base the plural
+    @return {string} - a word which has been pluralized.
 */
-function pluralize (word, count) {
+function pluralize(word, count) {
     if (count == 1) {
         return word;
     }
@@ -748,6 +751,14 @@ function pluralize (word, count) {
         return word.replace(/y$/i, 'ies');
     }
     return word + 's';
+}
+
+/*
+    Like `pluralize` above, but prepend the value to the output.
+    This is a short helper function which calls pluralize.
+*/
+function pluralizeWithNum(word, count) {
+    return count + ' ' + pluralize(word, count);
 }
 
 function createCorrectIncorrectGrouping(sectName) {
@@ -794,8 +805,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     }
 
     var comment = document.getElementById("comment");
-
     comment.innerHTML = "";
+    
     while (comment.nextSibling) {
         document.getElementById("ag-results").removeChild(comment.nextSibling);
     }
@@ -804,21 +815,20 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     var chunks = log.chunk_list;
     var linebreak = document.createElement("br");
     var numtips = 0;
-    var plural = "";
     var chunkHasCorrectTip = false;
     var tipHasCorrectTest = false;
 
-
-    onclick_menu.style.right = menu_right;
-    button.style.right = button_right;
-    document.getElementById("numtips").innerHTML = String(numtips) + " tip" + plural;
-    var tipwidth = document.getElementById("numtips").offsetWidth;
-
-    onclick_menu.style.right = String(Number(menu_right.slice(0, menu_right.length - 2)) + tipwidth - 2) + "px";
-    
-    button.style.right = String(Number(button_right.slice(0, button_right.length - 2)) + tipwidth - 2) + "px";
-
-    button.style.borderRadius = "0px";
+    var tipsDiv = document.getElementById("numtips");
+    // onclick_menu.style.right = menu_right;
+    // button.style.right = button_right;
+    // tipsDiv.innerHTML = pluralizeWithNum('tip', numtips);
+    // var tipwidth = tipsDiv.offsetWidth;
+    //
+    // onclick_menu.style.right = +(menu_right.slice(0, menu_right.length - 2)) + tipwidth - 2 + "px";
+    //
+    // button.style.right = +(button_right.slice(0, button_right.length - 2)) + tipwidth - 2 + "px";
+    //
+    // button.style.borderRadius = "0px";
 
     [ 'correct', 'incorrect' ].forEach(createCorrectIncorrectGrouping);
 
@@ -826,10 +836,12 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     var chunknum = typeof chunknum !== 'undefined' ? chunknum : undefined;
     var tipnum = typeof tipnum !== 'undefined' ? tipnum : undefined;
     
+    // TODO: Is this necessary?
     if (!showPoints) {
         showPoints = false;
     }
-
+    
+    // TODO: Break up these loops and document.
     for (i = 0; i < chunks.length; i++) {
         var chunk = chunks[i];
 
@@ -844,9 +856,9 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
 
         var tips = chunk.tip_list;
         var header = document.createElement("p");
-        header.innerHTML = String(chunk["chunk_title"]) + chunkPoints + '<br><br>';
+        header.innerHTML = chunk["chunk_title"] + chunkPoints + '<br><br>';
         
-        header.classList.add("chunk-header", "chunk" + String(i));
+        header.classList.add("chunk-header", "chunk" + i);
         
         var correct_chunk = header.cloneNode(true);
         correct_chunk.classList.add("correct-chunk" + String(i));
@@ -856,13 +868,14 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             document.getElementById("correct-section").appendChild(correct_chunk);
         } else {
             var incorrect_chunk = header.cloneNode(true);
-            incorrect_chunk.classList.add("incorrect-chunk" + String(i));
+            incorrect_chunk.classList.add("incorrect-chunk" + i);
             document.getElementById("incorrect-section").style.display = "block";
             document.getElementById("incorrect-section").appendChild(incorrect_chunk);
         }
 
         var currRank = 1;
         tipLoop:
+        // TODO: Document this
 
         for (x = 0; x < tips.length; x++) {
             var tip = tips[x];
@@ -884,7 +897,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             var tipPoints = "";
 
             // TODO: Clean this up
-            div.innerHTML = '<input class="details" id="expander' + i + x + '" type="checkbox" ><label class="' + label_class + '" for="expander' + i + x + '">' + tipPoints + String(suggestion) + '</label><div id="table-wrapper' + i + x + '">';
+            div.innerHTML = '<input class="details" id="expander' + i + x + '" type="checkbox" ><label class="' + label_class + '" for="expander' + i + x + '">' + tipPoints + suggestion + '</label><div id="table-wrapper' + i + x + '">';
 
             current_chunk.appendChild(div);
             var details = document.getElementById("table-wrapper" + i + x);
@@ -1101,7 +1114,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     }
     correct_width = document.getElementById("correct-section").offsetWidth;
     incorrect_width = document.getElementById("incorrect-section").offsetWidth;
-    popup_width = document.getElementById("ag-results").offsetWidth - 60; // TODO: make the subtracted value work for any padding values
+    popup_width = document.getElementById("ag-results").offsetWidth - 60;
+    // TODO: make the subtracted value work for any padding values
     if (document.getElementsByClassName("incorrectans")[0] !== undefined) {
         document.getElementsByClassName("incorrectans")[0].click();
     }
@@ -1130,12 +1144,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
         }
     }
 
-    if (numtips !== 1) {
-        plural = "s";
-    }
-
-    var problemPlural = "";
-    var problemPoints = "";
+    var problemPlural = "",
+        problemPoints = "";
     if (showPoints) {
         if (log["totalPoints"] !== 1) {
             problemPlural = "s";
@@ -1144,28 +1154,30 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
         problemPoints = " (" + log["totalPoints"] + " possible point" + problemPlural + ") ";
     }
 
-    document.getElementById("comment").innerHTML = "We have " + String(numtips) + " tip" + plural + " for you!" + problemPoints;
+    var tipText,
+        tipPlural = pluralizeWithNum('tip', numtips);
+    if (numtips === 0) {
+        tipText = 'Awesome work! You passed all tests.'
+    } else {
+        tipText = "We have " + tipPlural + " for you!" + problemPoints;
+    }
+    $("#comment").html(tipText);
 
     onclick_menu.style.right = menu_right;
     button.style.right = button_right;
-    document.getElementById("numtips").innerHTML = String(numtips) + " tip" + plural;
-    var tipwidth = document.getElementById("numtips").offsetWidth;
+    tipsDiv.innerHTML = tipPlural;
+    var tipwidth = tipsDiv.offsetWidth;
 
-    // TODO: Fix this or document why corercion is needed.
-    onclick_menu.style.right = String(Number(menu_right.slice(0, menu_right.length - 2)) + tipwidth - 2) + "px";
-    
-    button.style.right = String(Number(button_right.slice(0, button_right.length - 2)) + tipwidth - 2) + "px";
-
+    // TODO: Make this a function.
+    onclick_menu.style.right = +(menu_right.slice(0, menu_right.length - 2)) + tipwidth - 2 + "px";
+    button.style.right = +(button_right.slice(0, button_right.length - 2)) + tipwidth - 2 + "px";
     button.style.borderRadius = "0px";
 
     var toggleButton = document.getElementById("toggle-correct");
-    if (tipHasCorrectTest) {
-        toggleButton.style.display = "block";
-    } else {
-        toggleButton.style.display = "none";
-    }
+    toggleButton.style.display = tipHasCorrectTest ? 'block' : 'none';
 
     if (!isEDX) {
+        // No Credit Warning Commented out because it doesn't apply to bCourses.
         // var noCreditWarning = document.createElement("p");
         // var noCreditText = document.createTextNode("Please note you won't receive a score from edX for attempting this problem.");
         // noCreditWarning.appendChild(noCreditText);
