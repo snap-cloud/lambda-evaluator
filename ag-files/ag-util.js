@@ -3,6 +3,7 @@
     a few different places and don't have any dependencies.
 */
 
+var AG_UTIL = {};
 
 /** Give a nice visual display to a list, including showing nesting.
  *  The Default is for a console, but you can supply HTML strings for parameters
@@ -38,6 +39,81 @@ function arrayFormattedString(items, options) {
     return start + newline + content.join(separator + newline) +
         newline.replace(indent, '') + end; // replace(): un-indent 1 level.
 }
+
+AG_UTIL.getIDE = function () {
+    return world.children[0];
+}
+
+/*
+    Take in a Snap! block spec which inputs show as variable names
+    and remove them.
+    e.g. "word $arrowRight list %'word'" => "word $arrowRight list %"
+*/
+AG_UTIL.normalizeSpec = function (spec) {
+    if (!spec) {
+        return '';
+    }
+    return spec.replace(/%['"]\w+['"]/i, '%');
+};
+
+AG_UTIL.findCustomBlock = function (searchSpec) {
+    var ide = AG_UTIL.getIDE(), blockInstance;
+    
+    // Takes in a Custom*BlockMorph object and tests against searchSpec
+    // templateInstance() is a Snap! method that generates a 'copy'
+    // of the block.
+    function matchingBlock(block) {
+        var spec, spriteBlocks, allCustom; 
+        
+        spec = AG_UTIL.normalizeSpec(block.spec);
+        if (blockSpecMatch(spec, searchSpec)) {
+            return true;
+        }
+        return false;
+    }
+    
+    // Search Global Custom Blocks
+    blockInstance = ide.stage.globalBlocks.find(matchingBlock);
+    if (blockInstance) {
+        return blockInstance.templateInstance();
+    }
+    spriteBlocks = ide.sprites.contents.map(function (sprite) {
+        return sprite.customBlocks;
+    });
+    allCustom = Array.prototype.concat(
+        [], ide.stage.customBlocks, spriteBlocks
+    );
+    blockInstance = allCustom.find(matchingBlock);
+    if (blockInstance) {
+        return blockInstance.templateInstance();
+    }
+    return null;
+};
+
+AG_UTIL.specToImage = function (spec) {
+    var block = AG_UTIL.findCustomBlock(spec);
+    if (block) {
+        return block.scriptPic().toDataURL();
+    }
+    return null;
+};
+
+/*
+    Return an image tag from a given block spec.
+    If no block is found, use a simple <code> element.
+*/
+AG_UTIL.HTMLFormattedBlock = function (spec) {
+    var data = AG_UTIL.specToImage(spec),
+        outString;
+    if (data) {
+        outString = '<img src="DATA" />';
+    } else {
+        outString = '<code>DATA</code>';
+        data = spec;
+    }
+    return outString.replace('DATA', data);
+};
+
 
 
 
@@ -106,4 +182,3 @@ queryString.stringify = function (obj) {
         return encodeURIComponent(key) + '=' + encodeURIComponent(val);
     }).join('&') : '';
 };
-
