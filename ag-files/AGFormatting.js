@@ -773,14 +773,11 @@ function createCorrectIncorrectGrouping(sectName) {
     $('#ag-results').append(div)
 }
 
-
 /*
-    TODO: Update this to use jQuery, and maybe _ templates
+    TODO: Update this to use jQuery, and maybe _.template() ?
     http://underscorejs.org/#template
-    * This needs to be broken into at least a few functions
+    * This should be broken into at least a few functions
     * Cache all document.get*() calls which are used more than one
-    * Cleanup all the x["y"] calls to be x.y
-    * Remove add extra String() coercions, and document any that are necessary
 */
 function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     // TODO: Declare move variables up here:
@@ -1126,21 +1123,20 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
         }
     }
 
-    var points = log.totalPoints,
-        problemPoints = "";
+    var problemPoints = '';
     if (showPoints) {
-        points = Math.round(points);
         problemPoints = " ({0} possible {1}) ".format(
-            points, pluralize('point', points)
+            points, pluralize('point', Math.round(log.totalPoints))
         );
     }
 
-    var tipText,
-        tipPlural = pluralizeWithNum('tip', numtips);
+    var tipText;
     if (numtips === 0) {
-        tipText = 'Awesome work! You passed all tests.'
+        tipText = 'Awesome work! You passed all tests.';
     } else {
-        tipText = "We have {0} for you! {1}".format(tipPlural, problemPoints);
+        tipText = "We have {0} for you! ".format(
+            pluralizeWithNum('tip', numtips)
+        ) + problemPoints;
     }
     $("#comment").html(tipText);
 
