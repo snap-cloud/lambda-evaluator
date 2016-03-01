@@ -696,8 +696,7 @@ function moveHelp() {
 function appendElement(elem, text, elemClass, selector) {
     var data = document.createElement(elem);
     if (text !== null) {
-        var text = document.createTextNode(text);
-        data.appendChild(text);
+        data.innerHTML = text;
     }
     if (Array.isArray(elemClass)) {
         DOMTokenList.prototype.add.apply(data.classList, elemClass);
@@ -819,16 +818,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     var tipHasCorrectTest = false;
 
     var tipsDiv = document.getElementById("numtips");
-    // onclick_menu.style.right = menu_right;
-    // button.style.right = button_right;
-    // tipsDiv.innerHTML = pluralizeWithNum('tip', numtips);
-    // var tipwidth = tipsDiv.offsetWidth;
-    //
-    // onclick_menu.style.right = +(menu_right.slice(0, menu_right.length - 2)) + tipwidth - 2 + "px";
-    //
-    // button.style.right = +(button_right.slice(0, button_right.length - 2)) + tipwidth - 2 + "px";
-    //
-    // button.style.borderRadius = "0px";
 
     [ 'correct', 'incorrect' ].forEach(createCorrectIncorrectGrouping);
 
@@ -882,11 +871,11 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             var allFeedback = typeof allFeedback !== 'undefined' ? allFeedback : false;
             var div = document.createElement("div");
             var label_class = "incorrectans";
-            var current_chunk = document.getElementsByClassName("incorrect-chunk"+String(i))[0];
+            var current_chunk = document.getElementsByClassName("incorrect-chunk" + i)[0];
             if (tip.allCorrect) {
                 document.getElementById("correct-section").style.display = "block";
                 document.getElementById("correct-section").appendChild(correct_chunk);
-                current_chunk = document.getElementsByClassName("correct-chunk"+String(i))[0];
+                current_chunk = document.getElementsByClassName("correct-chunk" + i)[0];
                 label_class = "correctans";
                 var suggestion = tip.complement;
             } else {
@@ -913,13 +902,9 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             for (j = 0; j < allTests.length; j++) {
                 var newRow = document.createElement("tr");
                 var thisTest = allTests[j];
-                var testPlural = "";
                 var testPoints = "";
                 if (showPoints) {
-                    if (thisTest.points !== 1) {
-                        testPlural = "s";
-                    }
-                    testPoints = "(" + thisTest.points + " point" + testPlural + ") ";
+                    testPoints = "(" + pluralizeWithNum('point', thisTest.points) + ") ";
                 }
                 
                 if (thisTest.testClass !== "r") {

@@ -706,6 +706,7 @@ function findBlockInPalette(blockSpec, workingWorld) {
     var thisWorld = workingWorld || world,
         palette = null,
         i = 0,
+        // TODO: extract this, make a 'constant'
         pList = ["motion", "variables", "looks", "sound", "pen", "control", "sensing", "operators"];
 
     for (var item of pList) {
