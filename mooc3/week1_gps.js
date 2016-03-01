@@ -22,21 +22,23 @@ function AGTest(outputLog) {
         'Generate a list of coordinates'
     );
 
-    var blockName = "coordinates list from url %"
-    var chunk_1 = fb.newChunk('Complete the ' + blockName + ' block.');
+    var blockName = "coordinates list from url %";
+    
+    var blockImg = AG_UTIL.HTMLFormattedBlock(blockName);
+    var chunk_1 = fb.newChunk('Complete the ' + blockImg + ' block.');
 
     var blockExists_1 = function () {
         return spriteContainsBlock(blockName);
     }
 
-    var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly ' + blockName + ' and place it in the scripting area.',
+    var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly ' + blockImg + ' and place it in the scripting area.',
         'The coordinates block exists.');
 
     tip_1_1.newAssertTest(
         blockExists_1,
-        "Testing if the " + blockName + " block is in the scripting area.",
-        "The " + blockName + " block is in the scripting area.",
-        "Make sure you name your block exactly " + blockName + " and place it in the scripting area.",
+        "Testing if the " + blockImg + " block is in the scripting area.",
+        "The " + blockImg + " block is in the scripting area.",
+        "Make sure you name your block exactly " + blockImg + " and place it in the scripting area.",
         1
     );
 
