@@ -795,7 +795,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
         } else {
             toggleButton.classList.add("isOff");
             allFeedback = false;
-            toggleButton.innerHTML = "See Correct Tests";
+            toggleButton.innerHTML = "Show Correct Tests";
         }
         populateFeedback(feedbackLog, allFeedback);
         setTimeout(function() {
@@ -826,31 +826,28 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     var tipnum = typeof tipnum !== 'undefined' ? tipnum : undefined;
     
     // TODO: Is this necessary?
-    if (!showPoints) {
-        showPoints = false;
-    }
+    // if (!showPoints) {
+    //     showPoints = false;
+    // }
     
     // TODO: Break up these loops and document.
     for (i = 0; i < chunks.length; i++) {
         var chunk = chunks[i];
 
-        var chunkPlural = "";
         var chunkPoints = "";
         if (showPoints) {
-            if (chunk.totalPoints !== 1) {
-                chunkPlural = "s";
-            }
-            chunkPoints = " (" + chunk["totalPoints"] + " possible point" + chunkPlural + ")";
+            chunkPoints = " ({0} possible {1}) ".format(
+                chunk.totalPoints, pluralize('point', chunk.totalPoints));
         }
 
         var tips = chunk.tip_list;
         var header = document.createElement("p");
-        header.innerHTML = chunk["chunk_title"] + chunkPoints + '<br><br>';
+        header.innerHTML = chunk.chunk_title + chunkPoints + '<br><br>';
         
         header.classList.add("chunk-header", "chunk" + i);
         
         var correct_chunk = header.cloneNode(true);
-        correct_chunk.classList.add("correct-chunk" + String(i));
+        correct_chunk.classList.add("correct-chunk" + i);
         
         if (chunk.allCorrect) {
             document.getElementById("correct-section").style.display = "block";
@@ -891,7 +888,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             current_chunk.appendChild(div);
             var details = document.getElementById("table-wrapper" + i + x);
             details.previousSibling.click();
-            var allTests = tip["test_list"];
+            var allTests = tip.test_list;
             appendElement(
                 "p",
                 "",
@@ -904,7 +901,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                 var thisTest = allTests[j];
                 var testPoints = "";
                 if (showPoints) {
-                    testPoints = "(" + pluralizeWithNum('point', thisTest.points) + ") ";
+                    testPoints = "({0}) ".format(pluralizeWithNum('point', thisTest.points));
                 }
                 
                 if (thisTest.testClass !== "r") {
@@ -980,7 +977,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             document.getElementsByClassName("observations" + i + x)[0]
                         );
                     }
-                    if (thisTest["correct"] === true && tip["allCorrect"] === false) {
+                    if (thisTest.correct === true && tip.allCorrect === false) {
                         tipHasCorrectTest = true;
                         if (!document.getElementById("correct-tip" + i + x)) {
                             // TODO: This?
@@ -1010,17 +1007,16 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             htmlString = [
                                 '<p class="data assertion">',
                                 testPoints + thisTest.feedback,
-                                ' The <p class="data assertion bold">input: ',
+                                ' The input: <code class="data assertion">',
                                 thisTest.input,
-                                '</p>'
+                                '</code>'
                             ].join('');
-                            if (typeof thisTest.expOut === "function") {
-                            //if (thisTest.expOut.constructor !== Function) {
+                            if (thisTest.expOut.constructor !== Function) {
                                 htmlString += [
                                     '<p class="data assertion">, returned the </p>',
-                                    '<p class="data assertion bold">expected value: ',
+                                    ' expected value: <code class="data assertion">',
                                     thisTest.expOut,
-                                    '</p>'
+                                    '</code>'
                                 ].join('');
                             } else {
                                 htmlString += '<p class="data assertion">passed the tests.</p>';
@@ -1101,6 +1097,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     incorrect_width = document.getElementById("incorrect-section").offsetWidth;
     popup_width = document.getElementById("ag-results").offsetWidth - 60;
     // TODO: make the subtracted value work for any padding values
+    
     if (document.getElementsByClassName("incorrectans")[0] !== undefined) {
         document.getElementsByClassName("incorrectans")[0].click();
     }
@@ -1129,14 +1126,13 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
         }
     }
 
-    var problemPlural = "",
+    var points = log.totalPoints,
         problemPoints = "";
     if (showPoints) {
-        if (log["totalPoints"] !== 1) {
-            problemPlural = "s";
-        } 
-        log["totalPoints"] = Math.round(log["totalPoints"]);
-        problemPoints = " (" + log["totalPoints"] + " possible point" + problemPlural + ") ";
+        points = Math.round(points);
+        problemPoints = " ({0} possible {1}) ".format(
+            points, pluralize('point', points)
+        );
     }
 
     var tipText,
@@ -1144,7 +1140,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     if (numtips === 0) {
         tipText = 'Awesome work! You passed all tests.'
     } else {
-        tipText = "We have " + tipPlural + " for you!" + problemPoints;
+        tipText = "We have {0} for you! {1}".format(tipPlural, problemPoints);
     }
     $("#comment").html(tipText);
 
