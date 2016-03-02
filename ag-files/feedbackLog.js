@@ -238,7 +238,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
         }, timeout);
         this.currentTimeout = timeout_id;
         return this;
-    } catch(e) {
+    } catch (e) {
         // If an error is throw, fill out the test info, and find the next test
         test.feedback = e;
         test.correct = false;
@@ -260,25 +260,26 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
         // If the output is a list, reformat it for comparision
         if (output instanceof List) {
             test.output = arrayFormattedString(
-                toNativeArray(output),
-                {
-                    newline: output.length() < 25 ? '<br>' : '&nbsp;',
-                    indent: '&nbsp;&nbsp;'
-                }
+                toNativeArray(output)
             );
+            /*{
+                newline: output.length() < 25 ? '<br>' : '&nbsp;',
+                indent: '&nbsp;&nbsp;'
+            }*/
+
         } else {
             test.output = output.toString();
         }
     }
     
-    try {
-        var myscript = getScript(test.blockSpec);
-        // FIXME -- this isn't working...
-        test.picture = myscript.returnResultBubble(output);
-    } catch (e) {
-        console.log('Error Generating Script Pic: ', e);
-        test.picture = null;
-    }
+    // try {
+    //     var myscript = getScript(test.blockSpec);
+    //     // FIXME -- this isn't working...
+    //     test.picture = myscript.returnResultBubble(output);
+    // } catch (e) {
+    //     console.log('Error Generating Script Pic: ', e);
+    //     test.picture = null;
+    // }
 
     var expOut = test.expOut;
     if (expOut instanceof Function) {
@@ -287,8 +288,7 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
     } else {
         if (expOut instanceof Array) {
             // TODO: Switch this to toSnapList (or whatever I named that fn)
-            listify(expOut);
-            expOut = new List(expOut);
+            expOut = toSnapList(expOut);
         }
         test.correct = snapEquals(output, expOut);
     }
@@ -772,6 +772,8 @@ function evalReporter(block, outputLog, testID) {
         stage.isThreadSafe,
         false,
         function() {
+            console.log('Completion callback');
+            console.log(proc);
             outputLog.finishTest(testID, readValue(proc));
         }
     );
@@ -838,6 +840,7 @@ function toSnapList(array) {
 
 // Recursively Convert a Snap! list into a native array
 function toNativeArray(list) {
+    console.log('got list: ', list);
     return list.asArray().map(function (item) {
         return item.constructor === List ? toNativeArray(item) : item;
     });

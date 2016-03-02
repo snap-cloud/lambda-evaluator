@@ -22,7 +22,7 @@ function AGTest(outputLog) {
     var fb = new FeedbackLog(
         world,
         id,
-        'Complete the merge sort function.'
+        'Complete the merge lists function.'
     );
 
     var blockName = "merge % %";
@@ -48,8 +48,8 @@ function AGTest(outputLog) {
     );
 
     var tip_1_2 = chunk_1.newTip(
-        'Here are some tests to see if your block works.',
-        'Great job! You correct merge two lists.'
+        'Let\'s start with some basic tests.',
+        'Great job! You correctly merge two lists.'
     );
     
     tip_1_2.newIOTest('r',  // testClass
@@ -58,7 +58,39 @@ function AGTest(outputLog) {
         [1, 2],
         4 * 1000, // 4 second time out.
         true, // is isolated
-        1 // points
+        0.5 // points
+    );
+
+    tip_1_2.newIOTest('r',  // testClass
+        blockName,          // blockSpec
+        [ [1] , [2] ],      // input
+        [1, 2],
+        4 * 1000, // 4 second time out.
+        true, // is isolated
+        0.5 // points
+    );
+    
+    var tip_1_2 = chunk_1.newTip(
+        'Here\'s a more complex test.',
+        'Great job! You correctly merge two lists.'
+    );
+    
+    tip_1_2.newIOTest('r',  // testClass
+        blockName,          // blockSpec
+        [ [10, 8, 6, 4, 2] , [9, 7, 5, 3, 1] ],      // input
+        [9, 7, 5, 3, 1, 10, 8, 6, 4, 2],
+        4 * 1000, // 4 second time out.
+        true, // is isolated
+        0.5 // points
+    );
+    
+    tip_1_2.newIOTest('r',  // testClass
+        blockName,          // blockSpec
+        [ [2, 0] , [1, 3] ], // input
+        [1, 2, 0, 3],
+        4 * 1000, // 4 second time out.
+        true, // is isolated
+        0.5 // points
     );
 
     return fb;

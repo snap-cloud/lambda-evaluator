@@ -1025,27 +1025,40 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
 
                         string_reporter.classList.add("data", "assertion");
                         // TODO Clean these strings up.
+                        var input = thisTest.input;
+                        if (input instanceof List || input instanceof Array) {
+                            input = arrayFormattedString(input);
+                        }
+                        
                         htmlString = [
                             '<p class="data assertion">',
                             testPoints + thisTest.feedback,
-                            ' The <p class="data assertion bold">input: ',
-                            thisTest.input,
-                            '</p> '
+                            'The input: <code>',
+                            input,
+                            '</code></p> '
                         ].join('');
                         
                         // Don't show "expected output" if the output check is
                         // a custon JS function (where no output type is known.)
                         if (thisTest.expOut && thisTest.expOut.constructor !== Function) {
+                            var expOut = thisTest.expOut;
+                            if (expOut instanceof List || expOut instanceof Array) {
+                                expOut = arrayFormattedString(expOut);
+                            }
                             htmlString += [
-                                '<p class="data assertion">did <em>not</em> return the </p>',
-                                '<p class="data assertion bold">expected value: ',
-                                thisTest.expOut
+                                '<p class="data assertion">did <em>not</em> return the',
+                                ' expected value: ',
+                                '<code>', expOut, '</code></p>'
                             ].join('');
                         }
                         if (thisTest.output === null) {
                             htmlString += '<p class="data assertion">Instead it returned no output.</p>';
                         } else {
-                            htmlString += '<p class="data assertion bold">output: ' + thisTest.output + '</p>';
+                            var output = thisTest.output;
+                            if (output instanceof List || output instanceof Array) {
+                                output = arrayFormattedString(output);
+                            }
+                            htmlString += '<p class="data assertion">output: <code>' + output + '</code></p>';
                         }
                         string_reporter.innerHTML = htmlString;
                         document.getElementsByClassName(

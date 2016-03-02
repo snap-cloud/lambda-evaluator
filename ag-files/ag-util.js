@@ -38,6 +38,7 @@ function arrayFormattedString(items, options) {
     if (items.constructor !== Array) {
         return items;
     }
+    options = options || {};
     var separator, indent, newline, start, end, content;
     
     separator = options.separator || ',';
@@ -69,6 +70,12 @@ AG_UTIL.normalizeSpec = function (spec) {
     return spec.replace(/%['"]\w+['"]/gi, '%');
 };
 
+/*
+    This returns the instance of a Snap! block
+    NOTE: this is different than findBlockInPalette
+    This returns the `.definition` property.
+    TODO: consolidate code between those functions.
+*/
 AG_UTIL.findCustomBlock = function (searchSpec) {
     var ide = AG_UTIL.getIDE(), blockInstance;
     
