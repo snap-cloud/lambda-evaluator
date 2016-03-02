@@ -1,4 +1,6 @@
 // TODO: Refactor and document the need for iframe checking.
+// If should probably be in AG_EDX and be a function to call.
+// id_problem can be cached in some variable.
 
 var current_iframe = window.frameElement;
 var num_iframes = parent.document.getElementsByClassName('problem-header').length;
@@ -299,7 +301,6 @@ function revertToLastState(snapWorld, taskID) {
  * @return {Boolean} Equivalence of prev_xml and curr_xml, false if
  * either are strings are undefined.
  * Currently only works for one sprite with scripts
- * TODO: Extend to all script groups [DONE]
  * TODO: Improve XML scrubbing (Consider the following)
  *  - If correct solution (scripts) is subset of other [DONE]
  *  - Optional tags for variables, sprite position  

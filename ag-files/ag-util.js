@@ -105,6 +105,7 @@ AG_UTIL.findCustomBlock = function (searchSpec) {
 
 AG_UTIL.specToImage = function (spec) {
     var block = AG_UTIL.findCustomBlock(spec);
+    // TODO: investigate whether blob URIs will work.
     if (block) {
         return block.scriptPic().toDataURL();
     }
@@ -130,8 +131,32 @@ AG_UTIL.HTMLFormattedBlock = function (spec) {
 
 
 
+/*
+    A basic form of pluralization. 
+    Note that it returns a new word.
+    @param {string} word - the base word to turn into a plural
+    @param {integer} count - amount of items to base the plural
+    @return {string} - a word which has been pluralized.
+*/
+function pluralize(word, count) {
+    if (count == 1) {
+        return word;
+    }
+    if (word.match(/y$/i)) {
+        return word.replace(/y$/i, 'ies');
+    }
+    return word + 's';
+}
 
+/*
+    Like `pluralize` above, but prepend the value to the output.
+    This is a short helper function which calls pluralize.
+*/
+function pluralizeWithNum(word, count) {
+    return count + ' ' + pluralize(word, count);
+}
 
+/*****************************************************************************/
 
 /*!
     query-string

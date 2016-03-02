@@ -229,7 +229,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
             // TODO: This is erroring for some reason....
             var stage = fb_log.snapWorld.children[0].stage;
             if (test.proc.errorFlag) {
-                test.feedback = "Snap Error.";
+                test.feedback = "Uh oh! A Snap Error occurred.";
             } else {
                 test.feedback = "Test Timeout Occurred.";
             }
@@ -435,7 +435,7 @@ FeedbackLog.prototype.scoreLog = function() {
 
 /************** Formatting the Feedback Log *****************/
 
-// NOTE: May not longer be necessary
+// NOTE: May no longer be necessary
 FeedbackLog.prototype.toDict = function() {
     throw 'FeedbackLog.toDict: This function is DEPRICATED.'
     // body...

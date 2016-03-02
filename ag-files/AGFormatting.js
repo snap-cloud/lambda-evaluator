@@ -401,6 +401,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
         previousFeedbackButton();
         prevFeedbackButton = true;
     }
+    
     if (isEDX) {
         current_iframe.parentNode.parentNode.parentNode.style.width = "100%";
     }
@@ -574,10 +575,12 @@ function initializeSnapAdditions(snapWorld, taskID) {
         button_style = window.getComputedStyle(button);
         button_right = button_style.getPropertyValue('right');
 
+        var outputLog;
         if (prev_log) {
-            var outputLog = prev_log;
+            outputLog = prev_log;
         } else {
-           var outputLog = AGStart(snapWorld, taskID);
+            // Not sure if this is the best place...
+            outputLog = AGStart(snapWorld, taskID);
         }
 
         // for some reason, the for loop in populateFeedback doesn't increment
@@ -597,12 +600,11 @@ function initializeSnapAdditions(snapWorld, taskID) {
             tip_tests[i].style.maxWidth = String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px";
         }
 
+        // TODO: These can be extracted into their own file.
         StageHandleMorph.prototype.originalFixLayout = StageHandleMorph.prototype.fixLayout;
         StageHandleMorph.prototype.fixLayout = function() {
             this.originalFixLayout();
-            // console.log(this.target.right());
-            // console.log(this.target.width());
-            if (this.target.width() > 225) {
+            if (this.target.width() > 225) {``
                 if (this.target.width() > 390) {
                     $('#autograding_bar').css({
                         right: 150,
@@ -622,6 +624,15 @@ function initializeSnapAdditions(snapWorld, taskID) {
         if (starter_xml) {
             ide.openProjectString(starter_xml);
             sessionStorage.removeItem(taskID + "starter_file");
+        } else if (starter_path) {
+            ide.showMessage('Loading the starter file.');
+            $.get(
+                starter_path,
+                function(data) {
+                    ide.openProjectString(data);
+                }, 
+                "text"
+            );
         }
     }, 1500);
 }
@@ -692,7 +703,6 @@ function moveHelp() {
     });
 }
 
-
 function appendElement(elem, text, elemClass, selector) {
     var data = document.createElement(elem);
     if (text !== null) {
@@ -733,31 +743,6 @@ function createCollapsibleCorrectSection(selector) {
     selector.insertBefore(correct_tip, selector.firstChild);
 
     correct_tip.appendChild(correct_collapse);
-}
-
-/*
-    A basic form of pluralization. 
-    Note that it returns a new word.
-    @param {string} word - the base word to turn into a plural
-    @param {integer} count - amount of items to base the plural
-    @return {string} - a word which has been pluralized.
-*/
-function pluralize(word, count) {
-    if (count == 1) {
-        return word;
-    }
-    if (word.match(/y$/i)) {
-        return word.replace(/y$/i, 'ies');
-    }
-    return word + 's';
-}
-
-/*
-    Like `pluralize` above, but prepend the value to the output.
-    This is a short helper function which calls pluralize.
-*/
-function pluralizeWithNum(word, count) {
-    return count + ' ' + pluralize(word, count);
 }
 
 function createCorrectIncorrectGrouping(sectName) {
@@ -1142,7 +1127,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
 
     onclick_menu.style.right = menu_right;
     button.style.right = button_right;
-    tipsDiv.innerHTML = tipPlural;
+    tipsDiv.innerHTML = pluralizeWithNum('tip', numtips);
     var tipwidth = tipsDiv.offsetWidth;
 
     // TODO: Make this a function.
