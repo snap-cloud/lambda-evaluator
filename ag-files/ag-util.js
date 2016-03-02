@@ -66,7 +66,7 @@ AG_UTIL.normalizeSpec = function (spec) {
     if (!spec) {
         return '';
     }
-    return spec.replace(/%['"]\w+['"]/i, '%');
+    return spec.replace(/%['"]\w+['"]/gi, '%');
 };
 
 AG_UTIL.findCustomBlock = function (searchSpec) {
