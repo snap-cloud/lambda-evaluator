@@ -977,6 +977,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                     string_reporter = document.createElement("div")
                     string_reporter.classList.add("data", "assertion");
                     
+                    // TODO: Try extracting this out.
                     if (thisTest.correct) {
                         if ((allFeedback) || tip.allCorrect) {
                             appendElement(
@@ -985,20 +986,30 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                                 "data",
                                 document.getElementsByClassName("tests-section" + i + x)[0]
                             );
+                            // TODO Clean these strings up.
+                            var input = thisTest.input;
+                            if (input instanceof List || input instanceof Array) {
+                                input = arrayFormattedString(input);
+                            }
                             
                             htmlString = [
                                 '<p class="data assertion">',
                                 testPoints + thisTest.feedback,
                                 ' The input: <code class="data assertion">',
-                                thisTest.input,
+                                input,
                                 '</code>'
                             ].join('');
                             if (thisTest.expOut.constructor !== Function) {
+                                var expOut = thisTest.expOut;
+                                if (expOut instanceof List || expOut instanceof Array) {
+                                    expOut = arrayFormattedString(expOut);
+                                }
+                                
                                 htmlString += [
-                                    '<p class="data assertion">, returned the </p>',
+                                    '<p class="data assertion">, returned the',
                                     ' expected value: <code class="data assertion">',
-                                    thisTest.expOut,
-                                    '</code>'
+                                    expOut,
+                                    '</code></p>'
                                 ].join('');
                             } else {
                                 htmlString += '<p class="data assertion">passed the tests.</p>';
