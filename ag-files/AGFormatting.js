@@ -807,11 +807,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     var chunknum = typeof chunknum !== 'undefined' ? chunknum : undefined;
     var tipnum = typeof tipnum !== 'undefined' ? tipnum : undefined;
     
-    // TODO: Is this necessary?
-    // if (!showPoints) {
-    //     showPoints = false;
-    // }
-    
     // TODO: Break up these loops and document.
     for (i = 0; i < chunks.length; i++) {
         var chunk = chunks[i];
