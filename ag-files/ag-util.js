@@ -3,8 +3,12 @@
     a few different places and don't have any dependencies.
 */
 
+/****************************************************************************/
+// Polyfills for useful functions.
+// These must come first to be useful in the Autograder!
+/****************************************************************************/
 // String::format polyfill thing.
-// http://stackoverflow.com/questions/18405736/is-there-a-c-sharp-string-format-equivalent-in-javascript
+// http://stackoverflow.com/a/18405800
 if (!String.prototype.format) {
   String.prototype.format = function() {
     var args = arguments;
@@ -15,6 +19,33 @@ if (!String.prototype.format) {
     });
   };
 }
+
+// Array::find for use in block searching
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+if (!Array.prototype.find) {
+  Array.prototype.find = function(predicate) {
+    if (this === null) {
+      throw new TypeError('Array.prototype.find called on null or undefined');
+    }
+    if (typeof predicate !== 'function') {
+      throw new TypeError('predicate must be a function');
+    }
+    var list = Object(this);
+    var length = list.length >>> 0;
+    var thisArg = arguments[1];
+    var value;
+
+    for (var i = 0; i < length; i++) {
+      value = list[i];
+      if (predicate.call(thisArg, value, i, list)) {
+        return value;
+      }
+    }
+    return undefined;
+  };
+}
+/****************************************************************************/
+
 
 var AG_UTIL = {};
 

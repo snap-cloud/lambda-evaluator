@@ -840,7 +840,6 @@ function toSnapList(array) {
 
 // Recursively Convert a Snap! list into a native array
 function toNativeArray(list) {
-    console.log('got list: ', list);
     return list.asArray().map(function (item) {
         return item.constructor === List ? toNativeArray(item) : item;
     });
