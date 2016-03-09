@@ -36,7 +36,7 @@ function AGTest(outputLog) {
     
     tip_1_1.newIOTest('r',  // testClass
         tttBlock,          // blockSpec
-        [ ['_', 'x', 'o', 'x', 'o', 'x', 'x', 'o', 'o'], 'x' ], // input
+        [ ['1', 'x', 'o', 'x', 'o', 'x', 'x', 'o', 'o'], 'x' ], // input
         1,
         4 * 1000, // 4 second time out.
         true, // is isolated
@@ -50,11 +50,11 @@ function AGTest(outputLog) {
     
     tip_1_2.newIOTest('r',  // testClass
         tttBlock,          // blockSpec
-        [ ['o', 'x', '_', 'x', '_', 'x', 'x', '_', 'o'] , 'o' ],      // input
+        [ ['o', 'x', '3', 'x', '5', 'x', 'x', '6', 'o'] , 'o' ],      // input
         5,
         4 * 1000, // 4 second time out.
         true, // is isolated
-        0.5 // points
+        5 // points
     );
     return fb;
 }
