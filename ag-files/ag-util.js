@@ -101,48 +101,10 @@ AG_UTIL.normalizeSpec = function (spec) {
     return spec.replace(/%['"]\w+['"]/gi, '%');
 };
 
-/*
-    This returns the instance of a Snap! block
-    NOTE: this is different than findBlockInPalette
-    This returns the `.definition` property.
-    TODO: consolidate code between those functions.
-*/
-AG_UTIL.findCustomBlock = function (searchSpec) {
-    var ide = AG_UTIL.getIDE(), blockInstance;
-    
-    // Takes in a Custom*BlockMorph object and tests against searchSpec
-    // templateInstance() is a Snap! method that generates a 'copy'
-    // of the block.
-    function matchingBlock(block) {
-        var spec, spriteBlocks, allCustom; 
-        
-        spec = AG_UTIL.normalizeSpec(block.spec);
-        if (blockSpecMatch(spec, searchSpec)) {
-            return true;
-        }
-        return false;
-    }
-    
-    // Search Global Custom Blocks
-    blockInstance = ide.stage.globalBlocks.find(matchingBlock);
-    if (blockInstance) {
-        return blockInstance.templateInstance();
-    }
-    spriteBlocks = ide.sprites.contents.map(function (sprite) {
-        return sprite.customBlocks;
-    });
-    allCustom = Array.prototype.concat(
-        [], ide.stage.customBlocks, spriteBlocks
-    );
-    blockInstance = allCustom.find(matchingBlock);
-    if (blockInstance) {
-        return blockInstance.templateInstance();
-    }
-    return null;
-};
-
+// Take in a blockSpec and return a PNG image of the block
+// This is a URL that can be used in other HTML elements.
 AG_UTIL.specToImage = function (spec) {
-    var block = AG_UTIL.findCustomBlock(spec);
+    var block = findBlockInPalette(spec);
     // TODO: investigate whether blob URIs will work.
     if (block) {
         return block.scriptPic().toDataURL();
