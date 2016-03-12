@@ -604,7 +604,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
         StageHandleMorph.prototype.originalFixLayout = StageHandleMorph.prototype.fixLayout;
         StageHandleMorph.prototype.fixLayout = function() {
             this.originalFixLayout();
-            if (this.target.width() > 225) {``
+            if (this.target.width() > 225) {
                 if (this.target.width() > 390) {
                     $('#autograding_bar').css({
                         right: 150,
