@@ -289,15 +289,6 @@ function fullScreenSnap(button, taskID) {
     sessionStorage.setItem(taskID + "full-screen-on", JSON.stringify(true));
 }
 
-// TODO: REFACTOR THIS
-IDE_Morph.prototype.originalToggleStageSize = IDE_Morph.prototype.toggleStageSize;
-IDE_Morph.prototype.toggleStageSize = function (isSmall) {
-    this.originalToggleStageSize(isSmall);
-    setTimeout(function() {
-        moveAutogradingBar();
-    }, 100);
-}
-
 function moveAutogradingBar() {
     var autograding_bar = document.getElementById('autograding_bar');
     var ide = world.children[0];
@@ -525,7 +516,6 @@ function initializeSnapAdditions(snapWorld, taskID) {
             timesChecked += 1;
             console.log("checking...." + id_problem);
             if (parent.document.getElementsByClassName('check-label')[id_problem]) {
-            // if (edX_check_button) {
                 console.log("Exists!");
                 clearInterval(checkExist);
                 edX_check_button = current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.nextElementSibling.children[1];
@@ -564,7 +554,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
     setTimeout(function() {
         document.getElementById("toggle-correct-tests").innerHTML = '<div class="toggle-correct isOff" id="toggle-correct">See Correct Tests</div><div id="correct-table-wrapper">';
         if (!graded) {return; }
-    },1000);
+    }, 1000);
 
     setTimeout(function() {
         onclick_menu = document.getElementById('onclick-menu');
@@ -597,14 +587,14 @@ function initializeSnapAdditions(snapWorld, taskID) {
 
         var tip_tests = document.getElementsByClassName("data");
         for(var i=0; i < tip_tests.length; i++){
-            tip_tests[i].style.maxWidth = String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px";
+            tip_tests[i].style.maxWidth = document.getElementsByClassName("inner-titles")[0].offsetWidth - 50 + "px";
         }
 
         // TODO: These can be extracted into their own file.
         StageHandleMorph.prototype.originalFixLayout = StageHandleMorph.prototype.fixLayout;
         StageHandleMorph.prototype.fixLayout = function() {
             this.originalFixLayout();
-            if (this.target.width() > 225) {``
+            if (this.target.width() > 225) {
                 if (this.target.width() > 390) {
                     $('#autograding_bar').css({
                         right: 150,
