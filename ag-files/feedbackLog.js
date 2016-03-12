@@ -224,16 +224,29 @@ FeedbackLog.prototype.startSnapTest = function(test) {
         if (timeout < 0) {
             timeout = 1000; // Set default if -1
         }
+        console.log(timeout);
         // Launch timeout to handle Snap errors and infinitely looping scripts
         var timeout_id = setTimeout(function() {
             var stage = fb_log.snapWorld.children[0].stage;
+            console.log(test.proc);
+            console.log(test.proc.errorFlag);
             if (test.proc.errorFlag) {
                 test.feedback = "Snap Error.";
             } else {
                 test.feedback = "Test Timeout Occurred.";
             }
             test.output = "INVALID";
-            stage.threads.stopProcess(getScript(test.blockSpec), test.sprite);
+            //stage.threads.stopProcess(getScript(test.blockSpec), test.sprite);
+            var index = 0;
+            var ide = fb_log.snapWorld.children[0];
+            for (var i = 0; i < ide.sprites.contents.length; i++) {
+                console.log(ide.sprites.contents[i].name);
+                if (ide.sprites.contents[i].name === test.sprite.name) {
+                    index = i;
+                }
+            }
+
+            stage.threads.stopProcess(getScript(test.blockSpec, index));
         }, timeout);
         this.currentTimeout = timeout_id;
         return this;
