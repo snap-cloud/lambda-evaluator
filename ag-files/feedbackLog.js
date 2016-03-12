@@ -224,12 +224,9 @@ FeedbackLog.prototype.startSnapTest = function(test) {
         if (timeout < 0) {
             timeout = 1000; // Set default if -1
         }
-        console.log(timeout);
         // Launch timeout to handle Snap errors and infinitely looping scripts
         var timeout_id = setTimeout(function() {
             var stage = fb_log.snapWorld.children[0].stage;
-            console.log(test.proc);
-            console.log(test.proc.errorFlag);
             if (test.proc.errorFlag) {
                 test.feedback = "Snap Error.";
             } else {
