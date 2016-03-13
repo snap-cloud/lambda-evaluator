@@ -1,7 +1,7 @@
 /*
   Control bars and user-facing buttons to interact with the autograder.
 */
-#autograding_bar {
+/*#autograding_bar {
   position: absolute;
   height: 1em;
   width:8em;
@@ -14,7 +14,7 @@
   -moz-user-select: none;
   -khtml-user-select: none;
   -ms-user-select: none;
-}
+}*/
 
 /*
 #outside-menu {

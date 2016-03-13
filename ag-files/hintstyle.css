@@ -168,6 +168,7 @@ table.results {
     content: "\25BC";
 }
 
+/* TODO: avoid this */
 span {
   text-transform: initial;
 }
@@ -178,7 +179,6 @@ span {
     margin-bottom: 10px;
     height: 40px;
     vertical-align: middle;
-    /*text-transform: uppercase;*/
     font-weight: 600;
     width: 81px;
     display: block;
@@ -219,21 +219,9 @@ span {
     /*margin: 0px;*/
 }
 
-#numtips {
-    display: inline-block;
-    padding: 1px 3px;
-    border: 1px solid #666666;
-    border-radius: 3px;
-    border-radius: 0px 4px 4px 0px;
-}
-
 .correct-inner-titles {
     margin-left: 40px;
 }
-
-/*.correct-details + label{
-    margin-left: 40px;
-}*/
 
 #incorrect-section {
     font-size: 25px;

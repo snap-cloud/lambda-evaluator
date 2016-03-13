@@ -14,12 +14,3 @@ IDE_Morph.prototype.openCloudDataString = function (name) {
         AGUpdate(world, id);
     }, 1000);
 }
-
-// AG-UI: Keep autograding bar aligned
-IDE_Morph.prototype.originalToggleStageSize = IDE_Morph.prototype.toggleStageSize;
-IDE_Morph.prototype.toggleStageSize = function (isSmall) {
-    this.originalToggleStageSize(isSmall);
-    setTimeout(function() {
-        moveAutogradingBar();
-    }, 100);
-};

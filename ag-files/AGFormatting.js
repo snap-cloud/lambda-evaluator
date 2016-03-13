@@ -2,6 +2,22 @@
 * Makes AG status bar reflect the ungraded state of the outputLog.
 */
 
+// Store all the data about the feedback bar in one place that can be updated.
+var FeedbackDisplay = {
+    // JQuery selectors. (Will need to update the rest of the file.)
+    selectors: {
+        header_background: '#ag-header',
+        ag_button: '#autograding_button',
+        dropdown: '.dropdown-menu',
+        revert_button: '#revert-button',
+        undo_button: '#undo-button',
+        reset_button: '#reset-button',
+        help_button: '#help-button'
+    }
+};
+
+var SELECT = FeedbackDisplay.selectors;
+
 var onclick_menu;
 var menu_style;
 var menu_right;
@@ -21,7 +37,7 @@ function AG_bar_ungraded(outputLog) {
     button_elem.fadeOut('fast', function() {
         button_elem.html(button_text);
         button_elem.slideDown('fast');
-        $('#autograding_button').css('background', 'orange');
+        button_elem.css('background', 'orange');
     }); 
      
     $('#autograding_button .hover_darken').show();
@@ -39,14 +55,14 @@ function AG_bar_ungraded(outputLog) {
  */
 function AG_bar_graded(outputLog) {
     var button_text = "Get Feedback  ";
-    var button_elem = $('#autograding_button span');
+    var button_elem = $(SELECT.ag_button);
     var regex = new RegExp(button_text,"g");
     if (button_elem.html().match(regex) !== null) {
         return;
     }
 
     button_elem.html(button_text);
-    $('#autograding_button').css('background', '#29A629');
+    button_elem.css('background', '#29A629');
     $('#autograding_button .hover_darken').hide();
     $('#onclick-menu').css('color', 'white');
     $('#feedback-button').html("Review Feedback");
@@ -58,7 +74,7 @@ function AG_bar_graded(outputLog) {
  */
 function AG_bar_semigraded(outputLog) {
     var button_text = "Get Feedback";
-    var button_elem = $('#autograding_button span');
+    var button_elem = $(SELECT.ag_button);
     var regex = new RegExp("FEEDBACK","g");
     var num_errors = outputLog.testCount - outputLog.numCorrect;
     var plural = "";
@@ -77,10 +93,13 @@ function AG_bar_semigraded(outputLog) {
 
 function AG_bar_nograde() {
     var button_text = "NOT GRADED";
-    var button_elem = $('#autograding_button span');
+    var button_elem = $(SELECT.ag_button);
     button_elem.html(button_text);
-    $('#autograding_button').css({"background":"gray", "cursor":"default"});
-    document.getElementById('autograding_button').style.pointerEvents = 'none';
+    button_elem.css({
+        "background": "gray",
+        "cursor": "default",
+        'pointerEvents': 'none'
+    });
 }
 
 /*
@@ -95,46 +114,19 @@ function replaceall(string, find, replace) {
 }
 
 /*
- * Re-format the contents of a the hint string to add HTML tags and
- * appropriate CSS. Return the re-formatted string.
- */
-function formatFeedback(hint) {
-    var tags = 
-    [['collapsedivstart', '<input class="toggle-box" id="expander' + String(id_problem) + '" type="checkbox" ><label for="expander' + String(id_problem) + '">Details</label><div id="table-wrapper">'], 
-    ['collapsedivend', '</div>'], 
-    ['linebreak', '<br /></br />'], 
-    ['tablestart', '<table class="results">'], 
-    ['tableend', '</table>'], 
-    ['rowstart', '<tr>'], 
-    ['rowend', '</tr>'], 
-    ['headstart', '<th class="titles" style="text-align: center;">'], 
-    ['headend', '</th>'], 
-    ['datastart', '<td class="data" style="text-align: center;">'], 
-    ['evenstart', '<td class="evens" style="text-align: center;">'],
-    ['dataend', '</td>'], 
-    ['correctstart', '<td class="correctans" style="text-align: center;">'],
-    ['wrongstart', '<td class="incorrectans" style="text-align: center;">'],
-    ['teststart', '<td class="tests" style="text-align: center;">'],
-    ['spanend', '</span>'], 
-    ['spanstart', '<span class="message">']];
+    Replace a blockSpec with a generated scriptPic of the block. If a pic isn't
+    found, use <code> tags.
+    Note: This should be used before DISPLAYING HTML, but not for the stuff
+    that will be logged to a DB.
+    @param{string} blockSpec
+    @param{string} hintHTML
+    @returns{string} html with the blockSpec replaced.
+*/
+function createBlockIamges(blockSpec, hintHTML) {
+    var blockImg = AG_UTIL.specToImage(blockImg),
+        regexp = new RegExp(blockSpec, 'gi');
 
-    var taglength = tags.length;
-    var message = String(hint.innerHTML);
-
-    for (var i = 0; i < taglength; i++) {
-        message = replaceall(message, tags[i][0], tags[i][1]);
-    }
-    return message;
-}
-
-
-function toggleMenu() {
-    var menu_items = document.getElementsByClassName("bubble")[0];
-    if (menu_items.id === "dropdown-closed") {
-        menu_items.id = "dropdown-open";
-    } else {
-        menu_items.id = "dropdown-closed";
-    }
+    return hintHTML.replace(regexp, blockImg);
 }
 
 function openPopup() {
@@ -377,8 +369,8 @@ function previousFeedbackButton() {
     menu_divider.classList.add("menu-item-sub-menu");
     menu_divider.id = "menu-divider";
 
-    $(".bubble").prepend(menu_divider);
-    $(".bubble").prepend(prev_feedback);
+    $(SELECT.dropdwn).prepend(menu_divider);
+    $(SELECT.dropdwn).prepend(prev_feedback);
 }
 
 
@@ -405,25 +397,6 @@ function initializeSnapAdditions(snapWorld, taskID) {
 
     ide = snapWorld.children[0];
 
-    // AUTOGRADER ADDITION - FEEDBACK FORMATTING
-    // Checks if problem has been checked and modifies the autograded output if it has been checked
-
-    /*if (isEDX && parent.document.getElementsByClassName("message")[id_problem]) {
-        var hint = parent.document.getElementsByClassName("message")[id_problem];
-        hint.innerHTML = formatFeedback(hint);
-        hint.style.display = "inline";
-    }*/
-
-    // AUTOGRADER ADDITION
-    // Check if Pre-requisite task has completed
-    /*var req_check = parent.document.getElementById("pre_req");
-    if (preReqTaskID !== null) {
-        var preReqLog = JSON.parse(sessionStorage.getItem(preReqID + "_test_log"));
-        if ((preReqLog === null || !preReqLog.allCorrect) && req_check) {
-            req_check.innerHTML = "[WARNING: The previous task must be completed before continuing.]"
-        }
-    }*/
-
     setTimeout(function() {
         // If page has already been loaded, restore previously tested XML
         // TODO: Separate this into its own function.
@@ -443,13 +416,13 @@ function initializeSnapAdditions(snapWorld, taskID) {
     var reset_button = document.getElementById("reset-button");
     var revert_button = document.getElementById("revert-button");
     var undo_button = document.getElementById("undo-button");
+    
     var menu_button = document.getElementsByClassName("hover_darken")[0];
-    var help_overlay = document.getElementById('overlay');
-    var results_overlay = document.getElementById("ag-output");
+    
+    var help_overlay = $('#overlay');
+    
+    var results_overlay = $("#ag-output");
     var regrade_buttons = document.getElementsByClassName("regrade");
-    var grade_button = document.getElementById("autograding_button");
-    var world_canvas = document.getElementById('world');
-    var snap_menu = document.getElementsByClassName('bubble')[0];
 
     if (showPrevFeedback) {
         var feedback_button = document.getElementById("feedback-button");
@@ -457,55 +430,38 @@ function initializeSnapAdditions(snapWorld, taskID) {
     }
 
 
+    // TODO: Reduce the scope of this?
     document.addEventListener(
         "click",
         function() {
             grayOutButtons(snapWorld, taskID);
         }
     );
-    snap_menu.addEventListener('click', popup_listener);
+    // snap_menu.addEventListener('click', popup_listener);
     reset_button.onclick = function () {
         resetState(snapWorld, taskID);
-        toggleMenu(taskID);
     };
     revert_button.onclick = function (e) {
         revertToBestState(snapWorld, taskID);
-        toggleMenu(taskID);
     };
     undo_button.onclick = function (e) {
         revertToLastState(snapWorld, taskID);
-        toggleMenu(taskID);
-    };
-    menu_button.onclick = function (e) {
-        toggleMenu(taskID);
     };
 
-    help_overlay.onclick = function(e) {
+    help_overlay.click(function(e) {
         closePopup();
-    }
+    });
 
-    results_overlay.onclick = function(e) {
+    results_overlay.click(function(e) {
         if (!(document.getElementById('ag-results').contains(e.target)) && e.target.className.indexOf("regrade") === -1) {
             closeResults();
         }
-    }
-
-    world_canvas.onclick = function(e) {
-        if (document.getElementById('dropdown-open') !== null && !(document.getElementById('onclick-menu').contains(e.target))) {
-            toggleMenu();
-        }
-    }
-
-    var popup_listener = function(event) {
-        event.stopPropagation();
-    }
+    });
 
     $(".bubble").mouseover(moveHelp);
 
-    var initial_overlay = document.getElementById('initial-help');
-    if (initial_overlay) {
-        initial_overlay.onclick = function(e) { closeInitialHelp(); }
-    }
+    var initial_overlay = $('#initial-help');
+    initial_overlay.click(function(e) { closeInitialHelp(); });
 
     checkButtonExists = false;
     if (isEDX) {
@@ -583,30 +539,13 @@ function initializeSnapAdditions(snapWorld, taskID) {
             sessionStorage.removeItem(taskID + "_popupFeedback");
         }
         grayOutButtons(snapWorld, taskID);
-        moveAutogradingBar();
 
         var tip_tests = document.getElementsByClassName("data");
-        for(var i=0; i < tip_tests.length; i++){
+        for(var i = 0; i < tip_tests.length; i++){
             tip_tests[i].style.maxWidth = document.getElementsByClassName("inner-titles")[0].offsetWidth - 50 + "px";
         }
-
-        // TODO: These can be extracted into their own file.
-        StageHandleMorph.prototype.originalFixLayout = StageHandleMorph.prototype.fixLayout;
-        StageHandleMorph.prototype.fixLayout = function() {
-            this.originalFixLayout();
-            if (this.target.width() > 225) {
-                if (this.target.width() > 390) {
-                    $('#autograding_bar').css({
-                        right: 150,
-                        left: 'auto',
-                    });
-                } else {
-                    $('#autograding_bar').css({
-                        left:  this.target.left() - 140,
-                    });
-                }
-            }
-        }
+        
+    // FIXME -- this might be wrong
     }, 1000);
 
     setTimeout(function() {
