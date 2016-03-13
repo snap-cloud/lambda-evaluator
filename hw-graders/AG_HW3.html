@@ -547,22 +547,22 @@
 
         function openPopup(){
             var overlay = document.getElementById('overlay');
-            overlay.classList.remove("is-hidden");
+            overlay.classList.remove("hidden");
         }
 
         function closePopup(){
             var overlay = document.getElementById('overlay');
-            overlay.classList.add("is-hidden");
+            overlay.classList.add("hidden");
         }
 
         function openResults(){
             var overlay = document.getElementById('ag-output');
-            overlay.classList.remove("is-hidden");
+            overlay.classList.remove("hidden");
         }
 
         function closeResults(){
             var overlay = document.getElementById('ag-output');
-            overlay.classList.add("is-hidden");
+            overlay.classList.add("hidden");
         }
 
         function populateFeedback(outputLog) {
@@ -1100,7 +1100,7 @@
 <!-- Autograding Menu Help Button -->
 <!-- <div style="display:inline-block" class="AG-help-button" id="circle" onclick="openPopup();">?
 </div> -->
-<div class="overlay is-hidden" id="overlay">
+<div class="overlay hidden" id="overlay">
     <div class="popup-content" id="help-popup">
         <span class="button-close" onclick="closePopup();">X</span>
             <p>
@@ -1133,7 +1133,7 @@
 
 <div style="display:inline-block" class="view-results" id="circle" onclick="openResults();">Results
 </div>
-<div class="overlay is-hidden" id="ag-output">
+<div class="overlay hidden" id="ag-output">
     <div class="popup-content" id="ag-results">
         <span class="button-close" onclick="closeResults();" id="popup">X</span>
         <p id = "different-feedback"></p>
