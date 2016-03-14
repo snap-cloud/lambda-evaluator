@@ -234,7 +234,17 @@ FeedbackLog.prototype.startSnapTest = function(test) {
                 test.feedback = "Test Timeout Occurred.";
             }
             test.output = "INVALID";
-            stage.threads.stopProcess(getScript(test.blockSpec), test.sprite);
+            //stage.threads.stopProcess(getScript(test.blockSpec), test.sprite);
+            var index = 0;
+            var ide = fb_log.snapWorld.children[0];
+            for (var i = 0; i < ide.sprites.contents.length; i++) {
+                console.log(ide.sprites.contents[i].name);
+                if (ide.sprites.contents[i].name === test.sprite.name) {
+                    index = i;
+                }
+            }
+
+            stage.threads.stopProcess(getScript(test.blockSpec, index));
         }, timeout);
         this.currentTimeout = timeout_id;
         return this;
