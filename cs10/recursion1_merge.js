@@ -17,6 +17,8 @@ var graded = true;
 var showFeedback = true;
 // to allow ability to regrade certain tests, set this to true
 var regradeOn = true;
+// Show Points
+var showPoints = true;
 
 function AGTest() {
     var fb = new FeedbackLog(

@@ -39,7 +39,7 @@ function AG_bar_ungraded(outputLog) {
     }); 
     
     // $('#autograding_button .hover_darken').show(); 
-    $('#onclick-menu').css('color', 'white');
+    // $('#onclick-menu').css('color', 'white');
     if (sessionStorage.getItem(outputLog.taskID + "_test_log")) {
         $('#feedback-button').html("View Previous Feedback");
     } else {
@@ -62,7 +62,7 @@ function AG_bar_graded(outputLog) {
     button_elem.html(button_text);
     button_elem.css('background', '#29A629');
     $('#autograding_button .hover_darken').hide();
-    $('#onclick-menu').css('color', 'white');
+    // $('#onclick-menu').css('color', 'white');
     $('#feedback-button').html("Review Feedback");
 }
 
@@ -84,9 +84,10 @@ function AG_bar_semigraded(outputLog) {
     }
 
     button_elem.html(button_text);
-    $('#autograding_button').css('background', 'red');
-    $('#autograding_button .hover_darken').show();
-    $('#onclick-menu').css('color', 'orange');
+    setVisualGradedState('incorrect');
+    // $('#autograding_button').css('background', 'red');
+    // $('#autograding_button .hover_darken').show();
+    // $('#onclick-menu').css('color', 'orange');
 }
 
 function AG_bar_nograde() {
@@ -127,14 +128,18 @@ function createBlockIamges(blockSpec, hintHTML) {
     return hintHTML.replace(regexp, blockImg);
 }
 
+/*
+    TODO: Rename This Function
+*/
 function openPopup() {
-    var overlay = document.getElementById('overlay');
-    overlay.classList.remove("hidden");
+    $('#overlay').removeClass("hidden");
 }
 
+/*
+    TODO: Rename This Function
+*/
 function closePopup() {
-    var overlay = document.getElementById('overlay');
-    overlay.classList.add("hidden");
+    $('#overlay').addClass("hidden");
 }
 
 function openResults() {
@@ -142,8 +147,7 @@ function openResults() {
 }
 
 function closeResults() {
-    var overlay = document.getElementById('ag-output');
-    overlay.classList.add("hidden");
+    $('#ag-output').addClass("hidden");
 }
 
 function addBasicHeadings() {
@@ -205,22 +209,22 @@ function grayOutButtons(snapWorld, taskID) {
     var c_prev_xml = sessionStorage.getItem(taskID + "_c_test_state");
     var prev_xml = sessionStorage.getItem(taskID + "_test_state");
 
-    var revert_button = document.getElementById("revert-button");
+    var revert_button = $("#revert-button");
     if (c_prev_xml === null || isSameSnapXML(c_prev_xml, curr_xml)) {
-        revert_button.style.pointerEvents = "none";
-        revert_button.parentNode.id = "disabled-button";
+        revert_button.css('pointer-events', "none");
+        revert_button.addClass('disabled-button').removeClass('enabled-button');
     } else {
-        revert_button.parentNode.id = "enabled-button";
-        revert_button.style.pointerEvents = "auto";
+        revert_button.css('pointer-events', 'auto');
+        revert_button.addClass('enabled-button').removeClass('disabled-button');
     }
 
-    var undo_button = document.getElementById("undo-button");
+    var undo_button = $("#undo-button");
     if (prev_xml === null || isSameSnapXML(prev_xml, curr_xml)) {
-        undo_button.style.pointerEvents = "none";
-        undo_button.parentNode.id = "disabled-button";
+        undo_button.css('pointer-events', "none");
+        undo_button.addClass('disabled-button').removeClass('enabled-button');
     } else {
-        undo_button.parentNode.id = "enabled-button";
-        undo_button.style.pointerEvents = "auto";
+        undo_button.css('pointer-events', 'auto');
+        undo_button.addClass('enabled-button').removeClass('disabled-button');
     }
 }
 
@@ -394,17 +398,35 @@ function initializeSnapAdditions(snapWorld, taskID) {
 
     ide = snapWorld.children[0];
 
+    // Load a starter file.
     setTimeout(function() {
         // If page has already been loaded, restore previously tested XML
         // TODO: Separate this into its own function.
         // Moved this into the timeout so that keys in session storage have time to be set from setstate in AGEDX before they are called
         var prev_xml = sessionStorage.getItem(taskID + "_test_state");
+        var starter_xml = sessionStorage.getItem(taskID + "starter_file");
         if (prev_xml !== null) {
+            console.log('OPENING PREV XML');
             ide.openProjectString(prev_xml);
         } else if (preReqTaskID !== null) {
             if (preReqLog !== null && preReqLog.allCorrect) {
+                console.log('OPENING PREV SUBMISSION');
                 ide.openProjectString(sessionStorage.getItem(preReqID));
             }
+        } else if (starter_xml) {
+            console.log('OPENING STARTER FROM SESSION');
+            ide.openProjectString(starter_xml);
+            sessionStorage.removeItem(taskID + "starter_file");
+        } else if (starter_path) {
+            console.log('MAKING XHR FOR STARTER FILE');
+            ide.showMessage('Loading the starter file.');
+            $.get(
+                starter_path,
+                function(data) {
+                    ide.openProjectString(data);
+                }, 
+                "text"
+            );
         }
     }, 500);
 
@@ -418,8 +440,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
     var regrade_buttons = document.getElementsByClassName("regrade");
 
     if (showPrevFeedback) {
-        var feedback_button = document.getElementById("feedback-button");
-        feedback_button.onclick = function() { openResults(); };
+        $("#feedback-button").click(function() { openResults(); });
     }
 
 
@@ -527,30 +548,18 @@ function initializeSnapAdditions(snapWorld, taskID) {
         }
         grayOutButtons(snapWorld, taskID);
 
-        var tip_tests = document.getElementsByClassName("data");
-        var offSetWidth = $("inner-titles")[0].offsetWidth - 50 + "px";
-        for(var i = 0; i < tip_tests.length; i++){
-            tip_tests[i].style.maxWidth = offSetWidth;
+        var tip_tests = $(".data"),
+            offsetWidth = $(".inner-titles");
+        // FIXME -- WHY IS THIS ERRORING
+        if (offsetWidth.length) {
+            offsetWidth = offsetWidth[0].offsetWidth - 50 + "px";
+        } else {
+            offsetWidth = 0;
         }
-        
-    // FIXME -- this might be wrong
-    }, 1000);
-
-    setTimeout(function() {
-        var starter_xml = sessionStorage.getItem(taskID + "starter_file");
-        if (starter_xml) {
-            ide.openProjectString(starter_xml);
-            sessionStorage.removeItem(taskID + "starter_file");
-        } else if (starter_path) {
-            ide.showMessage('Loading the starter file.');
-            $.get(
-                starter_path,
-                function(data) {
-                    ide.openProjectString(data);
-                }, 
-                "text"
-            );
-        }
+        for (var i = 0; i < tip_tests.length; i += 1) {
+            console.log('TIP TESTS');
+            tip_tests[i].css('max-width', offsetWidth);
+        }        
     }, 1500);
 }
 
@@ -568,9 +577,17 @@ function doExecAndDisplayTests(event) {
     outputLog.numAttempts += 1;
     runAGTest(world, id, outputLog);
 
-    var tip_tests = document.getElementsByClassName("data");
+    var tip_tests = document.getElementsByClassName("data"),
+        offsetWidth = $(".inner-titles");
+    if (offsetWidth.length) {
+        offsetWidth = offsetWidth[0].offsetWidth - 50 + "px";
+    } else {
+        console.log('offset 0');
+        offsetWidth = 0;
+    }
     for(var i = 0; i < tip_tests.length; i++) {
-        tip_tests[i].style.maxWidth = document.getElementsByClassName("inner-titles")[0].offsetWidth - 50 + "px";
+        console.log('tip_tests');
+        tip_tests[i].style.maxWidth = offsetWidth;
     }
     sessionStorage.setItem(id + "_popupFeedback", '');
 }
@@ -662,6 +679,30 @@ function createCorrectIncorrectGrouping(sectName) {
 }
 
 /*
+    Returns an CSS color based on a status string.
+    If status isn't found, then assume status is a valid color.
+*/
+function getStatusColor(status) {
+    switch (status) {
+    case 'correct':
+        return 'rgba(0, 255, 0, 0.6)';
+    case 'incorrect':
+        return 'rgba(240, 0, 0, 0.6)';
+    case 'changed':
+        return 'rgba(255, 127, 0, 0.6)';
+    default:
+        return status;
+    }
+}
+/*
+    Sets the background color of the AG controls bar to the right color.
+*/
+function setVisualGradedState(status) {
+    var color = getStatusColor(status);
+    $(SELECT.header_background).css('background-color', color);
+}
+
+/*
     TODO: Update this to use jQuery, and maybe _.template() ?
     http://underscorejs.org/#template
     * This should be broken into at least a few functions
@@ -672,21 +713,22 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     var i, j, x;
     
     // TODO: Extract this function
-    document.getElementById("toggle-correct-tests").onclick = function () {
-        if (toggleButton.classList.contains("isOff")) {
-            toggleButton.classList.remove("isOff");
+    $("#toggle-correct-tests").click(function() {
+        var toggleButton = $("#toggle-correct");
+        if (toggleButton.hasClass("isOff")) {
+            toggleButton.removeClass("isOff");
             allFeedback = true;
-            toggleButton.innerHTML = "Hide Correct Tests";
+            toggleButton.html("Hide Correct Tests");
         } else {
-            toggleButton.classList.add("isOff");
+            toggleButton.addClass("isOff");
             allFeedback = false;
-            toggleButton.innerHTML = "Show Correct Tests";
+            toggleButton.html("Show Correct Tests");
         }
         populateFeedback(feedbackLog, allFeedback);
         setTimeout(function() {
             openResults();
         }, 100);
-    }
+    });
 
     var comment = document.getElementById("comment");
     comment.innerHTML = "";
@@ -744,10 +786,10 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
         // TODO: Document this
 
         for (x = 0; x < tips.length; x++) {
-            var tip = tips[x];
             var allFeedback = typeof allFeedback !== 'undefined' ? allFeedback : false;
-            var div = document.createElement("div");
+            var tip = tips[x];
             var label_class = "incorrectans";
+            var div = document.createElement("div");
             var current_chunk = document.getElementsByClassName("incorrect-chunk" + i)[0];
             if (tip.allCorrect) {
                 document.getElementById("correct-section").style.display = "block";
@@ -779,10 +821,9 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             for (j = 0; j < allTests.length; j++) {
                 var newRow = document.createElement("tr");
                 var thisTest = allTests[j];
-                var testPoints = "";
-                if (showPoints) {
-                    testPoints = "({0}) ".format(pluralizeWithNum('point', thisTest.points));
-                }
+                var testPoints = showPoints ? "({0}) ".format(
+                        pluralizeWithNum('point', thisTest.points)
+                    ) : '';
                 
                 if (thisTest.testClass !== "r") {
                     if (document.getElementsByClassName("observations-section" + i + x[0]) !== []) {
@@ -802,7 +843,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             // TODO: What's this for?
                         }
                     }
-                    
+
                     if (thisTest.correct) {
                         correct_assertions += 1;
                         if (allFeedback || tip.allCorrect) {
@@ -912,6 +953,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             } else {
                                 htmlString += '<p class="data assertion">passed the tests.</p>';
                             }
+                            // TODO: Make a block ==> image call here!
                             string_reporter.innerHTML = htmlString;
                             // TODO: Clean up this...
                             document.getElementsByClassName(
@@ -1033,7 +1075,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     var problemPoints = '';
     if (showPoints) {
         problemPoints = " ({0} possible {1}) ".format(
-            points, pluralize('point', Math.round(log.totalPoints))
+            log.totalPoints, pluralize('point', Math.round(log.totalPoints))
         );
     }
 
