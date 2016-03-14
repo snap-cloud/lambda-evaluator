@@ -1,22 +1,7 @@
 /*
   Control bars and user-facing buttons to interact with the autograder.
 */
-/*#autograding_bar {
-  position: absolute;
-  height: 1em;
-  width:8em;
-  right: 16em;
-  top: 3px;
-  font-size: 0.9em;
-  color: white;
-  text-align: right;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -ms-user-select: none;
-}*/
 
-/*
 #outside-menu {
   width: 100%;
   height: 100vh;
@@ -28,101 +13,6 @@
   font-weight: bold;
   height: 100%;
   top: 0px;
-}
-
-#autograding_button {
-  position: absolute;
-  height: 1.25em;
-  width: 6.7em;
-  right: 0px;
-  padding: 2px 3px 2px 3px;
-  text-align: center;
-  border-radius:0px 4px 4px 0px;
-  background-color: #333333;
-  font-size: 0.9em;
-  display:inline-block;
-
-  -moz-transition: all 0.5s;
-  -webkit-transition: all 0.5s;
-  transition: all 0.5s;
-
-  border:1px solid #666666;
-  cursor: pointer;
-}
-
-
-#autograding_button > .hover_darken {
-    position:absolute;
-    width: 7.04em;
-    height: 100%;
-    top:0px;
-    right:0em;
-    background-color: #000;
-    opacity: 0.1;
-    border-radius: 0px 4px 4px 0px;
-}
-
-#autograding_button:hover > .hover_darken {
-    opacity: 0;
-}
-
-#onclick-menu > .hover_darken {
-    position:absolute;
-    width:calc(100%);
-    height: calc(100%);
-    top:0px;
-    background-color:#000000;
-    opacity: 0.1;
-    border-radius: 4px 0px 0px 4px;
-    right: 0em;
-}
-#onclick-menu:hover > .hover_darken {
-    opacity:0;
-}
-
-.onclick-menu {
-    position: absolute;
-    display: inline-block;
-    color: white;
-    cursor: pointer;
-    outline: 0;
-    outline: none;
-    right: 7.4em;
-    height:1.25em;
-    margin-right: -5px;
-    margin-left: 0px;
-    padding-left:3px;
-    padding-right:3px;
-    -moz-transition: color 0.8s;
-    -webkit-transition: color 0.8s;
-    transition: color 0.8s;
-    border:1px solid #666666;
-    border-radius:4px 0px 0px 4px;
-}
-
-.onclick-menu:before {
-    content: &#9776;
-}
-
-.onclick-menu span {
-  line-height:1em;
-  font-size:1.3em;
-}
-
-.onclick-menu nav {
-  color: white;
-}
-
-.menu-item-sub-menu{
-    list-style-type:none;
-    padding: 1px 3px;
-    font-size: 12px;
-    color: black;
-}
-
-.menu-divider-sub-menu{
-    list-style-type:none;
-    padding:0px;
 }
 
 
@@ -137,86 +27,12 @@
     width: auto;
 }
 
-#menu-divider {
-  background-color: rgb(75, 75, 75);
-  height:2px;
-}
-
-#dropdown-closed {
-    position: absolute;
-    padding-left: 0;
-    min-width: 175px;
-    text-align: left;
-    padding: 5px;
-    z-index: 999;
-    right: -10px;
-
-    visibility: hidden;
-    list-style-type:none;
-    position: absolute;
-
-    background-color: #666666;
-}
-
-#dropdown-open {
-    right: -10px;
-    visibility: visible;
-    outline: 0;
-    outline: none;
-    position: absolute;
-    padding-left: 0;
-    min-width: 175px;
-    text-align: left;
-    padding: 5px;
-    z-index: 0;
-}
-
-.bubble {
-    position: relative;
-    padding: 0px;
-    background-color: white;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    border: #3C3C3C solid 2px;
-    box-shadow: 3px 3px 10px #000000;
-}
-
-.bubble:after {
-    content: '';
-    position: absolute;
-    border-style: solid;
-    border-width: 0 10px 12px;
-    border-color: white transparent;
-    display: block;
-    width: 0;
-    z-index: -1;
-    top: -10px;
-    left: 153px;
-}
-
-.bubble:before {
-    content: '';
-    position: absolute;
-    border-style: solid;
-    border-width: 0 9px 11px;
-    border-color: #3C3C3C transparent;
-    display: block;
-    width: 0;
-    z-index: -2;
-    top: -12px;
-    left: 154px;
-}
 
 #disabled-button {
     background: rgba(0, 0, 0, 0.2);
     cursor: default;
 }
 
-
-.is-hidden {
-  display: none;
-}
 
 .AG-help-button {
   letter-spacing: -0.5px;
@@ -265,7 +81,6 @@
   height: 100%;
   background: rgba(0,0,0,0.6);
   overflow: auto;
-
 }
 
 .popup-content {
@@ -418,4 +233,3 @@
     width: 7em;
     font-size: 0.75em;
 }
-*/

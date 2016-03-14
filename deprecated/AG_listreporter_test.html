@@ -225,7 +225,7 @@
 
             //Initialize AGSB button.
             var grade_button = document.getElementById("autograding_button");
-            grade_button.addEventListener('click', button_listener);
+            grade_button.addEventListener('click', doExecAndDisplayTests);
             var world_canvas = document.getElementById('world');
             world_canvas.addEventListener("mouseup", update_listener);
             // Start Snap Environment Loop

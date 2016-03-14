@@ -892,7 +892,7 @@
                 var outputLog = AGUpdate(world, id);
                 populateFeedback(outputLog);
             };
-            var button_listener = function(event) {
+            var doExecAndDisplayTests = function(event) {
                 event.stopPropagation();
                 console.log('PROPAGATION SHOULD STOP');
                 var numAttempts = setNumAttempts(id);
@@ -904,7 +904,7 @@
                 } 
                 // var outputLog = AGStart(world, id);
             }
-            grade_button.addEventListener('click', button_listener);
+            grade_button.addEventListener('click', doExecAndDisplayTests);
             var world_canvas = document.getElementById('world');
             world_canvas.addEventListener("mouseup", update_listener);
 

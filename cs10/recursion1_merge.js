@@ -18,7 +18,7 @@ var showFeedback = true;
 // to allow ability to regrade certain tests, set this to true
 var regradeOn = true;
 
-function AGTest(outputLog) {
+function AGTest() {
     var fb = new FeedbackLog(
         world,
         id,

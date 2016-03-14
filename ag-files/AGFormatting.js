@@ -6,30 +6,28 @@
 var FeedbackDisplay = {
     // JQuery selectors. (Will need to update the rest of the file.)
     selectors: {
+        // The entire nav bar div
         header_background: '#ag-header',
+        // Specific 'Get Feedback' button element
         ag_button: '#autograding_button',
+        // Button + menu items Formerly 'onclick-menu'
+        ag_menu: '#ag-menu-group',
+        // Formerly .bubble
         dropdown: '.dropdown-menu',
         revert_button: '#revert-button',
         undo_button: '#undo-button',
         reset_button: '#reset-button',
-        help_button: '#help-button'
+        help_button: '#help-button',
+        ag_html_output: '#comment'
     }
 };
 
 var SELECT = FeedbackDisplay.selectors;
 
-var onclick_menu;
-var menu_style;
-var menu_right;
-
-var button;
-var button_style;
-var button_right;
-
 // TODO: Pull out first 6 lines in a shared function
 function AG_bar_ungraded(outputLog) {
     var button_text = "Get Feedback ";
-    var button_elem = $('#autograding_button span');
+    var button_elem = $('#autograding_button');
     var regex = new RegExp(button_text,"g");
     if (button_elem.html().match(regex) !== null) {
         return;
@@ -39,8 +37,8 @@ function AG_bar_ungraded(outputLog) {
         button_elem.slideDown('fast');
         button_elem.css('background', 'orange');
     }); 
-     
-    $('#autograding_button .hover_darken').show();
+    
+    // $('#autograding_button .hover_darken').show(); 
     $('#onclick-menu').css('color', 'white');
     if (sessionStorage.getItem(outputLog.taskID + "_test_log")) {
         $('#feedback-button').html("View Previous Feedback");
@@ -131,22 +129,21 @@ function createBlockIamges(blockSpec, hintHTML) {
 
 function openPopup() {
     var overlay = document.getElementById('overlay');
-    overlay.classList.remove("is-hidden");
+    overlay.classList.remove("hidden");
 }
 
 function closePopup() {
     var overlay = document.getElementById('overlay');
-    overlay.classList.add("is-hidden");
+    overlay.classList.add("hidden");
 }
 
 function openResults() {
-    var overlay = document.getElementById('ag-output');
-    overlay.classList.remove("is-hidden");
+    $('#ag-output').removeClass("hidden");
 }
 
 function closeResults() {
     var overlay = document.getElementById('ag-output');
-    overlay.classList.add("is-hidden");
+    overlay.classList.add("hidden");
 }
 
 function addBasicHeadings() {
@@ -229,7 +226,7 @@ function grayOutButtons(snapWorld, taskID) {
 
 
 function makeOverlayButton() {
-    var grade_button = document.getElementById("autograding_button");
+    var grade_button = $("#autograding_button");
     var overlay_button = parent.document.createElement('button');
     var overlay_button_text = parent.document.createTextNode('Grade');
     overlay_button.appendChild(overlay_button_text);
@@ -293,7 +290,7 @@ function moveAutogradingBar() {
 
 function closeInitialHelp() {
     var initial_overlay = document.getElementById("initial-help");
-    initial_overlay.classList.add("is-hidden");
+    initial_overlay.classList.add("hidden");
 }
 
 function setInitialHelpDisplay(bool) {
@@ -375,7 +372,7 @@ function previousFeedbackButton() {
 
 
 function initializeSnapAdditions(snapWorld, taskID) {
-    var prevFeedbackButton = false;
+    var prevFeedbackButton = false, ide;
     if (!hasShownInitalHelp()) {
         createInitialHelp();
         moveHelp();
@@ -413,14 +410,10 @@ function initializeSnapAdditions(snapWorld, taskID) {
 
     var prev_log = JSON.parse(sessionStorage.getItem(taskID + "_test_log"));
 
-    var reset_button = document.getElementById("reset-button");
-    var revert_button = document.getElementById("revert-button");
-    var undo_button = document.getElementById("undo-button");
-    
     var menu_button = document.getElementsByClassName("hover_darken")[0];
-    
+
     var help_overlay = $('#overlay');
-    
+
     var results_overlay = $("#ag-output");
     var regrade_buttons = document.getElementsByClassName("regrade");
 
@@ -437,17 +430,19 @@ function initializeSnapAdditions(snapWorld, taskID) {
             grayOutButtons(snapWorld, taskID);
         }
     );
-    // snap_menu.addEventListener('click', popup_listener);
-    reset_button.onclick = function () {
-        resetState(snapWorld, taskID);
-    };
-    revert_button.onclick = function (e) {
-        revertToBestState(snapWorld, taskID);
-    };
-    undo_button.onclick = function (e) {
-        revertToLastState(snapWorld, taskID);
-    };
 
+    var reset_button = $("#reset-button");
+    var revert_button = $("#revert-button");
+    var undo_button = $("#undo-button");
+    reset_button.click(function () {
+        resetState(snapWorld, taskID);
+    });
+    revert_button.click(function (e) {
+        revertToBestState(snapWorld, taskID);
+    });
+    undo_button.click(function (e) {
+        revertToLastState(snapWorld, taskID);
+    });
     help_overlay.click(function(e) {
         closePopup();
     });
@@ -458,7 +453,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
         }
     });
 
-    $(".bubble").mouseover(moveHelp);
+    $(SELECT.dropdown).mouseover(moveHelp);
 
     var initial_overlay = $('#initial-help');
     initial_overlay.click(function(e) { closeInitialHelp(); });
@@ -513,14 +508,6 @@ function initializeSnapAdditions(snapWorld, taskID) {
     }, 1000);
 
     setTimeout(function() {
-        onclick_menu = document.getElementById('onclick-menu');
-        menu_style = window.getComputedStyle(onclick_menu);
-        menu_right = menu_style.getPropertyValue('right');
-
-        button = document.getElementById('autograding_button');
-        button_style = window.getComputedStyle(button);
-        button_right = button_style.getPropertyValue('right');
-
         var outputLog;
         if (prev_log) {
             outputLog = prev_log;
@@ -534,15 +521,16 @@ function initializeSnapAdditions(snapWorld, taskID) {
         // called twice at the very beginning...
         if (showFeedback && sessionStorage.getItem(taskID + "_popupFeedback") !== null) {
             populateFeedback(outputLog); 
-            populateFeedback(outputLog);
+            // populateFeedback(outputLog);
             openResults();
             sessionStorage.removeItem(taskID + "_popupFeedback");
         }
         grayOutButtons(snapWorld, taskID);
 
         var tip_tests = document.getElementsByClassName("data");
+        var offSetWidth = $("inner-titles")[0].offsetWidth - 50 + "px";
         for(var i = 0; i < tip_tests.length; i++){
-            tip_tests[i].style.maxWidth = document.getElementsByClassName("inner-titles")[0].offsetWidth - 50 + "px";
+            tip_tests[i].style.maxWidth = offSetWidth;
         }
         
     // FIXME -- this might be wrong
@@ -568,10 +556,12 @@ function initializeSnapAdditions(snapWorld, taskID) {
 
 // Call the test suite when this element is clicked.
 var update_listener = function() {
+    // TODO: Why is `var` here?
     var outputLog = AGUpdate(world, id);
 };
 
-var button_listener = function(event) {
+// Called from "Get Feedback Button" -- begins test execution
+function doExecAndDisplayTests(event) {
     event.stopPropagation();
     var numAttempts = setNumAttempts(id);
     outputLog = new FeedbackLog(world, id, numAttempts);
@@ -580,13 +570,13 @@ var button_listener = function(event) {
 
     var tip_tests = document.getElementsByClassName("data");
     for(var i = 0; i < tip_tests.length; i++) {
-        tip_tests[i].style.maxWidth = String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px";
+        tip_tests[i].style.maxWidth = document.getElementsByClassName("inner-titles")[0].offsetWidth - 50 + "px";
     }
-    sessionStorage.setItem(id + "_popupFeedback", "");
+    sessionStorage.setItem(id + "_popupFeedback", '');
 }
 
 function moveHelp() {
-    var pos = $(".bubble").offset();
+    var pos = $(SELECT.dropdown).offset();
     var menu_pos = $("#onclick-menu").offset();
 
     $("#menu-item-help").css({
@@ -656,22 +646,6 @@ function addReporterHeadings(selector) {
         newRow.appendChild(header);
     }
     selector.appendChild(newRow);
-}
-
-function createCollapsibleCorrectSection(selector) {
-    var identifier = "something";
-    var correct_collapse = document.createElement("div");
-    var correct_tip = document.createElement("div");
-    correct_tip.id = "correct-tip" + String(identifier);
-    correct_tip.classList.add("correct-tip");
-
-    correct_collapse.innerHTML = '<br><input class="details correct-details" id="correct-expander' + String(identifier) + '" type="checkbox" ><label for="correct-expander' + String(identifier) + '">' + "Here are the parts you did correctly!" + '</label><div id="correct-table-wrapper' + String(identifier) + '">';
-    correct_collapse.innerHTML = '<br><div class="toggle-correct" id="toggle-correct' + String(identifier) + '">Click Here</div><span class="correct-expander correct-expander' + String(identifier) + '">Here are the parts you did correctly!</span><div id="correct-table-wrapper' + String(identifier) + '">';
-    correct_collapse.innerHTML = '<br><div class="toggle-correct" id="toggle-correct' + String(identifier) + '">See Correct Tests</div><div id="correct-table-wrapper' + String(identifier) + '">';
-
-    selector.insertBefore(correct_tip, selector.firstChild);
-
-    correct_tip.appendChild(correct_collapse);
 }
 
 function createCorrectIncorrectGrouping(sectName) {
@@ -1073,18 +1047,10 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     }
     $("#comment").html(tipText);
 
-    onclick_menu.style.right = menu_right;
-    button.style.right = button_right;
     tipsDiv.innerHTML = pluralizeWithNum('tip', numtips);
-    var tipwidth = tipsDiv.offsetWidth;
 
-    // TODO: Make this a function.
-    onclick_menu.style.right = +(menu_right.slice(0, menu_right.length - 2)) + tipwidth - 2 + "px";
-    button.style.right = +(button_right.slice(0, button_right.length - 2)) + tipwidth - 2 + "px";
-    button.style.borderRadius = "0px";
-
-    var toggleButton = document.getElementById("toggle-correct");
-    toggleButton.style.display = tipHasCorrectTest ? 'block' : 'none';
+    // TODO: FIX THIS -- button seems to be missing??
+    $("#toggle-correct").css('display', tipHasCorrectTest ? 'block' : 'none');
 
     if (!isEDX) {
         // No Credit Warning Commented out because it doesn't apply to bCourses.

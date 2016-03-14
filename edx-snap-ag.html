@@ -62,7 +62,7 @@
             ide.toggleStageSize(true);
             // Initialize AGSB button.
             grade_button = document.getElementById("autograding_button");
-            grade_button.addEventListener('click', button_listener);
+            grade_button.addEventListener('click', doExecAndDisplayTests);
             world_canvas.addEventListener("mouseup", update_listener);
             // Load a remote specified file that contains the AG test
             //loadTestJS();

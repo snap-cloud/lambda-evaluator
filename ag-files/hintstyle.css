@@ -43,13 +43,13 @@ table.results {
   font-size: 20px;
  }
 
-  th.titles {
-    background-color: #4F5150;
-    color: white;
-    font-weight: normal;
-    padding: 5px 2px;
-    /*text-align: center;*/
-  }
+th.titles {
+  background-color: #4F5150;
+  color: white;
+  font-weight: normal;
+  padding: 5px 2px;
+  /*text-align: center;*/
+}
 
   .data {
     color: #4F5150;
@@ -64,19 +64,13 @@ table.results {
 
   }
 
-  .hidden {
-    white-space: normal;
-    padding: 3px 20px;
-    visibility: hidden;
-    width: 20px;
-  }
 
-  td.regrade {
-    color: red;
-    white-space: normal;
-    padding: 3px 20px;
-    width: 20px;
-  }
+td.regrade {
+  color: red;
+  white-space: normal;
+  padding: 3px 20px;
+  width: 20px;
+}
 
 
 .correctans, .incorrectans, .tests {
@@ -261,6 +255,7 @@ span {
 }*/
 
 #ag-results {
+  z-index: 100;
    /*width: 300px;
    height: 100px;*/
    position: absolute;
