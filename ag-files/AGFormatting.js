@@ -18,7 +18,8 @@ var FeedbackDisplay = {
         undo_button: '#undo-button',
         reset_button: '#reset-button',
         help_button: '#help-button',
-        ag_html_output: '#comment'
+        ag_html_output: '#comment',
+        toggle_correct_button: '#toggle-correct-button'
     }
 };
 
@@ -354,6 +355,41 @@ function createInitialHelp() {
     setInitialHelpDisplay(true);
 }
 
+/*
+    Create the function bindings for when various elements are clicked.
+*/
+function initializeButtonMouseListeners(snapWorld, taskID) {
+    // TODO: Reduce the scope of this?
+    $(document).click(function() {
+        grayOutButtons(snapWorld, taskID);
+    });
+    $("#reset-button").click(function () {
+        resetState(snapWorld, taskID);
+    });
+    $("#revert-button").click(function (e) {
+        revertToBestState(snapWorld, taskID);
+    });
+    $("#undo-button").click(function (e) {
+        revertToLastState(snapWorld, taskID);
+    });
+    $('#initial-help').click(function(e) { 
+        closeInitialHelp();
+    });
+    $('#overlay').click(function(e) {
+        closePopup();
+    });
+    $("#ag-output").click(function(e) {
+        if (!(document.getElementById('ag-results').contains(e.target)) && e.target.className.indexOf("regrade") === -1) {
+            closeResults();
+        }
+    });
+
+    $(SELECT.dropdown).mouseover(moveHelp);
+}
+
+/*
+    
+*/
 function previousFeedbackButton() {
     var prev_feedback = document.createElement("li");
     prev_feedback.classList.add("menu-item-sub-menu");
@@ -406,19 +442,15 @@ function initializeSnapAdditions(snapWorld, taskID) {
         var prev_xml = sessionStorage.getItem(taskID + "_test_state");
         var starter_xml = sessionStorage.getItem(taskID + "starter_file");
         if (prev_xml !== null) {
-            console.log('OPENING PREV XML');
             ide.openProjectString(prev_xml);
         } else if (preReqTaskID !== null) {
             if (preReqLog !== null && preReqLog.allCorrect) {
-                console.log('OPENING PREV SUBMISSION');
                 ide.openProjectString(sessionStorage.getItem(preReqID));
             }
         } else if (starter_xml) {
-            console.log('OPENING STARTER FROM SESSION');
             ide.openProjectString(starter_xml);
             sessionStorage.removeItem(taskID + "starter_file");
         } else if (starter_path) {
-            console.log('MAKING XHR FOR STARTER FILE');
             ide.showMessage('Loading the starter file.');
             $.get(
                 starter_path,
@@ -432,52 +464,11 @@ function initializeSnapAdditions(snapWorld, taskID) {
 
     var prev_log = JSON.parse(sessionStorage.getItem(taskID + "_test_log"));
 
-    var menu_button = document.getElementsByClassName("hover_darken")[0];
-
-    var help_overlay = $('#overlay');
-
-    var results_overlay = $("#ag-output");
-    var regrade_buttons = document.getElementsByClassName("regrade");
-
     if (showPrevFeedback) {
         $("#feedback-button").click(function() { openResults(); });
     }
 
-
-    // TODO: Reduce the scope of this?
-    document.addEventListener(
-        "click",
-        function() {
-            grayOutButtons(snapWorld, taskID);
-        }
-    );
-
-    var reset_button = $("#reset-button");
-    var revert_button = $("#revert-button");
-    var undo_button = $("#undo-button");
-    reset_button.click(function () {
-        resetState(snapWorld, taskID);
-    });
-    revert_button.click(function (e) {
-        revertToBestState(snapWorld, taskID);
-    });
-    undo_button.click(function (e) {
-        revertToLastState(snapWorld, taskID);
-    });
-    help_overlay.click(function(e) {
-        closePopup();
-    });
-
-    results_overlay.click(function(e) {
-        if (!(document.getElementById('ag-results').contains(e.target)) && e.target.className.indexOf("regrade") === -1) {
-            closeResults();
-        }
-    });
-
-    $(SELECT.dropdown).mouseover(moveHelp);
-
-    var initial_overlay = $('#initial-help');
-    initial_overlay.click(function(e) { closeInitialHelp(); });
+    initializeButtonMouseListeners(snapWorld, taskID);
 
     checkButtonExists = false;
     if (isEDX) {
@@ -524,7 +515,18 @@ function initializeSnapAdditions(snapWorld, taskID) {
     }
 
     setTimeout(function() {
-        document.getElementById("toggle-correct-tests").innerHTML = '<div class="toggle-correct isOff" id="toggle-correct">See Correct Tests</div><div id="correct-table-wrapper">';
+        var button = $('<button>').attr({
+            'class': 'btn btn-info isOff',
+            'id': 'toggle-correct-button',
+            'onclick': 'TODO'
+        }).html('See Correct Tests');
+        
+        $("#toggle-correct-tests").html(
+            '<button class="btn btn-info isOff" id="toggle-correct-button">' +
+            'See Correct Tests</button>' +
+            '<div id="correct-table-wrapper"></div>'
+        );
+        // TODO: explain this line.
         if (!graded) {return; }
     }, 1000);
 
@@ -542,24 +544,22 @@ function initializeSnapAdditions(snapWorld, taskID) {
         // called twice at the very beginning...
         if (showFeedback && sessionStorage.getItem(taskID + "_popupFeedback") !== null) {
             populateFeedback(outputLog); 
-            // populateFeedback(outputLog);
+            populateFeedback(outputLog);
             openResults();
             sessionStorage.removeItem(taskID + "_popupFeedback");
         }
         grayOutButtons(snapWorld, taskID);
 
+        // TODO: extract this.
+        // Sets each 'test content' piece to have a max-width, but WHY?
         var tip_tests = $(".data"),
             offsetWidth = $(".inner-titles");
-        // FIXME -- WHY IS THIS ERRORING
-        if (offsetWidth.length) {
-            offsetWidth = offsetWidth[0].offsetWidth - 50 + "px";
-        } else {
-            offsetWidth = 0;
+            if (offsetWidth.length) {
+                offsetWidth = offsetWidth[0].offsetWidth - 50 + "px";
+                for (var i = 0; i < tip_tests.length; i += 1) {
+                    $(tip_tests[i]).css('max-width', offsetWidth);
+                }
         }
-        for (var i = 0; i < tip_tests.length; i += 1) {
-            console.log('TIP TESTS');
-            tip_tests[i].css('max-width', offsetWidth);
-        }        
     }, 1500);
 }
 
@@ -577,17 +577,14 @@ function doExecAndDisplayTests(event) {
     outputLog.numAttempts += 1;
     runAGTest(world, id, outputLog);
 
+    // TODO: extract and document this...
     var tip_tests = document.getElementsByClassName("data"),
         offsetWidth = $(".inner-titles");
     if (offsetWidth.length) {
         offsetWidth = offsetWidth[0].offsetWidth - 50 + "px";
-    } else {
-        console.log('offset 0');
-        offsetWidth = 0;
-    }
-    for(var i = 0; i < tip_tests.length; i++) {
-        console.log('tip_tests');
-        tip_tests[i].style.maxWidth = offsetWidth;
+        for(var i = 0; i < tip_tests.length; i++) {
+            tip_tests[i].style.maxWidth = offsetWidth;
+        }
     }
     sessionStorage.setItem(id + "_popupFeedback", '');
 }
@@ -714,7 +711,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     
     // TODO: Extract this function
     $("#toggle-correct-tests").click(function() {
-        var toggleButton = $("#toggle-correct");
+        console.log('CLICKED');
+        var toggleButton = $(SELECT.toggle_correct_button);
         if (toggleButton.hasClass("isOff")) {
             toggleButton.removeClass("isOff");
             allFeedback = true;
@@ -724,6 +722,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             allFeedback = false;
             toggleButton.html("Show Correct Tests");
         }
+        // TODO: IMPROVE THIS
+        // No need to redraw the entire table each time.
         populateFeedback(feedbackLog, allFeedback);
         setTimeout(function() {
             openResults();
@@ -781,12 +781,12 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             document.getElementById("incorrect-section").appendChild(incorrect_chunk);
         }
 
+        var allFeedback = allFeedback !== undefined ? allFeedback : false;
         var currRank = 1;
         tipLoop:
         // TODO: Document this
 
         for (x = 0; x < tips.length; x++) {
-            var allFeedback = typeof allFeedback !== 'undefined' ? allFeedback : false;
             var tip = tips[x];
             var label_class = "incorrectans";
             var div = document.createElement("div");
@@ -846,6 +846,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
 
                     if (thisTest.correct) {
                         correct_assertions += 1;
+                        // TODO: Consider removing this conditional and always showing the test.
                         if (allFeedback || tip.allCorrect) {
                             appendElement(
                                 "p",
@@ -898,7 +899,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             document.getElementsByClassName("observations" + i + x)[0]
                         );
                     }
-                    if (thisTest.correct === true && tip.allCorrect === false) {
+                    if (thisTest.correct && !tip.allCorrect) {
                         tipHasCorrectTest = true;
                         if (!document.getElementById("correct-tip" + i + x)) {
                             // TODO: This?
@@ -918,11 +919,13 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                     
                     // TODO: Try extracting this out.
                     if (thisTest.correct) {
-                        if ((allFeedback) || tip.allCorrect) {
+                        // TODO: FIX THE CSS LIST HERE
+                        // passing-test-case is used for the show/hide button
+                        if (allFeedback || tip.allCorrect) {
                             appendElement(
                                 "p",
                                 "✔",
-                                "data",
+                                ["data", "passing-test-case"],
                                 document.getElementsByClassName("tests-section" + i + x)[0]
                             );
                             // TODO Clean these strings up.
@@ -1026,6 +1029,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                 } // end adding test div
 
                 if (tip.rank === currRank || tip.rank !== 0) {
+                    // TODO: document this....
                     if (!tip.allCorrect) {
                         break tipLoop;
                     } else {
@@ -1091,8 +1095,9 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
 
     tipsDiv.innerHTML = pluralizeWithNum('tip', numtips);
 
-    // TODO: FIX THIS -- button seems to be missing??
-    $("#toggle-correct").css('display', tipHasCorrectTest ? 'block' : 'none');
+    if (tipHasCorrectTest) {
+        $(SELECT.toggle_correct_button).show();
+    }
 
     if (!isEDX) {
         // No Credit Warning Commented out because it doesn't apply to bCourses.

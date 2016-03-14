@@ -48,21 +48,19 @@ th.titles {
   color: white;
   font-weight: normal;
   padding: 5px 2px;
-  /*text-align: center;*/
 }
 
-  .data {
-    color: #4F5150;
-    white-space: normal;
-    padding: 3px 10px;
-    font-size: 15px;
-    display: inline-block;
-    max-width: 800px;
-    vertical-align: top;
-    font-weight: normal;
-    margin: 0px;
-
-  }
+.data {
+  color: #4F5150;
+  white-space: normal;
+  padding: 3px 10px;
+  font-size: 15px;
+  display: inline-block;
+  max-width: 800px;
+  vertical-align: top;
+  font-weight: normal;
+  margin: 0px;
+}
 
 
 td.regrade {
