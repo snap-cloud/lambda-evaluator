@@ -296,7 +296,6 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
     if (expOut instanceof Function) {
         // NOTE: This may not work if output is of 'bad' type
         test.correct = expOut(output);
-        test.expOut = test.correct;
     } else {
         if (expOut instanceof Array) {
             // TODO: Switch this to toSnapList (or whatever I named that fn)
