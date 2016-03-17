@@ -1047,7 +1047,11 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             ].join('');
                         }
                         if (thisTest.output === null) {
-                            htmlString += '<p class="data assertion">Instead it returned no output.</p>';
+                            htmlString += [
+                                '<p class="data assertion"> did <em>not</em> return the </p>',
+                                'expected value.'
+                            ].join('');
+                            htmlString += '<p class="data assertion"> Instead it returned no output.</p>';
                         } else {
                             htmlString += '<p class="data assertion bold">output: ' + thisTest.output + '</p>';
                         }
