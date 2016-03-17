@@ -597,7 +597,7 @@ function AssertTest(statement, text, pos_fb, neg_fb, points) {
     } else {
         this.points = 1;
     }
-    //this.points = points !== undefined ? points || 1;
+    //this.points = points !== undefined ? points : 1 <<< FIXED ;
     try {
         this.correct = statement();
         if (this.correct) {

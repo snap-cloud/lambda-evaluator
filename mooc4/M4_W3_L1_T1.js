@@ -174,7 +174,7 @@ function AGTest(outputLog) {
         'Great job! Your block reports the correct value for given inputs.'
     );
 
-    var input_2_2_1 = "snap";
+    var input_2_2_1 = ["snap"];
     tip_2_2.newIOTest('r',  // testClass
         blockName_2,          // blockSpec
         input_2_2_1,        // input
