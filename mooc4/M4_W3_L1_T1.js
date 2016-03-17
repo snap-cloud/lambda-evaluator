@@ -153,7 +153,7 @@ function AGTest(outputLog) {
     );
 
     var blockName_2 = "word -> list %";
-    var chunk_2 = fb.newChunk('Complete the "' + blockName + '" block.');
+    var chunk_2 = fb.newChunk('Complete the "' + blockName_2 + '" block.');
 
     var blockExists_2 = function () {
         return spriteContainsBlock(blockName_2);
@@ -176,7 +176,7 @@ function AGTest(outputLog) {
 
     var input_2_2_1 = "snap";
     tip_2_2.newIOTest('r',  // testClass
-        blockName,          // blockSpec
+        blockName_2,          // blockSpec
         input_2_2_1,        // input
         function (output) {
             // Output should be a list of numbers.
