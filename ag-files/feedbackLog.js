@@ -131,16 +131,21 @@ FeedbackLog.prototype.tipOf = function(test) {
 FeedbackLog.prototype.saveLog = function() {
     // Save current state as 'last attempt'
     var log_string = this.toString();
-    sessionStorage.setItem(this.taskID + '_test_log', log_string);
-    // Find previous 'best attempt', compare with current, if better, overwrite
-    // Note: Holy Jesus. This predicate is rediculous. Brain hurts...
-    var c_prev_log = JSON.parse(sessionStorage.getItem(this.taskID + "_c_test_log"));
-    if (this.allCorrect || 
-        ((this.pScore > 0) && 
-            ((c_prev_log && (this.pScore >= c_prev_log.pScore)) || (!c_prev_log)))) {
-        // Store the correct log in sessionStorage
-        sessionStorage.setItem(this.taskID + "_c_test_log", log_string);
+    try {
+        sessionStorage.setItem(this.taskID + '_test_log', log_string);
+        // Find previous 'best attempt', compare with current, if better, overwrite
+        // Note: Holy Jesus. This predicate is rediculous. Brain hurts...
+        var c_prev_log = JSON.parse(sessionStorage.getItem(this.taskID + "_c_test_log"));
+        if (this.allCorrect || 
+            ((this.pScore > 0) && 
+                ((c_prev_log && (this.pScore >= c_prev_log.pScore)) || (!c_prev_log)))) {
+            // Store the correct log in sessionStorage
+            sessionStorage.setItem(this.taskID + "_c_test_log", log_string);
+        }
+    } catch (e) {
+        console.log(e);
     }
+    
 }
 
 FeedbackLog.prototype.saveSnapXML = function(store_key) {
@@ -642,6 +647,9 @@ function setValues(block, values) {
             valIndex += 1;
         } else if (morph instanceof ArgMorph && morph.type === "list") {
             setNewListToArg(values[valIndex], block, morphIndex);
+            valIndex += 1;
+        } else if (morph instanceof RingMorph) {
+            morph.children[0].children[0] = values[valIndex];
             valIndex += 1;
         }
         morphIndex++;
