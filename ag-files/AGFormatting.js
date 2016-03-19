@@ -996,7 +996,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                                 thisTest.input,
                                 '</p>'
                             ].join('');
-                            if (typeof thisTest.expOut === "function") {
+                            /*if (typeof thisTest.expOut === "function") {
                             //if (thisTest.expOut.constructor !== Function) {
                                 htmlString += [
                                     '<p class="data assertion">, returned the </p>',
@@ -1006,7 +1006,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                                 ].join('');
                             } else {
                                 htmlString += '<p class="data assertion">passed the tests.</p>';
-                            }
+                            }*/
+                            htmlString += '<p class="data assertion">passed the tests.</p>';
                             string_reporter.innerHTML = htmlString;
                             // TODO: Clean up this...
                             document.getElementsByClassName(
