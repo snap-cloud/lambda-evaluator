@@ -153,7 +153,7 @@ function AGTest(outputLog) {
     );
 
     var blockName_2 = "word -> list %";
-    var chunk_2 = fb.newChunk('Complete the "' + blockName_2 + '" block.');
+    var chunk_2 = fb.newChunk('Complete the "word -> list %" block.');
 
     var blockExists_2 = function () {
         return spriteContainsBlock(blockName_2);
@@ -170,8 +170,8 @@ function AGTest(outputLog) {
     );
 
     var tip_2_2 = chunk_2.newTip(
-        'Your block should return the correct list for the given inputs.',
-        'Great job! Your block reports the correct value for given inputs.'
+        'Your block should return the correct list for the given input.',
+        'Great job! Your block reports the correct list for given input.'
     );
 
     var input_2_2_1 = ["snap"];
