@@ -24,26 +24,30 @@ function AGTest(outputLog) {
 
     var blockName = "min value of % over all numbers in %";
 
-    /*var ide = world.children[0];
+    var spriteIndex;
+    var ide = world.children[0];
     var sprites = ide.sprites.contents;
     for (var i = 0; i < sprites.length; i++) {
-
-    }*/
+        if (sprites[i].name === "Minimize Function") {
+            spriteIndex = i;
+            break;
+        }
+    }
 
     var chunk_1 = fb.newChunk('Complete the "' + blockName + '" block.');
 
     var blockExists_1 = function () {
-        return spriteContainsBlock(blockName);
+        return spriteContainsBlock(blockName, spriteIndex);
     }
 
     var noIteration_1 = function() {
-        return (!customBlockContains(blockName, "forever %c")) && (!customBlockContains(blockName, "for %upvar = %n to %n %cs"))
-            && (!customBlockContains(blockName, "repeat until %b %c")) && (!customBlockContains(blockName, "repeat %n %c"))
-            && (!customBlockContains(blockName, "for each %upvar of %l %cs"));
+        return (!customBlockContains(blockName, "forever %c", undefined, spriteIndex)) && (!customBlockContains(blockName, "for %upvar = %n to %n %cs", undefined, spriteIndex))
+            && (!customBlockContains(blockName, "repeat until %b %c", undefined, spriteIndex)) && (!customBlockContains(blockName, "repeat %n %c", undefined, spriteIndex))
+            && (!customBlockContains(blockName, "for each %upvar of %l %cs", undefined, spriteIndex));
     }
 
     var noRecursion_1 = function() {
-        return (!customBlockContains(blockName, blockName));
+        return (!customBlockContains(blockName, blockName, undefined, spriteIndex));
     }
 
 
@@ -87,7 +91,7 @@ function AGTest(outputLog) {
         return n % 5;
     }
 
-    var input_1_2_1 = [getScript("f %"), [4, 6, 7]];
+    var input_1_2_1 = [getScript("f %", spriteIndex), [4, 6, 7]];
     tip_1_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
         input_1_2_1,        // input
@@ -114,7 +118,7 @@ function AGTest(outputLog) {
         1 // points
     );
 
-    var input_1_2_2 = [getScript("g %"), [1, 2, 3, 5, 7, 9, 11]];
+    var input_1_2_2 = [getScript("g %", spriteIndex), [1, 2, 3, 5, 7, 9, 11]];
     tip_1_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
         input_1_2_2,        // input
@@ -141,7 +145,7 @@ function AGTest(outputLog) {
         1 // points
     );
 
-    var input_1_2_3 = [getScript("f %"), []];
+    var input_1_2_3 = [getScript("f %", spriteIndex), []];
     tip_1_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
         input_1_2_3,        // input
