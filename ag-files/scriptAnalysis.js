@@ -27,6 +27,9 @@ function getAllScripts(blockSpec, spriteIndex) {
    // Try to get a sprite's scripts
    // Throw exception if none exist.
     spriteIndex = spriteIndex || 0;
+    if (spriteIndex === undefined) {
+        spriteIndex = 0;
+    }
     var scripts = getScripts(spriteIndex);
    // If no scripts, throw an exception.
     if (scripts.length === 0) {

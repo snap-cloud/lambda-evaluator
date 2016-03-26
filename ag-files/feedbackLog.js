@@ -131,6 +131,7 @@ FeedbackLog.prototype.tipOf = function(test) {
 FeedbackLog.prototype.saveLog = function() {
     // Save current state as 'last attempt'
     var log_string = this.toString();
+    //console.log(log_string);
     try {
         sessionStorage.setItem(this.taskID + '_test_log', log_string);
         // Find previous 'best attempt', compare with current, if better, overwrite
@@ -207,6 +208,19 @@ FeedbackLog.prototype.startSnapTest = function(test) {
         }
         // Set the selected block's inputs for the test
         setValues(block, test.input);
+        if (Array.isArray(test.input)) {
+            var temp = test.input;
+            test.input = [];
+            for (var j = 0; j < temp.length; j++) {
+                if (temp[j].selector === "evaluateCustomBlock") {
+                    test.input.push(temp[j].blockSpec);
+                } else {
+                    test.input.push(temp[j]);
+                }
+            }
+            
+        }
+        
         // Initiate the Snap Process with a callback to .finishSnapTest
         var stage = this.snapWorld.children[0].stage;
         var fb_log = this;    // to use in anonymous function
