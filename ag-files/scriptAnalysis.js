@@ -61,7 +61,7 @@ function getAllScripts(blockSpec, spriteIndex) {
 function blockSpecMatch(targetBlockSpec, templateBlockSpec) {
     var targetSplit = targetBlockSpec.split(" ");
     var templateSplit = templateBlockSpec.split(" ");
-    var symbols = ["%s", "%n", "%b", "%c", "%p", "%txt", "%repRing", "%mult%L", "%exp", "%l", "%words", "%idx", "%(ringified)", "%upvar", "%cs", "%scriptVars", "predRing", "delim"];
+    var symbols = ["%s", "%n", "%b", "%c", "%p", "%txt", "%repRing", "%mult%L", "%mult%l", "%exp", "%l", "%words", "%idx", "%(ringified)", "%upvar", "%cs", "%scriptVars", "predRing", "delim"];
     if (targetSplit.length !== templateSplit.length) {
         return false;
     }
