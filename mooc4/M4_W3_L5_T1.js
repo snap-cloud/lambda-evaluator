@@ -41,13 +41,22 @@ function AGTest(outputLog) {
     }
 
     var noIteration_1 = function() {
-        return (!customBlockContains(blockName, "forever %c", undefined, spriteIndex)) && (!customBlockContains(blockName, "for %upvar = %n to %n %cs", undefined, spriteIndex))
+        if (spriteContainsBlock(blockName, spriteIndex)) {
+            return (!customBlockContains(blockName, "forever %c", undefined, spriteIndex)) && (!customBlockContains(blockName, "for %upvar = %n to %n %cs", undefined, spriteIndex))
             && (!customBlockContains(blockName, "repeat until %b %c", undefined, spriteIndex)) && (!customBlockContains(blockName, "repeat %n %c", undefined, spriteIndex))
             && (!customBlockContains(blockName, "for each %upvar of %l %cs", undefined, spriteIndex));
+        } else {
+            return false;
+        }
+        
     }
 
     var noRecursion_1 = function() {
-        return (!customBlockContains(blockName, blockName, undefined, spriteIndex));
+        if (spriteContainsBlock(blockName, spriteIndex)) {
+           return (!customBlockContains(blockName, blockName, undefined, spriteIndex)); 
+        } else {
+            return false;
+        }
     }
 
 
@@ -91,86 +100,120 @@ function AGTest(outputLog) {
         return n % 5;
     }
 
-    var input_1_2_1 = [getScript("f %", spriteIndex), [4, 6, 7]];
-    tip_1_2.newIOTest('r',  // testClass
-        blockName,          // blockSpec
-        input_1_2_1,        // input
-        function (output) {
-            // Output should be a list of 2D lists.
-            var expected,
-                actual;
+    try {
+       var input_1_2_1 = [getScript("f %", spriteIndex), [4, 6, 7]];
+        tip_1_2.newIOTest('r',  // testClass
+            blockName,          // blockSpec
+            input_1_2_1,        // input
+            function (output) {
+                // Output should be a list of 2D lists.
+                var expected,
+                    actual;
 
-            expected = 1;
-            if (output instanceof List) {
-                actual = output.asArray();
-            } else {
-                actual = output;
-            }
-            if (!_.isEqual(actual, expected)) {
-                //tip_1_2.suggestion = 'The output should be ' + expected + ';';
-                //tip_1_2.suggestion += ' but was ' + actual + '.';
-                return false;
-            }
-            return true;
-        },
-        4 * 1000, // 4 second time out.
-        true, // is isolated
-        1 // points
-    );
+                expected = 1;
+                if (output instanceof List) {
+                    actual = output.asArray();
+                } else {
+                    actual = output;
+                }
+                if (!_.isEqual(actual, expected)) {
+                    //tip_1_2.suggestion = 'The output should be ' + expected + ';';
+                    //tip_1_2.suggestion += ' but was ' + actual + '.';
+                    return false;
+                }
+                return true;
+            },
+            4 * 1000, // 4 second time out.
+            true, // is isolated
+            1 // points
+        );
 
-    var input_1_2_2 = [getScript("g %", spriteIndex), [1, 2, 3, 5, 7, 9, 11]];
-    tip_1_2.newIOTest('r',  // testClass
-        blockName,          // blockSpec
-        input_1_2_2,        // input
-        function (output) {
-            // Output should be a list of 2D lists.
-            var expected,
-                actual;
+        var input_1_2_2 = [getScript("g %", spriteIndex), [1, 2, 3, 5, 7, 9, 11]];
+        tip_1_2.newIOTest('r',  // testClass
+            blockName,          // blockSpec
+            input_1_2_2,        // input
+            function (output) {
+                // Output should be a list of 2D lists.
+                var expected,
+                    actual;
 
-            expected = 11;
-            if (output instanceof List) {
-                actual = output.asArray();
-            } else {
-                actual = output;
-            }
-            if (!_.isEqual(actual, expected)) {
-                //tip_1_2.suggestion = 'The output should be ' + expected + ';';
-                //tip_1_2.suggestion += ' but was ' + actual + '.';
-                return false;
-            }
-            return true;
-        },
-        4 * 1000, // 4 second time out.
-        true, // is isolated
-        1 // points
-    );
+                expected = 11;
+                if (output instanceof List) {
+                    actual = output.asArray();
+                } else {
+                    actual = output;
+                }
+                if (!_.isEqual(actual, expected)) {
+                    //tip_1_2.suggestion = 'The output should be ' + expected + ';';
+                    //tip_1_2.suggestion += ' but was ' + actual + '.';
+                    return false;
+                }
+                return true;
+            },
+            4 * 1000, // 4 second time out.
+            true, // is isolated
+            1 // points
+        );
 
-    var input_1_2_3 = [getScript("f %", spriteIndex), []];
-    tip_1_2.newIOTest('r',  // testClass
-        blockName,          // blockSpec
-        input_1_2_3,        // input
-        function (output) {
-            // Output should be a list of 2D lists.
-            var expected,
-                actual;
+        var input_1_2_3 = [getScript("f %", spriteIndex), []];
+        tip_1_2.newIOTest('r',  // testClass
+            blockName,          // blockSpec
+            input_1_2_3,        // input
+            function (output) {
+                // Output should be a list of 2D lists.
+                var expected,
+                    actual;
 
-            expected = "";
-            if (output instanceof List) {
-                actual = output.asArray();
-            } else {
-                actual = output;
-            }
-            if (!_.isEqual(actual, expected)) {
-                //tip_1_2.suggestion = 'The output should be ' + expected + ';';
-                //tip_1_2.suggestion += ' but was ' + actual + '.';
-                return false;
-            }
-            return true;
-        },
-        4 * 1000, // 4 second time out.
-        true, // is isolated
-        1 // points
-    );
+                expected = "";
+                if (output instanceof List) {
+                    actual = output.asArray();
+                } else {
+                    actual = output;
+                }
+                if (!_.isEqual(actual, expected)) {
+                    //tip_1_2.suggestion = 'The output should be ' + expected + ';';
+                    //tip_1_2.suggestion += ' but was ' + actual + '.';
+                    return false;
+                }
+                return true;
+            },
+            4 * 1000, // 4 second time out.
+            true, // is isolated
+            1 // points
+        ); 
+    } catch(e) {
+
+        var blockName_2 = "f %";
+        var blockName_3 = "g %";
+
+        var blockExists_2 = function () {
+            return spriteContainsBlock(blockName_2, spriteIndex);
+        }
+        var blockExists_3 = function () {
+            return spriteContainsBlock(blockName_3, spriteIndex);
+        }
+
+
+
+
+        tip_1_2.newAssertTest(
+            blockExists_2,
+            'Testing if the "' + blockName_2 + '" block is in the scripting area.',
+            'The "' + blockName_2 + '" block is in the scripting area.',
+            'Make sure the "' + blockName_2 + '" block is in the scripting area. It is necessary for testing of the "min value of % over all numbers in %" block. Since it is found in the starter file, if the starter file did not load, please either load one of your previous exercises from this week or click the "reset" button.',
+            1
+        ); 
+
+        tip_1_2.newAssertTest(
+            blockExists_3,
+            'Testing if the "' + blockName_3 + '" block is in the scripting area.',
+            'The "' + blockName_3 + '" block is in the scripting area.',
+            'Make sure the "' + blockName_3 + '" block is in the scripting area. It is necessary for testing of the "min value of % over all numbers in %" block. Since it is found in the starter file, if the starter file did not load, please either load one of your previous exercises from this week or click the "reset" button.',
+            1
+        ); 
+    }
+
+    
 
 
 
