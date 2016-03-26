@@ -1,4 +1,4 @@
-var starter_path = "";
+var starter_path = null;
 // The id is to act as a course identifier.
 // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
 var courseID = "BJC.4x";  // e.g. "BJCx"
@@ -137,6 +137,7 @@ function AGTest(outputLog) {
         true, // is isolated
         1 // points
     );   
+
     var input_1_3_2 = [[1,2,3], []];
     tip_1_3.newIOTest('r',  // testClass
         blockName,          // blockSpec
@@ -167,9 +168,6 @@ function AGTest(outputLog) {
         true, // is isolated
         1 // points
     );       
-
-
-
 
     return fb;
     
