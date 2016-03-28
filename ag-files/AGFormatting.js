@@ -946,7 +946,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                                 if (expOut instanceof List || expOut instanceof Array) {
                                     expOut = arrayFormattedString(expOut);
                                 }
-                                
                                 htmlString += [
                                     '<p class="data assertion">, returned the',
                                     ' expected value: <code class="data assertion">',
@@ -1006,7 +1005,11 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             ].join('');
                         }
                         if (thisTest.output === null) {
-                            htmlString += '<p class="data assertion">Instead it returned no output.</p>';
+                            htmlString += [
+                                '<p class="data assertion"> did <em>not</em> return the expected value.</p>',
+                                ''
+                            ].join('');
+                            htmlString += '<p class="data assertion"> Instead it returned no output.</p>';
                         } else {
                             var output = thisTest.output;
                             if (output instanceof List || output instanceof Array) {
