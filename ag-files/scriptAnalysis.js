@@ -23,10 +23,11 @@ function getScript(blockSpec, spriteIndex) {
 }
 
 function getAllScripts(blockSpec, spriteIndex) {
-   // TODO: Consider expanding to grab from additional sprites
-   // Try to get a sprite's scripts
-   // Throw exception if none exist.
-    spriteIndex = spriteIndex || 0;
+    // TODO: Consider expanding to grab from additional sprites
+    // Try to get a sprite's scripts
+    // Throw exception if none exist.
+    spriteIndex = spriteIndex === undefined ? 0 : spriteIndex;
+    
     var scripts = getScripts(spriteIndex);
    // If no scripts, throw an exception.
     if (scripts.length === 0) {

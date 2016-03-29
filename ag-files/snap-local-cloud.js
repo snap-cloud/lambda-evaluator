@@ -50,7 +50,7 @@ Cloud.prototype.getPublicProject = function (
                 } else {
                     errorCall.call(
                         null,
-                        myself.url + 'Public',
+                        myself.url.replace('Local', 'Public'),
                         localize('could not connect to:')
                     );
                 }
@@ -103,7 +103,7 @@ Cloud.prototype.resetPassword = function (
                 } else {
                     errorCall.call(
                         null,
-                        myself.url + 'ResetPW',
+                        myself.url.replace('Local', 'ResetPW'),
                         localize('could not connect to:')
                     );
                 }

@@ -214,6 +214,19 @@ FeedbackLog.prototype.startSnapTest = function(test) {
         }
         // Set the selected block's inputs for the test
         setValues(block, test.input);
+        if (Array.isArray(test.input)) {
+            var temp = test.input;
+            test.input = [];
+            for (var j = 0; j < temp.length; j++) {
+                if (temp[j].selector === "evaluateCustomBlock") {
+                    test.input.push(temp[j].blockSpec);
+                } else {
+                    test.input.push(temp[j]);
+                }
+            }
+            
+        }
+        
         // Initiate the Snap Process with a callback to .finishSnapTest
         var stage = this.snapWorld.children[0].stage;
         var fb_log = this;    // to use in anonymous function
@@ -592,7 +605,8 @@ function AssertTest(statement, text, pos_fb, neg_fb, points) {
     this.text = text;
     this.pos_fb = pos_fb;
     this.neg_fb = neg_fb;
-    this.points = points || 1;
+    this.points = points !== undefined ? points : 1;
+    
     try {
         this.correct = statement();
         if (this.correct) {
@@ -797,6 +811,7 @@ function evalReporter(block, outputLog, testID) {
  * process on completion.
  */
 function readValue(proc) {
+    console.log('READ VALUE PROC: ', proc);
     return proc.homeContext.inputs[0];
 }
 
