@@ -596,7 +596,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
         moveAutogradingBar();
 
         var tip_tests = document.getElementsByClassName("data");
-        for(var i=0; i < tip_tests.length; i++){
+        for(var i = 0; i < tip_tests.length; i++){
             tip_tests[i].style.maxWidth = String(Number(document.getElementsByClassName("inner-titles")[0].offsetWidth) - 50) + "px";
         }
 
@@ -1008,7 +1008,8 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                                 ].join('');
                             } else {
                                 htmlString += '<p class="data assertion">passed the tests.</p>';
-                            }
+                            }*/
+                            htmlString += '<p class="data assertion">passed the tests.</p>';
                             string_reporter.innerHTML = htmlString;
                             // TODO: Clean up this...
                             document.getElementsByClassName(
@@ -1058,7 +1059,11 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                             ].join('');
                         }
                         if (thisTest.output === null) {
-                            htmlString += '<p class="data assertion">Instead it returned no output.</p>';
+                            htmlString += [
+                                '<p class="data assertion"> did <em>not</em> return the expected value.</p>',
+                                ''
+                            ].join('');
+                            htmlString += '<p class="data assertion"> Instead it returned no output.</p>';
                         } else {
                             var output = thisTest.output;
                             if (output instanceof List || output instanceof Array) {

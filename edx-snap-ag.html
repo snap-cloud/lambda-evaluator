@@ -22,6 +22,7 @@
         <script src="locale.js"></script>
         <script src="cloud.js"></script>
         <script src="sha512.js"></script>
+        <script src="tables.js"></script>
 
         <!-- AG Snap Modifications -->
         <script src="snap-edx-overrides.js"></script>
@@ -44,7 +45,7 @@
         <script src="AG_EDX.js"></script>
         <!-- Load snap + AG additions, similar to snap.html -->
         <script id="snap_ag">
-        loadTestJS();
+        //loadTestJS();
         var world, world_canvas;
         window.onload = function () {
             var ide, grade_button;
@@ -65,7 +66,7 @@
             grade_button.addEventListener('click', button_listener);
             world_canvas.addEventListener("mouseup", update_listener);
             // Load a remote specified file that contains the AG test
-            //loadTestJS();
+            loadTestJS();
         };
 
         function loop() {

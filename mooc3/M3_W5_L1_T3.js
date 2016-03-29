@@ -156,8 +156,10 @@ function AGTest(outputLog) {
                 actual;
 
             expected = 'Mjqqt Fenf!';
+            console.log(output);
+            console.log(typeof output);
             actual = output;
-            if (actual !== expected) {
+            if (actual !== expected && actual.substring(0, 11) !== expected) {
                 tip_2_2.suggestion = 'The output should be ' + expected + ';';
                 tip_2_2.suggestion += ' but was ' + actual + '.';
                 return false;
@@ -182,10 +184,16 @@ function AGTest(outputLog) {
             // Output should be a list of 2D lists.
             var expected,
                 actual;
-
             expected = 'brx fdq gr dqbwklqj!!';
+            console.log(output);
+            console.log(expected);
+            console.log(output.length);
+            console.log(expected.length);
+            
+            console.log(output.toString() == expected.toString());
+            console.log(output === "brx fdq gr dqbwklqj!!");
             actual = output;
-            if (actual !== expected) {
+            if (actual !== expected && actual.substring(0, 21) !== expected) {
                 tip_2_3.suggestion = 'The output should be ' + expected + ';';
                 tip_2_3.suggestion += ' but was ' + actual + '.';
                 return false;
@@ -239,7 +247,7 @@ function AGTest(outputLog) {
 
             expected = 'Hello Azia!';
             actual = output;
-            if (actual !== expected) {
+            if (actual !== expected && actual.substring(0, 11) !== expected) {
                 tip_3_2.suggestion = 'The output should be ' + expected + ';';
                 tip_3_2.suggestion += ' but was ' + actual + '.';
                 return false;
@@ -267,7 +275,7 @@ function AGTest(outputLog) {
 
             expected = 'apples are healthy';
             actual = output;
-            if (actual !== expected) {
+            if (actual !== expected && actual.substring(0, 18) !== expected) {
                 tip_3_3.suggestion = 'The output should be ' + expected + ';';
                 tip_3_3.suggestion += ' but was ' + actual + '.';
                 return false;
@@ -315,7 +323,6 @@ function AGTest(outputLog) {
             // Output should be a list of 2D lists.
             var expected,
                 actual;
-            console.log("test 4_2");
             expected = 3;
             actual = output;
             if (actual !== expected) {
@@ -343,7 +350,6 @@ function AGTest(outputLog) {
             // Output should be a list of 2D lists.
             var expected,
                 actual;
-            console.log("test 4_3");
             expected = 1;
             actual = output;
             if (actual !== expected) {
@@ -397,9 +403,12 @@ function AGTest(outputLog) {
             // Output should be a list of 2D lists.
             var expected,
                 actual;
-            console.log("test 5_2");
             expected = 5;
-            actual = output;
+            if (typeof output === 'string') {
+                actual = Number(output);
+            } else {
+                actual = output;
+            }
             if (actual !== expected) {
                 tip_5_2.suggestion = 'The output should be ' + expected + ';';
                 tip_5_2.suggestion += ' but was ' + actual + '.';
@@ -425,9 +434,12 @@ function AGTest(outputLog) {
             // Output should be a list of 2D lists.
             var expected,
                 actual;
-            console.log("test 5_3");
             expected = 7;
-            actual = output;
+            if (typeof output === 'string') {
+                actual = Number(output);
+            } else {
+                actual = output;
+            }
             if (actual !== expected) {
                 tip_5_3.suggestion = 'The output should be ' + expected + ';';
                 tip_5_3.suggestion += ' but was ' + actual + '.';

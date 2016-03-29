@@ -27,15 +27,15 @@ function getAllScripts(blockSpec, spriteIndex) {
     // Try to get a sprite's scripts
     // Throw exception if none exist.
     spriteIndex = spriteIndex === undefined ? 0 : spriteIndex;
-    
+
     var scripts = getScripts(spriteIndex);
-   // If no scripts, throw an exception.
+    // If no scripts, throw an exception.
     if (scripts.length === 0) {
         throw "Block/script not found."
     }
 
-   // Try to return the first block matching 'blockSpec'.
-   // Throw exception if none exist/
+    // Try to return the first block matching 'blockSpec'.
+    // Throw exception if none exist/
     var validScripts = scripts.filter(function (morph) {
         // if (morph.selector) {
         //    // TODO: consider adding selector type check (morph.selector === "evaluateCustomBlock")
@@ -62,7 +62,7 @@ function getAllScripts(blockSpec, spriteIndex) {
 function blockSpecMatch(targetBlockSpec, templateBlockSpec) {
     var targetSplit = targetBlockSpec.split(" ");
     var templateSplit = templateBlockSpec.split(" ");
-    var symbols = ["%s", "%n", "%b", "%c", "%p", "%txt", "%repRing", "%mult%L", "%exp", "%l", "%words", "%idx", "%(ringified)", "%upvar", "%cs", "%scriptVars", "predRing", "delim"];
+    var symbols = ["%s", "%n", "%b", "%c", "%p", "%txt", "%repRing", "%mult%L", "%mult%l", "%exp", "%l", "%words", "%idx", "%(ringified)", "%upvar", "%cs", "%scriptVars", "predRing", "delim"];
     if (targetSplit.length !== templateSplit.length) {
         return false;
     }
