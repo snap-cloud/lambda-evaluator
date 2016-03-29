@@ -999,7 +999,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                                 if (expOut instanceof List || expOut instanceof Array) {
                                     expOut = arrayFormattedString(expOut);
                                 }
-                                
                                 htmlString += [
                                     '<p class="data assertion">, returned the',
                                     ' expected value: <code class="data assertion">',
@@ -1008,8 +1007,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                                 ].join('');
                             } else {
                                 htmlString += '<p class="data assertion">passed the tests.</p>';
-                            }*/
-                            htmlString += '<p class="data assertion">passed the tests.</p>';
+                            }
                             string_reporter.innerHTML = htmlString;
                             // TODO: Clean up this...
                             document.getElementsByClassName(
