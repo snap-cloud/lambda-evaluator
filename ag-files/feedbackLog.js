@@ -219,6 +219,9 @@ FeedbackLog.prototype.startSnapTest = function(test) {
         }
         // Set the selected block's inputs for the test
         setValues(block, test.input);
+        // Clean this up. Extract it into a function.
+        // Searches for block specs, and removes "a CustomReporterBlock ()"
+        // From the output. 
         if (Array.isArray(test.input)) {
             var temp = test.input;
             test.input = [];
@@ -302,25 +305,12 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
             test.output = arrayFormattedString(
                 toNativeArray(output)
             );
-            /*{
-                newline: output.length() < 25 ? '<br>' : '&nbsp;',
-                indent: '&nbsp;&nbsp;'
-            }*/
-
         } else {
             test.output = output.toString();
         }
     }
     
-    // try {
-    //     var myscript = getScript(test.blockSpec);
-    //     // FIXME -- this isn't working...
-    //     test.picture = myscript.returnResultBubble(output);
-    // } catch (e) {
-    //     console.log('Error Generating Script Pic: ', e);
-    //     test.picture = null;
-    // }
-
+    // TODO: Inset pics of block outputs here....
     var expOut = test.expOut;
     if (expOut instanceof Function) {
         // NOTE: This may not work if output is of 'bad' type
@@ -816,8 +806,6 @@ function evalReporter(block, outputLog, testID) {
         stage.isThreadSafe,
         false,
         function() {
-            console.log('Completion callback');
-            console.log(proc);
             outputLog.finishTest(testID, readValue(proc));
         }
     );
