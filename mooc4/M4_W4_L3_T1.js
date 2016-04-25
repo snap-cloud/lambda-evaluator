@@ -88,24 +88,37 @@ function AGTest(outputLog) {
         1
     );
 
-      var correctRecursiveCalls = function() {
-        if(spriteContainsBlock(blockName, spriteIndex))
-        {
-            return occurancesOfBlockInSprite(blockName, 2, spriteIndex)
-        }
-        else
-        {
-            return false
-        }
-      }
+    // var correctRecursiveCalls = function() {
+    //     if(spriteContainsBlock(blockName, spriteIndex))
+    //     {
+    //         return customBlockContains(blockName, "move top piece from % to %", spriteIndex); 
+    //     }
+    //     else
+    //     {
+    //         return false
+    //     }
+    //   }
 
-      var tip_1_1b = chunk_1.newTip('Make sure you follow the rules of Hanoi!',
-        'The "' + blockName + '" block follows the basics rules of Hanoi!');
-      tip_1_1b.newAssertTest(
-        correctRecursiveCalls,
-        'Testing to make sure the "' + blockName + '" block follows the simple rules of Hanoi.',
-        'The "' + blockName + '" block does not follow the rules of Hanoi.',
-        'Make sure your block "' + blockName + '" follows all the rules of Hanoi!',
+    //   var tip_1_1b = chunk_1.newTip('Make sure you follow the rules of Hanoi!',
+    //     'The "' + blockName + '" block follows the basics rules of Hanoi!');
+    //   tip_1_1b.newAssertTest(
+    //     correctRecursiveCalls,
+    //     'Testing to make sure the "' + blockName + '" block follows the simple rules of Hanoi.',
+    //     'The "' + blockName + '" block follows the rules of Hanoi.',
+    //     'Make sure your block "' + blockName + '" follows all the rules of Hanoi!',
+    //     1s
+    //     );
+
+    var usesDansAmazingTemplate = function() {
+        return blockPrecedesInSprite(blockName, "say %", spriteIndex);
+    }
+    var tip_1_1c = chunk_1.newTip('Make sure you follow the template!',
+        'Basic checks have passed! ' + blockName + ' uses the visualization provided.');
+    tip_1_1c.newAssertTest(
+        usesDansAmazingTemplate,
+        'Testing to make sure the "' + blockName + '" block uses the template.',
+        'The "' + blockName + '" block does use the visualization provided.',
+        'Make sure your block "' + blockName + '" uses the template provided.',
         1
         );
 
