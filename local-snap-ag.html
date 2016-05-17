@@ -43,8 +43,10 @@
         <script src="ag-files/AG_EDX.js"></script>
         <!-- Load snap + AG additions, similar to snap.html -->
         <script>
+        //loadTestJS();
         var world, world_canvas;
         window.onload = function () {
+            loadTestJS();
             var ide, grade_button;
             world_canvas = document.getElementById('world')
             world = new WorldMorph(world_canvas);
@@ -63,7 +65,7 @@
             grade_button.addEventListener('click', button_listener);
             world_canvas.addEventListener("mouseup", update_listener);
             // Load a remote specified file that contains the AG test
-            loadTestJS();
+            //loadTestJS();
         };
 
         function loop() {
