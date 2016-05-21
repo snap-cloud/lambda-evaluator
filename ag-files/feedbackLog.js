@@ -220,6 +220,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
             }
             
         }
+        console.log(block);
         
         // Initiate the Snap Process with a callback to .finishSnapTest
         var stage = this.snapWorld.children[0].stage;
@@ -774,6 +775,10 @@ function addBlockToSprite(sprite, block) {
 
 // populates a list reporter block with the given arguments
 function populateList(list, args) {
+    /*if (args[0] instanceof Array) {
+        list.children[list.children.length - 1] = 
+    }*/
+
     var multiArg = list.children[list.children.length - 1];
 
     while (multiArg.children.length > 2) {
@@ -783,7 +788,16 @@ function populateList(list, args) {
         if (args[i] === 0) {
             args[i] = "0";
         }
-        multiArg.addInput(args[i]);
+
+        if (args[i] instanceof Array) {
+            var temp = cloneListReporter();
+            populateList(temp, args[i]);
+            multiArg.children[i+1] = temp;
+            multiArg.children[i+1].parent = list;
+        } else {
+            multiArg.addInput(args[i]);
+        }
+        
     }
 }
 
