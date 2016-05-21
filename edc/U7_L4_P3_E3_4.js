@@ -1,4 +1,4 @@
-var starter_path = null;
+var starter_path = "U7_L4_P3_E3_4_starter.xml";
 // The id is to act as a course identifier.
 // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
 var courseID = "edc";  // e.g. "BJCx"
@@ -6,7 +6,7 @@ var courseID = "edc";  // e.g. "BJCx"
 var preReqTaskID = null;
 var preReqID = courseID + preReqTaskID;
 // taskID uniquely identifies the task for saving in browser sessionStorage.
-var taskID = "_U7_L4_P1_E1";
+var taskID = "_U7_L4_P3_E3_4";
 var id = courseID + taskID;
 var isEDX = isEDXurl();
 // if this question is not meant to be graded, change this flag to false
@@ -19,10 +19,10 @@ function AGTest(outputLog) {
     var fb = new FeedbackLog(
         world,
         id,
-        'Plurals and Other Recursions'
+        'Even Numbers and Keep'
     );
 
-    var blockName = "squares %";
+    var blockName = "keep items such that %predRing from list %";
 
     /*var spriteIndex;
     var ide = world.children[0];
@@ -83,7 +83,7 @@ function AGTest(outputLog) {
         'Great job! Your block reports the correct value for given inputs.'
     );
 
-    var input_1_2_1 = [[7, 8, 1]];
+    var input_1_2_1 = [getScript("% f %"), [1, 2, 3, 4]];
     tip_1_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
         input_1_2_1,        // input
@@ -93,7 +93,7 @@ function AGTest(outputLog) {
                 actual;
             console.log(output);
 
-            expected = ["49", "64", "1"];
+            expected = ["1", "2"];
             if (output instanceof List) {
                 actual = output.asArray();
             } else {
@@ -116,7 +116,7 @@ function AGTest(outputLog) {
         1 // points
     );
 
-    var input_1_2_2 = [[]];
+    var input_1_2_2 = [getScript("% f %"), [5, 7, 9]];
     tip_1_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
         input_1_2_2,        // input
@@ -149,7 +149,7 @@ function AGTest(outputLog) {
         1 // points
     );
 
-    var input_1_2_3 = [[5, 5, 5]];
+    var input_1_2_3 = [getScript("% f %"), []];
     tip_1_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
         input_1_2_3,        // input
@@ -159,7 +159,7 @@ function AGTest(outputLog) {
                 actual;
             console.log(output);
 
-            expected = ["25", "25", "25"];
+            expected = [];
             if (output instanceof List) {
                 actual = output.asArray();
             } else {
@@ -185,7 +185,7 @@ function AGTest(outputLog) {
 
 
 
-    var blockName = "exaggerate %";
+    var blockName = "combine with % items of list %";
 
     /*var spriteIndex;
     var ide = world.children[0];
@@ -247,7 +247,7 @@ function AGTest(outputLog) {
         'Great job! Your block reports the correct value for given inputs.'
     );
 
-    var input_2_2_1 = "I ate 6 really good potstickers.";
+    var input_2_2_1 = [getScript("% g %"), [1, 2, 3, 4]];
     tip_2_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
         input_2_2_1,        // input
@@ -257,7 +257,7 @@ function AGTest(outputLog) {
                 actual;
             console.log(output);
 
-            expected = "I ate 12 really great potstickers.";
+            expected = "24";
             if (output instanceof List) {
                 actual = output.asArray();
             } else {
@@ -280,7 +280,7 @@ function AGTest(outputLog) {
         1 // points
     );
 
-    var input_2_2_2 = "The good guys found 4 traps left by the bad guys.";
+    var input_2_2_2 = [getScript("% g %"), [5, 7, 9]];
     tip_2_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
         input_2_2_2,        // input
@@ -290,7 +290,7 @@ function AGTest(outputLog) {
                 actual;
             console.log(output);
 
-            expected = "The great guys found 8 traps left by the terrible guys.";
+            expected = "315";
             if (output instanceof List) {
                 actual = output.asArray();
             } else {
@@ -313,7 +313,7 @@ function AGTest(outputLog) {
         1 // points
     );
 
-    var input_2_2_3 = "I like to eat pizza, but dislike anchovies.";
+    var input_2_2_3 = [getScript("% g %"), [130]];
     tip_2_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
         input_2_2_3,        // input
@@ -323,7 +323,7 @@ function AGTest(outputLog) {
                 actual;
             console.log(output);
 
-            expected = "I love to eat pizza, but hate anchovies.";
+            expected = "130";
             if (output instanceof List) {
                 actual = output.asArray();
             } else {
@@ -346,7 +346,7 @@ function AGTest(outputLog) {
         1 // points
     );
 
-    var input_2_2_4 = "Here is a sentence that needs no exaggeration.";
+    /*var input_2_2_4 = "Here is a sentence that needs no exaggeration.";
     tip_2_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
         input_2_2_4,        // input
@@ -377,7 +377,7 @@ function AGTest(outputLog) {
         4 * 1000, // 4 second time out.
         true, // is isolated
         1 // points
-    );
+    );*/
 
 
     return fb;
