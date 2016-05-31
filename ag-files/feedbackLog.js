@@ -619,7 +619,13 @@ function AssertTest(statement, text, pos_fb, neg_fb, points) {
     }
     //this.points = points !== undefined ? points : 1 <<< FIXED ;
     try {
-        this.correct = statement();
+        if (this.assertion === true) {
+            this.correct = true;
+        } else if (this.assertion === false) {
+            this.correct = false;
+        } else {
+            this.correct = statement();
+        }
         if (this.correct) {
             this.feedback = pos_fb;
         } else {
