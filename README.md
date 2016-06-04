@@ -52,10 +52,12 @@ This is the recommended approach:
 	* Navigate to [http://localhost:8000/](http://localhost:8000/)
 * Use the file: `local-snap-ag.html`
 * Set `#test_file=path` in the URL.
-	* For example:  [`http://localhost:8000/snap_autograder/local-snap-ag.html#test_file=mooc3/week1_gps.js`](http://localhost:8000/snap_autograder/local-snap-ag.html#test_file=mooc3/week1_gps.js)
+	* For example:  [`http://localhost:8000/local-snap-ag.html#test_file=mooc3/week1_gps.js`](http://localhost:8000/snap_autograder/local-snap-ag.html#test_file=mooc3/week1_gps.js)
 * If you have a starter XML file, it must be in the same directory as `test_file`
 	* Example: In the above case you have `week1_gps.js` in the `mooc3/` folder and a starter file `W1_L1_Starter_GPS_Scraping.xml` also in `mooc3/`
 	* NOTE: When referring to the path to the starter file, don't write the directory in your test file.
+* If the Snap! page does not load, and the console shows that the files in the `snap` folder cannot be found, `cd` into the `snap` folder and type the git commands from the "Cloning README" section above
+	
 
 ## edX Setup
 
