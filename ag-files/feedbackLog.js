@@ -1,6 +1,6 @@
 /*
  * Feedback Log is a modification of the old gradingLog, but includes
- * more structure for feedback organized into suggestions. 
+ * more structure for feedback organized into suggestions.
  */
 
 /****************************************************************************/
@@ -8,7 +8,7 @@
 /****************************************************************************/
 
 /*
- * First create a FeedbackLog. Required: snapWorld, taskID. 
+ * First create a FeedbackLog. Required: snapWorld, taskID.
  * Optional: Include general informational text in 'feedback_text', and
  * specify a numAttempts if this is not the first attempt. Default to 0, otherwise.
  * * * * *
@@ -22,7 +22,7 @@
  * * * * *
  var factorial_chunk = fb_log.newChunk('factorial', 'Factorial is a mathematical operation.')
 
- * Then you can add a Tip to the TestChunk using TestChunk.newTip. 
+ * Then you can add a Tip to the TestChunk using TestChunk.newTip.
  * Required parameters: a 'suggestion', and a 'complement'.
  * * * * *
  var basecase_tip = factorial_chunk.newTip('Make sure your basecase is correct, first.',
@@ -40,7 +40,7 @@
         "This test failed. I didn't see what I wanted to see.",  // neg_fb
         2); // points
 
- * An IO test is similar to the AssertTest, and only handles one input/output 
+ * An IO test is similar to the AssertTest, and only handles one input/output
  * pair. Each test must be added separately. Unlike AssertTest, you must
  * specify a testClass. 'r' for reporter tests, 's' for snap event tests.
  * * * * *
@@ -89,7 +89,7 @@ FeedbackLog.prototype.updateCounts = function(num_tests, num_points) {
 }
 
 /*
- * newChunk creates an empty chunk and immediately adds it to 
+ * newChunk creates an empty chunk and immediately adds it to
  * the feedbackLog chunk_list.
  */
 FeedbackLog.prototype.newChunk = function(chunk_title, chunk_text) {
@@ -100,7 +100,7 @@ FeedbackLog.prototype.newChunk = function(chunk_title, chunk_text) {
 
 /*
  * Add an existing chunk to the feedbackLog chunk_list. Update test
- * and point totals in the feedbackLog. Include a parent reference 
+ * and point totals in the feedbackLog. Include a parent reference
  * to the feedbackLog in the testChunk.
  */
 FeedbackLog.prototype.addChunk = function(chunk) {
@@ -137,8 +137,8 @@ FeedbackLog.prototype.saveLog = function() {
         // Find previous 'best attempt', compare with current, if better, overwrite
         // Note: Holy Jesus. This predicate is rediculous. Brain hurts...
         var c_prev_log = JSON.parse(sessionStorage.getItem(this.taskID + "_c_test_log"));
-        if (this.allCorrect || 
-            ((this.pScore > 0) && 
+        if (this.allCorrect ||
+            ((this.pScore > 0) &&
                 ((c_prev_log && (this.pScore >= c_prev_log.pScore)) || (!c_prev_log)))) {
             // Store the correct log in sessionStorage
             sessionStorage.setItem(this.taskID + "_c_test_log", log_string);
@@ -146,7 +146,7 @@ FeedbackLog.prototype.saveLog = function() {
     } catch (e) {
         console.log(e);
     }
-    
+
 }
 
 FeedbackLog.prototype.saveSnapXML = function(store_key) {
@@ -218,9 +218,9 @@ FeedbackLog.prototype.startSnapTest = function(test) {
                     test.input.push(temp[j]);
                 }
             }
-            
+
         }
-        
+
         // Initiate the Snap Process with a callback to .finishSnapTest
         var stage = this.snapWorld.children[0].stage;
         var fb_log = this;    // to use in anonymous function
@@ -302,7 +302,7 @@ FeedbackLog.prototype.finishSnapTest = function(test, output) {
             test.output = output;
         }
     }
-    
+
     try {
         var myscript = getScript(test.blockSpec);
         test.picture = myscript.returnResultBubble(output);
@@ -419,7 +419,7 @@ FeedbackLog.prototype.scoreLog = function() {
     this.points = 0;
     this.numCorrect = 0;
     var chunk,
-        tip, 
+        tip,
         test;
     for (var c = 0; c < this.chunk_list.length; c++) { // for each chunk
         chunk = this.chunk_list[c];
@@ -455,7 +455,7 @@ FeedbackLog.prototype.scoreLog = function() {
     this.pScore = this.points / this.totalPoints;
     this.graded = true;
     this.numAttempts += 1; // increment the number of attempts when grading succeeds.
-    // save the log 
+    // save the log
     this.saveLog();
     // this.SnapWorld = world;
     // console.log(this);
@@ -502,7 +502,7 @@ FeedbackLog.prototype.toAGLog = function() {
 /****************************************************************************/
 /*
  * A testChunk is an object that contains all the tips (aka 'suggestions')
- * associated with a tested block/script. 
+ * associated with a tested block/script.
  */
 
 function TestChunk(chunk_title, chunk_text) {
@@ -680,7 +680,7 @@ function setNewListToArg(values, block, i) {
     morph = block.children[i];
     morph_type = morph.constructor.name;
 
-    if ((morph.blockSpec === "list %exp") 
+    if ((morph.blockSpec === "list %exp")
         && (morph_type === "ReporterBlockMorph")) {
             populateList(morph,values);
     } else if ((morph_type === "ArgMorph") || (morph_type === "InputSlotMorph")) {
@@ -689,7 +689,7 @@ function setNewListToArg(values, block, i) {
         block.children[i] = newList;
         block.children[i].parent = block;
         block.fixLayout();
-        block.changed();    
+        block.changed();
     }
 
 }
@@ -730,7 +730,7 @@ function createTestSprite(log, test) {
 
 function setUpIsolatedTest(blockSpec, log, test) {
     var block = findBlockInPalette(blockSpec, log.snapWorld);
-    if (!block) { 
+    if (!block) {
         throw blockSpec + " not found in Palette!";
     }
     var sprite = createTestSprite(log, test);
@@ -902,8 +902,8 @@ function toNativeArray(list) {
     var assertionBad = function() {
         return false;
     }
-    var ass_test1 = test_tip.newAssertTest( 
-        assertion1, 
+    var ass_test1 = test_tip.newAssertTest(
+        assertion1,
         'The basecase should never have a recursive call.',
         'Your basecase correctly returns the simple solution.',
         'Careful, your basecase contains a recursive call.',
