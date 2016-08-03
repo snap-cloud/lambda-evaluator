@@ -1,0 +1,74 @@
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//            Standard Start Code
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+var starter_path = "null";
+// The id is to act as a course identifier.
+// NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
+var courseID = "BJC.4x";  // e.g. "BJCx"
+// Specify a prerequisite task id, should be null if no such requirement.
+var preReqTaskID = null;
+var preReqID = courseID + preReqTaskID;
+// taskID uniquely identifies the task for saving in browser sessionStorage.
+var taskID = "_M1_U1_L4_T3"; //this should follow the name of the nomenclature document
+var id = courseID + taskID;
+var isEDX = isEDXurl();
+// if this question is not meant to be graded, change this flag to false
+var graded = true;
+// to hide feedback for this problem, set this to false
+var showFeedback = true;
+// to allow ability to regrade certain tests, set this to true
+var regradeOn = true;
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//           Actual Autograder Code
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+function AGTest(outputLog) {
+    var fb = new FeedbackLog(
+        world,
+        id,
+        'Draw Polygon' //Name of the particular task you are creating.
+    );
+
+    //Standard code to find the SpriteIndex (read documentation if you're unclear why you need this)
+    // var spriteIndex;
+    // var ide = world.children[0];
+    // var sprites = ide.sprites.contents;
+    // for (var i = 0; i < sprites.length; i++) {
+    //     if (sprites[i].name === "NameOfSprite") {
+    //         spriteIndex = i;
+    //         break;
+    //     }
+    // }
+
+
+    //check if input exists in polygon
+    var drawPolygonHasInput = function() {
+        if (findBlockInPalette('draw polygon with % sides of length %') !== null) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    //DRAW Polygon AG TEST
+    var draw_polygon = 'draw polygon with % sides of length %'; //for style purposes please change both the string and the variable name i.e var desc = "desc
+
+    var chunk_1 = fb.newChunk('Add two inputs to ' + draw_polygon); //creates a chunk
+
+    var tip_1_1 = chunk_1.newTip('Make sure you add two inputs to the signature of your ' + draw_polygon + ' block.', 'Great job!');
+
+    //an assert test takes a function and returns true if the function returns true
+    tip_1_1.newAssertTest(
+        drawPolygonHasInput,
+        'Testing if ' + draw_polygon + ' has inputs in its signature.',
+        draw_polygon + ' has two inputs.',
+        draw_polygon + ' does not have two inputs in its signature.',
+        1
+    );
+
+    return fb;
+
+}

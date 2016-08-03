@@ -23,10 +23,23 @@ function AGTest(outputLog) {
     );
 
     var blockName = "is % a factorion?";
+
+    var spriteIndex;
+    var ide = world.children[0];
+    var sprites = ide.sprites.contents;
+    for (var i = 0; i < sprites.length; i++) {
+        if (sprites[i].name === "Factorions") {
+            spriteIndex = i;
+            break;
+        }
+    }
+
+
+
     var chunk_1 = fb.newChunk('Complete the "' + blockName + '" block.');
 
     var blockExists_1 = function () {
-        return spriteContainsBlock(blockName);
+        return spriteContainsBlock(blockName, spriteIndex);
     }
 
     
@@ -175,10 +188,10 @@ function AGTest(outputLog) {
     );
 
     var blockName_2 = "list all factorions between % and %";
-    var chunk_2 = fb.newChunk('Complete the "' + blockName + '" block.');
+    var chunk_2 = fb.newChunk('Complete the "' + blockName_2 + '" block.');
 
     var blockExists_2 = function () {
-        return spriteContainsBlock(blockName_2);
+        return spriteContainsBlock(blockName_2, spriteIndex);
     }
     var tip_2_1 = chunk_2.newTip('Make sure you name your block exactly "' + blockName_2 + '" and place it in the scripting area.',
         'The "' + blockName_2 + '" block exists.');
@@ -230,9 +243,9 @@ function AGTest(outputLog) {
 
     var checkHOF_factorion = function()
     {
-        var hasMap = customBlockContains("is % a factorion?", "map % over %");
-        var hasKeep = customBlockContains("is % a factorion?", "keep items such that % from %");
-        var hasCombine = customBlockContains("is % a factorion?", "combine with % items of %");
+        var hasMap = customBlockContains("is % a factorion?", "map % over %", undefined, spriteIndex);
+        var hasKeep = customBlockContains("is % a factorion?", "keep items such that % from %", undefined, spriteIndex);
+        var hasCombine = customBlockContains("is % a factorion?", "combine with % items of %", undefined, spriteIndex);
         return hasMap || hasKeep || hasCombine;
     }
 
@@ -247,7 +260,7 @@ function AGTest(outputLog) {
 
     var checkHOF_factorionList = function()
     {
-        var hasFac = customBlockContains("list all factorions between % and %", "is % a factorion?");
+        var hasFac = customBlockContains("list all factorions between % and %", "is % a factorion?", undefined, spriteIndex);
         return hasFac;
     }
 
