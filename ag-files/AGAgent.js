@@ -189,7 +189,6 @@ function AGFinish(outputLog) {
     console.log('Autograder test Results:');
     console.log(outputLog);
     if (isEDXurl()) {
-        console.log(edX_check_button);
         edX_check_button.click();
     } 
     if (!isEDXurl()) {
