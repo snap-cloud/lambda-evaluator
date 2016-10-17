@@ -71,12 +71,12 @@ function AGTest(outputLog) {
 	);
 
 	/* The assert test that checks for whether the correct answer is in the scripting area. */
-	var tip_1_1 = chunk_1.newTip("Make sure the blocks are in the correct order.", "The correct script exists.");
+	var tip_1_1 = chunk_1.newTip("Make sure the blocks are in the correct order and have the correct parameters.", "The correct script exists.");
 	tip_1_1.newAssertTest(
 		scriptPresentInSprite(expected, 0, []),
 		"Testing if the correct script is in the scripting area.",
-		"The script is in the scripting area and the blocks are in the correct order.",
-		"Make sure that the blocks in your script are in the correct order.",
+		"The script is in the scripting area and the blocks are in the correct order with the correct parameters.",
+		"Make sure that the blocks in your script are in the correct order and have the correct parameters.",
 		1
 	);
 
