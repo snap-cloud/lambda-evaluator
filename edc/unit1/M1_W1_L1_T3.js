@@ -76,7 +76,7 @@ function AGTest(outputLog) {
 		scriptPresentInSprite(expected, 0, []),
 		"Testing if the correct script is in the scripting area.",
 		"The script is in the scripting area and the blocks are in the correct order.",
-		"Make sure that the blocks in your script are in the correct order.",
+		"Make sure that the blocks in your script are in the correct order. For example, should the \"random\" block come before or after the \"go to \" block?",
 		1
 	);
 
