@@ -89,6 +89,17 @@
                 initializeSnapAdditions(world, id);
               }
             );
+          } else {
+            problem_js = location.search.slice(1).match(/test_file=(.*)/)[1];
+            console.log(problem_js);
+            if (problem_js) {
+              $.getScript(
+                problem_js,
+                function(data) {
+                  initializeSnapAdditions(world, id);
+                }
+              );
+            }
           }
         }
         </script>

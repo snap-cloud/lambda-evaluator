@@ -1,8 +1,7 @@
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //            Standard Start Code
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-var starter_path = "W2_L1_T3_Starter.xml";
+var starter_path = "M2_W1_L1_T2_E3_Starter.xml";
 // The id is to act as a course identifier.
 // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
 var courseID = "BJC.4x";  // e.g. "BJCx"
@@ -10,7 +9,7 @@ var courseID = "BJC.4x";  // e.g. "BJCx"
 var preReqTaskID = null;
 var preReqID = courseID + preReqTaskID;
 // taskID uniquely identifies the task for saving in browser sessionStorage.
-var taskID = "_W2_L1_T3"; //this should follow the name of the nomenclature document
+var taskID = "complex.js"; //this should follow the name of the nomenclature document
 var id = courseID + taskID;
 var isEDX = isEDXurl();
 // if this question is not meant to be graded, change this flag to false
@@ -42,7 +41,7 @@ function AGTest(outputLog) {
     //         break;
     //     }
     // }
-    var simpleSentence = "simple sentence";
+    const simpleSentence = "simple sentence";
 
     var chunk_0 = fb.newChunk("Make the " + simpleSentence + " block.");
 
@@ -77,14 +76,14 @@ function AGTest(outputLog) {
 
     const nounPhrase = "noun phrase";
 
-    var chunk_1 = fb.newChunk('Make the ' + nounPhrase + ' block.');
+    var chunk_1 = fb.newChunk('Make the ' + nounPhrase + 'block.');
 
     var nounPhraseExists_1 = function () {
         return spriteContainsBlock(nounPhrase);
     }
 
     var containsPickAnyFromNouns_1 = function () {
-        return customBlockContains(nounPhrase, "item %idx of %l", ["random","nouns"])
+        return customBlockContains(nounPhrase, "item %idx of %l", ["any","nouns"])
     }
 
 
@@ -99,14 +98,14 @@ function AGTest(outputLog) {
         "Make sure you name your block exactly " + nounPhrase + " and place it in the scripting area.",
         1);
 
-    var tip_1_2 = chunk_1.newTip('Try using an "item (random) of (nouns)" block.',
+    var tip_1_2 = chunk_1.newTip('Try using an "item (any) of (nouns)" block.',
         'Great job!');
 
     tip_1_2.newAssertTest(
         containsPickAnyFromNouns_1,
-        "Testing if there is an item (random) of (nouns) block in the " + nounPhrase + " block.",
-        "There is a item (random) of (nouns) in the " + nounPhrase + " block.",
-        "Make sure there is a item (random) of (nouns) in the " + nounPhrase + " block.",
+        "Testing if there is an item (any) of (nouns) block in the " + nounPhrase + " block.",
+        "There is a item (any) of (nouns) in the " + nounPhrase + " block.",
+        "Make sure there is a item (any) of (nouns) in the " + nounPhrase + " block.",
         1);
 
         /* Create chunk_2 for the exercise 2 : prepositionalPhrase */
@@ -119,8 +118,8 @@ function AGTest(outputLog) {
     }
 
     var containsPickAnyFromPrepositionals_2 = function () {
-        return customBlockContains(prepositionalPhrase, "item %idx of %l", ["random","prepositionals"]) ||
-        customBlockContains(prepositionalPhrase, "item %idx of %l", ["random","prepositions"]);
+        return customBlockContains(prepositionalPhrase, "item %idx of %l", ["any","prepositionals"]) ||
+        customBlockContains((prepositionalPhrase, "item %idx of %l", ["any","prepositions"]))
     }
 
 
@@ -135,14 +134,14 @@ function AGTest(outputLog) {
         "Make sure you name your block exactly " + prepositionalPhrase + " and place it in the scripting area.",
         1);
 
-    var tip_2_2 = chunk_2.newTip('Try using an "item (random) of (prepositionals)" block.',
+    var tip_2_2 = chunk_2.newTip('Try using an "item (any) of (prepositionals)" block.',
         'Great job!');
 
     tip_2_2.newAssertTest(
         containsPickAnyFromPrepositionals_2,
-        "Testing if there is an item (random) of (prepositionals) block in the " + prepositionalPhrase + " block.",
-        "There is a item (random) of (prepositionals) in the " + prepositionalPhrase + " block.",
-        "Make sure there is a item (random) of (prepositionals) in the " + prepositionalPhrase + " block.",
+        "Testing if there is an item (any) of (prepositionals) block in the " + prepositionalPhrase + " block.",
+        "There is a item (any) of (prepositionals) in the " + prepositionalPhrase + " block.",
+        "Make sure there is a item (any) of (prepositionals) in the " + prepositionalPhrase + " block.",
         1);
 
     /* Create chunk_3 for the exercise 3 : verbPhrase */
@@ -156,7 +155,7 @@ function AGTest(outputLog) {
     }
 
     var containsPickAnyFromVerbs_3 = function () {
-        return customBlockContains(verbPhrase, "item %idx of %l", ["random","verbs"])
+        return customBlockContains(verbPhrase, "item %idx of %l", ["any","verbs"])
     }
 
 
@@ -171,14 +170,14 @@ function AGTest(outputLog) {
         "Make sure you name your block exactly " + verbPhrase + " and place it in the scripting area.",
         1);
 
-    var tip_3_2 = chunk_3.newTip('Try using an "item (random) of (verbs)" block.',
+    var tip_3_2 = chunk_3.newTip('Try using an "item (any) of (verbs)" block.',
         'Great job!');
 
     tip_3_2.newAssertTest(
         containsPickAnyFromVerbs_3,
-        "Testing if there is an item (random) of (verbs) block in the " + verbPhrase + " block.",
-        "There is a item (random) of (verbs) in the " + verbPhrase + " block.",
-        "Make sure there is a item (random) of (verbs) in the " + verbPhrase + " block.",
+        "Testing if there is an item (any) of (verbs) block in the " + verbPhrase + " block.",
+        "There is a item (any) of (verbs) in the " + verbPhrase + " block.",
+        "Make sure there is a item (any) of (verbs) in the " + verbPhrase + " block.",
         1);
     
     const complexSentence = "complex sentence";

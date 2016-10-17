@@ -522,7 +522,8 @@ function initializeSnapAdditions(snapWorld, taskID) {
             // if (edX_check_button) {
                 console.log("Exists!");
                 clearInterval(checkExist);
-                edX_check_button = current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.nextElementSibling.children[1];
+                //edX_check_button = current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.nextElementSibling.children[1];
+                edX_check_button = current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.children[1].children[1];
 
                 edX_check_button.onclick = function () {
                     sessionStorage.setItem(
