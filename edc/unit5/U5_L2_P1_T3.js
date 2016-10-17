@@ -5,7 +5,7 @@
 var starter_path = "U5_L2_P1_T3_starter.xml";
 // The id is to act as a course identifier.
 // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
-var courseID = "BJC.4x"; // e.g. "BJCx"
+var courseID = "edc"; // e.g. "BJCx"
 // Specify a prerequisite task id, should be null if no such requirement.
 var preReqTaskID = null;
 var preReqID = courseID + preReqTaskID;
