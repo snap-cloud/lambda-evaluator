@@ -55,22 +55,11 @@ function AGTest(outputLog) {
         //if multiple sprites return spriteContainsBlock(blockname, spriteIndex);
         return spriteContainsBlock(block);
     }
-
-    // Check whether or not it's a reporter
-    var isReporter = function(block) {
-        return blockType(block) === "reporter";
-    }
-
-    //Check for keep items such that..
-    var keepExists = function(block) {
-        return customBlockContains(block, "keep items such that % from %");
-    }
-
     // ages tests
 	var chunk_1 = fb.newChunk('Complete the "' + ages + '" block.'); //creates a chunk
 
     var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly "' + ages + '" and place it in the scripting area.',
-        'The "' + age + '" block exists.');
+        'The "' + ages + '" block exists.');
 
     //an assert test takes a function and returns true if the function returns true
     tip_1_1.newAssertTest(
@@ -78,17 +67,6 @@ function AGTest(outputLog) {
         'Testing if the "' + ages + '" block is in the scripting area.',
         'The "' + ages + '" block is in the scripting area.',
         'Make sure you name your block exactly "' + ages + '" and place it in the scripting area.',
-        1
-    );
-
-    var tip_1_2 = chunk_1.newTip('Make sure your block "' + ages + '" is a reporter.',
-        'The "' + age + '" block is a reporter.')
-
-    tip_1_2.newAssertTest(
-        isReporter(ages),
-        'Testing if the "' + ages + '" block is a reporter.',
-        'The "' + ages + '" block is a reporter.',
-        'Make sure you name your block exactly "' + ages + '" and is a reporter.',
         1
     );
 
@@ -103,17 +81,6 @@ function AGTest(outputLog) {
         'Testing if the "' + heights + '" block is in the scripting area.',
         'The "' + heights + '" block is in the scripting area.',
         'Make sure you name your block exactly "' + heights + '" and place it in the scripting area.',
-        1
-    );
-
-    var tip_2_2 = chunk_2.newTip('Make sure your block "' + heights + '" is a reporter.',
-        'The "' + heights + '" block is a reporter.')
-
-    tip_2_2.newAssertTest(
-        isReporter(heights),
-        'Testing if the "' + heights + '" block is a reporter.',
-        'The "' + heights + '" block is a reporter.',
-        'Make sure you name your block exactly "' + heights + '" and is a reporter.',
         1
     );
 
@@ -132,16 +99,6 @@ function AGTest(outputLog) {
         1
     );
 
-    var tip_3_2 = chunk_3.newTip('Make sure your block "' + weights + '" is a reporter.',
-        'The "' + weights + '" block is a reporter.')
-
-    tip_3_2.newAssertTest(
-        isReporter(weights),
-        'Testing if the "' + weights + '" block is a reporter.',
-        'The "' + weights + '" block is a reporter.',
-        'Make sure you name your block exactly "' + weights + '" and is a reporter.',
-        1
-    );
 
     //average block
     var chunk_4 = fb.newChunk('Complete the "' + average + '" block.');
@@ -157,16 +114,6 @@ function AGTest(outputLog) {
         1
     );
 
-    var tip_4_2 = chunk_4.newTip('Make sure your block "' + average + '" is a reporter.',
-        'The "' + average + '" block is a reporter.')
-
-    tip_4_2.newAssertTest(
-        isReporter(average),
-        'Testing if the "' + average + '" block is a reporter',
-        'The "' + average + '" block is a reporter.',
-        'Make sure you name your block exactly "' + average + '" and is a reporter.',
-        1
-    );
 
     var tip_4_3 = chunk_4.newTip("Make sure your " + average + " block works for general cases",
         "Great job!");
@@ -209,17 +156,6 @@ function AGTest(outputLog) {
         1
     );
 
-    var tip_5_2 = chunk_5.newTip('Make sure your block "' + female_data + '" uses the keep items such that % from %',
-        'The "' + female_data + '" block uses keep.')
-
-    tip_5_2.newAssertTest(
-        keepExists(female_data),
-        'Testing if the "' + female_data + 'uses keep items such that % from %',
-        'The "' + female_data + '" block uses keep.',
-        'Make sure you name your block exactly "' + female_data + '" and use keep items such that % from %.',
-        1
-    );
-
     var chunk_6 = fb.newChunk('Complete the "' + male_data + '" block.');
 
     var tip_6_1 = chunk_6.newTip('Make sure you name your block exactly "' + male_data + '" and place it in the scripting area.',
@@ -232,18 +168,6 @@ function AGTest(outputLog) {
         'Make sure you name your block exactly "' + male_data + '" and place it in the scripting area.',
         1
     );
-
-    var tip_6_2 = chunk_6.newTip('Make sure your block "' + male_data + '" uses the keep items such that % from %',
-        'The "' + male_data + '" block uses keep.')
-
-    tip_6_2.newAssertTest(
-        keepExists(male_data),
-        'Testing if the "' + male_data + 'uses keep items such that % from %',
-        'The "' + male_data + '" block uses keep.',
-        'Make sure you name your block exactly "' + male_data + '" and use keep items such that % from %.',
-        1
-    );
-
 
     return fb;
     
