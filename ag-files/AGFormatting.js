@@ -1151,11 +1151,11 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
         toggleButton.style.display = "none";
     }
 
-    if (!isEDX) {
+    /*if (!isEDX) {
         var noCreditWarning = document.createElement("p");
-        var noCreditText = document.createTextNode("Please note you won't receive a score from edX for attempting this problem.");
+        //var noCreditText = document.createTextNode("Please note you won't receive a score from edX for attempting this problem.");
         noCreditWarning.appendChild(noCreditText);
         document.getElementById("comment").appendChild(noCreditWarning);
         openResults();
-    }
+    }*/
 }
