@@ -41,15 +41,6 @@ function AGTest(outputLog) {
         return spriteContainsBlock(blockName);
     }
 
-    var baseCaseExists_2 = function() {
-        return customBlockContains(blockName, "if %b %c") || customBlockContains(blockName, "if %b %c else %c");
-    }
-
-    var recursionExists_2 = function() {
-        return customBlockContains(blockName, blockName);
-    }
-
-
     var tip_2_1 = chunk_2.newTip('Make sure you name your block exactly "' + blockName + '" and place it in the scripting area.',
         'The "' + blockName + '" block exists and is recursive.');
 
@@ -344,7 +335,96 @@ function AGTest(outputLog) {
         1 // points
     );
 
+    var blockName = "names starting with %";
+
+    var chunk_3 = fb.newChunk('Complete the "' + blockName + '" block.');
+
+    var blockExists_3 = function () {
+        return spriteContainsBlock(blockName);
+    }
+
+    var selectionSortExists_3 = function() {
+        return customBlockContains(blockName, "selection sort %");
+    }
+
+    var tip_3_1 = chunk_3.newTip('Make sure you name your block exactly "' + blockName + '" and place it in the scripting area.',
+        'The "' + blockName + '" block exists.');
+
+    tip_3_1.newAssertTest(
+        blockExists_3,
+        'Testing if the "' + blockName + '" block is in the scripting area.',
+        'The "' + blockName + '" block is in the scripting area.',
+        'Make sure you name your block exactly "' + blockName + '" and place it in the scripting area.',
+        1
+    );
+
+    tip_3_1.newAssertTest(
+        selectionSortExists_3,
+        'Testing if the "' + blockName + '" block calls the "selection sort" block.',
+        'The "' + blockName + '" block calls the "selection sort" block within its function body.',
+        'Make sure your "' + blockName + '" block calls the "selection sort" block within its function body.',
+        1
+    );
+
+
+    var tip_3_2 = chunk_3.newTip(
+        'Your block should return the correct values for the given inputs.',
+        'Great job! Your block reports the correct value for given inputs.'
+    );
+
+    var input_3_2_1 = ["U"];
+    tip_3_2.newIOTest('r',  // testClass
+        blockName,          // blockSpec
+        input_3_2_1,        // input
+        function (output) {
+            // Output should be a list of names.
+            var expected,
+                actual;
+            console.log(output);
+
+            expected = ["Ubah", "Ubaid", "Ubaldo", "Uchechukwu", "Uchenna", "Uday", "Udy", "Ugochi", "Ugochukwu", "Ugonna", "Ula", "Ulani", "Ulices", "Ulises", "Ulisses", "Ulric", "Ulrich", "Ulyana", "Ulyses", "Ulyssa", "Ulysses", "Uma", "Umaima", "Umair", "Umaira", "Umaiza", "Umar", "Umberto", "Ume", "Umer", "Umi", "Umika", "Umme", "Umut", "Una", "Unique", "Unique", "Unity", "Unknown", "Unknown", "Upton", "Urban", "Urbano", "Urenna", "Uri", "Uriah", "Uriah", "Urias", "Urie", "Uriel", "Uriel", "Urijah", "Urijah", "Uriyah", "Uriyah", "Ursula", "Urvi", "Urwa", "Usher", "Usiel", "Usman", "Uthman", "Uvaldo", "Uyen", "Uzair", "Uzay", "Uzayr", "Uziah", "Uziel", "Uzziah", "Uzziel"];
+
+            if (output instanceof List) {
+                actual = output.asArray();
+            } else {
+                actual = output;
+                actual += ""; //to string
+            }
+            for (i = 0; i < actual.length; i++)
+            {
+                actual[i] = actual[i] + ""; //turns into strings
+            }
+
+            var actualDeduped = actual.filter(function (el, i, arr) {
+                return arr.indexOf(el) === i;
+            });
+            // Check if student actually returned a list with duplicates removed
+            if (actual.length == actualDeduped.length) {
+                var expectedDeduped = expected.filter(function (el, i, arr) {
+                    return arr.indexOf(el) === i;
+                });
+
+                if (!_.isEqual(actual, expectedDeduped)) {
+                    // Can't display the full expected output because it's way too long
+                    tip_3_2.suggestion = 'The output had ' + actual.length + ' unique items;';
+                    tip_3_2.suggestion += ' it should have ' + expectedDeduped.length + ' items.';
+                    return false;
+                }
+            }
+            else {
+                if (!_.isEqual(actual, expected)) {
+                    tip_3_2.suggestion = 'The output had ' + actual.length + ' items;';
+                    tip_3_2.suggestion += ' it should have ' + expected.length + ' items.';
+                    return false;
+                }
+            }
+
+            return true;
+        },
+        4 * 1000, // 4 second time out.
+        true, // is isolated
+        1 // points
+    );
 
     return fb;
-    
-    }
+}

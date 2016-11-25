@@ -269,8 +269,8 @@ function AGTest(outputLog) {
                 actual[i] = actual[i] + ""; //turns into strings
             }
             if (!_.isEqual(actual, expected)) {
-                tip_1_2.suggestion = 'The output should be ' + expected + ';';
-                tip_1_2.suggestion += ' but was ' + actual + '.';
+                tip_2_2.suggestion = 'The output should be ' + expected + ';';
+                tip_2_2.suggestion += ' but was ' + actual + '.';
                 return false;
             }
             return true;
@@ -302,8 +302,8 @@ function AGTest(outputLog) {
                 actual[i] = actual[i] + ""; //turns into strings
             }
             if (!_.isEqual(actual, expected)) {
-                tip_1_2.suggestion = 'The output should be ' + expected + ';';
-                tip_1_2.suggestion += ' but was ' + actual + '.';
+                tip_2_2.suggestion = 'The output should be ' + expected + ';';
+                tip_2_2.suggestion += ' but was ' + actual + '.';
                 return false;
             }
             return true;
@@ -335,8 +335,8 @@ function AGTest(outputLog) {
                 actual[i] = actual[i] + ""; //turns into strings
             }
             if (!_.isEqual(actual, expected)) {
-                tip_1_2.suggestion = 'The output should be ' + expected + ';';
-                tip_1_2.suggestion += ' but was ' + actual + '.';
+                tip_2_2.suggestion = 'The output should be ' + expected + ';';
+                tip_2_2.suggestion += ' but was ' + actual + '.';
                 return false;
             }
             return true;
@@ -379,6 +379,80 @@ function AGTest(outputLog) {
         1 // points
     );*/
 
+    var blockName = "sort % using %predRing to compare";
+
+    var chunk_3 = fb.newChunk('Complete the "' + blockName + '" block.');
+
+    var tip_3_2 = chunk_3.newTip(
+        'Your block should return the correct values for the given inputs.',
+        'Great job! Your block reports the correct value for given inputs.'
+    );
+
+    var input_3_2_1 = [[3, 6, 2, 4, 1], getScript("% h %")];
+    tip_3_2.newIOTest('r',  // testClass
+        blockName,          // blockSpec
+        input_3_2_1,        // input
+        function (output) {
+            // Output should be a list of numbers.
+            var expected,
+                actual;
+            console.log(output);
+
+            expected = ["6", "4", "3", "2", "1"];
+            if (output instanceof List) {
+                actual = output.asArray();
+            } else {
+                actual = output;
+                actual += ""; //to string
+            }
+            for (i = 0; i < actual.length; i++)
+            {
+                actual[i] = actual[i] + ""; //turns into strings
+            }
+            if (!_.isEqual(actual, expected)) {
+                tip_3_2.suggestion = 'The output should be ' + expected + ';';
+                tip_3_2.suggestion += ' but was ' + actual + '.';
+                return false;
+            }
+            return true;
+        },
+        4 * 1000, // 4 second time out.
+        true, // is isolated
+        1 // points
+    );
+
+    var input_3_2_3 = [["Emma", "Olivia", "Sophia", "Isabella", "Ava", "Mia", "Emily", "Abigail"], getScript("% h %")];
+    tip_3_2.newIOTest('r',  // testClass
+        blockName,          // blockSpec
+        input_3_2_3,        // input
+        function (output) {
+            // Output should be a list of strings.
+            var expected,
+                actual;
+            console.log(output);
+
+            expected = ["Sophia", "Olivia", "Mia", "Isabella", "Emma", "Emily", "Ava", "Abigail"];
+            if (output instanceof List) {
+                actual = output.asArray();
+            } else {
+                actual = output;
+                actual += ""; //to string
+            }
+            for (i = 0; i < actual.length; i++)
+            {
+                actual[i] = actual[i] + ""; //turns into strings
+            }
+            if (!_.isEqual(actual, expected)) {
+                tip_3_2.suggestion = 'The output should be ' + expected + ';';
+                tip_3_2.suggestion += ' but was ' + actual + '.';
+                return false;
+            }
+            return true;
+        },
+        4 * 1000, // 4 second time out.
+        true, // is isolated
+        1 // points
+    );
 
     return fb;
     
