@@ -48,7 +48,7 @@ This is the recommended approach:
 
 * Start a local host server, such as:
 	* `cd` into this directory.
-	* `python -m SimpleHttpServer` or `python3 -m http.server`
+	* `python -m SimpleHTTPServer` or `python3 -m http.server`
 	* Navigate to [http://localhost:8000/](http://localhost:8000/)
 * Use the file: `local-snap-ag.html`
 * Set `#test_file=path` in the URL.
