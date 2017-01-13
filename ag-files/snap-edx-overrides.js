@@ -7,4 +7,3 @@ IDE_Morph.prototype.resourceURL = function (folder, file) {
   return args.join('_');
 }
 
-
