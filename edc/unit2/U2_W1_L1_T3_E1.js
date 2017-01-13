@@ -1,12 +1,12 @@
 var starter_path = null;
 // The id is to act as a course identifier.
 // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
-var courseID = "BJC.4x";  // e.g. "BJCx"
+var courseID = "edc";  // e.g. "BJCx"
 // Specify a prerequisite task id, should be null if no such requirement.
 var preReqTaskID = null;
 var preReqID = courseID + preReqTaskID;
 // taskID uniquely identifies the task for saving in browser sessionStorage.
-var taskID = "_M4_W4_L5_T1";
+var taskID = "_U2_W1_L1_T3_E1";
 var id = courseID + taskID;
 var isEDX = isEDXurl();
 // if this question is not meant to be graded, change this flag to false
@@ -19,15 +19,19 @@ function AGTest(outputLog) {
     var fb = new FeedbackLog(
         world,
         id,
-        'Merge Sorted'
+        'Using Lists to Write Vowel?'
     );
 
-    var blockName = "% merge sorted %";
+    var blockName = "vowel? %";
 
-    /*var ide = world.children[0];
+    /*var spriteIndex;
+    var ide = world.children[0];
     var sprites = ide.sprites.contents;
     for (var i = 0; i < sprites.length; i++) {
-
+        if (sprites[i].name === "Minimize Function") {
+            spriteIndex = i;
+            break;
+        }
     }*/
 
     var chunk_1 = fb.newChunk('Complete the "' + blockName + '" block.');
@@ -36,15 +40,17 @@ function AGTest(outputLog) {
         return spriteContainsBlock(blockName);
     }
 
-    var noIteration_1 = function() {
-        return (!customBlockContains(blockName, "forever %c")) && (!customBlockContains(blockName, "for %upvar = %n to %n %cs"))
-            && (!customBlockContains(blockName, "repeat until %b %c")) && (!customBlockContains(blockName, "repeat %n %c"))
-            && (!customBlockContains(blockName, "for each %upvar of %l %cs"));
+    var vowelsListExists_1 = function() {
+        return customBlockContains(blockName, "list %exp", ["a", "e", "i", "o", "u"]);
+    }
+
+    var containsExists_1 = function() {
+        return customBlockContains(blockName, "% contains %");
     }
 
 
     var tip_1_1 = chunk_1.newTip('Make sure you name your block exactly "' + blockName + '" and place it in the scripting area.',
-        'The "' + blockName + '" block exists.');
+        'The "' + blockName + '" block exists and uses the suggested blocks.');
 
     tip_1_1.newAssertTest(
         blockExists_1,
@@ -54,37 +60,45 @@ function AGTest(outputLog) {
         1
     );
 
-    var tip_1_1a = chunk_1.newTip('Make sure you do not use iteration.',
-        'The "' + blockName + '" block does not use iteration.');
+    tip_1_1.newAssertTest(
+        vowelsListExists_1,
+        'Testing if the "' + blockName + '" block uses a list of vowels.',
+        'The "' + blockName + '" block uses a list of vowels.',
+        'Make sure your "' + blockName + '" block uses a list of vowels.',
+        1
+    );
 
-    tip_1_1a.newAssertTest(
-        noIteration_1,
-        'Testing to make sure the "' + blockName + '" block does not use iteration.',
-        'The "' + blockName + '" block does not use iteration.',
-        'Make sure your block "' + blockName + '" does not use iteration. Try using only recursion!',
+    tip_1_1.newAssertTest(
+        containsExists_1,
+        'Testing if the "' + blockName + '" block calls the "% contains %" predicate.',
+        'The "' + blockName + '" block calls the "% contains %" predicate.',
+        'Make sure your "' + blockName + '" block calls the "% contains %" predicate.',
         1
     );
 
 
+
     var tip_1_2 = chunk_1.newTip(
-        'Your block should return the correct values for given inputs.',
+        'Your block should return the correct values for the given inputs.',
         'Great job! Your block reports the correct value for given inputs.'
     );
 
-    var input_1_2_1 = [[1, 3, 5, 8, 9], [4, 6, 7, 10]];
+    var input_1_2_1 = ["o"];
     tip_1_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
         input_1_2_1,        // input
         function (output) {
-            // Output should be a list of 2D lists.
+            // Output should be a list of numbers.
             var expected,
                 actual;
+            console.log(output);
 
-            expected = ["1", "3", "4", "5", "6", "7", "8", "9", "10"];
+            expected = "true";
             if (output instanceof List) {
                 actual = output.asArray();
             } else {
                 actual = output;
+                actual += ""; //to string
             }
             for (i = 0; i < actual.length; i++)
             {
@@ -100,27 +114,24 @@ function AGTest(outputLog) {
         4 * 1000, // 4 second time out.
         true, // is isolated
         1 // points
-    );     
-
-    var tip_1_3 = chunk_1.newTip(
-        'Your block should account for empty lists as a possible given input.',
-        'Great job! Your block handles edge cases perfectly!'
     );
 
-    var input_1_3_1 = [[], [1,2,3]];
-    tip_1_3.newIOTest('r',  // testClass
+    var input_1_2_2 = ["m"];
+    tip_1_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
-        input_1_3_1,        // input
+        input_1_2_2,        // input
         function (output) {
-            // Output should be a list of 2D lists.
+            // Output should be a list of numbers.
             var expected,
                 actual;
+            console.log(output);
 
-            expected = ["1", "2", "3"];
+            expected = "false";
             if (output instanceof List) {
                 actual = output.asArray();
             } else {
                 actual = output;
+                actual += ""; //to string
             }
             for (i = 0; i < actual.length; i++)
             {
@@ -136,22 +147,24 @@ function AGTest(outputLog) {
         4 * 1000, // 4 second time out.
         true, // is isolated
         1 // points
-    );   
+    );
 
-    var input_1_3_2 = [[1,2,3], []];
-    tip_1_3.newIOTest('r',  // testClass
+    var input_1_2_3 = ["5"];
+    tip_1_2.newIOTest('r',  // testClass
         blockName,          // blockSpec
-        input_1_3_2,        // input
+        input_1_2_3,        // input
         function (output) {
-            // Output should be a list of 2D lists.
+            // Output should be a list of numbers.
             var expected,
                 actual;
+            console.log(output);
 
-            expected = ["1", "2", "3"];
+            expected = "false";
             if (output instanceof List) {
                 actual = output.asArray();
             } else {
                 actual = output;
+                actual += ""; //to string
             }
             for (i = 0; i < actual.length; i++)
             {
@@ -167,7 +180,41 @@ function AGTest(outputLog) {
         4 * 1000, // 4 second time out.
         true, // is isolated
         1 // points
-    );       
+    );
+
+    var input_1_2_4 = ["word"];
+    tip_1_2.newIOTest('r',  // testClass
+        blockName,          // blockSpec
+        input_1_2_4,        // input
+        function (output) {
+            // Output should be a list of numbers.
+            var expected,
+                actual;
+            console.log(output);
+
+            expected = "false";
+            if (output instanceof List) {
+                actual = output.asArray();
+            } else {
+                actual = output;
+                actual += ""; //to string
+            }
+            for (i = 0; i < actual.length; i++)
+            {
+                actual[i] = actual[i] + ""; //turns into strings
+            }
+            if (!_.isEqual(actual, expected)) {
+                tip_1_2.suggestion = 'The output should be ' + expected + ';';
+                tip_1_2.suggestion += ' but was ' + actual + '.';
+                return false;
+            }
+            return true;
+        },
+        4 * 1000, // 4 second time out.
+        true, // is isolated
+        1 // points
+    );
+
 
     return fb;
     
