@@ -85,6 +85,7 @@ function arrayFormattedString(items, options) {
         newline.replace(indent, '') + end; // replace(): un-indent 1 level.
 }
 
+// Relies on a globally defined world. 
 AG_UTIL.getIDE = function () {
     return world.children[0];
 }
@@ -115,6 +116,7 @@ AG_UTIL.specToImage = function (spec) {
 /*
     Return an image tag from a given block spec.
     If no block is found, use a simple <code> element.
+    TODO: make images be in a scrolling element.
 */
 AG_UTIL.HTMLFormattedBlock = function (spec) {
     var data = AG_UTIL.specToImage(spec),
@@ -129,11 +131,8 @@ AG_UTIL.HTMLFormattedBlock = function (spec) {
 };
 
 
-
-
 /*
     A basic form of pluralization. 
-    Note that it returns a new word.
     @param {string} word - the base word to turn into a plural
     @param {integer} count - amount of items to base the plural
     @return {string} - a word which has been pluralized.

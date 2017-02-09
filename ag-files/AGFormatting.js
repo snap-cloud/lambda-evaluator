@@ -453,7 +453,7 @@ var update_listener = function() {
     var outputLog = AGUpdate(world, id);
 };
 
-// Called from "Get Feedback Button" -- begins test execution
+// Called from "Get Feedback" Button -- begins test execution
 function doExecAndDisplayTests(event) {
     event.stopPropagation();
     var numAttempts = setNumAttempts(id);
@@ -508,10 +508,9 @@ function createCorrectIncorrectGrouping(sectName) {
         .html(text_content[sectName])
         .attr('id', sectName + '-section')
         .css({display: 'none'});
-            
+
     $('#ag-results').append(div)
 }
-
 
 /*
     Sets the background color of the AG controls bar to the right color.
@@ -703,7 +702,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
                         incorrect_assertions += 1;
                         appendElement(
                             "p",
-                            testPoints + "Error Found! " + thisTest.feedback,
+                            testPoints + thisTest.feedback,
                             ["data", "assertion"],
                             document.getElementsByClassName("observations-section" + i + x)[0]
                         );
@@ -922,13 +921,12 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     }
     $("#comment").html(tipText);
 
-    tipsDiv.innerHTML = pluralizeWithNum('tip', numtips);
+    // TODO Make a function for this.
+    tipsDiv.innerHTML = '<span class="badge">{0}</span>'.format(numtips) + pluralize('tip', numtips);
 
     if (tipHasCorrectTest) {
         $(SELECT.toggle_correct_button).show();
     }
 
-    if (!isEDX) {
-        openResults();
-    }
+    openResults();
 }
