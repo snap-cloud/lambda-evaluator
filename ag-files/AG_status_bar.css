@@ -1,5 +1,5 @@
 /*
-  Control bars and user-facing buttons to interact with the autograder.
+Control bars and user-facing buttons to interact with the autograder.
 */
 
 #outside-menu {
@@ -14,25 +14,6 @@
   height: 100%;
   top: 0px;
 }
-
-
-.enabled-button:hover {
-  
-}
-
-#reset-button,
-#revert-button,
-#last-submit, #undo-button,
-#feedback-button, #help-button {
-}
-
-
-.disabled-button {
-  /* FIXME */
-  background: rgba(1, 1, 1, 0.3);
-  color: gray;
-}
-
 
 .AG-help-button {
   letter-spacing: -0.5px;
@@ -54,11 +35,11 @@
 }
 
 #circle {
-    width: 15px;
-    height: 15px;
-    -webkit-border-radius: 7.5px;
-    -moz-border-radius: 7.5px;
-    border-radius: 7.5px;
+  width: 15px;
+  height: 15px;
+  -webkit-border-radius: 7.5px;
+  -moz-border-radius: 7.5px;
+  border-radius: 7.5px;
 }
 
 .button-close {
@@ -93,15 +74,15 @@
 }
 
 .example-ag-buttons {
-  margin-top:2px;
-  padding-top:2px;
-  padding-right:3px;
-  padding-bottom:0px;
-  padding-left:3px;
-  line-height:.9em;
-  border:1px gray solid;
-  border-radius:4px;
-  font-size:1.2em;
+  margin-top: 2px;
+  padding-top: 2px;
+  padding-right: 3px;
+  padding-bottom: 0px;
+  padding-left: 3px;
+  line-height: .9em;
+  border: 1px gray solid;
+  border-radius: 4px;
+  font-size: 1.2em;
   max-width: 14.672px;
   text-align: left;
 }
@@ -148,87 +129,103 @@
 }
 
 #full-screen-arrow {
-    position: absolute;
-    right: 80px;
-    bottom: 0;
-    color: white;
-    font-size: 120%;
+  position: absolute;
+  right: 80px;
+  bottom: 0;
+  color: white;
+  font-size: 120%;
 }
 
 #full-screen-help {
-    position: absolute;
-    right: 0;
-    bottom: 30px;
-    width: 150px;
-    color: black;
-    font-size: 0.75em;
-    background-color: white;
-    padding: 10px;
-    border-radius: 15px;
-    box-shadow: 5px 5px 20px black;
-    border: 5px solid rgba(41, 41, 41, 0.74);
-  }
+  position: absolute;
+  right: 0;
+  bottom: 30px;
+  width: 150px;
+  color: black;
+  font-size: 0.75em;
+  background-color: white;
+  padding: 10px;
+  border-radius: 15px;
+  box-shadow: 5px 5px 20px black;
+  border: 5px solid rgba(41, 41, 41, 0.74);
+}
 
 #menu-item-arrow {
-    color: white;
-    font-size: 1.2em;
+  color: white;
+  font-size: 1.2em;
 }
 
 #menu-item-help {
-    width: 20%;
-    color: black;
-    font-size: 0.7em;
-    background-color: white;
-    padding: 10px;
-    border-radius: 15px;
-    box-shadow: 5px 5px 20px black;
-    border: 5px solid rgba(41, 41, 41, 0.74);
+  width: 20%;
+  color: black;
+  font-size: 0.7em;
+  background-color: white;
+  padding: 10px;
+  border-radius: 15px;
+  box-shadow: 5px 5px 20px black;
+  border: 5px solid rgba(41, 41, 41, 0.74);
 }
 
 #ag-button-arrow {
-    color: white;
-    font-size: 1.2em;
+  color: white;
+  font-size: 1.2em;
 }
 
 #ag-button-help {
-    width: 7em;
-    color: black;
-    font-size: 0.75em;
-    background-color: white;
-    padding: 10px;
-    border-radius: 15px;
-    box-shadow: 5px 5px 20px black;
-    border: 5px solid rgba(41, 41, 41, 0.74);
+  width: 7em;
+  color: black;
+  font-size: 0.75em;
+  background-color: white;
+  padding: 10px;
+  border-radius: 15px;
+  box-shadow: 5px 5px 20px black;
+  border: 5px solid rgba(41, 41, 41, 0.74);
 }
 
 #initial-ag-button-arrow {
-    color: white;
-    font-size: 1.2em;
+  color: white;
+  font-size: 1.2em;
 }
 
 #initial-ag-button-help {
-    color: black;
-    background-color: white;
-    padding: 10px;
-    border-radius: 15px;
-    box-shadow: 5px 5px 20px black;
-    border: 5px solid rgba(41, 41, 41, 0.74);
-    width: 7em;
-    font-size: 0.75em;
+  color: black;
+  background-color: white;
+  padding: 10px;
+  border-radius: 15px;
+  box-shadow: 5px 5px 20px black;
+  border: 5px solid rgba(41, 41, 41, 0.74);
+  width: 7em;
+  font-size: 0.75em;
 }
 
 #hamburger-menu-arrow {
-    color: white;
-    font-size: 1.2em;
+  color: white;
+  font-size: 1.2em;
 }
 
 #hamburger-menu-help {
-    color: black;
-    background-color: white;
-    padding: 10px;
-    border-radius: 15px;
-    box-shadow: 5px 5px 20px black;
-    border: 5px solid rgba(41, 41, 41, 0.74);
-    width: 7em;
-    font-size: 0.75em;
+  color: black;
+  background-color: white;
+  padding: 10px;
+  border-radius: 15px;
+  box-shadow: 5px 5px 20px black;
+  border: 5px solid rgba(41, 41, 41, 0.74);
+  width: 7em;
+  font-size: 0.75em;
+}
+
+.agStatus--correct {
+  background-color: rgba(0, 255, 0, 0.5);
+}
+
+.agStatus--incorrect {
+  background-color: rgba(250, 0, 0, 0.5);
+}
+
+.agStatus--changed {
+  background-color: rgba(255, 127, 0, 0.5);
+}
+
+.agStatus--none {
+  background-color: none;
 }

@@ -970,7 +970,7 @@
          */
         function AGStart(snapWorld, taskID) {
             //Grab HTML divs
-            var menu_button = document.getElementById("onclick-menu");
+            var menu_button = document.getElementById("ag-action-menu");
             var grade_button = document.getElementById("autograding_button");
             //Get the current Snap XML string
             var ide = snapWorld.children[0];
@@ -1017,7 +1017,7 @@
 
             //TODO: Are there any optional parameters that may be useful?
             //Grabs HTML divs
-            var menu_button = document.getElementById("onclick-menu");
+            var menu_button = document.getElementById("ag-action-menu");
             var grade_button = document.getElementById("autograding_button");
             //Get the current Snap XML string
             var ide = snapWorld.children[0];
@@ -1225,7 +1225,7 @@
                 $('#autograding_button').css('background', 'orange');
             });          
             $('#autograding_button .hover_darken').show();
-            $('#onclick-menu').css('color', 'white');
+            $('#ag-action-menu').css('color', 'white');
             if (sessionStorage.getItem(outputLog.taskID + "_test_log")) {
                 $('#feedback-button').html("View Previous Feedback");
             } else {
@@ -1251,7 +1251,7 @@
                 $('#autograding_button').css('background', '#29A629');
             });
             $('#autograding_button .hover_darken').hide();
-            $('#onclick-menu').css('color', 'white');
+            $('#ag-action-menu').css('color', 'white');
             $('#feedback-button').html("Review Feedback");
         }
         /*
@@ -1276,7 +1276,7 @@
                 $('#autograding_button').css('background', 'red');
             });
             $('#autograding_button .hover_darken').show();
-            $('#onclick-menu').css('color', 'orange');
+            $('#ag-action-menu').css('color', 'orange');
         }
 
         /* Checks if two Snap! XML strings have approximately the same state.
@@ -1879,7 +1879,7 @@
             var undo_button = document.getElementById("undo-button");
             //var last_submit = document.getElementById("last-submit");
             //var menu_button = document.getElementById("hamburger-menu");
-            var menu_button = document.getElementsByClassName("onclick-menu")[0];
+            var menu_button = document.getElementsByClassName("ag-action-menu")[0];
             //var help_menu = document.getElementById("circle");
             var help_overlay = document.getElementById('overlay');
             var feedback_button = document.getElementById("feedback-button");
@@ -1914,14 +1914,14 @@
             }
 
             snapWorld.onclick = function(e) {
-                if (document.getElementById('dropdown-open') !== null && !(document.getElementById('onclick-menu').contains(e.target))) {
+                if (document.getElementById('dropdown-open') !== null && !(document.getElementById('ag-action-menu').contains(e.target))) {
                     toggleMenu();
                 }
             }
 
 
             /*outside_menu.onclick = function(e) {
-                if (document.getElementById('dropdown-open') !== null && !(document.getElementById('onclick-menu').contains(e.target))) {
+                if (document.getElementById('dropdown-open') !== null && !(document.getElementById('ag-action-menu').contains(e.target))) {
                     toggleMenu();
                 }
             }*/
@@ -2087,7 +2087,7 @@
 
 <!-- Snap Autograding Button -->
 <div id="autograding_bar">
-    <div tabindex="0" class="onclick-menu" id='onclick-menu' style="display:inline-block">
+    <div tabindex="0" class="ag-action-menu" id='ag-action-menu' style="display:inline-block">
         <span title="Menu">&#9776;</span>
         <div class='hover_darken'></div>
       <nav id="navigation" class="site-navigation" role="navigation">

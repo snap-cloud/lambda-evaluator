@@ -46,7 +46,7 @@ function runAGTest(snapWorld, taskID, outputLog) {
  */
 function AGStart(snapWorld, taskID) {
     // Grab HTML divs
-    var menu_button = document.getElementById("onclick-menu");
+    var menu_button = document.getElementById("ag-action-menu");
     var grade_button = document.getElementById("autograding_button");
     // Get the current Snap XML string
     var ide = snapWorld.children[0];
@@ -102,7 +102,7 @@ function AGStart(snapWorld, taskID) {
 function AGUpdate(snapWorld, taskID) {
     // TODO: Are there any optional parameters that may be useful?
     // Grabs HTML divs
-    var menu_button = document.getElementById("onclick-menu");
+    var menu_button = document.getElementById("ag-action-menu");
     var grade_button = document.getElementById("autograding_button");
    // Get the current Snap XML string
     var ide = snapWorld.children[0];

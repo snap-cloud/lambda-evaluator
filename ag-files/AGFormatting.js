@@ -10,13 +10,14 @@ var FeedbackDisplay = {
         header_background: '#ag-header',
         // Specific 'Get Feedback' button element
         ag_button: '#autograding_button',
-        // Button + menu items Formerly 'onclick-menu'
+        // Button + menu items Formerly 'ag-action-menu'
         ag_menu: '#ag-menu-group',
         // Formerly .bubble
         dropdown: '.dropdown-menu',
         revert_button: '#revert-button',
         undo_button: '#undo-button',
         reset_button: '#reset-button',
+        status_button: '#numtips', // FIXME
         help_button: '#help-button',
         ag_html_output: '#comment',
         toggle_correct_button: '#toggle-correct-button'
@@ -33,18 +34,11 @@ function AG_bar_ungraded(outputLog) {
     if (button_elem.html().match(regex) !== null) {
         return;
     }
-    button_elem.fadeOut('fast', function() {
-        button_elem.html(button_text);
-        button_elem.slideDown('fast');
-        button_elem.css('background', 'orange');
-    }); 
     
-    // $('#autograding_button .hover_darken').show(); 
-    // $('#onclick-menu').css('color', 'white');
     if (sessionStorage.getItem(outputLog.taskID + "_test_log")) {
+        // TODO: Set the number of tips
+        // This is currently a no-op
         $('#feedback-button').html("View Previous Feedback");
-    } else {
-        $('#feedback-button').html("No Feedback Available");
     }
 }
 
@@ -53,7 +47,7 @@ function AG_bar_ungraded(outputLog) {
  * only occurs when all tests on the outputLog have passed.
  */
 function AG_bar_graded(outputLog) {
-    var button_text = "Get Feedback  ";
+    var button_text = "Get Feedback";
     var button_elem = $(SELECT.ag_button);
     var regex = new RegExp(button_text,"g");
     if (button_elem.html().match(regex) !== null) {
@@ -61,10 +55,10 @@ function AG_bar_graded(outputLog) {
     }
 
     button_elem.html(button_text);
-    button_elem.css('background', '#29A629');
-    $('#autograding_button .hover_darken').hide();
-    // $('#onclick-menu').css('color', 'white');
-    $('#feedback-button').html("Review Feedback");
+    // TODO: FIXME:
+    // button_elem.css('background', '#29A629');
+    // $('#ag-action-menu').css('color', 'white');
+    // $('#feedback-button').html("Review Feedback");
 }
 
 /*
@@ -76,19 +70,12 @@ function AG_bar_semigraded(outputLog) {
     var button_elem = $(SELECT.ag_button);
     var regex = new RegExp("FEEDBACK","g");
     var num_errors = outputLog.testCount - outputLog.numCorrect;
-    var plural = "";
-    if (num_errors > 1) { plural = "s"};
-    $('#feedback-button').html("View Feedback ("+ 
-        num_errors +" Error" + plural + ")");
     if (button_elem.html().match(regex) !== null) {
         return;
     }
 
     button_elem.html(button_text);
     setVisualGradedState('incorrect');
-    // $('#autograding_button').css('background', 'red');
-    // $('#autograding_button .hover_darken').show();
-    // $('#onclick-menu').css('color', 'orange');
 }
 
 function AG_bar_nograde() {
@@ -130,15 +117,12 @@ function createBlockIamges(blockSpec, hintHTML) {
 }
 
 /*
-    TODO: Rename This Function
+    TODO: Rename these function
 */
 function openPopup() {
     $('#overlay').removeClass("hidden");
 }
 
-/*
-    TODO: Rename This Function
-*/
 function closePopup() {
     $('#overlay').addClass("hidden");
 }
@@ -150,6 +134,8 @@ function openResults() {
 function closeResults() {
     $('#ag-output').addClass("hidden");
 }
+
+//////////////////////////////////
 
 function addBasicHeadings() {
     basicCols = ["Test", "Points", "Feedback"];
@@ -212,20 +198,16 @@ function grayOutButtons(snapWorld, taskID) {
 
     var revert_button = $("#revert-button");
     if (c_prev_xml === null || isSameSnapXML(c_prev_xml, curr_xml)) {
-        revert_button.css('pointer-events', "none");
-        revert_button.addClass('disabled-button').removeClass('enabled-button');
+        revert_button.addClass('disabled');
     } else {
-        revert_button.css('pointer-events', 'auto');
-        revert_button.addClass('enabled-button').removeClass('disabled-button');
+        revert_button.removeClass('disabled');
     }
 
     var undo_button = $("#undo-button");
     if (prev_xml === null || isSameSnapXML(prev_xml, curr_xml)) {
-        undo_button.css('pointer-events', "none");
-        undo_button.addClass('disabled-button').removeClass('enabled-button');
+        undo_button.addClass('disabled');
     } else {
-        undo_button.css('pointer-events', 'auto');
-        undo_button.addClass('enabled-button').removeClass('disabled-button');
+        undo_button.removeClass('disabled');
     }
 }
 
@@ -244,54 +226,6 @@ function makeOverlayButton() {
     }
 }
 
-function makeFullScreenButton() {
-    var autograding_bar = document.getElementById('autograding_bar');
-    var full_screen_button = document.createElement('button');
-    var full_screen_button_text = document.createTextNode("Full-Screen");
-    full_screen_button.appendChild(full_screen_button_text);
-    full_screen_button.id = "full-screen";
-    full_screen_button.className = "off";
-    autograding_bar.parentNode.insertBefore(full_screen_button, autograding_bar.nextSibling);
-}
-
-function toggleSnapWindow(button, taskID) {
-    var iframe = parent.document.getElementsByTagName('iframe')[id_problem];
-    if (button.className === "off") {
-        fullScreenSnap(button, taskID);
-    } else {
-        iframe.style.position = 'initial';
-        iframe.style.top = 'initial';
-        iframe.style.right = 'initial';
-        iframe.style.height = '500px';
-        iframe.style.zIndex = 'initial';
-        button.className = "off";
-        button.innerHTML = "Full-Screen";
-        sessionStorage.removeItem(taskID + "full-screen-on");
-    }
-}
-
-function fullScreenSnap(button, taskID) {
-    var iframe = parent.document.getElementsByTagName('iframe')[id_problem];
-    iframe.style.position = 'fixed';
-    iframe.style.top = '0';
-    iframe.style.right = '0';
-    iframe.style.width = '100%';
-    iframe.style.height = '100vh';
-    iframe.style.zIndex = '16777270';
-    button.className = "on";
-    button.innerHTML = "Windowed";
-    sessionStorage.setItem(taskID + "full-screen-on", JSON.stringify(true));
-}
-
-function moveAutogradingBar() {
-    var autograding_bar = document.getElementById('autograding_bar');
-    var ide = world.children[0];
-    if (ide.stageRatio === 1) {
-        autograding_bar.style.right = '9em';
-    } else {
-        autograding_bar.style.right = '16em';
-    }
-}
 
 function closeInitialHelp() {
     var initial_overlay = document.getElementById("initial-help");
@@ -330,16 +264,8 @@ function createInitialHelp() {
     hamburger_help_arrow.appendChild(hamburger_help_arrow_text);
     hamburger_help_arrow.id = "hamburger-menu-arrow";
 
-
     document.getElementById("initial-help").appendChild(hamburger_help);
     document.getElementById("initial-help").appendChild(hamburger_help_arrow);
-    
-    // FOR NOW: Only show full screen if in edX.
-    // Note: iframe solution probably applies to embedded LTI apps
-    if (isEDX) {
-        $("#full-screen-arrow").clone().appendTo("#initial-help");
-        $("#full-screen-help").clone().appendTo("#initial-help");
-    }
 
     var arrow = document.getElementById("ag-button-arrow"), 
         arrow_clone = arrow.cloneNode(true);
@@ -372,9 +298,9 @@ function initializeButtonMouseListeners(snapWorld, taskID) {
     $("#undo-button").click(function (e) {
         revertToLastState(snapWorld, taskID);
     });
-    $('#initial-help').click(function(e) { 
-        closeInitialHelp();
-    });
+    // $('#initial-help').click(function(e) {
+    //     closeInitialHelp();
+    // });
     $('#overlay').click(function(e) {
         closePopup();
     });
@@ -388,7 +314,7 @@ function initializeButtonMouseListeners(snapWorld, taskID) {
 }
 
 /*
-    
+    TODO: Refactor or remove...
 */
 function previousFeedbackButton() {
     var prev_feedback = document.createElement("li");
@@ -413,10 +339,13 @@ function previousFeedbackButton() {
 
 function initializeSnapAdditions(snapWorld, taskID) {
     var prevFeedbackButton = false, ide;
-    if (!hasShownInitalHelp()) {
-        createInitialHelp();
-        moveHelp();
-    }
+
+    // TODO: renable soon
+    // if (!hasShownInitalHelp()) {
+    //     createInitialHelp();
+    //     moveHelp();
+    // }
+
     if (showPrevFeedback && !prevFeedbackButton) {
         previousFeedbackButton();
         prevFeedbackButton = true;
@@ -459,8 +388,6 @@ function initializeSnapAdditions(snapWorld, taskID) {
         }
     }, 500);
 
-    var prev_log = JSON.parse(sessionStorage.getItem(taskID + "_test_log"));
-
     if (showPrevFeedback) {
         $("#feedback-button").click(function() { openResults(); });
     }
@@ -479,12 +406,15 @@ function initializeSnapAdditions(snapWorld, taskID) {
             'See Correct Tests</button>' +
             '<div id="correct-table-wrapper"></div>'
         );
+        
         // TODO: explain this line.
         if (!graded) {return; }
     }, 1000);
 
     setTimeout(function() {
-        var outputLog;
+        var outputLog,
+            prev_log = JSON.parse(sessionStorage.getItem(taskID + "_test_log"));
+        
         if (prev_log) {
             outputLog = prev_log;
         } else {
@@ -517,6 +447,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
 }
 
 // Call the test suite when this element is clicked.
+// TODO: Rename this and cleanup outputLog
 var update_listener = function() {
     // TODO: Why is `var` here?
     var outputLog = AGUpdate(world, id);
@@ -540,53 +471,6 @@ function doExecAndDisplayTests(event) {
         }
     }
     sessionStorage.setItem(id + "_popupFeedback", '');
-}
-
-function moveHelp() {
-    var pos = $(SELECT.dropdown).offset();
-    var menu_pos = $("#onclick-menu").offset();
-
-    $("#menu-item-help").css({
-        position: "absolute",
-        top: pos.top + 100 + "px",
-        left: pos.left - 250 + "px"
-    });
-    $("#menu-item-arrow").css({
-        position: "absolute",
-        top: pos.top + 60 + "px",
-        left: pos.left - 30 + "px"
-    });
-    $("#ag-button-help").css({
-        position: "absolute",
-        top: pos.top + "px",
-        left: pos.left + 200 + "px"
-    });
-    $("#ag-button-arrow").css({
-        position: "absolute",
-        top: pos.top - 30 + "px",
-        left: pos.left + 270 + "px"
-    });
-
-    $("#initial-ag-button-help").css({
-        position: "absolute",
-        top: pos.top + "px",
-        left: pos.left + 200 + "px"
-    });
-    $("#initial-ag-button-arrow").css({
-        position: "absolute",
-        top: pos.top - 33 + "px",
-        left: pos.left + 200 + "px"
-    });
-    $("#hamburger-menu-help").css({
-        position: "absolute",
-        top: menu_pos.top + 40 + "px",
-        left: menu_pos.left - 100 + "px"
-    });
-    $("#hamburger-menu-arrow").css({
-        position: "absolute",
-        top: menu_pos.top + 5 + "px",
-        left: menu_pos.left + 5 + "px"
-    });
 }
 
 function appendElement(elem, text, elemClass, selector) {
@@ -628,28 +512,16 @@ function createCorrectIncorrectGrouping(sectName) {
     $('#ag-results').append(div)
 }
 
-/*
-    Returns an CSS color based on a status string.
-    If status isn't found, then assume status is a valid color.
-*/
-function getStatusColor(status) {
-    switch (status) {
-    case 'correct':
-        return 'rgba(0, 255, 0, 0.6)';
-    case 'incorrect':
-        return 'rgba(240, 0, 0, 0.6)';
-    case 'changed':
-        return 'rgba(255, 127, 0, 0.6)';
-    default:
-        return status;
-    }
-}
+
 /*
     Sets the background color of the AG controls bar to the right color.
 */
 function setVisualGradedState(status) {
-    var color = getStatusColor(status);
-    $(SELECT.header_background).css('background-color', color);
+    var statusClassBase = 'agStatus--'
+    $(SELECT.status_button).removeClass (function (index, className) {
+        return (className.match (/(^|\s)agStatus-\S+/g) || []).join(' ');
+    });
+    $(SELECT.status_button).addClass(statusClassBase + status);
 }
 
 /*
@@ -675,6 +547,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             allFeedback = false;
             toggleButton.html("Show Correct Tests");
         }
+        
         // TODO: IMPROVE THIS
         // No need to redraw the entire table each time.
         populateFeedback(feedbackLog, allFeedback);
@@ -1056,11 +929,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     }
 
     if (!isEDX) {
-        // No Credit Warning Commented out because it doesn't apply to bCourses.
-        // var noCreditWarning = document.createElement("p");
-        // var noCreditText = document.createTextNode("Please note you won't receive a score from edX for attempting this problem.");
-        // noCreditWarning.appendChild(noCreditText);
-        // document.getElementById("comment").appendChild(noCreditWarning);
         openResults();
     }
 }
