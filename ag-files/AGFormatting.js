@@ -153,7 +153,7 @@ function closeResults() {
 
 function addBasicHeadings() {
     basicCols = ["Test", "Points", "Feedback"];
-    for (i=0; i<basicCols.length; i++) {
+    for (i=0; i < basicCols.length; i++) {
         var header = document.createElement("th");
         var text = document.createTextNode(basicCols[i]);
         // var lastCol = document.getElementById("reporter-last-column");
@@ -421,12 +421,9 @@ function initializeSnapAdditions(snapWorld, taskID) {
         previousFeedbackButton();
         prevFeedbackButton = true;
     }
-    
-    if (isEDX) {
-        current_iframe.parentNode.parentNode.parentNode.style.width = "100%";
-    }
 
     var pageLocation = JSON.parse(sessionStorage.getItem(taskID + "pageLocation"));
+
     if (pageLocation) {
         parent.window.scrollTo(pageLocation[0], pageLocation[1]);
         sessionStorage.removeItem(taskID + "pageLocation");
@@ -469,50 +466,6 @@ function initializeSnapAdditions(snapWorld, taskID) {
     }
 
     initializeButtonMouseListeners(snapWorld, taskID);
-
-    checkButtonExists = false;
-    if (isEDX) {
-        var timesChecked = 0;
-
-        checkButtonExists = true;
-        var checkExist = setInterval(function() {
-            timesChecked += 1;
-            console.log("checking...." + id_problem);
-            if (parent.document.getElementsByClassName('check-label')[id_problem]) {
-                console.log("Exists!");
-                clearInterval(checkExist);
-                edX_check_button = current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.nextElementSibling.children[1];
-
-                edX_check_button.onclick = function () {
-                    sessionStorage.setItem(
-                        taskID + "pageLocation",
-                        JSON.stringify([
-                            parent.window.scrollX,
-                            parent.window.scrollY
-                        ])
-                    );
-                };
-
-                edX_check_button.style.display = "none";
-            }
-            if (timesChecked === 5) {
-                isEDX = false;
-                checkButtonExists = false;
-                clearInterval(checkExist);
-            }
-        }, 100);
-
-        makeFullScreenButton();
-        var full_screen = document.getElementById('full-screen');
-        full_screen.onclick = function() {
-            toggleSnapWindow(full_screen, id);
-            moveHelp();   
-        }
-        var full_screen_on = JSON.parse(sessionStorage.getItem(taskID + "full-screen-on"));
-        if (full_screen_on) {
-            fullScreenSnap(full_screen, id);
-        }
-    }
 
     setTimeout(function() {
         var button = $('<button>').attr({
