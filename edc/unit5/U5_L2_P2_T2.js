@@ -2,7 +2,7 @@
 //            Standard Start Code
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-var starter_path = "null";
+var starter_path = "U5_L2_P1_T3_starter.xml";
 // The id is to act as a course identifier.
 // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
 var courseID = "BJC.4x";  // e.g. "BJCx"
@@ -10,7 +10,7 @@ var courseID = "BJC.4x";  // e.g. "BJCx"
 var preReqTaskID = null;
 var preReqID = courseID + preReqTaskID;
 // taskID uniquely identifies the task for saving in browser sessionStorage.
-var taskID = "_U5_L2_P2_T1"; //this should follow the name of the nomenclature document
+var taskID = "_U5_L2_P2_T2"; //this should follow the name of the nomenclature document
 var id = courseID + taskID;
 var isEDX = isEDXurl();
 // if this question is not meant to be graded, change this flag to false
@@ -47,8 +47,8 @@ function AGTest(outputLog) {
     var heights = "heights";
     var weights = "weights";
     var average = "average %";
-    var female_data = "female_data";
-    var male_data = "male_data";
+    var female_data = "female data";
+    var male_data = "male data";
 
     //function checks for block existence
     var blockExists = function(block) { 

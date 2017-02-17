@@ -518,12 +518,12 @@ function initializeSnapAdditions(snapWorld, taskID) {
         var checkExist = setInterval(function() {
             timesChecked += 1;
             console.log("checking...." + id_problem);
-            if (parent.document.getElementsByClassName('check-label')[id_problem]) {
+            if (parent.document.getElementsByClassName('jsinput')[id_problem]) {
             // if (edX_check_button) {
                 console.log("Exists!");
                 clearInterval(checkExist);
                 //edX_check_button = current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.nextElementSibling.children[1];
-                edX_check_button = current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.children[1].children[1];
+                edX_check_button = current_iframe.parentNode.parentNode.parentNode.parentNode.parentNode.children[1].children[2].children[0];
 
                 edX_check_button.onclick = function () {
                     sessionStorage.setItem(
@@ -1151,11 +1151,11 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
         toggleButton.style.display = "none";
     }
 
-    if (!isEDX) {
+    /*if (!isEDX) {
         var noCreditWarning = document.createElement("p");
-        var noCreditText = document.createTextNode("Please note you won't receive a score from edX for attempting this problem.");
+        //var noCreditText = document.createTextNode("Please note you won't receive a score from edX for attempting this problem.");
         noCreditWarning.appendChild(noCreditText);
         document.getElementById("comment").appendChild(noCreditWarning);
         openResults();
-    }
+    }*/
 }

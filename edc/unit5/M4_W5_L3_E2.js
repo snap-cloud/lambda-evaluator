@@ -40,7 +40,7 @@ function AGTest(outputLog) {
 
 	var input01 = [[1, 2, 3, 4, 5, 6]];
 	var IOTest01 = function(output) {
-		return output == 6;
+		return output == true;
 	}
 
 	var duplicateName = "duplicates in %";
@@ -52,12 +52,12 @@ function AGTest(outputLog) {
 
 	var input02 = [[1, 2, 3, 4, 5]];
 	var IOTest02 = function(output) {
-		return output == 5;
+		return output == true;
 	}
 
 	var input03 = [[1, 2, 2, 2, 2]];
 	var IOTest03 = function(output) {
-		return output == 2;
+		return output == false;
 	}
 
 	var input11 = [[1, 2, 3]]
