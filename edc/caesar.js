@@ -15,6 +15,7 @@ var graded = true;
 var showFeedback = true;
 // to allow ability to regrade certain tests, set this to true
 var regradeOn = true;
+
 function AGTest(outputLog) {
     var fb = new FeedbackLog(
         world,
@@ -156,8 +157,6 @@ function AGTest(outputLog) {
                 actual;
 
             expected = 'Mjqqt Fenf!';
-            console.log(output);
-            console.log(typeof output);
             actual = output;
             if (actual !== expected && actual.substring(0, 11) !== expected) {
                 tip_2_2.suggestion = 'The output should be ' + expected + ';';
@@ -185,13 +184,7 @@ function AGTest(outputLog) {
             var expected,
                 actual;
             expected = 'brx fdq gr dqbwklqj!!';
-            console.log(output);
-            console.log(expected);
-            console.log(output.length);
-            console.log(expected.length);
             
-            console.log(output.toString() == expected.toString());
-            console.log(output === "brx fdq gr dqbwklqj!!");
             actual = output;
             if (actual !== expected && actual.substring(0, 21) !== expected) {
                 tip_2_3.suggestion = 'The output should be ' + expected + ';';
@@ -200,7 +193,7 @@ function AGTest(outputLog) {
             }
             return true;
         },
-        4 * 1000, // 4 second time out.
+         * 1000, // 4 second time out.
         true, // is isolated
         1 // points
     );
@@ -416,7 +409,7 @@ function AGTest(outputLog) {
             }
             return true;
         },
-        20 * 1000, // 4 second time out.
+        50 * 1000, // 4 second time out.
         true, // is isolated
         1 // points
     );
@@ -447,7 +440,7 @@ function AGTest(outputLog) {
             }
             return true;
         },
-        20 * 1000, // 4 second time out.
+        50 * 1000, // 4 second time out.
         true, // is isolated
         1 // points
     );
