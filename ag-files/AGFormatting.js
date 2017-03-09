@@ -535,7 +535,6 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     
     // TODO: Extract this function
     $("#toggle-correct-tests").click(function() {
-        console.log('CLICKED');
         var toggleButton = $(SELECT.toggle_correct_button);
         if (toggleButton.hasClass("isOff")) {
             toggleButton.removeClass("isOff");
