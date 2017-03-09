@@ -55,7 +55,7 @@ function AGTest(outputLog) {
     }
 
 
-    var tip_2_1 = chunk_2.newTip('Make sure you name your block exactly "' + blockName + '", place it in the scripting area, and that it is recursive.',
+    var tip_2_1 = chunk_2.newTip('Make sure you name your block exactly "' + blockName + '", place it in the scripting area, and that it uses the map block.',
         'The "' + blockName + '" block exists.');
 
     tip_2_1.newAssertTest(

@@ -239,6 +239,7 @@ FeedbackLog.prototype.startSnapTest = function(test) {
         test.proc = proc;
         // Timeouts for infinitely looping script or an Error.
         var timeout = test.timeOut;
+
         if (timeout < 0) {
             timeout = 1000; // Set default if -1
         }

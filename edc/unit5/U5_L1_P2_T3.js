@@ -5,7 +5,7 @@
 var starter_path = null;
 // The id is to act as a course identifier.
 // NOTE: FOR NOW YOU ALSO HAVE TO ADD THE ID TO THE BOTTOM OF THE PAGE.
-var courseID = "BJC.2x";  // e.g. "BJCx"
+var courseID = "edc";  // e.g. "BJCx"
 // Specify a prerequisite task id, should be null if no such requirement.
 var preReqTaskID = null;
 var preReqID = courseID + preReqTaskID;
@@ -125,7 +125,7 @@ function AGTest(outputLog) {
     tip_1_6.newIOTest('r',  //testClass
         position_of_number_in_unsorted_list,  //blockSpec
         [1, []],  //input
-        -,  //output
+        0,  //output
         -1,  //timeout
         true,  //isolated
         1);  //points

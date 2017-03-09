@@ -187,15 +187,14 @@ function AGFinish(outputLog) {
         // Save the correct XML string into sessionStorage
         AG_bar_graded(outputLog);
         outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
-        // TODO: Refactor this conditional. 
-    } else if (outputLog.pScore > 0 && 
-        ((c_prev_log && outputLog.pScore >= c_prev_log.pScore)
-        || (!c_prev_log))) {
+    } else if ((outputLog.pScore > 0) && ((c_prev_log && outputLog.pScore >= c_prev_log.pScore) || (!c_prev_log))) {
+        // TODO: update this
         // Update AG_status_bar to 'graded, but incorrect state
     } else {
         AG_bar_semigraded(outputLog);
     }
    // Save the current XML. Log is saved in gradingLog.scoreLog(...)
+
     outputLog.saveSnapXML(outputLog.taskID + "_test_state");
     if (showFeedback) {
         populateFeedback(outputLog);
