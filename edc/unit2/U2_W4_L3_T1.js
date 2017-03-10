@@ -60,7 +60,7 @@ function AGTest(outputLog) {
     var tip_1_3 = chunk_1.newTip('Make sure your block definition uses the round block.')
 
     var blockContains_round = function() {
-      return customBlockContains('integer? %n', 'round %n')
+      return customBlockContains('integer? %', 'round %')
     }
 
     tip_1_3.newAssertTest(
