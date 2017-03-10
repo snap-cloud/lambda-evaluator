@@ -6,7 +6,6 @@ Unit,Curriculum (Page Heading),Title of Problem,Github Link to File,Starter File
 1,Lab 3 - Giving Your Block an Input Variable,Exercise 1 - Draw Square with Input,edc/unit1/M1_U1_L4_T1.js,
 1,Lab 3 - Giving Your Block an Input Variable,Exercise 3 - 'Draw Triangle' and 'Draw House' with Input,edc/unit1/M1_U1_L4_T2.js,
 1,Lab 3 - Giving Your Block an Input Variable,Exercise 1 (Take it Further) - Draw Polygon,edc/unit1/M1_U1_L4_T3.js,
-,,,,
 2,Lab 1 - Using Lists to Write Vowel?,Exercise 1 - Vowel? using list and contains,edc/unit2/U2_W1_L1_T3_E1.js,
 2,Lab 1 - Developing a Block that Makes Plurals,Exercise 6 - Plural,edc/unit2/U2_W1_L1_T5_E_all.js,
 2,"Lab 1 - Plurals, Continued",Exercise 3 - Plural with Plural-h and Plural-y,edc/unit2/U2_W1_L1_T6_E_all.js,
@@ -14,11 +13,8 @@ Unit,Curriculum (Page Heading),Title of Problem,Github Link to File,Starter File
 2,Lab 3 - Predicates and Logic,Exercise 4 - >= Block,edc/unit2/U2_W1_L3_T1_E4.js,
 2,Lab 3 - Composition of Functions,"Exercises 1,2,3 - 'Three Input Addition', 'Sum of Two Smallest', and 'Are Any Equal'",edc/unit2/U2_W1_L3_T4_E_all.js,
 2,Lab 4 - Developing a Board Game,Exercise 2 - Is Between,edc/unit2/U2_W1_L4_T3_E2.js,
-,,,,
-,Homework 1 - Word Guessing Game,Word Guessing Game,edc/hw1_WordGuessingGame.js,edc/hw1_starter_file.xml
-,,,,
-,Homework 2 - Word Guessing Game Part 2,Word Guessing Game Part 2,edc/hw2_scaffold_tests.js,
-,,,,
+X,Homework 1 - Word Guessing Game,Word Guessing Game,edc/hw1_WordGuessingGame.js,edc/hw1_starter_file.xml
+X,Homework 2 - Word Guessing Game Part 2,Word Guessing Game Part 2,edc/hw2_scaffold_tests.js,
 5,Lab 1 - Analyzing and Improving Searches,"Exercises 1,4 - Position of Number in Unsorted/Sorted List",edc/unit5/U5_L1_P2_T3.js,
 5,Lab 2 - Building a Graphing App,"Exercises 3,5 - 'Go to Scaled Point' and 'Graph Datapoints'",edc/unit5/U5_L2_P1_T3.js,edc/unit5/U5_L2_P1_T3_starter.xml
 5,Lab 2 - Improving Your Grapher,"Exercises 3,4,5 - 'Ages', 'Heights', 'Weights', 'Average', 'Female Data', and 'Male Data;",edc/unit5/U5_L2_P2_T2.js,
