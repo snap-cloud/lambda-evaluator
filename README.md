@@ -67,5 +67,6 @@ This is the recommended approach:
 	* add `lib/` to `static/`
 	* Recompress the course folder and use edX's import tool.
 * Upload all the files in `ag-files` to edX, but not in a subfolder.
+* Upload all the files in `lib` to edX, but not in a subfolder.
 * Upload `edx-snap-ag.html` but not in a subfolder.
 * Upload a `*.js` file for each problem
