@@ -13,8 +13,9 @@ for (i = 0; i < num_iframes; i++) {
     }
 }
 
+// TODO: Move this to a configuration setting.
 var showPoints = false;
-var showPrevFeedback = false;
+// var showPrevFeedback = false;
 
 function isEDXurl() {
     return window.location.host.indexOf('edx.org') !== -1; //|| window.location.host.indexOf('cloudfront.net') !== -1;
@@ -175,7 +176,9 @@ function AGUpdate(snapWorld, taskID) {
  *  - Should only be called from outputLog.evaluateLog()
  */
 function AGFinish(outputLog) {
-    var c_prev_log = JSON.parse(sessionStorage.getItem(outputLog.taskID + "_c_test_log"));
+    var c_prev_log = JSON.parse(
+        sessionStorage.getItem(outputLog.taskID + "_c_test_log")
+    );
 
     if (!graded) {
         AG_bar_nograde();
@@ -189,7 +192,7 @@ function AGFinish(outputLog) {
         outputLog.saveSnapXML(outputLog.taskID + "_c_test_state");
     } else if ((outputLog.pScore > 0) && ((c_prev_log && outputLog.pScore >= c_prev_log.pScore) || (!c_prev_log))) {
         // TODO: update this
-        // Update AG_status_bar to 'graded, but incorrect state
+        // Update AG_status_bar to 'graded, but incorrect' state
     } else {
         AG_bar_semigraded(outputLog);
     }
@@ -204,6 +207,9 @@ function AGFinish(outputLog) {
     if (isEDXurl()) {
         edX_check_button.click();
     }
+    // Submission to the autograder site
+    // TODO: Extract this into something that can be called externally.
+    // AutograderCallbacks.call('onSubmit')
     if (submitAutograderResults) {
         console.log('SUBMITTING AG RESULTS');
         submitAutograderResults(outputLog);
@@ -336,7 +342,7 @@ function isSameSnapXML(prev_xml, curr_xml, no_subset) {
     // If the custom block definitions have changed
     prev_xml_blocks && prev_xml_blocks.sort().join("");
     curr_xml_blocks && curr_xml_blocks.sort().join("");
-    if(JSON.stringify(prev_xml_blocks) !== JSON.stringify(curr_xml_blocks)) {
+    if (JSON.stringify(prev_xml_blocks) !== JSON.stringify(curr_xml_blocks)) {
         return false;
     }
     // If the previous scripts are a subset of current scripts
@@ -409,3 +415,22 @@ function setNumAttempts(taskID) {
     }
 }
 
+/*
+    Returns an object to be POSTed to the server.
+    Cleans up the AG log in a friendlier way for storing.
+    
+    @param ag_log
+    @return {Object} with properties
+        'score': score,
+        'code_submission': xml,
+        'test_results': results,
+*/
+function resultsSubmissionObject(ag_log) {
+    var score, xml, results;
+
+    return {
+        'score': score,
+        'code_submission': xml,
+        'test_results': results
+    }
+}

@@ -90,17 +90,6 @@ function AG_bar_nograde() {
 }
 
 /*
-    TODO: Add documentation
-*/
-function escapeRegExp(string) {
-    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-}
-
-function replaceall(string, find, replace) {
-    return (string.replace(new RegExp(escapeRegExp(find), 'g'), replace));
-}
-
-/*
     Replace a blockSpec with a generated scriptPic of the block. If a pic isn't
     found, use <code> tags.
     Note: This should be used before DISPLAYING HTML, but not for the stuff
@@ -117,7 +106,7 @@ function createBlockIamges(blockSpec, hintHTML) {
 }
 
 /*
-    TODO: Rename these function
+    TODO: Rename these functions
 */
 function openPopup() {
     $('#overlay').removeClass("hidden");
@@ -127,67 +116,22 @@ function closePopup() {
     $('#overlay').addClass("hidden");
 }
 
+// TODO: Make this simply `toggleResults`
 function openResults() {
-    $('#ag-output').removeClass("hidden");
+    // TODO: There should be a safer way of getting this.
+    var numTips = $('.tips-msg .badge').text();
+    if (numTips == "0") {
+        alert('No tips yet! Try clicking "Get Feedback".');
+    }
+    $('#ag-output').show();
 }
 
+// TODO: Replace this function with just `toggleResults`
 function closeResults() {
-    $('#ag-output').addClass("hidden");
+    $('#ag-output').hide();
 }
 
 //////////////////////////////////
-
-function addBasicHeadings() {
-    basicCols = ["Test", "Points", "Feedback"];
-    for (i=0; i < basicCols.length; i++) {
-        var header = document.createElement("th");
-        var text = document.createTextNode(basicCols[i]);
-        // var lastCol = document.getElementById("reporter-last-column");
-        var titles = document.getElementById("table-titles");
-        header.classList.add("titles", "non-reporter");
-        header.appendChild(text);
-        titles.appendChild(header);
-    }
-}
-
-function addReporterHeadings() {
-    var columns = ["Test", "Points", "Block", "Input", "Output", "Expected", "Feedback"];
-    for (i = 0; i < columns.length; i++) {
-        var header = document.createElement("th");
-        var text = document.createTextNode(columns[i]);
-        var repTitles = document.getElementById("reporter-table-titles");
-        header.classList.add("titles", "reporter");
-        header.appendChild(text);
-        repTitles.appendChild(header);
-    }
-}
-
-function addTableCell(text, elemClass, row) {
-    var data = document.createElement("td");
-    var text = document.createTextNode(text);
-    data.appendChild(text);
-    if (Array.isArray(elemClass)) {
-        DOMTokenList.prototype.add.apply(data.classList, elemClass);
-    } else {
-        data.classList.add(elemClass);
-    }
-    row.appendChild(data);
-}
-
-function addRegradeButton(text, elemClass, row) {
-    var data = document.createElement("td");
-    var button = document.createElement("p");
-    var text = document.createTextNode(text);
-    button.classList.add("regrade-button");
-    button.appendChild(text);
-    data.appendChild(button);
-    if (Array.isArray(elemClass)) {
-        DOMTokenList.prototype.add.apply(data.classList, elemClass);
-    } else {
-        data.classList.add(elemClass);
-    }
-    row.appendChild(data);
-}
 
 function grayOutButtons(snapWorld, taskID) {
     var ide = snapWorld.children[0];
@@ -211,76 +155,6 @@ function grayOutButtons(snapWorld, taskID) {
     }
 }
 
-
-function makeOverlayButton() {
-    var grade_button = $("#autograding_button");
-    var overlay_button = parent.document.createElement('button');
-    var overlay_button_text = parent.document.createTextNode('Grade');
-    overlay_button.appendChild(overlay_button_text);
-    overlay_button.classList.add('overlay-button');
-    var button = parent.document.getElementsByName('problem_id')[id_problem];
-    button.parentNode.insertBefore(overlay_button, button.nextSibling);
-    overlay_button.onclick = function() { 
-        overlay_button.style.display = "none";
-        grade_button.click(); 
-    }
-}
-
-
-function closeInitialHelp() {
-    var initial_overlay = document.getElementById("initial-help");
-    initial_overlay.classList.add("hidden");
-}
-
-function setInitialHelpDisplay(bool) {
-    if (localStorage) {
-        localStorage['-snap-autograder-inital-help'] = JSON.stringify(bool);
-    }
-}
-
-function hasShownInitalHelp() {
-    if (localStorage) {
-        return JSON.parse(localStorage['-snap-autograder-inital-help'] || null);
-    }
-    return false;
-}
-
-
-function createInitialHelp() {
-    initial_help = document.createElement("div");
-    initial_help.classList.add("overlay");
-    initial_help.id = "initial-help";
-
-    $(initial_help).insertAfter("#overlay")
-
-    hamburger_help = document.createElement("p");
-    hamburger_text = document.createTextNode("Click this button to access helpful auto-feedback functions.");
-    hamburger_help.appendChild(hamburger_text);
-    hamburger_help.id = "hamburger-menu-help";
-    hamburger_help.classList.add("help-text");
-
-    hamburger_help_arrow = document.createElement("p");
-    hamburger_help_arrow_text = document.createTextNode("↑");
-    hamburger_help_arrow.appendChild(hamburger_help_arrow_text);
-    hamburger_help_arrow.id = "hamburger-menu-arrow";
-
-    document.getElementById("initial-help").appendChild(hamburger_help);
-    document.getElementById("initial-help").appendChild(hamburger_help_arrow);
-
-    var arrow = document.getElementById("ag-button-arrow"), 
-        arrow_clone = arrow.cloneNode(true);
-    var help = document.getElementById("ag-button-help"), 
-        help_clone = help.cloneNode(true);
-
-    arrow_clone.id = "initial-ag-button-arrow";
-    help_clone.id = "initial-ag-button-help";
-
-    document.getElementById("initial-help").appendChild(arrow_clone);
-    document.getElementById("initial-help").appendChild(help_clone);
-    
-    setInitialHelpDisplay(true);
-}
-
 /*
     Create the function bindings for when various elements are clicked.
 */
@@ -293,10 +167,10 @@ function initializeButtonMouseListeners(snapWorld, taskID) {
         resetState(snapWorld, taskID);
     });
     $("#revert-button").click(function (e) {
-        revertToBestState(snapWorld, taskID);
+        // revertToBestState(snapWorld, taskID);
     });
     $("#undo-button").click(function (e) {
-        revertToLastState(snapWorld, taskID);
+        // revertToLastState(snapWorld, taskID);
     });
     // $('#initial-help').click(function(e) {
     //     closeInitialHelp();
@@ -313,30 +187,6 @@ function initializeButtonMouseListeners(snapWorld, taskID) {
     $(SELECT.dropdown).mouseover(moveHelp);
 }
 
-/*
-    TODO: Refactor or remove...
-*/
-function previousFeedbackButton() {
-    var prev_feedback = document.createElement("li");
-    prev_feedback.classList.add("menu-item-sub-menu");
-    prev_feedback.id = "enabled-button";
-
-    var prev_feedback_link = document.createElement("a");
-    var prev_feedback_text = document.createTextNode("View Previous Feedback");
-    prev_feedback_link.appendChild(prev_feedback_text);
-    prev_feedback_link.id = "feedback-button";
-
-    prev_feedback.appendChild(prev_feedback_link);
-
-    var menu_divider = document.createElement("li");
-    menu_divider.classList.add("menu-item-sub-menu");
-    menu_divider.id = "menu-divider";
-
-    $(SELECT.dropdwn).prepend(menu_divider);
-    $(SELECT.dropdwn).prepend(prev_feedback);
-}
-
-
 function initializeSnapAdditions(snapWorld, taskID) {
     var prevFeedbackButton = false, ide;
 
@@ -346,12 +196,15 @@ function initializeSnapAdditions(snapWorld, taskID) {
     //     moveHelp();
     // }
 
-    if (showPrevFeedback && !prevFeedbackButton) {
-        previousFeedbackButton();
-        prevFeedbackButton = true;
-    }
+    // TODO: Renable at some point showPrevFeedback is always false.
+    // if (showPrevFeedback && !prevFeedbackButton) {
+    //     previousFeedbackButton();
+    //     prevFeedbackButton = true;
+    // }
 
-    var pageLocation = JSON.parse(sessionStorage.getItem(taskID + "pageLocation"));
+    var pageLocation = JSON.parse(
+        sessionStorage.getItem(taskID + "pageLocation")
+    );
 
     if (pageLocation) {
         parent.window.scrollTo(pageLocation[0], pageLocation[1]);
@@ -388,33 +241,32 @@ function initializeSnapAdditions(snapWorld, taskID) {
         }
     }, 500);
 
-    if (showPrevFeedback) {
-        $("#feedback-button").click(function() { openResults(); });
-    }
+    // if (showPrevFeedback) {
+    //     $("#feedback-button").click(function() { openResults(); });
+    // }
 
     initializeButtonMouseListeners(snapWorld, taskID);
 
+    // TODO: Write this in HTML directly
     setTimeout(function() {
         var button = $('<button>').attr({
             'class': 'btn btn-info isOff',
             'id': 'toggle-correct-button',
-            'onclick': 'TODO'
+            'title': 'Coming Soon'
         }).html('See Correct Tests');
-        
-        $("#toggle-correct-tests").html(
-            '<button class="btn btn-info isOff" id="toggle-correct-button">' +
-            'See Correct Tests</button>' +
-            '<div id="correct-table-wrapper"></div>'
+
+        $("#toggle-correct-tests").append(button).append(
+            $('<div>').attr({'id': 'correct-table-wrapper'})
         );
-        
+
         // TODO: explain this line.
-        if (!graded) {return; }
+        // if (!graded) {return; }
     }, 1000);
 
     setTimeout(function() {
         var outputLog,
             prev_log = JSON.parse(sessionStorage.getItem(taskID + "_test_log"));
-        
+
         if (prev_log) {
             outputLog = prev_log;
         } else {
@@ -428,7 +280,7 @@ function initializeSnapAdditions(snapWorld, taskID) {
         if (showFeedback && sessionStorage.getItem(taskID + "_popupFeedback") !== null) {
             populateFeedback(outputLog); 
             populateFeedback(outputLog);
-            openResults();
+            // openResults();
             sessionStorage.removeItem(taskID + "_popupFeedback");
         }
         grayOutButtons(snapWorld, taskID);
@@ -473,6 +325,10 @@ function doExecAndDisplayTests(event) {
     sessionStorage.setItem(id + "_popupFeedback", '');
 }
 
+/*
+    TODO: Rewrite this with jQuery. 
+    Then, probably remove this from use
+*/
 function appendElement(elem, text, elemClass, selector) {
     var data = document.createElement(elem);
     if (text !== null) {
@@ -484,19 +340,6 @@ function appendElement(elem, text, elemClass, selector) {
         data.classList.add(elemClass);
     }
     selector.appendChild(data);
-}
-
-function addReporterHeadings(selector) {
-    var columns = ["Input", "Output", "Expected", "Comment"];
-    var newRow = document.createElement("tr");
-    for (z = 0; z < columns.length; z++) {
-        var header = document.createElement("th");
-        var text = document.createTextNode(columns[z]);
-        header.classList.add("titles", "reporter");
-        header.appendChild(text);
-        newRow.appendChild(header);
-    }
-    selector.appendChild(newRow);
 }
 
 function createCorrectIncorrectGrouping(sectName) {
@@ -524,6 +367,28 @@ function setVisualGradedState(status) {
 }
 
 /*
+    
+*/
+function toggleCorrectTests() {
+    var toggleButton = $(SELECT.toggle_correct_button), allFeedback;
+    if (toggleButton.hasClass("isOff")) {
+        toggleButton.removeClass("isOff");
+        allFeedback = true;
+        toggleButton.html("Hide Correct Tests");
+    } else {
+        toggleButton.addClass("isOff");
+        allFeedback = false;
+        toggleButton.html("Show Correct Tests");
+    }
+
+    // TODO: IMPROVE THIS
+    // No need to redraw the entire table each time.
+    populateFeedback(feedbackLog, allFeedback);
+    setTimeout(function() {
+        openResults();
+    }, 100);
+}
+/*
     TODO: Update this to use jQuery, and maybe _.template() ?
     http://underscorejs.org/#template
     * This should be broken into at least a few functions
@@ -533,26 +398,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     // TODO: Declare move variables up here:
     var i, j, x;
     
-    // TODO: Extract this function
-    $("#toggle-correct-tests").click(function() {
-        var toggleButton = $(SELECT.toggle_correct_button);
-        if (toggleButton.hasClass("isOff")) {
-            toggleButton.removeClass("isOff");
-            allFeedback = true;
-            toggleButton.html("Hide Correct Tests");
-        } else {
-            toggleButton.addClass("isOff");
-            allFeedback = false;
-            toggleButton.html("Show Correct Tests");
-        }
-        
-        // TODO: IMPROVE THIS
-        // No need to redraw the entire table each time.
-        populateFeedback(feedbackLog, allFeedback);
-        setTimeout(function() {
-            openResults();
-        }, 100);
-    });
+    $("#toggle-correct-tests").click(toggleCorrectTests);
 
     var comment = document.getElementById("comment");
     comment.innerHTML = "";
@@ -629,6 +475,7 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
             var tipPoints = "";
 
             // TODO: Clean this up
+            // TODO: Use a button and bootstrap collapse.
             div.innerHTML = '<input class="details" id="expander' + i + x + '" type="checkbox" ><label class="' + label_class + '" for="expander' + i + x + '">' + tipPoints + suggestion + '</label><div id="table-wrapper' + i + x + '">';
 
             current_chunk.appendChild(div);
@@ -916,9 +763,9 @@ function populateFeedback(feedbackLog, allFeedback, chunknum, tipnum) {
     } else {
         tipText = "We have {0} for you! ".format(
             pluralizeWithNum('tip', numtips)
-        ) + problemPoints;
+        );
     }
-    $("#comment").html(tipText);
+    $("#comment").html(tipText + problemPoints);
 
     // TODO Make a function for this.
     tipsDiv.innerHTML = '<span class="badge">{0}</span>'.format(numtips) + pluralize('tip', numtips);

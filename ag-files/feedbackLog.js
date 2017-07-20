@@ -431,7 +431,7 @@ FeedbackLog.prototype.scoreLog = function() {
             tip.points = 0;
             tip.numCorrect = 0;
             // for (var i in tip.test_list) { // for each test
-            for (var i=0; i<tip.test_list.length; i++) {
+            for (var i=0; i < tip.test_list.length; i++) {
                 test = tip.test_list[i];
                 if (test.correct) {    // check if test passed,
                     tip.numCorrect += 1;    // update count and points

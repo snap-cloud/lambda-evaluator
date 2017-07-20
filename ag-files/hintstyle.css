@@ -197,7 +197,7 @@ span {
     margin-left: 40px;
     font-size: 20px;
     /*border: 1px solid black;*/
-}    
+}
 
 .chunk-header {
     font-size: 20px;
@@ -257,7 +257,7 @@ span {
    /*width: 300px;
    height: 100px;*/
    position: absolute;
-   left:0; 
+   left:0;
    right:0;
    /*left: 50%;
    top: 50%;
@@ -290,5 +290,3 @@ span {
 #toggle-correct-tests {
     position: absolute;
 }
-
-

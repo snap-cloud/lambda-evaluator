@@ -44,6 +44,7 @@ if (!Array.prototype.find) {
     return undefined;
   };
 }
+
 /****************************************************************************/
 
 
@@ -85,6 +86,37 @@ function arrayFormattedString(items, options) {
         newline.replace(indent, '') + end; // replace(): un-indent 1 level.
 }
 
+// A Simple logging function
+AGLogger = {
+    levels: {
+        debug: 0,
+        info: 1,
+        warning: 2,
+        error: 4
+    },
+    LOG_LEVEL: 'warning',
+    log: function () {
+        if (AGLogger.levels[AGLogger.LOG_LEVEL] >= AGLogger.levels.debug) {
+            console.log.apply(null, arguments);
+        }
+    },
+    info: function () {
+        if (AGLogger.levels[AGLogger.LOG_LEVEL] >= AGLogger.levels.info) {
+            console.info.apply(null, arguments);
+        }
+    },
+    warn: function () {
+        if (AGLogger.levels[AGLogger.LOG_LEVEL] >= AGLogger.levels.warning) {
+            console.warn.apply(null, arguments);
+        }
+    },
+    error: function () {
+        if (AGLogger.levels[AGLogger.LOG_LEVEL] >= AGLogger.levels.error) {
+            console.error.apply(null, arguments);
+        }
+    }
+}
+
 // Relies on a globally defined world. 
 AG_UTIL.getIDE = function () {
     return world.children[0];
@@ -122,7 +154,7 @@ AG_UTIL.HTMLFormattedBlock = function (spec) {
     var data = AG_UTIL.specToImage(spec),
         outString;
     if (data) {
-        outString = '<img src="DATA" />';
+        outString = '<img class="block-image" src="DATA" alt="' + spec + '"/>';
     } else {
         outString = '<code>DATA</code>';
         data = spec;

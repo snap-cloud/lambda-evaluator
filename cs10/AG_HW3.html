@@ -4,33 +4,34 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Snap! Build Your Own Blocks. Beta</title>
     <link rel="shortcut icon" href="favicon.ico">
-    <script src="jschannel.js"></script>
+    <script src="../lib/jschannel.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script type="text/javascript" src="underscore-min.js"></script>
-    <script type="text/javascript" src="SnapPLE.js"></script>
+    <script type="text/javascript" src="../lib/underscore-min.js"></script>
+    <script type="text/javascript" src="../deprecated/SnapPLE.js"></script>
     <!-- Moved down to the bottom to have var id. -->
-    
-    <!-- <script type="text/javascript" src="snap.js"></script> -->
-    <script type="text/javascript" src="morphic.js"></script>
-    <script type="text/javascript" src="widgets.js"></script>
-    <script type="text/javascript" src="blocks.js"></script>
-    <script type="text/javascript" src="threads.js"></script>
-    <script type="text/javascript" src="objects.js"></script>
-    <script type="text/javascript" src="gui.js"></script>
-    <script type="text/javascript" src="paint.js"></script>
-    <script type="text/javascript" src="lists.js"></script>
-    <script type="text/javascript" src="byob.js"></script>
-    <script type="text/javascript" src="xml.js"></script>
-    <script type="text/javascript" src="store.js"></script>
-    <script type="text/javascript" src="locale.js"></script>
-    <script type="text/javascript" src="cloud.js"></script>
-    <script type="text/javascript" src="sha512.js"></script>
-<script type="text/javascript" src="FileSaver.min.js"></script>
-<script type="text/javascript" src="snap-edx-overrides.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="AG_status_bar.css" />
-    <link rel="stylesheet" type="text/css" href="hintstyle.css" />
-    <script type="text/javascript" src="AG_hint_format.js"></script>
+    <!-- <script type="text/javascript" src="snap.js"></script> -->
+    <script type="text/javascript" src="../../snap/morphic.js"></script>
+    <script type="text/javascript" src="../../snap/widgets.js"></script>
+    <script type="text/javascript" src="../../snap/blocks.js"></script>
+    <script type="text/javascript" src="../../snap/threads.js"></script>
+    <script type="text/javascript" src="../../snap/objects.js"></script>
+    <script type="text/javascript" src="../../snap/gui.js"></script>
+    <script type="text/javascript" src="../../snap/paint.js"></script>
+    <script type="text/javascript" src="../../snap/lists.js"></script>
+    <script type="text/javascript" src="../../snap/byob.js"></script>
+    <script type="text/javascript" src="../../snap/tables.js"></script>
+    <script type="text/javascript" src="../../snap/xml.js"></script>
+    <script type="text/javascript" src="../../snap/store.js"></script>
+    <script type="text/javascript" src="../../snap/locale.js"></script>
+    <script type="text/javascript" src="../../snap/cloud.js"></script>
+    <script type="text/javascript" src="../../snap/sha512.js"></script>
+<script type="text/javascript" src="../../snap/FileSaver.min.js"></script>
+<script type="text/javascript" src="../ag-files/snap-edx-overrides.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../ag-files/AG_status_bar.css" />
+    <link rel="stylesheet" type="text/css" href="../ag-files/hintstyle.css" />
+    <script type="text/javascript" src="../deprecated/AG_hint_format.js"></script>
 
     <script type="text/javascript">
         // The id is to act as a course identifier.
@@ -94,7 +95,7 @@
             var numAttempts = setNumAttempts(taskID);
             outputLog = outputLog || new gradingLog(snapWorld, taskID, numAttempts);
             // Populate, run, and evaluate the tests specified in AGTest()
-            // These tests specified by the Course Designer. 
+            // These tests specified by the Course Designer.
 
             //outputLog.numAttempts += 1;
 
@@ -135,15 +136,15 @@
                 var outputLog = JSON.parse(localStorage.getItem(taskID + "_test_log"));
                 outputLog.snapWorld = snapWorld;
                 AG_bar_semigraded(outputLog);
-                return outputLog; 
+                return outputLog;
             } else {
                 //Restore the AG status bar to a graded state
                 //If no previous state is recognized, return new {gradingLog}.
                 var numAttempts = setNumAttempts(taskID);
-                outputLog = new gradingLog(snapWorld, taskID, numAttempts); 
+                outputLog = new gradingLog(snapWorld, taskID, numAttempts);
                 AG_bar_ungraded(outputLog);
                 return outputLog;
-            }   
+            }
         }
         /* Checks to see if the Snap! XML has changed and updates the
          * AG status bar. If Snap! is restored to its former state
@@ -154,7 +155,7 @@
          */
         function AGUpdate(snapWorld, taskID) {
 
-            
+
 
             //TODO: Are there any optional parameters that may be useful?
             //Grabs HTML divs
@@ -177,16 +178,16 @@
             }
 
 
-            //menu bar grays out options that are not available 
+            //menu bar grays out options that are not available
             //(ex. current state is same as best attempt) and restores the button state
 
             grayOutButtons(snapWorld, taskID);
 
             var outputLog;
             //If current XML is different from prev_xml
-            if (c_prev_xml && isSameSnapXML(c_prev_xml, curr_xml)) {               
+            if (c_prev_xml && isSameSnapXML(c_prev_xml, curr_xml)) {
                 //Restore the AG status bar to a graded state
-                
+
                 // TODO: Write a good comment
                 // TODO: Give gradeLog ability to recover log data and xml string
                 console.log('AGUpdate: Thinks this is the "correct" XML.');
@@ -232,9 +233,9 @@
 
         }
 
-        /* Updates the AG_status_bar with respect to the outputLog. 
+        /* Updates the AG_status_bar with respect to the outputLog.
          *  - Formats CSS for 'autograding_flag' and 'autograding_button'
-         * If the outputLog is correct, save the Snap XML string into 
+         * If the outputLog is correct, save the Snap XML string into
          * localStorage.
          *  - key = outputLog.taskID + "_c_test_state"
          * Note:
@@ -261,7 +262,7 @@
         }
         /*
          * Reset state removes all saved logs and XML files, and opens a new
-         * Snap! file. 
+         * Snap! file.
          */
         function resetState(snapWorld, taskID) {
 
@@ -284,7 +285,7 @@
         }
 
         function revertToBestState(snapWorld, taskID) {
-    
+
             var ide = snapWorld.children[0];
 
             var numAttempts = JSON.parse(localStorage.getItem(taskID + "_test_log")).numAttempts;
@@ -355,7 +356,7 @@
                 button_elem.html(button_text);
                 button_elem.slideDown('fast');
                 $('#autograding_button').css('background', 'orange');
-            });          
+            });
             $('#autograding_button .hover_darken').show();
             $('#ag-action-menu').css('color', 'white');
             if (localStorage.getItem(outputLog.taskID + "_test_log")) {
@@ -387,7 +388,7 @@
             $('#feedback-button').html("Review Feedback");
         }
         /*
-         * Makes AG status bar reflect the semi graded state of the outputLog. 
+         * Makes AG status bar reflect the semi graded state of the outputLog.
          * This is called when any test on the outputLog fails.
          */
         function AG_bar_semigraded(outputLog) {
@@ -407,13 +408,13 @@
             var num_errors = outputLog.testCount - outputLog.numCorrect;
             var plural = "";
             if (num_errors > 1) { plural = "s"};
-            $('#feedback-button').html("View Feedback ("+ 
+            $('#feedback-button').html("View Feedback ("+
                 num_errors +" Error" + plural + ")");
         }
 
         /* Checks if two Snap! XML strings have approximately the same state.
          * The positions of scripts are ignored, as well as the order in which
-         * they were most recently manipulated. 
+         * they were most recently manipulated.
          * @param {String} prev_xml
          * @param {String} curr_xml
          * @return {Boolean} Equivalence of prev_xml and curr_xml, false if
@@ -422,9 +423,9 @@
          * TODO: Extend to all script groups [DONE]
          * TODO: Improve XML scrubbing (Consider the following)
          *  - If correct solution (scripts) is subset of other [DONE]
-         *  - Optional tags for variables, sprite position  
+         *  - Optional tags for variables, sprite position
          *  - Option to restore the highest scoring {gradingLog}
-         *  
+         *
          * Note: Apparently works with multiple sprites, but produces a malformed
          * Snap XML string. Each sprite gets all scripts in sorted order. Needs
          * further testing.
@@ -508,23 +509,23 @@
          * appropriate CSS. Return the re-formatted string.
          */
         function formatFeedback(hint) {
-            var tags = 
-            [['collapsedivstart', '<input class="toggle-box" id="expander" type="checkbox" ><label for="expander">Details</label><div id="table-wrapper">'], 
-            ['collapsedivend', '</div>'], 
-            ['linebreak', '<br /></br />'], 
-            ['tablestart', '<table class="results">'], 
-            ['tableend', '</table>'], 
-            ['rowstart', '<tr>'], 
-            ['rowend', '</tr>'], 
-            ['headstart', '<th class="titles" style="text-align: center;">'], 
-            ['headend', '</th>'], 
-            ['datastart', '<td class="data" style="text-align: center;">'], 
+            var tags =
+            [['collapsedivstart', '<input class="toggle-box" id="expander" type="checkbox" ><label for="expander">Details</label><div id="table-wrapper">'],
+            ['collapsedivend', '</div>'],
+            ['linebreak', '<br /></br />'],
+            ['tablestart', '<table class="results">'],
+            ['tableend', '</table>'],
+            ['rowstart', '<tr>'],
+            ['rowend', '</tr>'],
+            ['headstart', '<th class="titles" style="text-align: center;">'],
+            ['headend', '</th>'],
+            ['datastart', '<td class="data" style="text-align: center;">'],
             ['evenstart', '<td class="evens" style="text-align: center;">'],
-            ['dataend', '</td>'], 
+            ['dataend', '</td>'],
             ['correctstart', '<td class="correctans" style="text-align: center;">'],
             ['wrongstart', '<td class="incorrectans" style="text-align: center;">'],
             ['teststart', '<td class="tests" style="text-align: center;">'],
-            ['spanend', '</span>'], 
+            ['spanend', '</span>'],
             ['spanstart', '<span class="message">']];
 
             var taglength = tags.length;
@@ -587,7 +588,7 @@
                 document.getElementById("reporter-table-data").style.display = "table";
             }
 
-            // Wipes the feedback clean, including if it has been populated before. 
+            // Wipes the feedback clean, including if it has been populated before.
             caution.innerHTML = "";
             edx_caution.innerHTML = "";
             document.getElementById("comment").innerHTML = "";
@@ -642,7 +643,7 @@
                     repTest += 1;
                 }
 
-                // If test is correct, make the feedback appropriately colored. 
+                // If test is correct, make the feedback appropriately colored.
                 if (feedback[test]["correct"] === true) {
                     addTableCell(feedback[test]["feedback"], "correctans", newRow);
                     // addRegradeButton("Regrade", ["data", "hidden"], newRow);
@@ -655,12 +656,12 @@
                     document.getElementById("reporter-table-data").appendChild(newRow);
                 } else {
                     document.getElementById("table-data").appendChild(newRow);
-                }  
+                }
             }
             console.log(outputLog);
             //outputLog.saveLog();
 
-            // makes recently created regrade buttons clickable 
+            // makes recently created regrade buttons clickable
             var regrade_buttons = document.getElementsByClassName("regrade");
             for(var i=0; i<regrade_buttons.length; i++) {
                 regrade_buttons[i].onclick = function() {
@@ -876,11 +877,11 @@
                     ide.openProjectString(localStorage.getItem(preReqID));
                 }
             }
-            
 
-            //AUTOGRADER ADDITION - 
+
+            //AUTOGRADER ADDITION -
             //Forced to use setTimeout() to let the world load before... Maybe not.
-            
+
             //Create a gradingLog and initialize the AG status bar (AGSB).
             // var testLog = AGStart(world, id);
 
@@ -901,7 +902,7 @@
                 runAGTest(world, id, outputLog);
                 if (isEDX) {
                     parent.document.getElementsByClassName('check-label')[0].click();
-                } 
+                }
                 // var outputLog = AGStart(world, id);
             }
             grade_button.addEventListener('click', doExecAndDisplayTests);
@@ -930,7 +931,7 @@
             var results_overlay = document.getElementById("ag-output");
             var snapWorld = document.getElementById("world");
             var regrade_buttons = document.getElementsByClassName("regrade");
-            
+
             //var outside_menu = document.getElementById("outside-menu");
 
             reset_button.onclick = function() { resetState(world, id); toggleMenu(id); };
@@ -943,7 +944,7 @@
 
 
             $(".bubble").click(function(event){
-                event.stopPropagation();  
+                event.stopPropagation();
             });
 
             feedback_button.onclick = function() {
@@ -996,9 +997,9 @@
 
                     var overlay_button = parent.document.getElementById('overlay-button');
                     //overlay_button.style.display = "block";
-                    overlay_button.onclick = function() { 
+                    overlay_button.onclick = function() {
                         overlay_button.style.display = "none";
-                        grade_button.click(); 
+                        grade_button.click();
                     }
                 }
 
@@ -1020,10 +1021,10 @@
                     outputLog.scoreLog;
                     console.log(outputLog);
                     var mylog = outputLog;
-                    //this.classList[2]); 
+                    //this.classList[2]);
                 });*/
 
-                
+
                 /*for (i=0; i<regrade_buttons.length; i++) {
                     regrade_buttons[i].setAttribute('onclick', 'alert("hello")');
                 }*/
@@ -1036,7 +1037,7 @@
                 //runAGTest(world,id);
                 //AGUpdate(world, id);
 
-                
+
             },600);
 
             /*var overlay_button = document.createElement('button');
@@ -1050,7 +1051,7 @@
             //AGUpdate(world, id);
 
             setInterval(loop, 1);
-            
+
         };
 
         function loop() {
@@ -1058,7 +1059,7 @@
         }
 
     </script>
-    <script type="text/javascript" src="AG_EDX.js"></script>
+    <script type="text/javascript" src="../ag-files/AG_EDX.js"></script>
 </head>
 <body style="margin: 0;">
     <canvas id="world" tabindex="1" style="position: absolute;" ></canvas>
@@ -1142,8 +1143,8 @@
         <p id="comment"></p>
         <table class="results">
             <tbody id="table-data">
-                <tr id="table-titles"> 
-                    <!--<th class="titles"> Test </th> 
+                <tr id="table-titles">
+                    <!--<th class="titles"> Test </th>
                     <th class="titles" id="last-column"> Feedback </th>-->
                 </tr>
             </tbody>
@@ -1151,8 +1152,8 @@
         </br>
         <table class="results">
             <tbody id="reporter-table-data">
-                <tr id="reporter-table-titles"> 
-                    <!--<th class="titles"> Test </th> 
+                <tr id="reporter-table-titles">
+                    <!--<th class="titles"> Test </th>
                     <th class="titles" id="last-column"> Feedback </th>-->
                 </tr>
             </tbody>
